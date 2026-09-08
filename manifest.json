@@ -1,0 +1,14 @@
+{
+  "name": "Meu Plano · Emagrecimento",
+  "short_name": "Meu Plano",
+  "description": "Seu plano alimentar, treinos e progresso em um só lugar.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FBFCFB",
+  "theme_color": "#159A55",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
