@@ -11,6 +11,8 @@ const App = {
   refAberta: null,
   busca: '',
   cat: 'Todos',
+  exAberto: null,
+  abaCardapio: 'cardapio',
   modoLocal: false,
 
   /* ---------- inicialização ---------- */
@@ -58,7 +60,9 @@ const App = {
     const fn = Telas[this.tela] || Telas.inicio;
     app.innerHTML = fn.call(Telas);
 
-    nav.style.display = this.tela === 'biblioteca' ? 'none' : 'flex';
+    /* telas internas ocupam a tela inteira, sem a barra de navegação */
+    const internas = ['biblioteca', 'cardapio'];
+    nav.style.display = internas.includes(this.tela) ? 'none' : 'flex';
     document.querySelectorAll('.nav button').forEach(b => {
       b.classList.toggle('on', b.dataset.tela === this.tela);
     });
@@ -83,10 +87,10 @@ const App = {
   },
 
   marcarTreino() {
-    const feito = Store.alternarTreino();
+    if (!Store.concluirTreino()) return;      // já estava concluído, ignora
     Backend.agendarSync();
     this.render();
-    if (feito) this.toast('Treino concluído! +40 pontos 🏋️', true);
+    this.toast('Treino concluído! +40 pontos 🏋️', true);
   },
 
   marcarAlimento(refId, alimId) {
@@ -111,7 +115,58 @@ const App = {
   },
 
   selDia(i) { this.diaTreino = i; this.render(); },
+
+  /* ---------- organização da semana ---------- */
+  trocarDiaTreino(posicao, idxTreino) {
+    const trocou = Store.trocarDiaTreino(posicao, idxTreino);
+    Backend.agendarSync();
+    this.render();
+    if (trocou) this.toast('Semana reorganizada ✅', true);
+  },
+
+  restaurarOrdem() {
+    Store.restaurarOrdemTreino();
+    Backend.agendarSync();
+    this.render();
+    this.toast('Ordem original do plano restaurada');
+  },
+
+  /* ---------- cargas dos exercícios ---------- */
+  /* recebe a posição do exercício no treino do dia e devolve o nome,
+     que é a chave usada para guardar o histórico de carga */
+  nomeExercicio(i) {
+    const dia = Store.diasTreino()[this.diaTreino];
+    return dia && dia.exercicios && dia.exercicios[i] ? dia.exercicios[i].ex : null;
+  },
+
+  abrirEx(i) {
+    const nome = this.nomeExercicio(i);
+    if (!nome) return;
+    this.exAberto = this.exAberto === nome ? null : nome;
+    this.render();
+  },
+
+  salvarCarga(i) {
+    const nome = this.nomeExercicio(i);
+    if (!nome) return;
+    const peso = parseFloat(document.getElementById('carga-peso').value);
+    const reps = parseInt(document.getElementById('carga-reps').value, 10);
+    if (isNaN(peso) || peso < 0 || peso > 1000) return this.toast('Digite uma carga válida.');
+
+    const anterior = Store.ultimaCarga(nome);
+    Store.registrarCarga(nome, peso, reps);
+    Backend.agendarSync();
+    this.exAberto = null;
+    this.render();
+
+    if (anterior && peso > anterior.peso) {
+      this.toast(`Subiu de ${anterior.peso}kg para ${peso}kg! 💪`, true);
+    } else {
+      this.toast('Carga registrada ✅', true);
+    }
+  },
   setPeriodo(p) { this.periodo = p; this.render(); },
+  setAbaCardapio(a) { this.abaCardapio = a; this.render(); window.scrollTo(0, 0); },
   setCat(c) { this.cat = c; this.render(); },
 
   buscar(v) {

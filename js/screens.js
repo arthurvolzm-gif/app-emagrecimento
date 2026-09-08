@@ -96,7 +96,7 @@ const Telas = {
               </div>
               <div class="barra"><i style="width:${t.treino ? 100 : 0}%"></i></div>
             </div>
-            ${treinoHoje.descanso ? '' : `<button class="btn-mini" onclick="App.marcarTreino()">${t.treino ? '↺' : '✓'}</button>`}
+            ${treinoHoje.descanso || t.treino ? '' : `<button class="btn-mini" onclick="App.marcarTreino()">✓</button>`}
           </div>
         </div>
 
@@ -156,11 +156,90 @@ const Telas = {
           </div>
         </div>
 
+        <button class="btn sec" style="margin-bottom:14px" onclick="App.ir('cardapio')">
+          📋  Ver cardápio completo e lista de compras
+        </button>
+
         ${plano.map(r => Telas._refeicao(r)).join('')}
 
-        <div class="aviso" style="margin-top:6px">
-          As gramagens são calculadas a partir do seu peso, altura, idade e objetivo. Este material é orientativo e não substitui acompanhamento nutricional.
+        <div class="card livre-card">
+          <div class="card-tt" style="margin-bottom:8px">🍕 Refeição livre</div>
+          <p style="font-size:13.5px;color:#4a4a4a;line-height:1.6;font-weight:600;margin:0">
+            ${Store.planoBase().livre}
+          </p>
         </div>
+
+        <p style="font-size:12px;color:var(--cinza-c);line-height:1.55;font-weight:600;text-align:center;margin-top:4px">
+          As gramagens são calculadas a partir do seu peso, altura, idade e objetivo.
+        </p>
+      </div>`;
+  },
+
+  /* ============ CARDÁPIO COMPLETO + LISTA DE COMPRAS ============ */
+  cardapio() {
+    const plano = Store.planoAlimentar();
+    const p = Store.db.perfil;
+    const compras = Store.listaCompras();
+    const verCompras = App.abaCardapio === 'compras';
+
+    const kcalTotal = plano.reduce((s, r) =>
+      s + r.alimentos.reduce((x, a) => x + (a.opcional ? 0 : a.kcal), 0), 0);
+
+    return `
+      <div class="topo">
+        <div>
+          <h1 class="display">${verCompras ? 'Lista de compras' : 'Cardápio completo'}</h1>
+          <div class="topo-sub">${verCompras
+            ? 'Quantidades para 7 dias, já somadas'
+            : App.rotuloObjetivo() + ' · ' + kcalTotal + ' kcal por dia'}</div>
+        </div>
+        <button class="btn-mini" style="width:40px;height:40px" onclick="App.ir('alimentacao')">✕</button>
+      </div>
+
+      <div class="tela">
+        <div class="toggle">
+          <button class="${!verCompras ? 'on' : ''}" onclick="App.setAbaCardapio('cardapio')">Cardápio</button>
+          <button class="${verCompras ? 'on' : ''}" onclick="App.setAbaCardapio('compras')">Compras</button>
+        </div>
+
+        ${verCompras ? `
+          <div class="aviso">
+            Lista baseada no seu cardápio, multiplicada por 7 dias. Ajuste conforme as trocas que você costuma fazer.
+          </div>
+
+          <div class="card">
+            ${compras.map(item => `
+              <div class="compra-item">
+                <span class="ci-nome">${item.nome}</span>
+                <span class="ci-qtd">${item.texto}</span>
+              </div>`).join('')}
+          </div>
+
+          <p style="font-size:12px;color:var(--cinza-c);line-height:1.55;font-weight:600;text-align:center">
+            Itens "à vontade" são saladas e legumes: compre o que você gosta,<br>sem precisar pesar.
+          </p>
+        ` : `
+          ${plano.map(r => {
+            const kcalRef = r.alimentos.reduce((s, a) => s + (a.opcional ? 0 : a.kcal), 0);
+            return `
+              <div class="card">
+                <div class="card-tt">${r.icone} ${r.nome} · ${r.horario}<span class="n">${kcalRef} kcal</span></div>
+                ${r.alimentos.map(a => `
+                  <div class="cardapio-item ${a.opcional ? 'opc' : ''}">
+                    <div>
+                      <div class="cai-nome">${a.nome}${a.opcional ? ' <span class="tag-opc">opcional</span>' : ''}</div>
+                      <div class="cai-det">${/vontade|se quiser/i.test(a.un) ? a.un : a.g + 'g · ' + a.un}</div>
+                    </div>
+                    <div class="cai-kcal">${a.kcal}<span>kcal</span></div>
+                  </div>`).join('')}
+              </div>`;
+          }).join('')}
+
+          <div class="card livre-card">
+            <div class="card-tt" style="margin-bottom:8px">🍕 Refeição livre</div>
+            <p style="font-size:13.5px;color:#4a4a4a;line-height:1.6;font-weight:600;margin:0">${Store.planoBase().livre}</p>
+          </div>
+        `}
       </div>`;
   },
 
@@ -188,13 +267,21 @@ const Telas = {
         <div class="ref-corpo">
           ${r.alimentos.map(a => {
             const feito = Store.alimentoMarcado(r.id, a.id);
+            const trocas = Array.isArray(a.alt) ? a.alt : (a.alt ? [a.alt] : []);
             return `
-              <div class="alim ${feito ? 'feito' : ''}" onclick="App.marcarAlimento('${r.id}','${a.id}')">
+              <div class="alim ${feito ? 'feito' : ''} ${a.opcional ? 'opcional' : ''}" onclick="App.marcarAlimento('${r.id}','${a.id}')">
                 <div class="check">${feito ? '✓' : ''}</div>
                 <div class="alim-corpo">
-                  <div class="alim-nome">${a.nome}</div>
-                  <div class="alim-det">${a.g}g · ${a.un}</div>
-                  <div class="alim-alt">Troca: ${a.alt}</div>
+                  <div class="alim-nome">
+                    ${a.nome}
+                    ${a.opcional ? '<span class="tag-opc">opcional</span>' : ''}
+                  </div>
+                  <div class="alim-det">${/vontade|se quiser/i.test(a.un) ? a.un : a.g + 'g · ' + a.un}</div>
+                  ${trocas.length ? `
+                    <div class="alim-alt">
+                      <span class="alt-tt">Pode trocar por:</span>
+                      ${trocas.map(t => `<span class="alt-op">${t}</span>`).join('')}
+                    </div>` : ''}
                 </div>
                 <div class="alim-kcal">${a.kcal}<span>${a.prot}g prot</span></div>
               </div>`;
@@ -211,7 +298,8 @@ const Telas = {
   /* ============ TREINOS ============ */
   treinos() {
     const plano = Store.planoTreino();
-    const dia = plano.dias[App.diaTreino];
+    const dias = Store.diasTreino();
+    const dia = dias[App.diaTreino];
     const hojeIdx = App.indiceHoje();
     const ehHoje = App.diaTreino === hojeIdx;
     const feito = Store.dia().treino;
@@ -236,7 +324,7 @@ const Telas = {
         </div>
 
         <div class="dias-fila">
-          ${plano.dias.map((d, i) => `
+          ${dias.map((d, i) => `
             <button class="dia-chip ${i === App.diaTreino ? 'ativo' : ''} ${i === hojeIdx ? 'hoje' : ''}" onclick="App.selDia(${i})">
               <div class="d">${d.dia}</div>
               <div class="p"></div>
@@ -253,23 +341,106 @@ const Telas = {
           </div>` : `
           <div class="card">
             <div class="card-tt">🏋️ ${dia.foco}<span class="n">${dia.exercicios.length} exercícios</span></div>
-            ${dia.exercicios.map((e, i) => `
-              <div class="ex">
-                <div class="ex-n">${i + 1}</div>
-                <div>
-                  <div class="ex-nome">${e.ex}</div>
-                  <div class="ex-det">Descanso: ${e.desc}</div>
-                </div>
-                <div class="ex-serie">${e.series}×${e.reps}</div>
-              </div>`).join('')}
+            ${dia.exercicios.map((e, i) => Telas._exercicio(e, i)).join('')}
           </div>
 
-          ${ehHoje ? `
-            <button class="btn ${feito ? 'sec' : ''}" onclick="App.marcarTreino()">
-              ${feito ? '✓ Treino concluído hoje' : 'Marcar treino como concluído'}
-            </button>` : `
-            <div class="aviso">Este é o treino de ${dia.dia}. Você só marca como concluído no dia.</div>`}
+          ${ehHoje ? (feito
+            ? `<div class="treino-feito">✓ Treino concluído hoje</div>`
+            : `<button class="btn" onclick="App.marcarTreino()">Marcar treino como concluído</button>`) : `
+            <div class="aviso">Este é o treino de ${dia.diaLongo}. Você só marca como concluído no dia.</div>`}
         `}
+
+        ${Telas._organizarSemana(plano, dias)}
+      </div>`;
+  },
+
+  /* linha do exercício, com seta que abre o registro de carga */
+  _exercicio(e, i) {
+    const nome = e.ex;
+    const aberto = App.exAberto === nome;
+    const ultima = Store.ultimaCarga(nome);
+    const hist = Store.cargas(nome);
+    const anterior = hist.length > 1 ? hist[hist.length - 2] : null;
+    const subiu = ultima && anterior && ultima.peso > anterior.peso;
+
+    return `
+      <div class="ex-bloco ${aberto ? 'aberto' : ''}">
+        <div class="ex" onclick="App.abrirEx(${i})">
+          <div class="ex-n">${i + 1}</div>
+          <div style="flex:1;min-width:0">
+            <div class="ex-nome">${nome}</div>
+            <div class="ex-det">
+              Descanso: ${e.desc}
+              ${ultima ? ` · <b style="color:var(--verde-esc)">${ultima.peso}kg${ultima.reps ? ' × ' + ultima.reps : ''}</b>${subiu ? ' ↑' : ''}` : ''}
+            </div>
+          </div>
+          <div class="ex-serie">${e.series}×${e.reps}</div>
+          <div class="ex-seta">▾</div>
+        </div>
+
+        <div class="ex-corpo">
+          ${hist.length ? `
+            <div class="carga-hist">
+              ${hist.slice(-6).map(r => `
+                <div class="carga-pt">
+                  <div class="cp-peso">${r.peso}<span>kg</span></div>
+                  <div class="cp-data">${App.dataCurta(r.data)}</div>
+                </div>`).join('')}
+            </div>` : `
+            <p class="carga-vazio">Ainda sem registro. Anote a carga de hoje para acompanhar sua evolução.</p>`}
+
+          <div class="carga-form">
+            <div class="carga-campo">
+              <label>Carga (kg)</label>
+              <input id="carga-peso" type="number" inputmode="decimal" step="0.5"
+                     placeholder="0" value="${ultima ? ultima.peso : ''}" onclick="event.stopPropagation()">
+            </div>
+            <div class="carga-campo">
+              <label>Repetições</label>
+              <input id="carga-reps" type="number" inputmode="numeric"
+                     placeholder="${String(e.reps).replace(/\D/g, '') || '12'}"
+                     value="${ultima && ultima.reps ? ultima.reps : ''}" onclick="event.stopPropagation()">
+            </div>
+            <button class="carga-btn" onclick="event.stopPropagation();App.salvarCarga(${i})">Salvar</button>
+          </div>
+        </div>
+      </div>`;
+  },
+
+  /* organizador: define qual treino cai em cada dia da semana */
+  _organizarSemana(plano, dias) {
+    const ordem = Store.ordemTreino();
+    const padrao = ordem.every((v, i) => v === i);
+
+    /* rótulo de cada opção; numera os descansos para não ficarem iguais */
+    let nDesc = 0;
+    const rotulos = plano.dias.map(d => d.descanso ? `Descanso ${++nDesc}` : d.foco);
+
+    return `
+      <h3 class="secao-tt">Organize a sua semana</h3>
+      <div class="card">
+        <p style="font-size:13px;color:var(--cinza);line-height:1.55;font-weight:600;margin-bottom:4px">
+          Escolha o que fica em cada dia. Ao mover um treino, ele <b>troca de lugar</b>
+          com o que estava naquele dia, então a semana continua com o mesmo volume.
+        </p>
+
+        ${dias.map((d, i) => `
+          <div class="dia-org">
+            <div class="dia-org-lbl">
+              ${d.diaLongo}
+              ${i === App.indiceHoje() ? '<span class="hoje-tag">hoje</span>' : ''}
+            </div>
+            <select class="sel-dia ${d.descanso ? 'sel-descanso' : ''}" onchange="App.trocarDiaTreino(${i}, this.value)">
+              ${plano.dias.map((op, idx) => `
+                <option value="${idx}" ${ordem[i] === idx ? 'selected' : ''}>${rotulos[idx]}</option>
+              `).join('')}
+            </select>
+          </div>`).join('')}
+
+        ${padrao ? '' : `
+          <button class="btn sec" style="margin-top:14px" onclick="App.restaurarOrdem()">
+            Voltar à ordem original do plano
+          </button>`}
       </div>`;
   },
 
@@ -323,11 +494,18 @@ const Telas = {
   /* ============ METAS ============ */
   metas() {
     const p = Store.db.perfil;
-    const perdido = Math.round((p.peso_inicial - p.peso_atual) * 10) / 10;
-    const faltam = Math.round((p.peso_atual - p.meta_peso) * 10) / 10;
-    const total = Math.abs(p.peso_inicial - p.meta_peso) || 1;
-    const pct = Math.max(0, Math.min(100, Math.round((perdido / total) * 100)));
     const ms = Store.metasSemana();
+
+    /* a meta pode ser perder OU ganhar peso — a conta vale para os dois lados */
+    const dif = p.meta_peso - p.peso_inicial;
+    const ganhar = dif > 0;
+    const manter = Math.abs(dif) < 0.05;
+    const variacao = Math.round((p.peso_atual - p.peso_inicial) * 10) / 10;  // + ganhou, − perdeu
+    const andado = ganhar ? variacao : -variacao;                            // quanto andou na direção certa
+    const pct = manter ? 100 : Math.max(0, Math.min(100, Math.round((andado / Math.abs(dif)) * 100)));
+    const atingiu = manter || (ganhar ? p.peso_atual >= p.meta_peso : p.peso_atual <= p.meta_peso);
+    const faltam = Math.round(Math.abs(p.peso_atual - p.meta_peso) * 10) / 10;
+    const naDirecao = (ganhar && variacao > 0) || (!ganhar && variacao < 0);
 
     return `
       <div class="topo">
@@ -346,7 +524,7 @@ const Telas = {
           <div class="peso-box">
             <div class="l">Atual</div>
             <div class="n">${p.peso_atual}<small>kg</small></div>
-            ${perdido !== 0 ? `<div class="d" style="color:${perdido > 0 ? 'var(--verde)' : 'var(--vermelho)'}">${perdido > 0 ? '↓' : '↑'} ${Math.abs(perdido)} kg</div>` : ''}
+            ${variacao !== 0 ? `<div class="d" style="color:${naDirecao ? 'var(--verde)' : 'var(--vermelho)'}">${variacao > 0 ? '↑' : '↓'} ${Math.abs(variacao)} kg</div>` : ''}
           </div>
           <div class="peso-box">
             <div class="l">Meta</div>
@@ -361,7 +539,9 @@ const Telas = {
           </div>
           <div class="barra" style="height:10px"><i style="width:${pct}%"></i></div>
           <div style="font-size:12.5px;color:var(--cinza);margin-top:10px;font-weight:600">
-            ${faltam > 0 ? `Faltam <b style="color:var(--tinta)">${faltam} kg</b> para chegar na sua meta.` : 'Meta atingida. Agora é sustentar. 🎉'}
+            ${atingiu
+              ? 'Meta atingida. Agora é sustentar. 🎉'
+              : `Faltam <b style="color:var(--tinta)">${faltam} kg</b> para ${ganhar ? 'chegar no peso que você quer' : 'chegar na sua meta'}.`}
           </div>
         </div>
 
@@ -432,6 +612,8 @@ const Telas = {
           </div>
         </div>
 
+        ${Telas._evolucaoCargas()}
+
         <div class="card nivel-card">
           <div class="nivel-topo">
             <div class="nivel-emoji">${nv.icone}</div>
@@ -469,6 +651,52 @@ const Telas = {
               </span>
             </div>`).join('')}
         </div>
+      </div>`;
+  },
+
+  /* evolução de carga por exercício (aba de progresso) */
+  _evolucaoCargas() {
+    const lista = Store.evolucaoCargas();
+
+    if (!lista.length) return `
+      <h3 class="secao-tt">Evolução de carga</h3>
+      <div class="card">
+        <div class="vazio" style="padding:26px 16px">
+          <div class="em">🏋️</div>
+          <p>Anote as cargas na aba de Treinos, tocando na seta<br>de cada exercício, e a evolução aparece aqui.</p>
+        </div>
+      </div>`;
+
+    const totalGanho = Math.round(lista.reduce((s, e) => s + Math.max(0, e.ganho), 0) * 10) / 10;
+
+    return `
+      <h3 class="secao-tt">Evolução de carga</h3>
+      <div class="card">
+        <div class="card-tt">🏋️ Por exercício<span class="n">${lista.length} registrados</span></div>
+
+        ${totalGanho > 0 ? `
+          <div class="carga-destaque">
+            <div class="cd-n">+${totalGanho}<span>kg</span></div>
+            <div class="cd-l">somando o ganho de todos os exercícios desde o primeiro registro</div>
+          </div>` : ''}
+
+        ${lista.map(e => `
+          <div class="carga-linha">
+            <div class="cl-topo">
+              <span class="cl-nome">${e.ex}</span>
+              <span class="cl-ganho ${e.ganho > 0 ? 'sobe' : e.ganho < 0 ? 'desce' : ''}">
+                ${e.ganho > 0 ? '+' : ''}${e.ganho} kg
+              </span>
+            </div>
+            <div class="cl-corpo">
+              ${Comp.sparkline(e.serie)}
+              <div class="cl-nums">
+                <span>${e.inicio}kg</span>
+                <span class="seta">→</span>
+                <span class="atual">${e.atual}kg</span>
+              </div>
+            </div>
+          </div>`).join('')}
       </div>`;
   },
 
@@ -559,6 +787,25 @@ const Comp = {
         </div>
         <div style="color:var(--cinza-c);font-size:18px">›</div>
       </div>`;
+  },
+
+  /* minigráfico de carga dentro da linha do exercício */
+  sparkline(vals) {
+    if (vals.length < 2) {
+      return `<div class="spark-vazio">1 registro</div>`;
+    }
+    const W = 86, H = 26;
+    const min = Math.min(...vals), max = Math.max(...vals);
+    const amp = (max - min) || 1;
+    const x = i => (i / (vals.length - 1)) * W;
+    const y = v => H - 3 - ((v - min) / amp) * (H - 6);
+    const d = vals.map((v, i) => `${i === 0 ? 'M' : 'L'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+
+    return `
+      <svg class="spark" viewBox="0 0 ${W} ${H}">
+        <path d="${d}" fill="none" stroke="#159A55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="${x(vals.length - 1).toFixed(1)}" cy="${y(vals[vals.length - 1]).toFixed(1)}" r="2.8" fill="#159A55"/>
+      </svg>`;
   },
 
   /* gráfico de linha do peso */

@@ -26,7 +26,7 @@ const Store = {
   },
 
   vazio() {
-    return { perfil: null, dias: {}, pesagens: [] };
+    return { perfil: null, dias: {}, pesagens: [], cargas: {} };
   },
 
   resetar() {
@@ -66,6 +66,7 @@ const Store = {
       meta_peso: Number(dados.meta_peso),
       objetivo: dados.objetivo,         // 'emagrecimento' | 'hipertrofia' | 'manutencao'
       local: dados.local,               // 'academia' | 'casa'
+      ordem_treino: [0, 1, 2, 3, 4, 5, 6],
       criado_em: this.hoje()
     };
     perfil.meta_kcal = this.calcMetaKcal(perfil);
@@ -114,10 +115,21 @@ const Store = {
   },
 
   /* ---------- plano alimentar reescalado para a meta ---------- */
+  planoBase() {
+    const p = this.db.perfil;
+    return PLANOS_ALIMENTARES[p.objetivo] || PLANOS_ALIMENTARES.emagrecimento;
+  },
+
   planoAlimentar() {
     const p = this.db.perfil;
-    const plano = PLANOS_ALIMENTARES[p.objetivo] || PLANOS_ALIMENTARES.emagrecimento;
-    let fator = p.meta_kcal / plano.kcalBase;
+    const plano = this.planoBase();
+
+    /* a base é somada dos próprios alimentos (sem os opcionais), então
+       editar o cardápio nunca desalinha o cálculo */
+    const base = plano.refeicoes.reduce((s, r) =>
+      s + r.alimentos.reduce((x, a) => x + (a.opcional ? 0 : a.kcal), 0), 0) || 1;
+
+    let fator = p.meta_kcal / base;
     fator = Math.max(0.6, Math.min(1.8, fator));
 
     return plano.refeicoes.map(r => ({
@@ -134,6 +146,49 @@ const Store = {
   planoTreino() {
     const p = this.db.perfil;
     return PLANOS_TREINO[`${p.sexo}_${p.local}`] || PLANOS_TREINO.feminino_academia;
+  },
+
+  /* ---------- organização da semana ----------
+     `ordem_treino` guarda, para cada dia da semana (posição 0=Seg ... 6=Dom),
+     qual treino do plano original ocupa aquele dia. Trocar dois dias é só
+     trocar duas posições deste array.                                       */
+  ordemTreino() {
+    const p = this.db.perfil;
+    if (!p.ordem_treino || p.ordem_treino.length !== 7) {
+      p.ordem_treino = [0, 1, 2, 3, 4, 5, 6];
+    }
+    return p.ordem_treino;
+  },
+
+  /* os 7 dias já reorganizados: o rótulo do dia vem da posição,
+     o conteúdo do treino vem da ordem escolhida pela pessoa */
+  diasTreino() {
+    const plano = this.planoTreino();
+    return this.ordemTreino().map((idx, pos) => ({
+      ...plano.dias[idx],
+      dia: DIAS_SEMANA[pos],
+      diaLongo: DIAS_SEMANA_LONGO[pos]
+    }));
+  },
+
+  /* põe o treino `idxTreino` no dia `posicao`, trocando de lugar
+     com o que estava ali */
+  trocarDiaTreino(posicao, idxTreino) {
+    const ordem = this.ordemTreino();
+    idxTreino = Number(idxTreino);
+    const origem = ordem.indexOf(idxTreino);
+    if (origem === -1 || origem === posicao) return false;
+
+    const antigo = ordem[posicao];
+    ordem[posicao] = idxTreino;
+    ordem[origem] = antigo;
+    this.save();
+    return true;
+  },
+
+  restaurarOrdemTreino() {
+    this.db.perfil.ordem_treino = [0, 1, 2, 3, 4, 5, 6];
+    this.save();
   },
 
   /* ---------- registro diário ---------- */
@@ -165,10 +220,56 @@ const Store = {
     ref.alimentos.forEach(a => {
       const chave = `${refId}:${a.id}`;
       const i = d.alimentos.indexOf(chave);
-      if (marcar && i < 0) d.alimentos.push(chave);
+      /* "marcar tudo" não marca a sobremesa por você */
+      if (marcar && i < 0 && !a.opcional) d.alimentos.push(chave);
       if (!marcar && i >= 0) d.alimentos.splice(i, 1);
     });
     this.save();
+  },
+
+  /* lista de compras da semana: quantidade diária × 7, somando repetidos.
+     Quando a medida caseira faz mais sentido que gramas (ovos, potes,
+     xícaras), a lista usa ela — ninguém compra "1575g de café".        */
+  listaCompras() {
+    const CASEIRAS = /^(\d+(?:[.,]\d+)?)\s*(unidades?|potes?|scoops?|x[ií]caras?|fatias?|fil[ée]s?|por[çc][õo]es?|punhados?|conchas?)/i;
+    const PLURAIS = { unidade:'unidades', pote:'potes', scoop:'scoops', xicara:'xícaras',
+                      fatia:'fatias', file:'filés', porcao:'porções', punhado:'punhados', concha:'conchas' };
+    const mapa = {};
+
+    this.planoAlimentar().forEach(r => r.alimentos.forEach(a => {
+      if (a.opcional) return;
+
+      if (!mapa[a.nome]) mapa[a.nome] = { nome: a.nome, gramas: 0, aVontade: false, caseira: null };
+      const item = mapa[a.nome];
+
+      if (/vontade/i.test(a.un)) { item.aVontade = true; return; }
+
+      item.gramas += a.g * 7;
+
+      const m = a.un.match(CASEIRAS);
+      if (m) {
+        const chave = m[2].toLowerCase()
+          .replace(/s$/, '').replace('í', 'i').replace('é', 'e').replace('ç', 'c').replace('õ', 'o');
+        const qtd = parseFloat(m[1].replace(',', '.')) * 7;
+        if (!item.caseira) item.caseira = { qtd: 0, rotulo: PLURAIS[chave] || m[2] };
+        item.caseira.qtd += qtd;
+      }
+    }));
+
+    return Object.values(mapa)
+      .map(i => ({ ...i, texto: this._qtdCompras(i) }))
+      .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+  },
+
+  _qtdCompras(item) {
+    if (item.aVontade) return 'à vontade';
+    if (item.caseira) {
+      const q = Math.round(item.caseira.qtd * 10) / 10;
+      return `${String(q).replace('.', ',')} ${item.caseira.rotulo}`;
+    }
+    return item.gramas >= 1000
+      ? `${(item.gramas / 1000).toFixed(1).replace('.', ',')} kg`
+      : `${item.gramas} g`;
   },
 
   addAgua(ml) {
@@ -183,11 +284,13 @@ const Store = {
     this.save();
   },
 
-  alternarTreino() {
+  /* concluir treino é via de mão única: marcou, ficou marcado no dia */
+  concluirTreino() {
     const d = this.dia();
-    d.treino = !d.treino;
+    if (d.treino) return false;
+    d.treino = true;
     this.save();
-    return d.treino;
+    return true;
   },
 
   registrarPeso(peso) {
@@ -201,6 +304,52 @@ const Store = {
     this.save();
   },
 
+  /* ---------- cargas dos exercícios ----------
+     Guardadas por NOME do exercício, então o histórico sobrevive
+     a trocas de plano de treino.                                 */
+  cargas(ex) {
+    return (this.db.cargas && this.db.cargas[ex]) || [];
+  },
+
+  ultimaCarga(ex) {
+    const lista = this.cargas(ex);
+    return lista.length ? lista[lista.length - 1] : null;
+  },
+
+  registrarCarga(ex, peso, reps) {
+    if (!this.db.cargas) this.db.cargas = {};
+    if (!this.db.cargas[ex]) this.db.cargas[ex] = [];
+    const hoje = this.hoje();
+    /* um registro por exercício por dia */
+    this.db.cargas[ex] = this.db.cargas[ex].filter(r => r.data !== hoje);
+    this.db.cargas[ex].push({ data: hoje, peso: Number(peso), reps: Number(reps) || null });
+    this.db.cargas[ex].sort((a, b) => a.data.localeCompare(b.data));
+    this.save();
+  },
+
+  /* resumo de evolução para a aba de progresso */
+  evolucaoCargas() {
+    const c = this.db.cargas || {};
+    const saida = [];
+
+    for (const ex in c) {
+      const reg = c[ex];
+      if (!reg.length) continue;
+      const inicio = reg[0].peso;
+      const atual = reg[reg.length - 1].peso;
+      saida.push({
+        ex, inicio, atual,
+        ganho: Math.round((atual - inicio) * 10) / 10,
+        pct: inicio > 0 ? Math.round(((atual - inicio) / inicio) * 100) : 0,
+        registros: reg.length,
+        serie: reg.slice(-8).map(r => r.peso),
+        ultimaData: reg[reg.length - 1].data
+      });
+    }
+
+    return saida.sort((a, b) => b.ganho - a.ganho || b.registros - a.registros);
+  },
+
   /* ---------- totais do dia ---------- */
   totaisDoDia(data) {
     const d = this.db.dias[data || this.hoje()];
@@ -209,10 +358,11 @@ const Store = {
 
     plano.forEach(r => {
       r.alimentos.forEach(a => {
-        total++;
-        if (d && d.alimentos.indexOf(`${r.id}:${a.id}`) >= 0) {
-          kcal += a.kcal; prot += a.prot; marcados++;
-        }
+        const feito = d && d.alimentos.indexOf(`${r.id}:${a.id}`) >= 0;
+        /* opcionais (sobremesa) não entram na conta do "completou tudo",
+           mas somam calorias se a pessoa marcar */
+        if (!a.opcional) { total++; if (feito) marcados++; }
+        if (feito) { kcal += a.kcal; prot += a.prot; }
       });
     });
 
@@ -226,10 +376,11 @@ const Store = {
 
   /* progresso de uma refeição específica: [marcados, total] */
   progressoRefeicao(ref, data) {
+    const obrigatorios = ref.alimentos.filter(a => !a.opcional);
     const d = this.db.dias[data || this.hoje()];
-    if (!d) return [0, ref.alimentos.length];
-    const m = ref.alimentos.filter(a => d.alimentos.indexOf(`${ref.id}:${a.id}`) >= 0).length;
-    return [m, ref.alimentos.length];
+    if (!d) return [0, obrigatorios.length];
+    const m = obrigatorios.filter(a => d.alimentos.indexOf(`${ref.id}:${a.id}`) >= 0).length;
+    return [m, obrigatorios.length];
   },
 
   /* ---------- pontos e níveis ---------- */
