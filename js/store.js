@@ -67,6 +67,7 @@ const Store = {
       objetivo: dados.objetivo,         // 'emagrecimento' | 'hipertrofia' | 'manutencao'
       local: dados.local,               // 'academia' | 'casa'
       ordem_treino: [0, 1, 2, 3, 4, 5, 6],
+      nivel_visto: 1,
       criado_em: this.hoje()
     };
     perfil.meta_kcal = this.calcMetaKcal(perfil);
@@ -414,11 +415,26 @@ const Store = {
     for (const n of NIVEIS) if (pts >= n.min) atual = n;
 
     const proximo = NIVEIS.find(n => n.min > pts) || null;
+    const totalNiveis = NIVEIS.length;
     const base = atual.min;
     const alvo = proximo ? proximo.min : atual.min;
     const pct = proximo ? Math.round(((pts - base) / (alvo - base)) * 100) : 100;
 
-    return { ...atual, pontos: pts, proximo, pct, faltam: proximo ? alvo - pts : 0 };
+    return { ...atual, pontos: pts, proximo, pct, totalNiveis, faltam: proximo ? alvo - pts : 0 };
+  },
+
+  /* ---------- controle de "subiu de nível" ----------
+     Guarda o último nível que a pessoa já viu comemorado, para a
+     animação disparar uma vez só por nível conquistado.            */
+  nivelPendente() {
+    const atual = this.nivel();
+    const visto = this.db.perfil.nivel_visto || 1;
+    return atual.n > visto ? atual : null;
+  },
+
+  marcarNivelVisto(n) {
+    this.db.perfil.nivel_visto = n;
+    this.save();
   },
 
   /* ---------- streak (dias seguidos com atividade) ---------- */

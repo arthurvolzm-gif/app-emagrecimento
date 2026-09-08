@@ -83,6 +83,7 @@ const App = {
     const p = Store.db.perfil;
     const depois = Store.dia().agua;
     this.render();
+    if (this.checarNivel()) return;
     if (antes < p.meta_agua && depois >= p.meta_agua) this.toast('Meta de água batida! +20 pontos 💧', true);
   },
 
@@ -90,6 +91,7 @@ const App = {
     if (!Store.concluirTreino()) return;      // já estava concluído, ignora
     Backend.agendarSync();
     this.render();
+    if (this.checarNivel()) return;
     this.toast('Treino concluído! +40 pontos 🏋️', true);
   },
 
@@ -99,6 +101,7 @@ const App = {
     const ref = Store.planoAlimentar().find(r => r.id === refId);
     const [m, t] = Store.progressoRefeicao(ref);
     this.render();
+    if (this.checarNivel()) return;
     if (m === t) this.toast(`${ref.nome} completa! +10 pontos ✅`, true);
   },
 
@@ -106,6 +109,7 @@ const App = {
     Store.marcarRefeicaoToda(refId, marcar);
     Backend.agendarSync();
     this.render();
+    if (this.checarNivel()) return;
     if (marcar) this.toast('Refeição marcada como feita ✅', true);
   },
 
@@ -177,6 +181,82 @@ const App = {
     if (inp) { inp.focus(); inp.setSelectionRange(pos, pos); }
   },
 
+  /* ---------- subida de nível ----------
+     Chamado depois de toda ação que dá pontos. Se a pessoa cruzou
+     a faixa de um nível novo, a comemoração entra no lugar do toast. */
+  checarNivel() {
+    const novo = Store.nivelPendente();
+    if (!novo) return false;
+    Store.marcarNivelVisto(novo.n);
+    Backend.agendarSync();
+    setTimeout(() => this.mostrarNivelUp(novo), 260);
+    return true;
+  },
+
+  mostrarNivelUp(nv) {
+    const el = document.getElementById('nivelup');
+    const cores = [nv.cor2, '#FFFFFF', nv.cor1, '#FFD86B', nv.cor2];
+
+    /* confete: cada pedaço com posição, atraso, giro e forma próprios */
+    let confete = '';
+    for (let i = 0; i < 46; i++) {
+      const cor = cores[i % cores.length];
+      const esq = Math.random() * 100;
+      const atraso = Math.random() * 0.7;
+      const dur = 1.9 + Math.random() * 1.4;
+      const larg = 6 + Math.random() * 7;
+      const alt = larg * (0.5 + Math.random());
+      const giro = (Math.random() * 900 - 450).toFixed(0);
+      const desvio = (Math.random() * 120 - 60).toFixed(0);
+      const redondo = i % 4 === 0 ? '50%' : '2px';
+      confete += `<i style="left:${esq}%;background:${cor};width:${larg}px;height:${alt}px;
+                    border-radius:${redondo};animation-delay:${atraso}s;animation-duration:${dur}s;
+                    --giro:${giro}deg;--desvio:${desvio}px"></i>`;
+    }
+
+    el.innerHTML = `
+      <div class="nu-brilho" style="background:radial-gradient(circle at 50% 42%, ${nv.cor2}55 0%, transparent 62%)"></div>
+      <div class="nu-confete">${confete}</div>
+
+      <div class="nu-caixa">
+        <div class="nu-selo-area">
+          <span class="nu-anel" style="border-color:${nv.cor2}"></span>
+          <span class="nu-anel a2" style="border-color:${nv.cor2}"></span>
+          <span class="nu-anel a3" style="border-color:${nv.cor2}"></span>
+          <div class="nu-raios">${Array.from({length:12},(_, i)=>
+            `<b style="transform:rotate(${i*30}deg);background:linear-gradient(to top, transparent, ${nv.cor2})"></b>`).join('')}</div>
+          <div class="nu-selo" style="background:linear-gradient(140deg, ${nv.cor1}, ${nv.cor2});
+               box-shadow:0 18px 50px ${nv.cor1}70">${nv.icone}</div>
+        </div>
+
+        <div class="nu-tag">Você subiu de nível</div>
+        <div class="nu-nome" style="background:linear-gradient(100deg, ${nv.cor2}, #fff);
+             -webkit-background-clip:text;background-clip:text;color:transparent">${nv.nome}</div>
+        <div class="nu-n">Nível ${nv.n} de ${NIVEIS.length} · ${nv.pontos} pontos</div>
+        <p class="nu-frase">${nv.frase}</p>
+
+        ${nv.proximo ? `
+          <div class="nu-prox">
+            Próximo: <b>${nv.proximo.nome}</b> ${nv.proximo.icone} em mais ${nv.faltam} pontos
+          </div>` : `
+          <div class="nu-prox">Você chegou ao último nível. 👑</div>`}
+
+        <button class="nu-btn" onclick="App.fecharNivelUp()">Continuar</button>
+      </div>`;
+
+    el.classList.add('on');
+  },
+
+  fecharNivelUp() {
+    const el = document.getElementById('nivelup');
+    el.classList.add('saindo');
+    setTimeout(() => {
+      el.className = 'nivelup';
+      el.innerHTML = '';
+      this.render();
+    }, 320);
+  },
+
   /* ---------- modais ---------- */
   modal(html) {
     const bg = document.getElementById('modal-bg');
@@ -211,6 +291,7 @@ const App = {
     Backend.agendarSync();
     this.fecharModal();
     this.render();
+    if (this.checarNivel()) return;
     if (antes < p.meta_sono && v >= p.meta_sono) this.toast('Meta de sono batida! +20 pontos 😴', true);
   },
 
@@ -236,6 +317,7 @@ const App = {
     Backend.agendarSync();
     this.fecharModal();
     this.render();
+    if (this.checarNivel()) return;
     this.toast('Pesagem registrada! +15 pontos ⚖️', true);
   },
 

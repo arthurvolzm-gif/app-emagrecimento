@@ -149,7 +149,7 @@ a{color:inherit;text-decoration:none;}
 .btn-mini:active{transform:scale(.9);background:var(--verde-tint);}
 
 /* ---------- nível ---------- */
-.nivel-card{
+.nivel-card{ /* o degradê vem do nível atual, definido em linha */
   background:linear-gradient(135deg,var(--verde-esc),var(--verde) 55%,var(--verde-claro));
   color:#fff;border:none;position:relative;overflow:hidden;
 }
@@ -484,6 +484,104 @@ a{color:inherit;text-decoration:none;}
 }
 .toast.on{opacity:1;transform:translate(-50%,0);}
 .toast.verde{background:var(--verde-esc);}
+
+/* ---------- comemoração de subida de nível ---------- */
+.nivelup{
+  position:fixed;inset:0;z-index:300;display:none;
+  align-items:center;justify-content:center;
+  background:rgba(8,20,15,.92);backdrop-filter:blur(6px);
+  overflow:hidden;
+}
+.nivelup.on{display:flex;animation:nuEntra .4s ease both;}
+.nivelup.saindo{animation:nuSai .32s ease both;}
+@keyframes nuEntra{from{opacity:0}to{opacity:1}}
+@keyframes nuSai{to{opacity:0;transform:scale(1.04)}}
+
+.nu-brilho{position:absolute;inset:0;animation:nuPulsa 2.6s ease-in-out infinite;}
+@keyframes nuPulsa{0%,100%{opacity:.55}50%{opacity:1}}
+
+/* confete */
+.nu-confete{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.nu-confete i{
+  position:absolute;top:-8%;display:block;opacity:0;
+  animation-name:nuCai;animation-timing-function:cubic-bezier(.25,.6,.5,1);
+  animation-iteration-count:1;animation-fill-mode:both;
+}
+@keyframes nuCai{
+  0%{opacity:0;transform:translate3d(0,-40px,0) rotate(0)}
+  8%{opacity:1}
+  100%{opacity:0;transform:translate3d(var(--desvio),108vh,0) rotate(var(--giro))}
+}
+
+/* selo central */
+.nu-caixa{position:relative;text-align:center;padding:30px 26px;max-width:400px;width:100%;}
+.nu-selo-area{position:relative;height:150px;display:flex;align-items:center;justify-content:center;margin-bottom:8px;}
+
+.nu-anel{
+  position:absolute;width:104px;height:104px;border-radius:50%;
+  border:2px solid;opacity:0;
+  animation:nuAnel 2.4s cubic-bezier(.2,.7,.3,1) infinite;
+}
+.nu-anel.a2{animation-delay:.7s}
+.nu-anel.a3{animation-delay:1.4s}
+@keyframes nuAnel{
+  0%{transform:scale(.7);opacity:.9}
+  100%{transform:scale(2.5);opacity:0}
+}
+
+.nu-raios{position:absolute;width:150px;height:150px;animation:nuGira 14s linear infinite;}
+.nu-raios b{
+  position:absolute;left:50%;top:0;width:2px;height:52px;margin-left:-1px;
+  transform-origin:50% 75px;opacity:.42;
+}
+@keyframes nuGira{to{transform:rotate(360deg)}}
+
+.nu-selo{
+  position:relative;width:104px;height:104px;border-radius:34px;
+  display:flex;align-items:center;justify-content:center;font-size:50px;
+  animation:nuSelo .8s cubic-bezier(.18,1.5,.4,1) .1s both;
+}
+@keyframes nuSelo{
+  0%{transform:scale(0) rotate(-35deg);opacity:0}
+  60%{opacity:1}
+  100%{transform:scale(1) rotate(0);opacity:1}
+}
+
+.nu-tag{
+  font-size:11.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.62);animation:nuSobe .5s ease .45s both;
+}
+.nu-nome{
+  font-family:'Bricolage Grotesque',sans-serif;font-size:42px;font-weight:800;
+  letter-spacing:-.03em;line-height:1.05;margin:6px 0 10px;
+  animation:nuSobe .5s ease .55s both;
+}
+.nu-n{font-size:13px;font-weight:800;color:rgba(255,255,255,.72);animation:nuSobe .5s ease .65s both;}
+.nu-frase{
+  font-size:15px;color:rgba(255,255,255,.9);line-height:1.6;font-weight:500;
+  margin:16px auto 0;max-width:300px;animation:nuSobe .5s ease .75s both;
+}
+.nu-prox{
+  font-size:12.5px;color:rgba(255,255,255,.62);font-weight:600;margin-top:20px;
+  animation:nuSobe .5s ease .85s both;
+}
+.nu-prox b{color:#fff;}
+@keyframes nuSobe{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+.nu-btn{
+  margin-top:26px;padding:15px 44px;border-radius:16px;
+  background:#fff;color:var(--tinta);font-size:15px;font-weight:800;
+  box-shadow:0 12px 36px rgba(0,0,0,.3);
+  animation:nuSobe .5s ease .95s both;transition:transform .14s;
+}
+.nu-btn:active{transform:scale(.96);}
+
+@media (max-height:640px){
+  .nu-selo-area{height:118px}
+  .nu-selo{width:84px;height:84px;font-size:40px;border-radius:28px}
+  .nu-nome{font-size:34px}
+  .nu-frase{font-size:14px;margin-top:12px}
+}
 
 /* ---------- modal ---------- */
 .modal-bg{position:fixed;inset:0;background:rgba(15,28,23,.55);backdrop-filter:blur(3px);z-index:200;display:none;align-items:flex-end;justify-content:center;}

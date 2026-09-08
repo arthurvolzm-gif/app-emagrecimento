@@ -28,7 +28,7 @@ const Telas = {
 
       <div class="tela stagger">
 
-        <div class="card nivel-card">
+        <div class="card nivel-card" style="background:linear-gradient(135deg, ${nv.cor1}, ${nv.cor2})">
           <div class="nivel-topo">
             <div class="nivel-emoji">${nv.icone}</div>
             <div>
@@ -614,11 +614,11 @@ const Telas = {
 
         ${Telas._evolucaoCargas()}
 
-        <div class="card nivel-card">
+        <div class="card nivel-card" style="background:linear-gradient(135deg, ${nv.cor1}, ${nv.cor2})">
           <div class="nivel-topo">
             <div class="nivel-emoji">${nv.icone}</div>
             <div>
-              <div class="nivel-n">Nível ${nv.n} de 5</div>
+              <div class="nivel-n">Nível ${nv.n} de ${nv.totalNiveis}</div>
               <div class="nivel-nome">${nv.nome}</div>
             </div>
             <div class="nivel-pts"><b>${nv.pontos}</b><span>pontos</span></div>
