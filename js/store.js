@@ -67,7 +67,7 @@ const Store = {
       objetivo: dados.objetivo,         // 'emagrecimento' | 'hipertrofia' | 'manutencao'
       local: dados.local,               // 'academia' | 'casa'
       ordem_treino: [0, 1, 2, 3, 4, 5, 6],
-      nivel_visto: 1,
+      nivel_visto: 0,       // 0 para a comemoração do nível 1 disparar no primeiro acesso
       criado_em: this.hoje()
     };
     perfil.meta_kcal = this.calcMetaKcal(perfil);
@@ -104,8 +104,13 @@ const Store = {
     return Math.round(get * fator / 10) * 10;
   },
 
+  /* 35 ml por quilo de peso corporal, arredondado para meio litro —
+     assim a meta vira 2,5L / 3L em vez de 2,9L, e fecha certinho
+     com os copos de 250 ml do botão de água.                        */
   calcMetaAgua(p) {
-    return Math.round(p.peso_atual * 35 / 100) * 100;  // ml, arredondado
+    const bruto = p.peso_atual * 35;
+    const arredondado = Math.round(bruto / 500) * 500;
+    return Math.max(1500, Math.min(4500, arredondado));
   },
 
   calcMetaProt(p) {
@@ -428,7 +433,10 @@ const Store = {
      animação disparar uma vez só por nível conquistado.            */
   nivelPendente() {
     const atual = this.nivel();
-    const visto = this.db.perfil.nivel_visto || 1;
+    /* atenção: nivel_visto pode ser 0 (perfil novo), e 0 é falso em JS —
+       por isso a checagem é contra null/undefined, não com || */
+    const bruto = this.db.perfil.nivel_visto;
+    const visto = (bruto === null || bruto === undefined) ? 1 : bruto;
     return atual.n > visto ? atual : null;
   },
 

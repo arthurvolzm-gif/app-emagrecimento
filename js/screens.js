@@ -28,6 +28,19 @@ const Telas = {
 
       <div class="tela stagger">
 
+        ${typeof CONFIG !== 'undefined' && CONFIG.MODO_PREVIA ? `
+          <div class="previa">
+            <div class="previa-tt">Prévia das animações · desligue em config.js</div>
+            <div class="previa-chips">
+              ${NIVEIS.map(n => `
+                <button class="previa-chip" style="background:linear-gradient(140deg, ${n.cor1}, ${n.cor2})"
+                        onclick="App.previaNivel(${n.n})" title="${n.nome}">
+                  <span class="pc-ic">${n.icone}</span>
+                  <span class="pc-n">${n.n}</span>
+                </button>`).join('')}
+            </div>
+          </div>` : ''}
+
         <div class="card nivel-card" style="background:linear-gradient(135deg, ${nv.cor1}, ${nv.cor2})">
           <div class="nivel-topo">
             <div class="nivel-emoji">${nv.icone}</div>

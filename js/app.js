@@ -193,6 +193,20 @@ const App = {
     return true;
   },
 
+  /* prévia: mostra a animação de qualquer nível sem mexer no progresso real */
+  previaNivel(n) {
+    const base = NIVEIS[n - 1];
+    if (!base) return;
+    const proximo = NIVEIS[n] || null;
+    this.mostrarNivelUp({
+      ...base,
+      pontos: base.min,
+      totalNiveis: NIVEIS.length,
+      proximo,
+      faltam: proximo ? proximo.min - base.min : 0
+    });
+  },
+
   mostrarNivelUp(nv) {
     const el = document.getElementById('nivelup');
     const cores = [nv.cor2, '#FFFFFF', nv.cor1, '#FFD86B', nv.cor2];
@@ -229,7 +243,7 @@ const App = {
                box-shadow:0 18px 50px ${nv.cor1}70">${nv.icone}</div>
         </div>
 
-        <div class="nu-tag">Você subiu de nível</div>
+        <div class="nu-tag">${nv.n === 1 ? 'Seu plano está pronto' : 'Você subiu de nível'}</div>
         <div class="nu-nome" style="background:linear-gradient(100deg, ${nv.cor2}, #fff);
              -webkit-background-clip:text;background-clip:text;color:transparent">${nv.nome}</div>
         <div class="nu-n">Nível ${nv.n} de ${NIVEIS.length} · ${nv.pontos} pontos</div>

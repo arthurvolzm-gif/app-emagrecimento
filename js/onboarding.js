@@ -265,6 +265,7 @@ const Onb = {
     App.tela = 'inicio';
     App.render();
     window.scrollTo(0, 0);
-    setTimeout(() => App.toast(`Plano criado, ${d.nome.split(' ')[0]}! Bora começar. 🌿`, true), 400);
+    /* recebe a pessoa com a comemoração do nível 1 em vez de um toast */
+    setTimeout(() => { if (!App.checarNivel()) App.toast(`Plano criado, ${d.nome.split(' ')[0]}! 🌿`, true); }, 500);
   }
 };

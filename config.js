@@ -14,6 +14,11 @@
 const CONFIG = {
   APP_NOME: 'Meu Plano',
 
+  /* Mostra, na tela de Início, uma barra com os 10 níveis para você
+     visualizar cada animação sem precisar somar pontos.
+     TROQUE PARA false ANTES DE DIVULGAR O APP.                      */
+  MODO_PREVIA: true,
+
   SUPABASE_URL: 'https://ddtxvijlmjqtaxdystph.supabase.co',
   SUPABASE_KEY: 'sb_publishable_XsRkTp9ahN8T3ydSfOEE_Q_AYH4Oq11'
 };
