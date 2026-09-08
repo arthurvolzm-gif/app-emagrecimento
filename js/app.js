@@ -239,8 +239,8 @@ const App = {
           <span class="nu-anel a3" style="border-color:${nv.cor2}"></span>
           <div class="nu-raios">${Array.from({length:12},(_, i)=>
             `<b style="transform:rotate(${i*30}deg);background:linear-gradient(to top, transparent, ${nv.cor2})"></b>`).join('')}</div>
-          <div class="nu-selo" style="background:linear-gradient(140deg, ${nv.cor1}, ${nv.cor2});
-               box-shadow:0 18px 50px ${nv.cor1}70">${nv.icone}</div>
+          <div class="nu-halo" style="background:radial-gradient(circle, ${nv.cor2} 0%, transparent 70%)"></div>
+          <div class="nu-selo" style="--brilho:${nv.cor2}90">${nv.icone}</div>
         </div>
 
         <div class="nu-tag">${nv.n === 1 ? 'Seu plano está pronto' : 'Você subiu de nível'}</div>
@@ -279,6 +279,48 @@ const App = {
   },
 
   fecharModal() { document.getElementById('modal-bg').classList.remove('on'); },
+
+  /* ---------- troca de alimento ---------- */
+  abrirTroca(idx) {
+    const lista = Store.alimentosTrocaveis();
+    const a = lista[idx];
+    if (!a) return;
+    const atual = Store.trocaDe(a.nome);
+
+    this.modal(`
+      <h3 class="display">${a.nome}</h3>
+      <p class="m-sub">Escolha o que você prefere comer no lugar. A escolha vale para o cardápio e para a lista de compras.</p>
+
+      <div class="troca-lista">
+        <button class="troca-op ${atual === null ? 'on' : ''}" onclick="App.escolherTroca(${idx}, null)">
+          <span class="to-check">${atual === null ? '✓' : ''}</span>
+          <span class="to-txt">
+            <b>${a.nome}</b>
+            <small>${/vontade|se quiser/i.test(a.un) ? a.un : a.g + 'g · ' + a.un} · opção original</small>
+          </span>
+        </button>
+
+        ${a.alt.map((op, i) => `
+          <button class="troca-op ${atual === i ? 'on' : ''}" onclick="App.escolherTroca(${idx}, ${i})">
+            <span class="to-check">${atual === i ? '✓' : ''}</span>
+            <span class="to-txt"><b>${op}</b></span>
+          </button>`).join('')}
+      </div>
+
+      <p class="troca-nota">As opções foram montadas como porções equivalentes, então as calorias e a proteína do dia continuam as mesmas.</p>
+      <button class="btn sec" style="margin-top:14px" onclick="App.fecharModal()">Fechar</button>
+    `);
+  },
+
+  escolherTroca(idx, opcao) {
+    const a = Store.alimentosTrocaveis()[idx];
+    if (!a) return;
+    Store.definirTroca(a.nome, opcao);
+    Backend.agendarSync();
+    this.fecharModal();
+    this.render();
+    this.toast(opcao === null ? `Voltou para ${a.nome}` : `Trocado por ${a.alt[opcao]}`, true);
+  },
 
   abrirSono() {
     const atual = Store.dia().sono || '';

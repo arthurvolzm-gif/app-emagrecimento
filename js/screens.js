@@ -221,11 +221,18 @@ const Telas = {
           </div>
 
           <div class="card">
-            ${compras.map(item => `
-              <div class="compra-item">
-                <span class="ci-nome">${item.nome}</span>
-                <span class="ci-qtd">${item.texto}</span>
-              </div>`).join('')}
+            ${compras.map(item => {
+              const idx = item.trocadoDe ? Store.indiceTrocavel(item.trocadoDe) : Store.indiceTrocavel(item.nome);
+              return `
+                <div class="compra-item">
+                  <div style="flex:1;min-width:0">
+                    <div class="ci-nome">${item.nome}</div>
+                    ${item.trocadoDe ? `<div class="ci-sub">no lugar de ${item.trocadoDe}</div>` : ''}
+                  </div>
+                  ${idx >= 0 ? `<button class="ci-troca" onclick="App.abrirTroca(${idx})">trocar</button>` : ''}
+                  <span class="ci-qtd">${item.texto}</span>
+                </div>`;
+            }).join('')}
           </div>
 
           <p style="font-size:12px;color:var(--cinza-c);line-height:1.55;font-weight:600;text-align:center">
@@ -239,9 +246,12 @@ const Telas = {
                 <div class="card-tt">${r.icone} ${r.nome} · ${r.horario}<span class="n">${kcalRef} kcal</span></div>
                 ${r.alimentos.map(a => `
                   <div class="cardapio-item ${a.opcional ? 'opc' : ''}">
-                    <div>
+                    <div style="flex:1;min-width:0">
                       <div class="cai-nome">${a.nome}${a.opcional ? ' <span class="tag-opc">opcional</span>' : ''}</div>
-                      <div class="cai-det">${/vontade|se quiser/i.test(a.un) ? a.un : a.g + 'g · ' + a.un}</div>
+                      <div class="cai-det">
+                        ${a.trocado ? `no lugar de ${a.nomeOriginal}` : (/vontade|se quiser/i.test(a.un) ? a.un : a.g + 'g · ' + a.un)}
+                      </div>
+                      ${Array.isArray(a.alt) && a.alt.length ? Comp.botaoTroca(a) : ''}
                     </div>
                     <div class="cai-kcal">${a.kcal}<span>kcal</span></div>
                   </div>`).join('')}
@@ -289,12 +299,10 @@ const Telas = {
                     ${a.nome}
                     ${a.opcional ? '<span class="tag-opc">opcional</span>' : ''}
                   </div>
-                  <div class="alim-det">${/vontade|se quiser/i.test(a.un) ? a.un : a.g + 'g · ' + a.un}</div>
-                  ${trocas.length ? `
-                    <div class="alim-alt">
-                      <span class="alt-tt">Pode trocar por:</span>
-                      ${trocas.map(t => `<span class="alt-op">${t}</span>`).join('')}
-                    </div>` : ''}
+                  <div class="alim-det">
+                    ${a.trocado ? `no lugar de ${a.nomeOriginal}` : (/vontade|se quiser/i.test(a.un) ? a.un : a.g + 'g · ' + a.un)}
+                  </div>
+                  ${trocas.length ? Comp.botaoTroca(a) : ''}
                 </div>
                 <div class="alim-kcal">${a.kcal}<span>${a.prot}g prot</span></div>
               </div>`;
@@ -791,6 +799,18 @@ const Telas = {
    COMPONENTES reutilizáveis
    ========================================================= */
 const Comp = {
+  /* botão que abre as opções de troca de um alimento */
+  botaoTroca(a) {
+    const nomeBase = a.nomeOriginal || a.nome;
+    const idx = Store.indiceTrocavel(nomeBase);
+    if (idx < 0) return '';
+    return `
+      <button class="btn-troca ${a.trocado ? 'ativa' : ''}"
+              onclick="event.stopPropagation();App.abrirTroca(${idx})">
+        ${a.trocado ? '✓ trocado · ver opções' : '⇄ trocar por outro alimento'}
+      </button>`;
+  },
+
   anel(pct, valor, unidade) {
     const r = 54, c = 2 * Math.PI * r;
     const off = c * (1 - Math.min(100, pct) / 100);

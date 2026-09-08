@@ -26,7 +26,7 @@ const Store = {
   },
 
   vazio() {
-    return { perfil: null, dias: {}, pesagens: [], cargas: {} };
+    return { perfil: null, dias: {}, pesagens: [], cargas: {}, trocas: {} };
   },
 
   resetar() {
@@ -140,13 +140,58 @@ const Store = {
 
     return plano.refeicoes.map(r => ({
       ...r,
-      alimentos: r.alimentos.map(a => ({
-        ...a,
-        g: Math.round(a.g * fator),
-        kcal: Math.round(a.kcal * fator),
-        prot: Math.round(a.prot * fator)
-      }))
+      alimentos: r.alimentos.map(a => {
+        const item = {
+          ...a,
+          g: Math.round(a.g * fator),
+          kcal: Math.round(a.kcal * fator),
+          prot: Math.round(a.prot * fator)
+        };
+
+        /* se a pessoa escolheu uma troca para este alimento, ela passa a
+           ser o item mostrado — calorias e proteína seguem as mesmas, já
+           que as opções foram escritas como porções equivalentes */
+        const idx = this.trocaDe(a.nome);
+        if (idx !== null && Array.isArray(a.alt) && a.alt[idx]) {
+          item.nomeOriginal = a.nome;
+          item.nome = a.alt[idx];
+          item.trocado = true;
+        }
+        return item;
+      })
     }));
+  },
+
+  /* ---------- trocas de alimento ----------
+     Guardadas pelo NOME original, então valem em todas as refeições
+     em que aquele alimento aparece.                                  */
+  trocaDe(nome) {
+    const t = this.db.trocas || {};
+    return (nome in t) ? t[nome] : null;
+  },
+
+  definirTroca(nome, idx) {
+    if (!this.db.trocas) this.db.trocas = {};
+    if (idx === null) delete this.db.trocas[nome];
+    else this.db.trocas[nome] = Number(idx);
+    this.save();
+  },
+
+  /* lista única de alimentos que aceitam troca, para as telas
+     referenciarem por índice (evita escapar aspas no onclick) */
+  alimentosTrocaveis() {
+    const vistos = {};
+    const lista = [];
+    this.planoBase().refeicoes.forEach(r => r.alimentos.forEach(a => {
+      if (!Array.isArray(a.alt) || !a.alt.length || vistos[a.nome]) return;
+      vistos[a.nome] = true;
+      lista.push({ nome: a.nome, alt: a.alt, un: a.un, g: a.g });
+    }));
+    return lista;
+  },
+
+  indiceTrocavel(nome) {
+    return this.alimentosTrocaveis().findIndex(a => a.nome === nome);
   },
 
   planoTreino() {
@@ -245,6 +290,20 @@ const Store = {
     this.planoAlimentar().forEach(r => r.alimentos.forEach(a => {
       if (a.opcional) return;
 
+      /* item trocado: a quantidade vem do texto da própria troca
+         ("150g de tilápia", "2 ovos cozidos") em vez da gramagem original */
+      if (a.trocado) {
+        const t = this._lerTroca(a.nome);
+        if (!mapa[t.nome]) mapa[t.nome] = { nome: t.nome, gramas: 0, aVontade: false, caseira: null, trocadoDe: a.nomeOriginal };
+        const it = mapa[t.nome];
+        if (t.gramas) it.gramas += t.gramas * 7;
+        else if (t.caseira) {
+          if (!it.caseira) it.caseira = { qtd: 0, rotulo: t.caseira.rotulo };
+          it.caseira.qtd += t.caseira.qtd * 7;
+        } else it.aVontade = true;
+        return;
+      }
+
       if (!mapa[a.nome]) mapa[a.nome] = { nome: a.nome, gramas: 0, aVontade: false, caseira: null };
       const item = mapa[a.nome];
 
@@ -265,6 +324,35 @@ const Store = {
     return Object.values(mapa)
       .map(i => ({ ...i, texto: this._qtdCompras(i) }))
       .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+  },
+
+  /* separa quantidade e nome de um texto de troca:
+     "150g de tilápia"   -> { gramas:150, nome:'Tilápia' }
+     "2 ovos cozidos"    -> { caseira:{qtd:2, rotulo:'ovos'}, nome:'Ovos cozidos' }
+     "Brócolis"          -> { nome:'Brócolis' }                                   */
+  _lerTroca(texto) {
+    let t = String(texto).trim();
+
+    const gr = t.match(/^(\d+(?:[.,]\d+)?)\s*(g|ml)\b\s*(?:de\s+)?(.*)$/i);
+    if (gr) {
+      const nome = gr[3].trim();
+      return { gramas: parseFloat(gr[1].replace(',', '.')), nome: this._maiuscula(nome || t) };
+    }
+
+    const un = t.match(/^(\d+(?:[.,]\d+)?)\s+([a-zà-ú.]+)\s*(?:de\s+)?(.*)$/i);
+    if (un) {
+      const qtd = parseFloat(un[1].replace(',', '.'));
+      const rotulo = un[2].toLowerCase();
+      const resto = un[3].trim();
+      const nome = resto ? `${this._maiuscula(rotulo)} ${resto}` : this._maiuscula(rotulo);
+      return { caseira: { qtd, rotulo }, nome };
+    }
+
+    return { nome: this._maiuscula(t) };
+  },
+
+  _maiuscula(s) {
+    return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
   },
 
   _qtdCompras(item) {
