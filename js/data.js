@@ -282,14 +282,12 @@ const PLANOS_TREINO = {
         { ex: 'Desenvolvimento com halteres', series: 4, reps: '12', desc: '60s' },
         { ex: 'Elevação lateral', series: 4, reps: '15', desc: '45s' },
         { ex: 'Tríceps na polia', series: 3, reps: '15', desc: '45s' },
-        { ex: 'Supino reto com halteres', series: 3, reps: '12', desc: '60s' },
-        { ex: 'Cardio esteira', series: 1, reps: '20 min', desc: 'moderado' }
+        { ex: 'Supino reto com halteres', series: 3, reps: '12', desc: '60s' }
       ]},
       { dia: 'Sex', foco: 'Glúteos e Cardio', exercicios: [
         { ex: 'Agachamento sumô', series: 4, reps: '15', desc: '60s' },
         { ex: 'Elevação pélvica com barra', series: 4, reps: '12', desc: '90s' },
-        { ex: 'Abdução na máquina', series: 4, reps: '20', desc: '45s' },
-        { ex: 'Escada ou bike', series: 1, reps: '25 min', desc: 'moderado' }
+        { ex: 'Abdução na máquina', series: 4, reps: '20', desc: '45s' }
       ]},
       { dia: 'Sáb', descanso: true, sugestao: 'Caminhada leve de 30 a 40 minutos, se quiser.' },
       { dia: 'Dom', descanso: true, sugestao: 'Descanso total. Recuperação é parte do treino.' }
@@ -373,8 +371,7 @@ const PLANOS_TREINO = {
       { dia: 'Sex', foco: 'Full Body e Cardio', exercicios: [
         { ex: 'Levantamento terra', series: 4, reps: '8', desc: '120s' },
         { ex: 'Supino reto', series: 3, reps: '12', desc: '75s' },
-        { ex: 'Puxada frontal', series: 3, reps: '12', desc: '60s' },
-        { ex: 'Cardio esteira ou bike', series: 1, reps: '25 min', desc: 'moderado' }
+        { ex: 'Puxada frontal', series: 3, reps: '12', desc: '60s' }
       ]},
       { dia: 'Sáb', descanso: true, sugestao: 'Cardio leve opcional: caminhada, bike ou natação.' },
       { dia: 'Dom', descanso: true, sugestao: 'Descanso total. Recuperação é parte do treino.' }
@@ -420,6 +417,58 @@ const PLANOS_TREINO = {
       { dia: 'Sáb', descanso: true, sugestao: 'Caminhada ou pedalada leve, se quiser.' },
       { dia: 'Dom', descanso: true, sugestao: 'Descanso total. O músculo cresce na recuperação.' }
     ]
+  }
+};
+
+/* ---------- CARDIO POR OBJETIVO ----------
+   Os planos de treino acima são o esqueleto de FORÇA e mudam por sexo e
+   local. O cardio é o que muda por OBJETIVO: quem está em déficit precisa
+   de muito mais volume aeróbico do que quem está tentando ganhar massa.
+   Por isso ele fica aqui, separado, e é aplicado por cima do plano.     */
+const CARDIO_POR_OBJETIVO = {
+  emagrecimento: {
+    frequencia: 'Quase todos os dias',
+    treino: {
+      titulo: 'Cardio pós-treino',
+      texto: '20 a 25 minutos em ritmo moderado logo depois do treino: esteira, bike, elíptico ou escada.',
+      dica: 'Moderado é o ritmo em que você consegue falar frases curtas, mas não cantar.'
+    },
+    descanso: {
+      titulo: 'Cardio do dia de descanso',
+      texto: 'Caminhada de 30 a 40 minutos, mesmo em ritmo leve. Vale ir ao mercado a pé.',
+      dica: 'Descanso é da musculação, não do movimento.'
+    },
+    porque: 'No déficit, o cardio amplia o gasto sem precisar cortar mais comida.'
+  },
+
+  manutencao: {
+    frequencia: '3x por semana',
+    treino: {
+      titulo: 'Cardio pós-treino',
+      texto: '15 a 20 minutos em ritmo leve a moderado, em 3 dos seus dias de treino.',
+      dica: 'Escolha os dias em que sobrar mais energia.'
+    },
+    descanso: {
+      titulo: 'Dia livre',
+      texto: 'Caminhada leve se bater vontade, sem obrigação nenhuma.',
+      dica: 'Manutenção também é sustentar a rotina sem sufoco.'
+    },
+    porque: 'Aqui o cardio é mais por saúde e disposição do que por gasto calórico.'
+  },
+
+  hipertrofia: {
+    frequencia: '2x por semana',
+    treino: {
+      titulo: 'Cardio na dose certa',
+      texto: '10 a 15 minutos em ritmo leve, no máximo 2x na semana, de preferência longe do treino de pernas.',
+      dica: 'Se for fazer, deixe para depois da musculação, nunca antes.'
+    },
+    descanso: {
+      titulo: 'Descanso de verdade',
+      texto: 'Sem cardio. O corpo cresce nas horas em que você não treina.',
+      dica: 'Cardio demais come o superávit que faz você ganhar massa.'
+    },
+    porque: 'No ganho de massa, cardio em excesso trabalha contra o seu objetivo.'
   }
 };
 

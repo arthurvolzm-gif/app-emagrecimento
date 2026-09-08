@@ -320,7 +320,11 @@ const Telas = {
           <div class="plano-tags">
             <span class="tag">🎯 ${App.rotuloObjetivo()}</span>
             <span class="tag">📅 ${plano.frequencia}</span>
+            <span class="tag">🏃 Cardio: ${(CARDIO_POR_OBJETIVO[Store.db.perfil.objetivo] || CARDIO_POR_OBJETIVO.manutencao).frequencia.toLowerCase()}</span>
           </div>
+          <p style="font-size:12.5px;opacity:.9;margin-top:12px;line-height:1.5;font-weight:600">
+            ${(CARDIO_POR_OBJETIVO[Store.db.perfil.objetivo] || CARDIO_POR_OBJETIVO.manutencao).porque}
+          </p>
         </div>
 
         <div class="dias-fila">
@@ -338,11 +342,14 @@ const Telas = {
               <h3>Dia de Descanso</h3>
               <p>${dia.sugestao}</p>
             </div>
-          </div>` : `
+          </div>
+          ${Telas._cardio(true)}` : `
           <div class="card">
             <div class="card-tt">🏋️ ${dia.foco}<span class="n">${dia.exercicios.length} exercícios</span></div>
             ${dia.exercicios.map((e, i) => Telas._exercicio(e, i)).join('')}
           </div>
+
+          ${Telas._cardio(false)}
 
           ${ehHoje ? (feito
             ? `<div class="treino-feito">✓ Treino concluído hoje</div>`
@@ -351,6 +358,23 @@ const Telas = {
         `}
 
         ${Telas._organizarSemana(plano, dias)}
+      </div>`;
+  },
+
+  /* cardio prescrito pelo objetivo — muda entre dia de treino e de descanso */
+  _cardio(ehDescanso) {
+    const c = CARDIO_POR_OBJETIVO[Store.db.perfil.objetivo] || CARDIO_POR_OBJETIVO.manutencao;
+    const bloco = ehDescanso ? c.descanso : c.treino;
+    const semCardio = ehDescanso && Store.db.perfil.objetivo === 'hipertrofia';
+
+    return `
+      <div class="card cardio-card ${semCardio ? 'off' : ''}">
+        <div class="card-tt" style="margin-bottom:10px">
+          ${semCardio ? '🛌' : '🏃'} ${bloco.titulo}
+          <span class="n">${c.frequencia}</span>
+        </div>
+        <p class="cardio-txt">${bloco.texto}</p>
+        <p class="cardio-dica">${bloco.dica}</p>
       </div>`;
   },
 
