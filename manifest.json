@@ -9,6 +9,6 @@
   "theme_color": "#159A55",
   "lang": "pt-BR",
   "icons": [
-    { "src": "icone.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
   ]
 }
