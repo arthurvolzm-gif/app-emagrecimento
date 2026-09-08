@@ -126,19 +126,44 @@ const Store = {
     return PLANOS_ALIMENTARES[p.objetivo] || PLANOS_ALIMENTARES.emagrecimento;
   },
 
-  planoAlimentar() {
+  /* ---------- variação do cardápio ----------
+     Cada refeição tem 3 variações que giram pelos dias da semana:
+     Seg=1ª, Ter=2ª, Qua=3ª, Qui=1ª, Sex=2ª, Sáb=3ª, Dom=1ª.       */
+  variacaoDoDia(data) {
+    const d = data ? this.deIso(data) : new Date();
+    const dow = d.getDay();                     // 0=Dom
+    const pos = dow === 0 ? 6 : dow - 1;        // 0=Seg ... 6=Dom
+    return pos % 3;
+  },
+
+  /* o cardápio de uma data. SEMPRE passe a data ao calcular dias
+     passados, senão o histórico usa o cardápio de hoje.           */
+  planoAlimentar(data) {
+    return this._planoDaVariacao(this.variacaoDoDia(data));
+  },
+
+  _planoDaVariacao(v) {
     const p = this.db.perfil;
     const plano = this.planoBase();
 
-    /* a base é somada dos próprios alimentos (sem os opcionais), então
-       editar o cardápio nunca desalinha o cálculo */
-    const base = plano.refeicoes.reduce((s, r) =>
+    const refeicoes = plano.refeicoes.map(r => {
+      const varia = r.variacoes[v % r.variacoes.length];
+      return {
+        id: r.id, nome: r.nome, horario: r.horario, icone: r.icone,
+        variacao: varia.nome,
+        alimentos: varia.alimentos
+      };
+    });
+
+    /* a base é somada dos próprios alimentos do dia (sem os opcionais),
+       então editar o cardápio nunca desalinha o cálculo */
+    const base = refeicoes.reduce((s, r) =>
       s + r.alimentos.reduce((x, a) => x + (a.opcional ? 0 : a.kcal), 0), 0) || 1;
 
     let fator = p.meta_kcal / base;
     fator = Math.max(0.6, Math.min(1.8, fator));
 
-    return plano.refeicoes.map(r => ({
+    return refeicoes.map(r => ({
       ...r,
       alimentos: r.alimentos.map(a => {
         const item = {
@@ -182,11 +207,11 @@ const Store = {
   alimentosTrocaveis() {
     const vistos = {};
     const lista = [];
-    this.planoBase().refeicoes.forEach(r => r.alimentos.forEach(a => {
+    this.planoBase().refeicoes.forEach(r => r.variacoes.forEach(v => v.alimentos.forEach(a => {
       if (!Array.isArray(a.alt) || !a.alt.length || vistos[a.nome]) return;
       vistos[a.nome] = true;
       lista.push({ nome: a.nome, alt: a.alt, un: a.un, g: a.g });
-    }));
+    })));
     return lista;
   },
 
@@ -267,7 +292,7 @@ const Store = {
 
   marcarRefeicaoToda(refId, marcar) {
     const d = this.dia();
-    const ref = this.planoAlimentar().find(r => r.id === refId);
+    const ref = this.planoAlimentar(this.hoje()).find(r => r.id === refId);
     ref.alimentos.forEach(a => {
       const chave = `${refId}:${a.id}`;
       const i = d.alimentos.indexOf(chave);
@@ -287,49 +312,49 @@ const Store = {
                       fatia:'fatias', file:'filés', porcao:'porções', punhado:'punhados', concha:'conchas' };
     const mapa = {};
 
-    this.planoAlimentar().forEach(r => r.alimentos.forEach(a => {
-      if (a.opcional) return;
+    /* percorre os 7 dias da semana, cada um com a sua variação de cardápio,
+       somando o que aquele dia realmente pede — em vez de multiplicar um
+       único cardápio por 7 */
+    for (let pos = 0; pos < 7; pos++) {
+      this._planoDaVariacao(pos % 3).forEach(r => r.alimentos.forEach(a => {
+        if (a.opcional) return;
 
-      /* item trocado: a quantidade vem do texto da própria troca
-         ("150g de tilápia", "2 ovos cozidos") em vez da gramagem original */
-      if (a.trocado) {
-        const t = this._lerTroca(a.nome);
-        if (!mapa[t.nome]) mapa[t.nome] = { nome: t.nome, gramas: 0, aVontade: false, caseira: null, trocadoDe: a.nomeOriginal };
-        const it = mapa[t.nome];
-        if (t.gramas) it.gramas += t.gramas * 7;
-        else if (t.caseira) {
-          if (!it.caseira) it.caseira = { qtd: 0, rotulo: t.caseira.rotulo };
-          it.caseira.qtd += t.caseira.qtd * 7;
-        } else it.aVontade = true;
-        return;
-      }
+        /* item trocado: a quantidade vem do texto da própria troca */
+        if (a.trocado) {
+          const t = this._lerTroca(a.nome);
+          if (!mapa[t.nome]) mapa[t.nome] = { nome: t.nome, gramas: 0, aVontade: false, caseira: null, trocadoDe: a.nomeOriginal };
+          const it = mapa[t.nome];
+          if (t.gramas) it.gramas += t.gramas;
+          else if (t.caseira) {
+            if (!it.caseira) it.caseira = { qtd: 0, rotulo: t.caseira.rotulo };
+            it.caseira.qtd += t.caseira.qtd;
+          } else it.aVontade = true;
+          return;
+        }
 
-      if (!mapa[a.nome]) mapa[a.nome] = { nome: a.nome, gramas: 0, aVontade: false, caseira: null };
-      const item = mapa[a.nome];
+        if (!mapa[a.nome]) mapa[a.nome] = { nome: a.nome, gramas: 0, aVontade: false, caseira: null };
+        const item = mapa[a.nome];
 
-      if (/vontade/i.test(a.un)) { item.aVontade = true; return; }
+        if (/vontade/i.test(a.un)) { item.aVontade = true; return; }
 
-      item.gramas += a.g * 7;
+        item.gramas += a.g;
 
-      const m = a.un.match(CASEIRAS);
-      if (m) {
-        const chave = m[2].toLowerCase()
-          .replace(/s$/, '').replace('í', 'i').replace('é', 'e').replace('ç', 'c').replace('õ', 'o');
-        const qtd = parseFloat(m[1].replace(',', '.')) * 7;
-        if (!item.caseira) item.caseira = { qtd: 0, rotulo: PLURAIS[chave] || m[2] };
-        item.caseira.qtd += qtd;
-      }
-    }));
+        const m = a.un.match(CASEIRAS);
+        if (m) {
+          const chave = m[2].toLowerCase()
+            .replace(/s$/, '').replace('í', 'i').replace('é', 'e').replace('ç', 'c').replace('õ', 'o');
+          const qtd = parseFloat(m[1].replace(',', '.'));
+          if (!item.caseira) item.caseira = { qtd: 0, rotulo: PLURAIS[chave] || m[2] };
+          item.caseira.qtd += qtd;
+        }
+      }));
+    }
 
     return Object.values(mapa)
       .map(i => ({ ...i, texto: this._qtdCompras(i) }))
       .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
   },
 
-  /* separa quantidade e nome de um texto de troca:
-     "150g de tilápia"   -> { gramas:150, nome:'Tilápia' }
-     "2 ovos cozidos"    -> { caseira:{qtd:2, rotulo:'ovos'}, nome:'Ovos cozidos' }
-     "Brócolis"          -> { nome:'Brócolis' }                                   */
   _lerTroca(texto) {
     let t = String(texto).trim();
 
@@ -446,8 +471,9 @@ const Store = {
 
   /* ---------- totais do dia ---------- */
   totaisDoDia(data) {
-    const d = this.db.dias[data || this.hoje()];
-    const plano = this.planoAlimentar();
+    const dia = data || this.hoje();
+    const d = this.db.dias[dia];
+    const plano = this.planoAlimentar(dia);
     let kcal = 0, prot = 0, marcados = 0, total = 0;
 
     plano.forEach(r => {
@@ -485,7 +511,7 @@ const Store = {
     let pts = d.alimentos.length * PONTOS.alimento;
 
     /* bônus por refeição completa */
-    this.planoAlimentar().forEach(r => {
+    this.planoAlimentar(data).forEach(r => {
       const [m, t] = this.progressoRefeicao(r, data);
       if (t > 0 && m === t) pts += PONTOS.refeicao;
     });
@@ -565,7 +591,7 @@ const Store = {
       agua += d.agua;
       kcal += t.kcal;
       prot += t.prot;
-      this.planoAlimentar().forEach(r => {
+      this.planoAlimentar(data).forEach(r => {
         const [m, tt] = this.progressoRefeicao(r, data);
         if (tt > 0 && m === tt) refeicoes++;
       });

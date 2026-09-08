@@ -255,6 +255,12 @@ a{color:inherit;text-decoration:none;}
 
 .livre-card{background:linear-gradient(140deg,var(--ambar-tint),#FFFDF6);border-color:#F3E3BC;}
 
+.var-nome{
+  font-size:12.5px;font-weight:800;color:var(--verde-esc);
+  background:var(--verde-tint2);border-radius:8px;padding:6px 10px;
+  margin:-6px 0 12px;display:inline-block;
+}
+
 /* cardápio completo */
 .cardapio-item{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--linha);}
 .cardapio-item:last-child{border-bottom:none;padding-bottom:0;}

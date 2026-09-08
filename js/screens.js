@@ -244,6 +244,7 @@ const Telas = {
             return `
               <div class="card">
                 <div class="card-tt">${r.icone} ${r.nome} · ${r.horario}<span class="n">${kcalRef} kcal</span></div>
+                ${r.variacao ? `<div class="var-nome">${r.variacao}</div>` : ''}
                 ${r.alimentos.map(a => `
                   <div class="cardapio-item ${a.opcional ? 'opc' : ''}">
                     <div style="flex:1;min-width:0">
@@ -276,9 +277,9 @@ const Telas = {
       <div class="ref ${aberta ? 'aberta' : ''}">
         <div class="ref-cab" onclick="App.abrirRef('${r.id}')">
           <div class="ref-ic">${r.icone}</div>
-          <div>
+          <div style="flex:1;min-width:0">
             <div class="ref-nome">${r.nome}</div>
-            <div class="ref-meta">${r.horario} · ${total} alimentos</div>
+            <div class="ref-meta">${r.variacao ? r.variacao : r.horario + ' · ' + total + ' alimentos'}</div>
           </div>
           <div class="ref-dir">
             <div class="ref-kcal">${kcalRef}<span> kcal</span></div>

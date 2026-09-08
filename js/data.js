@@ -32,216 +32,519 @@ const PONTOS = {
 };
 
 /* ---------- PLANOS ALIMENTARES ----------
-   Um plano por objetivo. Os valores são a BASE de referência: o app
-   reescala todas as gramagens para a meta calórica de cada pessoa.
+   Um plano por objetivo. Cada refeição tem 3 VARIAÇÕES que giram pelos
+   dias da semana (segunda usa a 1ª, terça a 2ª, quarta a 3ª, quinta volta
+   para a 1ª, e assim por diante), para a pessoa não comer a mesma coisa
+   todo santo dia.
+
+   Os valores são a BASE de referência: o app reescala todas as gramagens
+   para a meta calórica de cada pessoa, calculando a base a partir dos
+   próprios alimentos do dia.
 
    - `alt`      : lista de trocas equivalentes para aquele alimento
    - `opcional` : não conta para "refeição completa", mas soma calorias
                   se a pessoa marcar (caso da sobremesa)                  */
 const PLANOS_ALIMENTARES = {
 
-  /* ===== EMAGRECIMENTO (cutting) — déficit com proteína alta ===== */
+  /* ===================== EMAGRECIMENTO (cutting) ===================== */
   emagrecimento: {
-    kcalBase: 1650,
     livre: 'Uma refeição livre por semana, de preferência no fim de semana e no lugar de uma refeição comum, não somada a ela.',
     refeicoes: [
       {
-        id: 'cafe', nome: 'Café da Manhã', horario: '07:00', icone: '☀️',
-        alimentos: [
-          { id:'c1', nome:'Ovos mexidos', g:100, un:'2 unidades', kcal:155, prot:13,
-            alt:['200g de claras + 1 gema','1 scoop de whey (30g)','120g de queijo cottage','150g de iogurte proteico'] },
-          { id:'c2', nome:'Pão integral', g:50, un:'2 fatias', kcal:130, prot:6,
-            alt:['2 fatias de pão de forma integral','1 pão francês sem miolo','40g de tapioca','40g de aveia em flocos','1 crepioca (1 ovo + 20g de goma)'] },
-          { id:'c3', nome:'Queijo branco', g:30, un:'1 fatia', kcal:72, prot:5,
-            alt:['1 fatia de queijo minas','2 col. de requeijão light','15g de pasta de amendoim'] },
-          { id:'c4', nome:'Mamão papaia', g:120, un:'1/2 unidade', kcal:48, prot:1,
-            alt:['1 fatia de melão','8 morangos','1 fatia de abacaxi','1 laranja','1/2 banana'] },
-          { id:'c5', nome:'Café sem açúcar', g:200, un:'1 xícara', kcal:5, prot:0,
-            alt:['Chá verde','Chá de hibisco','Café com adoçante'] }
+        id:'cafe', nome:'Café da Manhã', horario:'07:00', icone:'☀️',
+        variacoes: [
+          { nome:'Ovos com pão integral', alimentos:[
+            { id:'c1', nome:'Ovos mexidos', g:100, un:'2 unidades', kcal:155, prot:13,
+              alt:['200g de claras + 1 gema','1 scoop de whey (30g)','120g de queijo cottage','150g de iogurte proteico'] },
+            { id:'c2', nome:'Pão integral', g:50, un:'2 fatias', kcal:130, prot:6,
+              alt:['1 pão francês sem miolo','40g de tapioca','40g de aveia em flocos','1 crepioca'] },
+            { id:'c3', nome:'Queijo branco', g:30, un:'1 fatia', kcal:72, prot:5,
+              alt:['1 fatia de queijo minas','2 col. de requeijão light','15g de pasta de amendoim'] },
+            { id:'c4', nome:'Mamão papaia', g:120, un:'1/2 unidade', kcal:48, prot:1,
+              alt:['1 fatia de melão','8 morangos','1 fatia de abacaxi','1 laranja'] },
+            { id:'c5', nome:'Café sem açúcar', g:200, un:'1 xícara', kcal:5, prot:0,
+              alt:['Chá verde','Chá de hibisco','Café com adoçante'] }
+          ]},
+          { nome:'Tapioca com frango', alimentos:[
+            { id:'c1', nome:'Tapioca', g:45, un:'1 unidade média', kcal:150, prot:0,
+              alt:['2 fatias de pão integral','1 crepioca','45g de cuscuz'] },
+            { id:'c2', nome:'Frango desfiado', g:90, un:'3 col. sopa', kcal:148, prot:28,
+              alt:['2 ovos mexidos','100g de atum','90g de peito de peru'] },
+            { id:'c3', nome:'Queijo branco', g:25, un:'1 fatia fina', kcal:60, prot:4,
+              alt:['1 col. de requeijão light','15g de cottage'] },
+            { id:'c4', nome:'Morangos', g:100, un:'8 unidades', kcal:32, prot:1,
+              alt:['1 fatia de melão','1/2 mamão','1 kiwi'] },
+            { id:'c5', nome:'Café sem açúcar', g:200, un:'1 xícara', kcal:5, prot:0,
+              alt:['Chá verde','Chá de hibisco'] }
+          ]},
+          { nome:'Iogurte com aveia e fruta', alimentos:[
+            { id:'c1', nome:'Iogurte natural desnatado', g:170, un:'1 pote', kcal:90, prot:15,
+              alt:['150g de queijo cottage','1 scoop de whey com água','200g de leite desnatado'] },
+            { id:'c2', nome:'Aveia em flocos', g:40, un:'4 col. sopa', kcal:155, prot:5,
+              alt:['40g de granola sem açúcar','2 fatias de pão integral','35g de cuscuz'] },
+            { id:'c3', nome:'Banana', g:80, un:'1 unidade pequena', kcal:71, prot:1,
+              alt:['1 maçã','1 pera','1 fatia de mamão'] },
+            { id:'c4', nome:'Pasta de amendoim', g:12, un:'1 col. chá', kcal:71, prot:3,
+              alt:['10g de castanhas','8g de amêndoas'] },
+            { id:'c5', nome:'Café sem açúcar', g:200, un:'1 xícara', kcal:5, prot:0,
+              alt:['Chá verde','Chá de hibisco'] }
+          ]}
         ]
       },
       {
-        id: 'lanche1', nome: 'Lanche da Manhã', horario: '10:00', icone: '🍎',
-        alimentos: [
-          { id:'l1', nome:'Iogurte natural desnatado', g:170, un:'1 pote', kcal:90, prot:15,
-            alt:['120g de queijo cottage','1 scoop de whey com água','2 ovos cozidos','200g de leite desnatado'] },
-          { id:'l2', nome:'Castanha-do-pará', g:15, un:'3 unidades', kcal:98, prot:2,
-            alt:['15g de amêndoas','15g de nozes','10 amendoins','1 col. de pasta de amendoim'] }
+        id:'lanche1', nome:'Lanche da Manhã', horario:'10:00', icone:'🍎',
+        variacoes: [
+          { nome:'Iogurte com castanhas', alimentos:[
+            { id:'l1', nome:'Iogurte natural desnatado', g:170, un:'1 pote', kcal:90, prot:15,
+              alt:['120g de queijo cottage','1 scoop de whey com água','2 ovos cozidos'] },
+            { id:'l2', nome:'Castanha-do-pará', g:15, un:'3 unidades', kcal:98, prot:2,
+              alt:['15g de amêndoas','15g de nozes','10 amendoins'] }
+          ]},
+          { nome:'Cottage com amêndoas', alimentos:[
+            { id:'l1', nome:'Queijo cottage', g:120, un:'4 col. sopa', kcal:98, prot:14,
+              alt:['170g de iogurte natural','1 scoop de whey','2 ovos cozidos'] },
+            { id:'l2', nome:'Amêndoas', g:14, un:'12 unidades', kcal:82, prot:3,
+              alt:['14g de castanhas','14g de nozes'] }
+          ]},
+          { nome:'Whey com fruta', alimentos:[
+            { id:'l1', nome:'Whey protein', g:25, un:'1 scoop', kcal:100, prot:20,
+              alt:['2 ovos cozidos','170g de iogurte proteico','120g de cottage'] },
+            { id:'l2', nome:'Maçã', g:130, un:'1 unidade', kcal:68, prot:0,
+              alt:['1 pera','1 laranja','1 fatia de melão'] }
+          ]}
         ]
       },
       {
-        id: 'almoco', nome: 'Almoço', horario: '12:30', icone: '🍽️',
-        alimentos: [
-          { id:'a1', nome:'Arroz integral cozido', g:100, un:'4 col. sopa', kcal:124, prot:3,
-            alt:['100g de arroz branco','100g de quinoa','150g de batata-doce','120g de macarrão integral','130g de mandioca'] },
-          { id:'a2', nome:'Feijão cozido', g:80, un:'1 concha', kcal:61, prot:4,
-            alt:['80g de lentilha','80g de grão-de-bico','80g de ervilha'] },
-          { id:'a3', nome:'Peito de frango grelhado', g:130, un:'1 filé médio', kcal:214, prot:40,
-            alt:['150g de tilápia','120g de patinho','130g de peito de peru','3 ovos inteiros','150g de merluza'] },
-          { id:'a4', nome:'Legumes cozidos', g:120, un:'à vontade', kcal:48, prot:2,
-            alt:['Brócolis','Abobrinha','Chuchu','Cenoura','Vagem','Couve-flor'] },
-          { id:'a5', nome:'Salada crua', g:150, un:'à vontade', kcal:30, prot:1,
-            alt:['Alface, tomate e pepino','Rúcula com cebola','Repolho com cenoura','Acelga com tomate'] },
-          { id:'a6', nome:'Sobremesa', g:100, un:'se quiser', kcal:70, prot:1, opcional:true,
-            alt:['1 fruta média','1 pote de gelatina diet','20g de chocolate 70%','1 picolé de fruta'] }
+        id:'almoco', nome:'Almoço', horario:'12:30', icone:'🍽️',
+        variacoes: [
+          { nome:'Frango com arroz e feijão', alimentos:[
+            { id:'a1', nome:'Arroz integral cozido', g:100, un:'4 col. sopa', kcal:124, prot:3,
+              alt:['100g de arroz branco','100g de quinoa','150g de batata-doce','120g de macarrão integral'] },
+            { id:'a2', nome:'Feijão cozido', g:80, un:'1 concha', kcal:61, prot:4,
+              alt:['80g de lentilha','80g de grão-de-bico','80g de ervilha'] },
+            { id:'a3', nome:'Peito de frango grelhado', g:130, un:'1 filé médio', kcal:214, prot:40,
+              alt:['150g de tilápia','120g de patinho','130g de peito de peru','3 ovos inteiros'] },
+            { id:'a4', nome:'Legumes cozidos', g:120, un:'à vontade', kcal:48, prot:2,
+              alt:['Brócolis','Abobrinha','Chuchu','Cenoura','Vagem'] },
+            { id:'a5', nome:'Salada crua', g:150, un:'à vontade', kcal:30, prot:1,
+              alt:['Alface, tomate e pepino','Rúcula com cebola','Repolho com cenoura'] },
+            { id:'a6', nome:'Sobremesa', g:100, un:'se quiser', kcal:70, prot:1, opcional:true,
+              alt:['1 fruta média','1 pote de gelatina diet','20g de chocolate 70%'] }
+          ]},
+          { nome:'Carne moída com macarrão', alimentos:[
+            { id:'a1', nome:'Macarrão integral cozido', g:120, un:'1 pegador', kcal:160, prot:6,
+              alt:['100g de arroz integral','150g de batata-doce','120g de mandioca'] },
+            { id:'a2', nome:'Feijão cozido', g:60, un:'1/2 concha', kcal:46, prot:3,
+              alt:['60g de lentilha','60g de grão-de-bico'] },
+            { id:'a3', nome:'Patinho moído', g:120, un:'1 porção', kcal:204, prot:35,
+              alt:['130g de frango desfiado','150g de tilápia','130g de peito de peru'] },
+            { id:'a4', nome:'Legumes cozidos', g:120, un:'à vontade', kcal:48, prot:2,
+              alt:['Brócolis','Abobrinha','Cenoura','Vagem'] },
+            { id:'a5', nome:'Salada crua', g:150, un:'à vontade', kcal:30, prot:1,
+              alt:['Folhas variadas','Tomate com cebola','Repolho com cenoura'] },
+            { id:'a6', nome:'Sobremesa', g:100, un:'se quiser', kcal:70, prot:1, opcional:true,
+              alt:['1 fruta média','1 gelatina diet','20g de chocolate 70%'] }
+          ]},
+          { nome:'Peixe com batata-doce', alimentos:[
+            { id:'a1', nome:'Batata-doce cozida', g:150, un:'1 unidade média', kcal:129, prot:3,
+              alt:['100g de arroz integral','130g de mandioca','150g de inhame'] },
+            { id:'a2', nome:'Lentilha cozida', g:80, un:'1 concha', kcal:93, prot:6,
+              alt:['80g de feijão','80g de grão-de-bico'] },
+            { id:'a3', nome:'Tilápia grelhada', g:150, un:'1 filé', kcal:148, prot:32,
+              alt:['130g de frango','150g de merluza','120g de patinho'] },
+            { id:'a4', nome:'Legumes cozidos', g:120, un:'à vontade', kcal:48, prot:2,
+              alt:['Brócolis','Abobrinha','Cenoura','Couve-flor'] },
+            { id:'a5', nome:'Salada crua', g:150, un:'à vontade', kcal:30, prot:1,
+              alt:['Folhas variadas','Tomate com pepino','Acelga'] },
+            { id:'a6', nome:'Sobremesa', g:100, un:'se quiser', kcal:70, prot:1, opcional:true,
+              alt:['1 fruta média','1 gelatina diet','20g de chocolate 70%'] }
+          ]}
         ]
       },
       {
-        id: 'lanche2', nome: 'Lanche da Tarde', horario: '16:00', icone: '🥤',
-        alimentos: [
-          { id:'l3', nome:'Whey protein', g:30, un:'1 scoop', kcal:120, prot:24,
-            alt:['2 ovos cozidos','170g de iogurte proteico','120g de queijo cottage','100g de atum'] },
-          { id:'l4', nome:'Banana', g:100, un:'1 unidade', kcal:89, prot:1,
-            alt:['1 maçã','1 pera','1 fatia de melão','1 laranja','2 fatias de abacaxi'] }
+        id:'lanche2', nome:'Lanche da Tarde', horario:'16:00', icone:'🥤',
+        variacoes: [
+          { nome:'Whey com banana', alimentos:[
+            { id:'l3', nome:'Whey protein', g:30, un:'1 scoop', kcal:120, prot:24,
+              alt:['2 ovos cozidos','170g de iogurte proteico','120g de cottage'] },
+            { id:'l4', nome:'Banana', g:100, un:'1 unidade', kcal:89, prot:1,
+              alt:['1 maçã','1 pera','1 laranja','1 fatia de melão'] }
+          ]},
+          { nome:'Iogurte com castanhas e fruta', alimentos:[
+            { id:'l3', nome:'Iogurte proteico', g:170, un:'1 pote', kcal:104, prot:15,
+              alt:['1 scoop de whey','120g de cottage','2 ovos cozidos'] },
+            { id:'l4', nome:'Maçã', g:130, un:'1 unidade', kcal:68, prot:0,
+              alt:['1 pera','1 laranja','1 fatia de mamão'] },
+            { id:'l5', nome:'Castanhas', g:8, un:'1 punhado pequeno', kcal:52, prot:1,
+              alt:['8g de amêndoas','8g de nozes'] }
+          ]},
+          { nome:'Ovos cozidos com fruta', alimentos:[
+            { id:'l3', nome:'Ovos cozidos', g:100, un:'2 unidades', kcal:155, prot:13,
+              alt:['1 scoop de whey','170g de iogurte proteico','100g de atum'] },
+            { id:'l4', nome:'Fruta da estação', g:110, un:'1 porção', kcal:55, prot:1,
+              alt:['Banana','Maçã','Pera','Melão'] }
+          ]}
         ]
       },
       {
-        id: 'jantar', nome: 'Jantar', horario: '19:30', icone: '🌙',
-        alimentos: [
-          { id:'j1', nome:'Omelete (2 ovos + legumes)', g:150, un:'1 porção', kcal:190, prot:15,
-            alt:['120g de frango desfiado','150g de peixe grelhado','130g de carne moída magra','1 crepioca com frango'] },
-          { id:'j2', nome:'Batata-doce cozida', g:100, un:'1 unidade pequena', kcal:86, prot:2,
-            alt:['80g de mandioca','100g de inhame','80g de arroz integral','2 fatias de pão integral'] },
-          { id:'j3', nome:'Salada verde', g:150, un:'à vontade', kcal:25, prot:1,
-            alt:['Folhas variadas com 1 fio de azeite','Legumes refogados','Sopa de legumes'] }
+        id:'jantar', nome:'Jantar', horario:'19:30', icone:'🌙',
+        variacoes: [
+          { nome:'Omelete com batata-doce', alimentos:[
+            { id:'j1', nome:'Omelete (2 ovos + legumes)', g:150, un:'1 porção', kcal:190, prot:15,
+              alt:['120g de frango desfiado','150g de peixe grelhado','130g de carne moída magra'] },
+            { id:'j2', nome:'Batata-doce cozida', g:100, un:'1 unidade pequena', kcal:86, prot:2,
+              alt:['80g de mandioca','100g de inhame','80g de arroz integral'] },
+            { id:'j3', nome:'Salada verde', g:150, un:'à vontade', kcal:25, prot:1,
+              alt:['Folhas com 1 fio de azeite','Legumes refogados','Sopa de legumes'] }
+          ]},
+          { nome:'Frango com mandioca', alimentos:[
+            { id:'j1', nome:'Frango desfiado', g:120, un:'1 porção', kcal:198, prot:37,
+              alt:['2 ovos + 1 clara','130g de peixe','120g de patinho'] },
+            { id:'j2', nome:'Mandioca cozida', g:90, un:'1 pedaço médio', kcal:112, prot:1,
+              alt:['100g de batata-doce','90g de inhame','80g de arroz'] },
+            { id:'j3', nome:'Salada verde', g:150, un:'à vontade', kcal:25, prot:1,
+              alt:['Folhas variadas','Legumes refogados','Sopa de legumes'] }
+          ]},
+          { nome:'Peixe com arroz integral', alimentos:[
+            { id:'j1', nome:'Peixe grelhado', g:150, un:'1 filé', kcal:148, prot:32,
+              alt:['120g de frango','Omelete de 2 ovos','120g de patinho'] },
+            { id:'j2', nome:'Arroz integral', g:90, un:'3 col. sopa', kcal:112, prot:3,
+              alt:['100g de batata-doce','80g de mandioca','90g de quinoa'] },
+            { id:'j3', nome:'Legumes refogados', g:150, un:'à vontade', kcal:40, prot:2,
+              alt:['Abobrinha e cenoura','Brócolis','Salada crua'] }
+          ]}
         ]
       }
     ]
   },
 
-  /* ===== HIPERTROFIA (bulking) — superávit controlado ===== */
+  /* ===================== HIPERTROFIA (bulking) ===================== */
   hipertrofia: {
-    kcalBase: 2600,
     livre: 'Uma refeição livre por semana. No bulking ela costuma cair bem no dia do treino mais pesado.',
     refeicoes: [
       {
-        id: 'cafe', nome: 'Café da Manhã', horario: '07:00', icone: '☀️',
-        alimentos: [
-          { id:'c1', nome:'Ovos inteiros', g:150, un:'3 unidades', kcal:233, prot:19,
-            alt:['2 ovos + 100g de claras','2 scoops de whey','200g de queijo cottage'] },
-          { id:'c2', nome:'Pão integral', g:100, un:'4 fatias', kcal:260, prot:12,
-            alt:['2 pães franceses','80g de tapioca','2 crepiocas','100g de aveia em flocos'] },
-          { id:'c3', nome:'Aveia em flocos', g:40, un:'4 col. sopa', kcal:155, prot:5,
-            alt:['40g de granola sem açúcar','2 fatias extras de pão','40g de cuscuz'] },
-          { id:'c4', nome:'Banana', g:100, un:'1 unidade', kcal:89, prot:1,
-            alt:['150g de mamão','120g de manga','1 fatia de melancia','1 punhado de uvas'] },
-          { id:'c5', nome:'Pasta de amendoim', g:20, un:'1 col. sopa', kcal:118, prot:5,
-            alt:['20g de castanhas','1 fatia de queijo + 1 col. de requeijão','1/2 abacate pequeno'] }
+        id:'cafe', nome:'Café da Manhã', horario:'07:00', icone:'☀️',
+        variacoes: [
+          { nome:'Ovos, pão e aveia', alimentos:[
+            { id:'c1', nome:'Ovos inteiros', g:150, un:'3 unidades', kcal:233, prot:19,
+              alt:['2 ovos + 100g de claras','2 scoops de whey','200g de cottage'] },
+            { id:'c2', nome:'Pão integral', g:100, un:'4 fatias', kcal:260, prot:12,
+              alt:['2 pães franceses','80g de tapioca','2 crepiocas'] },
+            { id:'c3', nome:'Aveia em flocos', g:40, un:'4 col. sopa', kcal:155, prot:5,
+              alt:['40g de granola','2 fatias extras de pão','40g de cuscuz'] },
+            { id:'c4', nome:'Banana', g:100, un:'1 unidade', kcal:89, prot:1,
+              alt:['150g de mamão','120g de manga','1 punhado de uvas'] },
+            { id:'c5', nome:'Pasta de amendoim', g:20, un:'1 col. sopa', kcal:118, prot:5,
+              alt:['20g de castanhas','1/2 abacate pequeno'] }
+          ]},
+          { nome:'Vitamina reforçada com cuscuz', alimentos:[
+            { id:'c1', nome:'Cuscuz de milho', g:80, un:'1 prato pequeno', kcal:290, prot:6,
+              alt:['100g de pão integral','80g de tapioca','80g de aveia'] },
+            { id:'c2', nome:'Ovos mexidos', g:150, un:'3 unidades', kcal:233, prot:19,
+              alt:['2 ovos + 100g de claras','150g de frango desfiado'] },
+            { id:'c3', nome:'Vitamina de banana com leite', g:300, un:'1 copo grande', kcal:230, prot:12,
+              alt:['300ml de leite + 1 scoop de whey','200g de iogurte + fruta'] },
+            { id:'c4', nome:'Castanhas', g:20, un:'1 punhado', kcal:130, prot:3,
+              alt:['20g de amêndoas','1 col. de pasta de amendoim'] }
+          ]},
+          { nome:'Panqueca de aveia', alimentos:[
+            { id:'c1', nome:'Panqueca de aveia (aveia + ovos + banana)', g:220, un:'2 unidades', kcal:430, prot:22,
+              alt:['2 crepiocas com frango','100g de pão integral com ovos'] },
+            { id:'c2', nome:'Iogurte natural integral', g:200, un:'1 pote', kcal:122, prot:11,
+              alt:['300ml de leite integral','150g de cottage'] },
+            { id:'c3', nome:'Mel', g:20, un:'1 col. sopa', kcal:61, prot:0,
+              alt:['1 fruta média','20g de geleia sem açúcar'] },
+            { id:'c4', nome:'Pasta de amendoim', g:20, un:'1 col. sopa', kcal:118, prot:5,
+              alt:['20g de castanhas','20g de amêndoas'] },
+            { id:'c5', nome:'Café sem açúcar', g:200, un:'1 xícara', kcal:5, prot:0,
+              alt:['Chá verde','Café com leite'] }
+          ]}
         ]
       },
       {
-        id: 'lanche1', nome: 'Lanche da Manhã', horario: '10:00', icone: '🍎',
-        alimentos: [
-          { id:'l1', nome:'Iogurte natural integral', g:200, un:'1 pote', kcal:122, prot:11,
-            alt:['150g de queijo cottage','300ml de leite integral','1 vitamina de banana com leite'] },
-          { id:'l2', nome:'Granola sem açúcar', g:40, un:'3 col. sopa', kcal:180, prot:5,
-            alt:['40g de aveia + 10g de mel','2 fatias de pão integral','40g de castanhas'] }
+        id:'lanche1', nome:'Lanche da Manhã', horario:'10:00', icone:'🍎',
+        variacoes: [
+          { nome:'Iogurte com granola', alimentos:[
+            { id:'l1', nome:'Iogurte natural integral', g:200, un:'1 pote', kcal:122, prot:11,
+              alt:['150g de cottage','300ml de leite integral'] },
+            { id:'l2', nome:'Granola sem açúcar', g:40, un:'3 col. sopa', kcal:180, prot:5,
+              alt:['40g de aveia + 10g de mel','2 fatias de pão integral'] }
+          ]},
+          { nome:'Sanduíche de peito de peru', alimentos:[
+            { id:'l1', nome:'Pão integral', g:60, un:'2 fatias', kcal:156, prot:7,
+              alt:['1 pão francês','60g de tapioca'] },
+            { id:'l2', nome:'Peito de peru e queijo', g:80, un:'3 fatias', kcal:150, prot:16,
+              alt:['80g de frango desfiado','2 ovos mexidos'] }
+          ]},
+          { nome:'Shake com castanhas', alimentos:[
+            { id:'l1', nome:'Whey com leite', g:330, un:'1 copo', kcal:230, prot:30,
+              alt:['200g de iogurte proteico','4 ovos cozidos'] },
+            { id:'l2', nome:'Castanhas variadas', g:20, un:'1 punhado', kcal:130, prot:3,
+              alt:['20g de amêndoas','1 col. de pasta de amendoim'] }
+          ]}
         ]
       },
       {
-        id: 'almoco', nome: 'Almoço', horario: '12:30', icone: '🍽️',
-        alimentos: [
-          { id:'a1', nome:'Arroz branco ou integral', g:180, un:'7 col. sopa', kcal:234, prot:5,
-            alt:['150g de macarrão integral','250g de batata-doce','200g de mandioca','180g de quinoa'] },
-          { id:'a2', nome:'Feijão cozido', g:120, un:'1 concha e meia', kcal:92, prot:6,
-            alt:['120g de lentilha','120g de grão-de-bico','120g de feijão preto'] },
-          { id:'a3', nome:'Patinho moído ou frango', g:180, un:'1 porção grande', kcal:306, prot:52,
-            alt:['180g de salmão','200g de tilápia','180g de coxão mole','4 ovos + 100g de frango'] },
-          { id:'a4', nome:'Legumes cozidos', g:120, un:'à vontade', kcal:48, prot:2,
-            alt:['Brócolis','Abobrinha','Cenoura','Couve-flor','Vagem'] },
-          { id:'a5', nome:'Salada crua com azeite', g:150, un:'à vontade', kcal:90, prot:1,
-            alt:['Folhas variadas + 1 fio de azeite','Salada de tomate com azeite','Salada com 1/4 de abacate'] },
-          { id:'a6', nome:'Sobremesa', g:100, un:'se quiser', kcal:110, prot:2, opcional:true,
-            alt:['1 fruta grande','1 pote de iogurte com mel','30g de chocolate 70%','1 bola de sorvete'] }
+        id:'almoco', nome:'Almoço', horario:'12:30', icone:'🍽️',
+        variacoes: [
+          { nome:'Carne com arroz e feijão', alimentos:[
+            { id:'a1', nome:'Arroz branco ou integral', g:180, un:'7 col. sopa', kcal:234, prot:5,
+              alt:['150g de macarrão integral','250g de batata-doce','200g de mandioca'] },
+            { id:'a2', nome:'Feijão cozido', g:120, un:'1 concha e meia', kcal:92, prot:6,
+              alt:['120g de lentilha','120g de grão-de-bico'] },
+            { id:'a3', nome:'Patinho moído ou frango', g:180, un:'1 porção grande', kcal:306, prot:52,
+              alt:['180g de salmão','200g de tilápia','180g de coxão mole'] },
+            { id:'a4', nome:'Legumes cozidos', g:120, un:'à vontade', kcal:48, prot:2,
+              alt:['Brócolis','Abobrinha','Cenoura'] },
+            { id:'a5', nome:'Salada crua com azeite', g:150, un:'à vontade', kcal:90, prot:1,
+              alt:['Folhas + 1 fio de azeite','Salada com 1/4 de abacate'] },
+            { id:'a6', nome:'Sobremesa', g:100, un:'se quiser', kcal:110, prot:2, opcional:true,
+              alt:['1 fruta grande','1 iogurte com mel','30g de chocolate 70%'] }
+          ]},
+          { nome:'Macarrão com frango', alimentos:[
+            { id:'a1', nome:'Macarrão integral cozido', g:200, un:'2 pegadores', kcal:266, prot:10,
+              alt:['180g de arroz','250g de batata-doce'] },
+            { id:'a2', nome:'Grão-de-bico', g:120, un:'1 concha e meia', kcal:110, prot:7,
+              alt:['120g de feijão','120g de lentilha'] },
+            { id:'a3', nome:'Frango grelhado', g:190, un:'1 porção grande', kcal:313, prot:58,
+              alt:['180g de patinho','200g de tilápia','180g de salmão'] },
+            { id:'a4', nome:'Legumes salteados', g:130, un:'à vontade', kcal:55, prot:2,
+              alt:['Abobrinha e cenoura','Brócolis','Vagem'] },
+            { id:'a5', nome:'Salada crua com azeite', g:150, un:'à vontade', kcal:90, prot:1,
+              alt:['Folhas + azeite','Tomate com azeite'] },
+            { id:'a6', nome:'Sobremesa', g:100, un:'se quiser', kcal:110, prot:2, opcional:true,
+              alt:['1 fruta grande','1 iogurte com mel','30g de chocolate 70%'] }
+          ]},
+          { nome:'Salmão com batata-doce', alimentos:[
+            { id:'a1', nome:'Batata-doce cozida', g:250, un:'2 unidades médias', kcal:215, prot:5,
+              alt:['180g de arroz','200g de mandioca','200g de inhame'] },
+            { id:'a2', nome:'Lentilha cozida', g:120, un:'1 concha e meia', kcal:139, prot:9,
+              alt:['120g de feijão','120g de grão-de-bico'] },
+            { id:'a3', nome:'Salmão grelhado', g:180, un:'1 posta', kcal:374, prot:40,
+              alt:['190g de frango','180g de patinho','200g de tilápia'] },
+            { id:'a4', nome:'Legumes cozidos', g:120, un:'à vontade', kcal:48, prot:2,
+              alt:['Brócolis','Couve-flor','Cenoura'] },
+            { id:'a5', nome:'Salada crua com azeite', g:150, un:'à vontade', kcal:90, prot:1,
+              alt:['Folhas + azeite','Rúcula com tomate'] },
+            { id:'a6', nome:'Sobremesa', g:100, un:'se quiser', kcal:110, prot:2, opcional:true,
+              alt:['1 fruta grande','1 iogurte com mel','30g de chocolate 70%'] }
+          ]}
         ]
       },
       {
-        id: 'lanche2', nome: 'Lanche Pré-Treino', horario: '16:00', icone: '⚡',
-        alimentos: [
-          { id:'l3', nome:'Whey protein', g:30, un:'1 scoop', kcal:120, prot:24,
-            alt:['3 ovos cozidos','200g de iogurte proteico','150g de frango desfiado'] },
-          { id:'l4', nome:'Pão integral com mel', g:60, un:'2 fatias', kcal:180, prot:7,
-            alt:['50g de tapioca','150g de banana','60g de aveia','1 batata-doce média'] }
+        id:'lanche2', nome:'Lanche Pré-Treino', horario:'16:00', icone:'⚡',
+        variacoes: [
+          { nome:'Whey com pão e mel', alimentos:[
+            { id:'l3', nome:'Whey protein', g:30, un:'1 scoop', kcal:120, prot:24,
+              alt:['3 ovos cozidos','200g de iogurte proteico'] },
+            { id:'l4', nome:'Pão integral com mel', g:60, un:'2 fatias', kcal:180, prot:7,
+              alt:['50g de tapioca','150g de banana','60g de aveia'] }
+          ]},
+          { nome:'Banana com aveia e whey', alimentos:[
+            { id:'l3', nome:'Whey protein', g:30, un:'1 scoop', kcal:120, prot:24,
+              alt:['3 ovos cozidos','200g de iogurte proteico'] },
+            { id:'l4', nome:'Banana com aveia', g:150, un:'1 unidade + 3 col.', kcal:210, prot:5,
+              alt:['2 fatias de pão com mel','1 batata-doce média'] }
+          ]},
+          { nome:'Tapioca com frango', alimentos:[
+            { id:'l3', nome:'Tapioca', g:60, un:'1 unidade', kcal:200, prot:0,
+              alt:['60g de pão integral','1 batata-doce média'] },
+            { id:'l4', nome:'Frango desfiado', g:100, un:'3 col. sopa', kcal:165, prot:31,
+              alt:['1 scoop de whey','3 ovos cozidos','100g de atum'] }
+          ]}
         ]
       },
       {
-        id: 'jantar', nome: 'Jantar', horario: '20:00', icone: '🌙',
-        alimentos: [
-          { id:'j1', nome:'Frango grelhado ou carne magra', g:160, un:'1 filé grande', kcal:264, prot:49,
-            alt:['4 ovos inteiros','180g de peixe','160g de patinho','170g de peito de peru'] },
-          { id:'j2', nome:'Batata-doce ou mandioca', g:180, un:'1 porção', kcal:155, prot:3,
-            alt:['150g de arroz integral','150g de macarrão','4 fatias de pão integral'] },
-          { id:'j3', nome:'Legumes e salada', g:180, un:'à vontade', kcal:60, prot:2,
-            alt:['Legumes refogados','Salada com azeite','Sopa de legumes com frango'] }
+        id:'jantar', nome:'Jantar', horario:'20:00', icone:'🌙',
+        variacoes: [
+          { nome:'Carne com batata-doce', alimentos:[
+            { id:'j1', nome:'Frango grelhado ou carne magra', g:160, un:'1 filé grande', kcal:264, prot:49,
+              alt:['4 ovos inteiros','180g de peixe','160g de patinho'] },
+            { id:'j2', nome:'Batata-doce ou mandioca', g:180, un:'1 porção', kcal:155, prot:3,
+              alt:['150g de arroz integral','150g de macarrão'] },
+            { id:'j3', nome:'Legumes e salada', g:180, un:'à vontade', kcal:60, prot:2,
+              alt:['Legumes refogados','Salada com azeite'] }
+          ]},
+          { nome:'Omelete reforçado com arroz', alimentos:[
+            { id:'j1', nome:'Omelete (4 ovos + queijo)', g:250, un:'1 porção grande', kcal:380, prot:32,
+              alt:['160g de frango','180g de peixe','160g de patinho'] },
+            { id:'j2', nome:'Arroz integral', g:150, un:'6 col. sopa', kcal:186, prot:4,
+              alt:['180g de batata-doce','150g de macarrão'] },
+            { id:'j3', nome:'Salada e legumes', g:180, un:'à vontade', kcal:60, prot:2,
+              alt:['Legumes refogados','Salada com azeite'] }
+          ]},
+          { nome:'Peixe com mandioca', alimentos:[
+            { id:'j1', nome:'Tilápia ou merluza grelhada', g:200, un:'2 filés', kcal:197, prot:42,
+              alt:['160g de frango','4 ovos','160g de patinho'] },
+            { id:'j2', nome:'Mandioca cozida', g:180, un:'1 porção', kcal:224, prot:2,
+              alt:['180g de batata-doce','150g de arroz'] },
+            { id:'j3', nome:'Legumes e salada', g:180, un:'à vontade', kcal:60, prot:2,
+              alt:['Legumes refogados','Salada com azeite'] }
+          ]}
         ]
       }
     ]
   },
 
-  /* ===== MANUTENÇÃO — sustentar o peso e melhorar a composição ===== */
+  /* ===================== MANUTENÇÃO ===================== */
   manutencao: {
-    kcalBase: 2050,
     livre: 'Uma a duas refeições livres por semana, sem exagero no restante dos dias.',
     refeicoes: [
       {
-        id: 'cafe', nome: 'Café da Manhã', horario: '07:00', icone: '☀️',
-        alimentos: [
-          { id:'c1', nome:'Ovos mexidos', g:120, un:'2 unidades e 1 clara', kcal:180, prot:16,
-            alt:['200g de iogurte proteico','1 scoop de whey','150g de queijo cottage'] },
-          { id:'c2', nome:'Pão integral', g:60, un:'2 fatias', kcal:156, prot:7,
-            alt:['1 pão francês','50g de tapioca','50g de aveia','1 crepioca'] },
-          { id:'c3', nome:'Queijo branco', g:30, un:'1 fatia', kcal:72, prot:5,
-            alt:['2 col. de requeijão','15g de pasta de amendoim','1 fatia de peito de peru'] },
-          { id:'c4', nome:'Fruta da estação', g:130, un:'1 porção', kcal:60, prot:1,
-            alt:['Mamão','Melão','Morango','Banana','Laranja'] },
-          { id:'c5', nome:'Café sem açúcar', g:200, un:'1 xícara', kcal:5, prot:0,
-            alt:['Chá verde','Café com adoçante','Chá de hibisco'] }
+        id:'cafe', nome:'Café da Manhã', horario:'07:00', icone:'☀️',
+        variacoes: [
+          { nome:'Ovos com pão e fruta', alimentos:[
+            { id:'c1', nome:'Ovos mexidos', g:120, un:'2 unidades e 1 clara', kcal:180, prot:16,
+              alt:['200g de iogurte proteico','1 scoop de whey','150g de cottage'] },
+            { id:'c2', nome:'Pão integral', g:60, un:'2 fatias', kcal:156, prot:7,
+              alt:['1 pão francês','50g de tapioca','50g de aveia'] },
+            { id:'c3', nome:'Queijo branco', g:30, un:'1 fatia', kcal:72, prot:5,
+              alt:['2 col. de requeijão','15g de pasta de amendoim'] },
+            { id:'c4', nome:'Fruta da estação', g:130, un:'1 porção', kcal:60, prot:1,
+              alt:['Mamão','Melão','Morango','Banana'] },
+            { id:'c5', nome:'Café sem açúcar', g:200, un:'1 xícara', kcal:5, prot:0,
+              alt:['Chá verde','Café com adoçante'] }
+          ]},
+          { nome:'Crepioca com queijo', alimentos:[
+            { id:'c1', nome:'Crepioca (2 ovos + goma)', g:150, un:'1 unidade', kcal:250, prot:15,
+              alt:['2 fatias de pão com ovos','60g de tapioca com frango'] },
+            { id:'c2', nome:'Queijo branco', g:40, un:'1 fatia grossa', kcal:96, prot:7,
+              alt:['2 col. de requeijão','40g de cottage'] },
+            { id:'c3', nome:'Mamão papaia', g:130, un:'1/2 unidade', kcal:52, prot:1,
+              alt:['1 fatia de melão','1 laranja','8 morangos'] },
+            { id:'c4', nome:'Café sem açúcar', g:200, un:'1 xícara', kcal:5, prot:0,
+              alt:['Chá verde','Café com leite'] }
+          ]},
+          { nome:'Aveia com iogurte e banana', alimentos:[
+            { id:'c1', nome:'Iogurte natural', g:170, un:'1 pote', kcal:104, prot:12,
+              alt:['150g de cottage','200ml de leite'] },
+            { id:'c2', nome:'Aveia em flocos', g:50, un:'5 col. sopa', kcal:194, prot:7,
+              alt:['50g de granola','2 fatias de pão integral'] },
+            { id:'c3', nome:'Banana', g:100, un:'1 unidade', kcal:89, prot:1,
+              alt:['1 maçã','1 pera','1 fatia de mamão'] },
+            { id:'c4', nome:'Pasta de amendoim', g:15, un:'1 col. chá', kcal:89, prot:4,
+              alt:['15g de castanhas','15g de amêndoas'] }
+          ]}
         ]
       },
       {
-        id: 'lanche1', nome: 'Lanche da Manhã', horario: '10:00', icone: '🍎',
-        alimentos: [
-          { id:'l1', nome:'Iogurte natural', g:170, un:'1 pote', kcal:104, prot:12,
-            alt:['130g de queijo cottage','1 scoop de whey','2 ovos cozidos'] },
-          { id:'l2', nome:'Castanhas variadas', g:20, un:'1 punhado', kcal:130, prot:3,
-            alt:['20g de amêndoas','20g de nozes','1 col. de pasta de amendoim'] }
+        id:'lanche1', nome:'Lanche da Manhã', horario:'10:00', icone:'🍎',
+        variacoes: [
+          { nome:'Iogurte com castanhas', alimentos:[
+            { id:'l1', nome:'Iogurte natural', g:170, un:'1 pote', kcal:104, prot:12,
+              alt:['130g de cottage','1 scoop de whey'] },
+            { id:'l2', nome:'Castanhas variadas', g:20, un:'1 punhado', kcal:130, prot:3,
+              alt:['20g de amêndoas','20g de nozes'] }
+          ]},
+          { nome:'Fruta com pasta de amendoim', alimentos:[
+            { id:'l1', nome:'Banana', g:110, un:'1 unidade', kcal:98, prot:1,
+              alt:['1 maçã','1 pera'] },
+            { id:'l2', nome:'Pasta de amendoim', g:20, un:'1 col. sopa', kcal:118, prot:5,
+              alt:['20g de castanhas','20g de amêndoas'] }
+          ]},
+          { nome:'Sanduíche leve', alimentos:[
+            { id:'l1', nome:'Pão integral', g:50, un:'2 fatias', kcal:130, prot:6,
+              alt:['40g de tapioca','1 crepioca'] },
+            { id:'l2', nome:'Peito de peru e queijo', g:50, un:'2 fatias', kcal:95, prot:10,
+              alt:['1 ovo cozido + queijo','50g de frango desfiado'] }
+          ]}
         ]
       },
       {
-        id: 'almoco', nome: 'Almoço', horario: '12:30', icone: '🍽️',
-        alimentos: [
-          { id:'a1', nome:'Arroz integral', g:130, un:'5 col. sopa', kcal:161, prot:4,
-            alt:['130g de arroz branco','180g de batata-doce','130g de quinoa','150g de macarrão'] },
-          { id:'a2', nome:'Feijão cozido', g:100, un:'1 concha', kcal:76, prot:5,
-            alt:['100g de lentilha','100g de grão-de-bico','100g de feijão preto'] },
-          { id:'a3', nome:'Proteína grelhada', g:150, un:'1 filé', kcal:247, prot:45,
-            alt:['Frango','Patinho','Tilápia','Peito de peru','3 ovos + 80g de frango'] },
-          { id:'a4', nome:'Legumes cozidos', g:120, un:'à vontade', kcal:48, prot:2,
-            alt:['Brócolis','Abobrinha','Cenoura','Vagem','Couve-flor'] },
-          { id:'a5', nome:'Salada crua', g:150, un:'à vontade', kcal:40, prot:1,
-            alt:['Folhas variadas','Tomate com cebola','Repolho com cenoura'] },
-          { id:'a6', nome:'Sobremesa', g:100, un:'se quiser', kcal:90, prot:1, opcional:true,
-            alt:['1 fruta média','1 gelatina','25g de chocolate 70%','1 pote de iogurte'] }
+        id:'almoco', nome:'Almoço', horario:'12:30', icone:'🍽️',
+        variacoes: [
+          { nome:'Proteína com arroz e feijão', alimentos:[
+            { id:'a1', nome:'Arroz integral', g:130, un:'5 col. sopa', kcal:161, prot:4,
+              alt:['130g de arroz branco','180g de batata-doce','130g de quinoa'] },
+            { id:'a2', nome:'Feijão cozido', g:100, un:'1 concha', kcal:76, prot:5,
+              alt:['100g de lentilha','100g de grão-de-bico'] },
+            { id:'a3', nome:'Proteína grelhada', g:150, un:'1 filé', kcal:247, prot:45,
+              alt:['Frango','Patinho','Tilápia','Peito de peru'] },
+            { id:'a4', nome:'Legumes cozidos', g:120, un:'à vontade', kcal:48, prot:2,
+              alt:['Brócolis','Abobrinha','Cenoura'] },
+            { id:'a5', nome:'Salada crua', g:150, un:'à vontade', kcal:40, prot:1,
+              alt:['Folhas variadas','Tomate com cebola'] },
+            { id:'a6', nome:'Sobremesa', g:100, un:'se quiser', kcal:90, prot:1, opcional:true,
+              alt:['1 fruta média','1 gelatina','25g de chocolate 70%'] }
+          ]},
+          { nome:'Frango com macarrão', alimentos:[
+            { id:'a1', nome:'Macarrão integral cozido', g:150, un:'1 pegador e meio', kcal:200, prot:8,
+              alt:['130g de arroz integral','180g de batata-doce'] },
+            { id:'a2', nome:'Grão-de-bico', g:100, un:'1 concha', kcal:92, prot:6,
+              alt:['100g de feijão','100g de lentilha'] },
+            { id:'a3', nome:'Frango grelhado', g:150, un:'1 filé', kcal:247, prot:45,
+              alt:['150g de tilápia','140g de patinho','150g de peito de peru'] },
+            { id:'a4', nome:'Legumes salteados', g:120, un:'à vontade', kcal:50, prot:2,
+              alt:['Abobrinha e cenoura','Brócolis'] },
+            { id:'a5', nome:'Salada crua', g:150, un:'à vontade', kcal:40, prot:1,
+              alt:['Folhas variadas','Rúcula com tomate'] },
+            { id:'a6', nome:'Sobremesa', g:100, un:'se quiser', kcal:90, prot:1, opcional:true,
+              alt:['1 fruta média','1 gelatina','25g de chocolate 70%'] }
+          ]},
+          { nome:'Peixe com batata e legumes', alimentos:[
+            { id:'a1', nome:'Batata-doce cozida', g:180, un:'1 unidade grande', kcal:155, prot:3,
+              alt:['130g de arroz integral','150g de mandioca'] },
+            { id:'a2', nome:'Lentilha cozida', g:100, un:'1 concha', kcal:116, prot:8,
+              alt:['100g de feijão','100g de grão-de-bico'] },
+            { id:'a3', nome:'Tilápia grelhada', g:160, un:'1 filé grande', kcal:158, prot:34,
+              alt:['150g de frango','140g de patinho','160g de merluza'] },
+            { id:'a4', nome:'Legumes cozidos', g:130, un:'à vontade', kcal:52, prot:2,
+              alt:['Brócolis','Couve-flor','Cenoura'] },
+            { id:'a5', nome:'Salada crua', g:150, un:'à vontade', kcal:40, prot:1,
+              alt:['Folhas variadas','Tomate com pepino'] },
+            { id:'a6', nome:'Sobremesa', g:100, un:'se quiser', kcal:90, prot:1, opcional:true,
+              alt:['1 fruta média','1 gelatina','25g de chocolate 70%'] }
+          ]}
         ]
       },
       {
-        id: 'lanche2', nome: 'Lanche da Tarde', horario: '16:00', icone: '🥤',
-        alimentos: [
-          { id:'l3', nome:'Whey ou ovos', g:30, un:'1 scoop', kcal:120, prot:24,
-            alt:['2 ovos cozidos','170g de iogurte proteico','100g de atum'] },
-          { id:'l4', nome:'Fruta', g:120, un:'1 unidade', kcal:70, prot:1,
-            alt:['Banana','Maçã','Pera','Laranja','Melão'] }
+        id:'lanche2', nome:'Lanche da Tarde', horario:'16:00', icone:'🥤',
+        variacoes: [
+          { nome:'Whey com fruta', alimentos:[
+            { id:'l3', nome:'Whey ou ovos', g:30, un:'1 scoop', kcal:120, prot:24,
+              alt:['2 ovos cozidos','170g de iogurte proteico'] },
+            { id:'l4', nome:'Fruta', g:120, un:'1 unidade', kcal:70, prot:1,
+              alt:['Banana','Maçã','Pera','Laranja'] }
+          ]},
+          { nome:'Iogurte com granola', alimentos:[
+            { id:'l3', nome:'Iogurte proteico', g:170, un:'1 pote', kcal:104, prot:15,
+              alt:['1 scoop de whey','130g de cottage'] },
+            { id:'l4', nome:'Granola sem açúcar', g:25, un:'2 col. sopa', kcal:112, prot:3,
+              alt:['25g de aveia','1 fatia de pão integral'] }
+          ]},
+          { nome:'Ovos com fruta', alimentos:[
+            { id:'l3', nome:'Ovos cozidos', g:100, un:'2 unidades', kcal:155, prot:13,
+              alt:['1 scoop de whey','170g de iogurte proteico'] },
+            { id:'l4', nome:'Fruta da estação', g:110, un:'1 porção', kcal:55, prot:1,
+              alt:['Banana','Maçã','Melão'] }
+          ]}
         ]
       },
       {
-        id: 'jantar', nome: 'Jantar', horario: '19:30', icone: '🌙',
-        alimentos: [
-          { id:'j1', nome:'Proteína (carne, frango ou peixe)', g:140, un:'1 porção', kcal:231, prot:42,
-            alt:['Omelete de 3 ovos','140g de peixe','140g de frango','140g de patinho'] },
-          { id:'j2', nome:'Carboidrato', g:130, un:'1 porção', kcal:112, prot:3,
-            alt:['Batata-doce','Arroz integral','Mandioca','2 fatias de pão integral'] },
-          { id:'j3', nome:'Salada e legumes', g:170, un:'à vontade', kcal:45, prot:2,
-            alt:['Salada verde','Legumes refogados','Sopa de legumes'] }
+        id:'jantar', nome:'Jantar', horario:'19:30', icone:'🌙',
+        variacoes: [
+          { nome:'Proteína com carboidrato e salada', alimentos:[
+            { id:'j1', nome:'Proteína (carne, frango ou peixe)', g:140, un:'1 porção', kcal:231, prot:42,
+              alt:['Omelete de 3 ovos','140g de peixe','140g de frango'] },
+            { id:'j2', nome:'Carboidrato', g:130, un:'1 porção', kcal:112, prot:3,
+              alt:['Batata-doce','Arroz integral','Mandioca'] },
+            { id:'j3', nome:'Salada e legumes', g:170, un:'à vontade', kcal:45, prot:2,
+              alt:['Salada verde','Legumes refogados'] }
+          ]},
+          { nome:'Sopa reforçada de legumes', alimentos:[
+            { id:'j1', nome:'Sopa de legumes com frango', g:400, un:'1 prato fundo', kcal:280, prot:35,
+              alt:['Caldo de carne magra','Sopa de peixe com legumes'] },
+            { id:'j2', nome:'Torradas integrais', g:40, un:'4 unidades', kcal:104, prot:4,
+              alt:['1 fatia de pão integral','40g de mandioca'] }
+          ]},
+          { nome:'Omelete com salada', alimentos:[
+            { id:'j1', nome:'Omelete (3 ovos + legumes)', g:200, un:'1 porção', kcal:265, prot:22,
+              alt:['140g de frango desfiado','150g de peixe'] },
+            { id:'j2', nome:'Batata-doce cozida', g:120, un:'1 unidade', kcal:103, prot:2,
+              alt:['100g de arroz','100g de mandioca'] },
+            { id:'j3', nome:'Salada verde', g:170, un:'à vontade', kcal:45, prot:2,
+              alt:['Folhas variadas','Legumes refogados'] }
+          ]}
         ]
       }
     ]
