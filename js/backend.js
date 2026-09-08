@@ -14,10 +14,40 @@ const Backend = {
   usuario: null,
   timerSync: null,
 
+  /* estado do carregamento da biblioteca, para dar mensagem certa ao usuário */
+  libOk: false,
+
+  /* Garante que a biblioteca do Supabase está carregada.
+     Se o CDN principal falhar, tenta o reserva antes de desistir. */
+  async carregarLib() {
+    if (window.supabase) { this.libOk = true; return true; }
+
+    const cdns = [
+      'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
+      'https://unpkg.com/@supabase/supabase-js@2'
+    ];
+
+    for (const url of cdns) {
+      try {
+        await new Promise((ok, falhou) => {
+          const s = document.createElement('script');
+          s.src = url;
+          s.onload = ok;
+          s.onerror = () => falhou(new Error('falhou: ' + url));
+          document.head.appendChild(s);
+        });
+        if (window.supabase) { this.libOk = true; return true; }
+      } catch (e) { /* tenta o próximo */ }
+    }
+    return false;
+  },
+
   /* ---------- inicialização ---------- */
   init() {
-    if (!window.CONFIG || !CONFIG.SUPABASE_URL || !CONFIG.SUPABASE_KEY) return false;
+    /* CONFIG é declarado com const em config.js, então não vira window.CONFIG */
+    if (typeof CONFIG === 'undefined' || !CONFIG.SUPABASE_URL || !CONFIG.SUPABASE_KEY) return false;
     if (!window.supabase) return false;
+    this.libOk = true;
     try {
       this.sb = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
       return true;
@@ -39,7 +69,16 @@ const Backend = {
     return this.usuario;
   },
 
+  /* barra o uso antes da biblioteca existir, com mensagem clara */
+  exigirConexao() {
+    if (this.sb) return;
+    throw new Error(this.libOk
+      ? 'Não foi possível conectar ao servidor. Confira as chaves em config.js.'
+      : 'Sem conexão com o servidor agora. Verifique sua internet e recarregue a página.');
+  },
+
   async criarConta(email, senha) {
+    this.exigirConexao();
     const { data, error } = await this.sb.auth.signUp({ email, password: senha });
     if (error) throw new Error(this.traduzErro(error.message));
     this.usuario = data.user;
@@ -47,6 +86,7 @@ const Backend = {
   },
 
   async entrar(email, senha) {
+    this.exigirConexao();
     const { data, error } = await this.sb.auth.signInWithPassword({ email, password: senha });
     if (error) throw new Error(this.traduzErro(error.message));
     this.usuario = data.user;

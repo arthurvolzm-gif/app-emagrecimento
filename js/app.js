@@ -16,6 +16,7 @@ const App = {
   /* ---------- inicialização ---------- */
   async iniciar() {
     Store.load();
+    await Backend.carregarLib();
     const temBackend = Backend.init();
 
     if (temBackend) {

@@ -17,3 +17,6 @@ const CONFIG = {
   SUPABASE_URL: 'https://ddtxvijlmjqtaxdystph.supabase.co',
   SUPABASE_KEY: 'sb_publishable_XsRkTp9ahN8T3ydSfOEE_Q_AYH4Oq11'
 };
+
+/* deixa acessível também como window.CONFIG */
+window.CONFIG = CONFIG;

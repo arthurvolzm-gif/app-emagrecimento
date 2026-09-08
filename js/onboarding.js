@@ -43,7 +43,9 @@ const Onb = {
 
         ${Backend.configurado() ? '' : `
           <div class="aviso" style="margin-top:22px">
-            O banco de dados ainda não está configurado. Você pode usar o app normalmente neste aparelho.
+            ${Backend.libOk
+              ? 'As chaves do servidor não estão preenchidas em config.js. Você pode usar o app normalmente neste aparelho.'
+              : 'Não conseguimos falar com o servidor agora. Verifique sua internet e recarregue a página, ou use o app só neste aparelho.'}
           </div>`}
 
         <div style="text-align:center;margin-top:22px">
