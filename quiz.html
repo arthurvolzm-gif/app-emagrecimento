@@ -3,13 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Meu Plano — Descubra o seu Índice de Constância</title>
-
-<!-- ===== Meta Pixel =====
-     Troque o ID abaixo pelo pixel deste funil. Vazio, nada carrega. -->
+<title>Protocolo GLP-1 Natural — Diagnóstico do seu GLP-1 Natural</title>
+<meta name="facebook-domain-verification" content="1ghqwe79k59bfxj5rarqsz5i6aoug4" />
+<!-- Meta Pixel Code -->
 <script>
-var PIXEL_ID = '';
-if (PIXEL_ID) {
 !function(f,b,e,v,n,t,s)
 {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -18,13 +15,17 @@ n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];
 s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', PIXEL_ID);
+fbq('init', '1021851947333727');
 fbq('track', 'PageView');
-}
 </script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1021851947333727&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
 
-<!-- ===== Google Analytics 4 =====
-     Cole o ID de medição (G-XXXXXXXXXX). Vazio, nada carrega. -->
+<!-- ===== Google Analytics 4 (funil do quiz) =====
+     Cole aqui o ID de medição da sua propriedade GA4 (formato G-XXXXXXXXXX).
+     Enquanto estiver vazio, nada é carregado e o quiz funciona normalmente. -->
 <script>
   var GA_ID = '';
   if (GA_ID) {
@@ -38,1119 +39,1895 @@ fbq('track', 'PageView');
     gtag('config', GA_ID);
   }
 </script>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-
+<!-- End GA4 -->
 <style>
-/* =========================================================
-   Mesma paleta do app: branco + verde médio.
-   A pessoa sai do anúncio, faz o quiz e entra no app sem
-   sentir que trocou de produto.
-   ========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800;900&family=Playfair+Display:wght@400;700;900&family=Lato:wght@300;400;700;900&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
 :root{
-  --verde:#159A55;
-  --verde-esc:#0E7A42;
-  --verde-claro:#3FBE7C;
-  --verde-tint:#E8F6EE;
-  --verde-tint2:#F1FAF5;
-  --ambar:#F0A500;
-  --ambar-tint:#FFF6E0;
-  --vermelho:#E05A4E;
-  --vermelho-tint:#FDECEC;
-  --azul-tint:#EAF2FA;
-  --tinta:#0F1C17;
-  --tinta-2:#3C4B44;
-  --cinza:#6B7C74;
-  --cinza-c:#9CAAA3;
-  --linha:#E6EDE9;
-  --fundo:#FBFCFB;
-  --branco:#FFFFFF;
-  --r:18px;
-  --sombra:0 1px 2px rgba(15,28,23,.04), 0 8px 24px rgba(15,28,23,.06);
+  --verde:#2e7d5a;
+  --verde-claro:#4caf82;
+  --verde-suave:#e8f5ef;
+  --verde-escuro:#1a4d38;
+  --dourado:#c8973a;
+  --dourado-claro:#f5d99a;
+  --creme:#fdf9f3;
+  --cinza:#4a4a4a;
+  --cinza-claro:#f5f5f5;
+  --branco:#ffffff;
+  --vermelho:#c0574f;
 }
 
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html{scroll-behavior:smooth;}
+
 body{
-  font-family:'Manrope',-apple-system,sans-serif;
-  background:var(--fundo);color:var(--tinta);
-  font-size:15px;line-height:1.55;min-height:100vh;
+  font-family:'Lato',sans-serif;
+  background-color:#f3f8f5;
+  background-image:url('bg-vegetal.jpg');
+  background-attachment:fixed;
+  background-size:cover;
+  background-position:center;
+  color:var(--cinza);
+  line-height:1.6;
+  min-height:100vh;
 }
-body::before{
-  content:'';position:fixed;inset:0 0 auto 0;height:340px;
-  background:radial-gradient(120% 100% at 50% 0%, rgba(21,154,85,.10) 0%, rgba(21,154,85,0) 70%);
-  pointer-events:none;z-index:0;
+
+/* ===== BARRA TOPO ===== */
+.topbar{
+  background:var(--verde-escuro);
+  color:#fff;
+  text-align:center;
+  padding:12px 16px;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.3px;
+  position:sticky;
+  top:0;
+  z-index:50;
+  box-shadow:0 2px 12px rgba(0,0,0,.15);
 }
-h1,h2,h3,h4,.display{font-family:'Bricolage Grotesque','Manrope',sans-serif;font-weight:800;letter-spacing:-.02em;line-height:1.15;}
-button{font-family:inherit;font-size:inherit;color:inherit;background:none;border:none;cursor:pointer;}
-input{font-family:inherit;font-size:inherit;color:inherit;}
-a{color:inherit;text-decoration:none;}
-img{max-width:100%;}
+.topbar span{opacity:.9;}
 
-.wrap{max-width:560px;margin:0 auto;padding:22px 18px 60px;position:relative;z-index:1;}
-.card-quiz{background:var(--branco);border-radius:24px;box-shadow:var(--sombra);border:1px solid var(--linha);padding:30px 24px;position:relative;}
+/* ===== WRAP ===== */
+.wrap{
+  max-width:620px;
+  margin:0 auto;
+  padding:28px 20px 80px;
+}
 
-.back-btn{position:absolute;left:12px;top:12px;color:var(--cinza-c);font-size:22px;line-height:1;padding:6px 10px;z-index:5;transition:color .16s;}
+.card-quiz{
+  background:rgba(250,249,240,.96);
+  border-radius:22px;
+  box-shadow:0 12px 50px rgba(26,77,56,.14);
+  padding:34px 30px;
+  backdrop-filter:blur(2px);
+  position:relative;
+}
+
+/* seta de voltar */
+.back-btn{position:absolute;left:16px;top:14px;background:none;border:none;color:#9aaaa2;font-size:24px;line-height:1;cursor:pointer;padding:4px 8px;z-index:5;transition:color .18s;}
 .back-btn:hover{color:var(--verde);}
 
-.brand{text-align:center;font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800;color:var(--verde-esc);letter-spacing:-.01em;}
-.brand-sub{font-size:11px;color:var(--cinza-c);text-align:center;margin-top:2px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
+.brand{text-align:center;margin-bottom:6px;}
+.brand-nome{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--verde-escuro);}
+.brand-logo{height:54px;display:block;margin:0 auto;}
+.brand-sub{font-size:13px;color:#8aa79a;margin-bottom:20px;text-align:center;}
 
 /* ===== PROGRESSO ===== */
-.progress-bar{height:7px;background:var(--linha);border-radius:20px;overflow:hidden;margin:16px 0 24px;}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--verde-esc),var(--verde-claro));border-radius:20px;transition:width .5s ease;}
+.progress-head{display:flex;justify-content:flex-end;font-size:13px;color:var(--dourado);font-weight:700;margin-bottom:8px;}
+.progress-bar{height:7px;background:#e3ede8;border-radius:20px;overflow:hidden;margin-bottom:26px;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--verde-escuro),var(--verde-claro));border-radius:20px;transition:width .5s ease;}
 
-/* ===== PILLS (respostas já dadas) ===== */
-.pills{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px;}
-.pill{background:var(--verde-tint2);border:1px solid var(--verde-tint);color:var(--verde-esc);font-size:11.5px;font-weight:800;padding:5px 11px;border-radius:20px;}
+/* ===== PILLS ===== */
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
+.pill{background:#f0f7f3;border:1px solid #d9ebe2;color:var(--verde);font-size:12px;font-weight:700;padding:6px 12px;border-radius:20px;}
 
-.q-title{font-size:24px;font-weight:800;color:var(--tinta);line-height:1.22;margin-bottom:20px;text-align:center;}
-.q-title.tight{margin-bottom:10px;}
-.q-sub{font-size:13px;color:var(--cinza);text-align:center;margin:-12px 0 18px;font-weight:600;}
-.echo{font-size:13px;color:var(--cinza);margin-bottom:8px;text-align:center;font-weight:600;}
+/* ===== INSIGHT BOX ===== */
+.insight{background:#eef7f1;border-left:4px solid var(--verde-claro);border-radius:8px;padding:14px 16px;font-size:14px;color:#3a5a4c;line-height:1.6;margin-bottom:20px;}
+.insight strong{color:var(--verde);}
+
+.echo{font-size:14px;color:#7d9488;margin-bottom:6px;}
+
+/* ===== PERGUNTA ===== */
+.q-title{font-family:'Open Sans',sans-serif;font-size:26px;font-weight:900;color:var(--verde-escuro);line-height:1.25;margin-bottom:22px;text-align:center;}
 
 /* ===== OPÇÕES ===== */
-.opts{display:flex;flex-direction:column;gap:10px;}
-.opts.compact{gap:8px;}
-.opts.compact .opt{padding:13px 15px;font-size:14px;}
-.opt{
-  display:flex;align-items:center;gap:13px;width:100%;text-align:left;
-  background:var(--branco);border:1.5px solid var(--linha);border-radius:15px;
-  padding:16px 17px;font-size:14.5px;font-weight:700;color:var(--tinta);
-  transition:all .16s ease;
-}
-.opt:hover{border-color:var(--verde-claro);box-shadow:0 6px 18px rgba(21,154,85,.10);transform:translateY(-1px);}
-.opt-radio{width:23px;height:23px;border-radius:50%;border:2px solid #CDDDD4;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .16s;}
-.opt.sel{border-color:var(--verde);background:var(--verde-tint2);}
-.opt.sel .opt-radio{border-color:var(--verde);background:var(--verde);}
-.opt.sel .opt-radio::after{content:'✓';color:#fff;font-size:12px;font-weight:900;}
-.opt-sub{display:block;font-size:12px;color:var(--cinza);font-weight:600;margin-top:2px;line-height:1.4;}
-
-/* grade de 2 na abertura, foto colada ao botão */
-.opts.grid2{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
-.sexo-card{display:flex;flex-direction:column;border-radius:18px;overflow:hidden;box-shadow:0 8px 22px rgba(21,154,85,.20);transition:all .18s;cursor:pointer;}
-.sexo-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(21,154,85,.30);}
-.sexo-img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:var(--verde-tint);}
-.sexo-emoji{width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-size:60px;background:linear-gradient(150deg,var(--verde-tint),var(--verde-tint2));}
+.opts{display:flex;flex-direction:column;gap:12px;}
+/* variação compacta (perguntas com muitas opções, ex.: múltipla escolha) */
+.opts.compact{gap:9px;}
+.opts.compact .opt{padding:13px 16px;font-size:14.5px;}
+.opts.compact .opt-radio{width:22px;height:22px;}
+.q-title.tight{margin-bottom:12px;}
+/* variação em grade: 2 opções por linha (abertura do quiz) */
+.opts.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+/* card = foto colada ao botão, os dois arredondados juntos como uma peça só */
+.opts.grid2 .idade-card{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;box-shadow:0 6px 18px rgba(46,125,90,.28);transition:all .18s ease;cursor:pointer;}
+.opts.grid2 .idade-card:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(46,125,90,.38);}
+.opts.grid2 .idade-img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;}
 .opts.grid2 .opt{
-  justify-content:center;text-align:center;gap:9px;border-radius:0;padding:15px 12px;font-size:15px;font-weight:800;
-  background:linear-gradient(135deg,var(--verde-esc),var(--verde));color:#fff;border-color:transparent;
+  padding:15px 14px;font-size:14px;font-weight:500;justify-content:center;text-align:center;gap:10px;
+  background:linear-gradient(135deg,#27ae60,var(--verde-claro));color:#fff;border-color:transparent;
+  border-radius:0;margin:0;
 }
-.opts.grid2 .opt:hover{transform:none;box-shadow:none;}
-.opts.grid2 .opt-radio{width:19px;height:19px;border-color:rgba(255,255,255,.85);background:rgba(255,255,255,.16);}
-.opts.grid2 .opt.sel{background:linear-gradient(135deg,#0B5F33,var(--verde-esc));}
+.opts.grid2 .opt:hover{transform:none;box-shadow:none;border-color:transparent;}
+.opts.grid2 .opt.sel{background:linear-gradient(135deg,#1a4d38,#2e7d5a);border-color:transparent;color:#fff;}
+.opts.grid2 .opt-radio{width:20px;height:20px;border-color:rgba(255,255,255,.85);background:rgba(255,255,255,.16);}
 .opts.grid2 .opt.sel .opt-radio{border-color:#fff;background:#fff;}
-.opts.grid2 .opt.sel .opt-radio::after{color:var(--verde-esc);font-size:11px;}
+.opts.grid2 .opt.sel .opt-radio::after{color:var(--verde-escuro);font-size:12px;}
+.opts.grid2 .idade-card:last-child:nth-child(odd){grid-column:1 / -1;justify-self:center;width:calc(50% - 5px);}
+.opt{
+  display:flex;align-items:center;gap:14px;
+  background:#fff;border:1.5px solid #e2ece7;border-radius:14px;
+  padding:17px 18px;font-size:15px;font-weight:600;color:var(--cinza);
+  cursor:pointer;transition:all .18s ease;text-align:left;
+}
+.opt:hover{border-color:var(--verde-claro);box-shadow:0 6px 20px rgba(76,175,130,.12);transform:translateY(-1px);}
+.opt-radio{width:24px;height:24px;border-radius:50%;border:2px solid #cdddd4;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .18s ease;}
+.opt.sel{border-color:var(--verde);background:var(--verde-suave);}
+.opt.sel .opt-radio{border-color:var(--verde);background:var(--verde);}
+.opt.sel .opt-radio::after{content:'✓';color:#fff;font-size:13px;font-weight:700;}
+
+/* variação com foto colada à esquerda de cada opção (lista vertical) */
+.opts.photo .opt-row{display:flex;align-items:stretch;border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.06);cursor:pointer;transition:all .18s ease;}
+.opts.photo .opt-row:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(76,175,130,.18);}
+.opts.photo .opt-row-img{width:84px;flex-shrink:0;object-fit:cover;display:block;}
+.opts.photo .opt-row .opt{flex:1;border:none;border-radius:0;box-shadow:none;}
+.opts.photo .opt-row .opt:hover{transform:none;box-shadow:none;border-color:transparent;}
 
 /* ===== BOTÕES ===== */
 .btn{
   display:block;width:100%;text-align:center;
-  background:linear-gradient(135deg,var(--verde-esc),var(--verde));
-  color:#fff;font-size:16px;font-weight:800;letter-spacing:-.01em;
-  border-radius:16px;padding:17px 24px;
-  box-shadow:0 8px 24px rgba(21,154,85,.28);transition:transform .16s,box-shadow .16s;
+  background:linear-gradient(135deg,#27ae60,var(--verde-claro));
+  color:#fff;font-family:'Lato',sans-serif;font-size:17px;font-weight:900;
+  border:none;border-radius:50px;padding:18px 28px;cursor:pointer;text-decoration:none;
+  box-shadow:0 8px 30px rgba(46,125,90,.32);transition:transform .2s,box-shadow .2s;letter-spacing:.3px;
 }
-.btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(21,154,85,.38);}
-.btn:active{transform:translateY(0);}
-.btn.sec{background:var(--branco);color:var(--tinta);border:1.5px solid var(--linha);box-shadow:none;margin-top:10px;}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(46,125,90,.45);}
+.btn-ghost{background:#fff;color:var(--verde);border:1.5px solid #d9ebe2;box-shadow:none;margin-top:12px;}
+.btn-ghost:hover{background:#f4faf7;box-shadow:none;}
 
-/* ===== INPUT ===== */
-.text-input{
-  width:100%;border:1.5px solid var(--linha);border-radius:15px;padding:16px 17px;
-  font-size:16px;background:var(--branco);margin-bottom:13px;outline:none;font-weight:700;
-  transition:border-color .16s,box-shadow .16s;
-}
-.text-input:focus{border-color:var(--verde);box-shadow:0 0 0 3px var(--verde-tint);}
-.text-input::placeholder{color:var(--cinza-c);font-weight:600;}
+/* ===== INPUT DE TEXTO (nome) ===== */
+.text-input{width:100%;border:1.5px solid #e2ece7;border-radius:14px;padding:16px 18px;font-size:16px;font-family:'Lato',sans-serif;color:var(--cinza);background:#fff;margin-bottom:14px;outline:none;transition:border-color .18s,box-shadow .18s;}
+.text-input:focus{border-color:var(--verde);box-shadow:0 6px 20px rgba(76,175,130,.12);}
+.text-input::placeholder{color:#b7c6bf;}
 
-/* ===== RÉGUA ===== */
-.ruler-val{font-family:'Bricolage Grotesque',sans-serif;font-size:46px;font-weight:800;color:var(--verde-esc);margin:14px 0 4px;line-height:1;letter-spacing:-.03em;}
-.ruler-val small{font-size:19px;color:var(--verde);margin-left:3px;font-weight:800;}
+/* ===== RÉGUA (peso / altura) ===== */
+.ruler-sub{font-size:14px;color:#7d9488;margin:-8px 0 18px;}
+.unit-toggle{display:inline-flex;background:#e3ede8;border-radius:30px;padding:4px;margin-bottom:6px;}
+.unit-toggle .ut{border:none;background:transparent;color:#7d9488;font-weight:800;font-size:14px;padding:8px 26px;border-radius:24px;cursor:pointer;transition:all .18s;}
+.unit-toggle .ut.active{background:var(--verde);color:#fff;box-shadow:0 4px 14px rgba(46,125,90,.3);}
+.ruler-val{font-family:'Playfair Display',serif;font-size:46px;font-weight:900;color:var(--verde-escuro);margin:16px 0 6px;line-height:1;}
+.ruler-val small{font-size:20px;color:var(--verde);margin-left:3px;font-weight:700;}
 .ruler-track{position:relative;height:52px;margin:6px 6px 0;}
-.ruler-line{position:absolute;left:0;right:0;bottom:16px;height:2px;background:var(--linha);}
+.ruler-line{position:absolute;left:0;right:0;bottom:16px;height:2px;background:#e2ece7;}
 .ruler-ticks{position:absolute;left:0;right:0;bottom:16px;height:26px;display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none;}
-.ruler-ticks .tk{width:1px;height:11px;background:#CDDDD4;}
-.ruler-ticks .tk.maj{height:22px;width:2px;background:#9BB3A8;}
+.ruler-ticks .tk{width:1px;height:12px;background:#cdddd4;}
+.ruler-ticks .tk.maj{height:24px;width:2px;background:#9bb3a8;}
 .ruler-pointer{position:absolute;top:0;bottom:16px;width:3px;background:var(--verde);transform:translateX(-50%);pointer-events:none;border-radius:2px;transition:left .05s linear;}
 .ruler-pointer::after{content:'';position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);border-left:8px solid transparent;border-right:8px solid transparent;border-top:12px solid var(--verde);}
 .ruler-input{position:absolute;left:0;right:0;top:0;width:100%;height:100%;margin:0;opacity:0;cursor:grab;z-index:5;-webkit-appearance:none;appearance:none;background:transparent;}
+.ruler-input:active{cursor:grabbing;}
 .ruler-input::-webkit-slider-thumb{-webkit-appearance:none;width:40px;height:52px;background:transparent;cursor:grab;}
 .ruler-input::-moz-range-thumb{width:40px;height:52px;border:none;background:transparent;cursor:grab;}
-.ruler-labels{display:flex;justify-content:space-between;font-size:12.5px;color:var(--cinza-c);font-weight:800;margin-top:6px;}
+.ruler-labels{display:flex;justify-content:space-between;font-size:13px;color:#9aaaa2;font-weight:700;margin-top:6px;}
 
 /* ===== INTRO ===== */
-.intro-badge{display:inline-block;background:var(--verde-tint);color:var(--verde-esc);font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:7px 16px;border-radius:20px;margin-bottom:18px;}
-.intro-h1{font-size:30px;font-weight:800;color:var(--tinta);line-height:1.18;margin-bottom:12px;text-align:center;}
-.intro-h1 span{color:var(--verde);}
-.intro-sub{font-size:15.5px;color:var(--cinza);text-align:center;line-height:1.6;margin-bottom:24px;font-weight:600;}
-.intro-hint{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--cinza-c);margin:14px 0 18px;text-align:center;}
+.intro-badge{display:inline-block;background:var(--verde-suave);color:var(--verde);font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:7px 18px;border-radius:20px;margin-bottom:22px;}
+.intro-h1{font-family:'Open Sans',sans-serif;font-size:32px;font-weight:900;color:var(--verde-escuro);line-height:1.25;margin-bottom:16px;text-align:center;}
+.intro-h1 span{color:var(--verde-claro);}
+.intro-sub{font-size:16px;color:#5f6f68;text-align:center;line-height:1.65;margin-bottom:26px;}
+.intro-secure{text-align:center;font-size:12px;color:#98a89f;margin-top:12px;}
+
+/* ===== INTERSTICIAL ===== */
+.inter-badge{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.inter-badge .ic{width:38px;height:38px;border-radius:50%;background:var(--verde-escuro);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.inter-badge .tt{font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--verde-escuro);line-height:1.3;}
+.inter-text{font-size:16px;color:#4a5c53;line-height:1.7;margin-bottom:14px;}
+.inter-text strong{color:var(--verde);}
+.inter-text .red{color:var(--vermelho);font-weight:700;}
+.inter-mini{font-size:13px;color:#9aaaa2;margin-bottom:22px;}
 
 /* ===== ANALISANDO ===== */
-.analise-title{text-align:center;font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--verde-esc);margin-bottom:24px;}
-.analise-list{display:flex;flex-direction:column;gap:15px;}
-.analise-item{display:flex;align-items:center;gap:13px;font-size:14.5px;color:var(--cinza-c);font-weight:700;opacity:.45;transition:all .4s ease;}
-.analise-item .ic{width:27px;height:27px;border-radius:50%;border:2px solid var(--linha);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;}
-.analise-item.done{opacity:1;color:var(--tinta);}
-.analise-item.done .ic{background:var(--verde);border-color:var(--verde);color:#fff;}
+.analise-title{text-align:center;font-size:13px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--verde-escuro);margin-bottom:26px;}
+.analise-list{display:flex;flex-direction:column;gap:16px;}
+.analise-item{display:flex;align-items:center;gap:14px;font-size:15px;color:#9aaaa2;font-weight:600;opacity:.5;transition:all .4s ease;}
+.analise-item .ic{width:28px;height:28px;border-radius:50%;border:2px solid #d5e2db;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.analise-item.done{opacity:1;color:var(--verde-escuro);}
+.analise-item.done .ic{background:var(--verde-escuro);border-color:var(--verde-escuro);color:#fff;}
 
-/* ===== DIAGNÓSTICO ===== */
-.diag-tag{display:block;width:max-content;margin:0 auto 14px;background:var(--verde-esc);color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:6px 15px;border-radius:20px;}
-.gauge{position:relative;width:190px;height:190px;margin:6px auto 4px;}
-.gauge svg{transform:rotate(-90deg);}
-.gauge .trilho{fill:none;stroke:var(--linha);stroke-width:14;}
-.gauge .arco{fill:none;stroke-width:14;stroke-linecap:round;transition:stroke-dashoffset 1.4s cubic-bezier(.2,.7,.3,1);}
-.gauge-centro{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.gauge-num{font-family:'Bricolage Grotesque',sans-serif;font-size:52px;font-weight:800;line-height:1;letter-spacing:-.04em;}
-.gauge-lbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--cinza-c);margin-top:5px;}
-.faixa{text-align:center;font-size:20px;font-weight:800;margin:2px 0 6px;font-family:'Bricolage Grotesque',sans-serif;}
-.faixa-sub{text-align:center;font-size:13.5px;color:var(--cinza);font-weight:600;line-height:1.6;margin-bottom:22px;}
+/* ===== HISTÓRIA ===== */
+.hist-avatar{width:82px;height:82px;border-radius:50%;margin:0 auto 12px;overflow:hidden;border:4px solid #fff;box-shadow:0 6px 20px rgba(0,0,0,.12);}
+.hist-avatar img{width:100%;height:100%;object-fit:cover;}
+.hist-tagline{font-family:'Playfair Display',serif;font-style:italic;font-size:17px;color:var(--verde-escuro);text-align:center;margin-bottom:14px;line-height:1.4;}
+.hist-tag{display:block;width:max-content;margin:0 auto 10px;background:var(--verde-escuro);color:#fff;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;border-radius:20px;}
+.hist-nome{text-align:center;font-weight:900;font-size:16px;color:var(--cinza);}
+.hist-info{text-align:center;font-size:13px;color:#9aaaa2;margin-bottom:6px;}
+.hist-stars{text-align:center;color:#f5a623;font-size:16px;letter-spacing:2px;margin-bottom:16px;}
+.hist-quote{font-size:14.5px;color:#556a60;line-height:1.7;font-style:italic;text-align:center;margin-bottom:18px;}
+.hist-result{display:flex;align-items:center;gap:12px;justify-content:center;background:var(--verde);color:#fff;border-radius:12px;padding:14px 18px;font-size:14px;font-weight:700;line-height:1.4;margin-bottom:22px;}
+.hist-result .ic{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;}
+.hist-pergunta{text-align:center;font-weight:700;color:var(--cinza);margin-bottom:14px;}
 
-.alerta{background:var(--vermelho-tint);border:1px solid #F6D3D0;border-radius:15px;padding:15px 17px;margin-bottom:18px;}
-.alerta .t{font-size:14.5px;font-weight:800;color:#A03A32;line-height:1.4;}
-.alerta .s{font-size:13px;color:#8A4A44;margin-top:5px;line-height:1.6;font-weight:600;}
+/* ===== MINI-VSL / VÍDEO PLACEHOLDER ===== */
+.vsl-tag{display:block;width:max-content;margin:0 auto 14px;background:#fdecec;color:var(--vermelho);font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:6px 16px;border-radius:20px;}
+.vsl-ask{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--verde-escuro);text-align:center;line-height:1.3;margin-bottom:20px;}
+.vsl-ask span{color:var(--verde-claro);}
+.video-box{position:relative;border-radius:16px;overflow:hidden;margin-bottom:18px;background:linear-gradient(135deg,var(--verde-suave),#d6ede1);border:1px solid #d9ebe2;aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;}
+.video-box .play{width:66px;height:66px;border-radius:50%;background:var(--verde);color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:14px;box-shadow:0 8px 30px rgba(46,125,90,.4);animation:pulse 2.2s ease-in-out infinite;}
+.video-box .vlabel{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--verde);}
+.video-box .vname{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--verde-escuro);margin-top:6px;}
+.video-box .vhint{font-size:11px;color:#9aaaa2;margin-top:8px;font-style:italic;}
 
-.ponto{border:1.5px solid var(--verde-tint);background:var(--verde-tint2);border-radius:16px;padding:17px 18px;margin-bottom:12px;}
-.ponto .n{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--verde-esc);margin-bottom:7px;}
-.ponto p{font-size:14px;color:var(--tinta-2);line-height:1.65;font-weight:600;}
-.ponto p b{color:var(--verde-esc);font-weight:800;}
-.ponto p + p{margin-top:9px;}
-
-.numeros{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0;}
-.num-box{background:var(--branco);border:1.5px solid var(--linha);border-radius:15px;padding:15px 14px;text-align:center;}
-.num-box .v{font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:800;color:var(--verde-esc);line-height:1;letter-spacing:-.03em;}
-.num-box .v small{font-size:13px;color:var(--verde);margin-left:2px;}
-.num-box .l{font-size:11px;color:var(--cinza);font-weight:700;margin-top:6px;line-height:1.35;}
-
-/* ===== MINI-VSL ===== */
-.vsl-tag{display:block;width:max-content;margin:0 auto 14px;background:var(--ambar-tint);color:#8A6100;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:6px 15px;border-radius:20px;}
-.vsl-ask{font-size:22px;font-weight:800;color:var(--tinta);text-align:center;line-height:1.25;margin-bottom:6px;}
-.vsl-ask span{color:var(--verde);}
-.vsl-quem{text-align:center;font-size:13px;color:var(--cinza);font-weight:600;margin-bottom:18px;}
-.video-box{
-  position:relative;border-radius:18px;overflow:hidden;margin-bottom:16px;
-  background:linear-gradient(150deg,var(--verde-tint),var(--verde-tint2));
-  border:1.5px solid var(--verde-tint);aspect-ratio:16/9;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px;
-}
-.video-box .play{width:62px;height:62px;border-radius:50%;background:var(--verde);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:12px;box-shadow:0 10px 28px rgba(21,154,85,.38);animation:pulse 2.2s ease-in-out infinite;}
-.video-box .vlabel{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--verde-esc);}
-.video-box .vname{font-size:15px;font-weight:800;color:var(--tinta);margin-top:5px;font-family:'Bricolage Grotesque',sans-serif;}
-.video-box .vhint{font-size:11px;color:var(--cinza-c);margin-top:7px;font-weight:600;}
-@keyframes pulse{0%,100%{box-shadow:0 10px 28px rgba(21,154,85,.34);}50%{box-shadow:0 14px 40px rgba(21,154,85,.55);}}
-
-.roteiro{background:var(--branco);border:1.5px solid var(--linha);border-radius:16px;padding:19px;margin-bottom:18px;}
-.roteiro h4{font-size:11px;color:var(--verde-esc);margin-bottom:11px;letter-spacing:.1em;font-weight:800;text-transform:uppercase;}
-.roteiro p{font-size:14px;color:var(--tinta-2);line-height:1.7;margin-bottom:11px;font-weight:600;}
+/* roteiro visível (substitui o vídeo por enquanto) */
+.roteiro{background:#f4faf7;border:1px solid #d9ebe2;border-radius:14px;padding:20px;margin-bottom:20px;}
+.roteiro h4{font-family:'Lato',sans-serif;font-size:14px;color:var(--verde);margin-bottom:12px;letter-spacing:.3px;font-weight:900;}
+.roteiro p{font-size:14.5px;color:#556a60;line-height:1.7;margin-bottom:12px;}
 .roteiro p:last-child{margin-bottom:0;}
-.roteiro strong{color:var(--verde-esc);font-weight:800;}
+.roteiro strong{color:var(--verde-escuro);}
+.roteiro .red{color:var(--vermelho);font-weight:700;}
 
-/* ===== OFERTA ===== */
-.oferta{max-width:600px;margin:0 auto;padding:0 0 40px;}
-.of-sec{padding:0 4px;margin-bottom:26px;}
-.of-h{font-size:25px;font-weight:800;text-align:center;line-height:1.2;margin-bottom:8px;}
-.of-h span{color:var(--verde);}
-.of-sub{text-align:center;font-size:14px;color:var(--cinza);margin-bottom:20px;font-weight:600;line-height:1.6;}
-.secao-tt{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza);margin:28px 0 12px;text-align:center;}
+/* ===== PRÉ-PITCH (antes x depois) ===== */
+.pp-h{font-family:'Playfair Display',serif;font-size:24px;font-weight:900;color:var(--verde-escuro);text-align:center;line-height:1.3;margin-bottom:8px;}
+.pp-h span{color:var(--verde-claro);}
+.pp-sub{text-align:center;font-size:14px;color:#7d9488;margin-bottom:24px;}
 
-.lista-check{display:flex;flex-direction:column;gap:10px;}
-.item-check{display:flex;gap:11px;align-items:flex-start;background:var(--branco);border:1.5px solid var(--linha);border-radius:15px;padding:14px 16px;}
-.item-check .ic{width:24px;height:24px;border-radius:8px;background:var(--verde-tint);color:var(--verde-esc);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0;margin-top:1px;}
-.item-check .t{font-size:14px;font-weight:800;line-height:1.35;}
-.item-check .s{font-size:12.5px;color:var(--cinza);font-weight:600;margin-top:3px;line-height:1.5;}
+/* antes/depois */
+.ad-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.res-ad-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.ad-col{background:#fff;border-radius:14px;padding:20px;border:1px solid #e4ede9;}
+.ad-col.antes{border-top:3px solid #e07a7a;}
+.ad-col.depois{border-top:3px solid var(--verde-claro);}
+.ad-col h4{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;color:var(--cinza);}
+.ad-col.antes h4{color:var(--vermelho);}
+.ad-col.depois h4{color:var(--verde);}
+.ad-col li{list-style:none;font-size:13px;color:#66756f;padding:6px 0;display:flex;gap:8px;align-items:flex-start;line-height:1.5;}
+.ad-col.antes li::before{content:'✕';color:#e07a7a;font-weight:800;flex-shrink:0;}
+.ad-col.depois li::before{content:'✓';color:var(--verde-claro);font-weight:800;flex-shrink:0;}
+.ad-note{text-align:center;font-size:12px;color:#a8b8b1;margin-top:14px;font-style:italic;}
 
-.price-box{background:linear-gradient(150deg,var(--verde-esc),var(--verde));border-radius:22px;padding:28px 24px;text-align:center;color:#fff;margin-bottom:16px;box-shadow:0 14px 38px rgba(21,154,85,.30);}
-.price-box .label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.86;}
-.price-box .de{font-size:14px;opacity:.78;text-decoration:line-through;margin-top:8px;}
-.price-box .val{font-family:'Bricolage Grotesque',sans-serif;font-size:54px;font-weight:800;line-height:1;margin:4px 0;letter-spacing:-.04em;}
-.price-box .val sup{font-size:22px;top:-16px;position:relative;}
-.price-box .por{font-size:13.5px;opacity:.9;font-weight:700;}
-.price-box .off{display:inline-block;background:rgba(255,255,255,.18);font-size:11.5px;font-weight:800;padding:5px 14px;border-radius:20px;margin-top:12px;letter-spacing:.04em;}
-.price-just{font-size:12.5px;color:var(--cinza);line-height:1.6;text-align:center;margin:14px 0 0;font-weight:600;}
-.price-just b{color:var(--verde-esc);}
+/* ===== OFERTA REVELAR ===== */
+.rev-badge{display:block;width:max-content;margin:0 auto 16px;background:var(--verde-escuro);color:#fff;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:6px 16px;border-radius:20px;}
+.rev-lead{text-align:center;font-size:15px;color:#4a5c53;line-height:1.65;margin-bottom:22px;}
+.rev-lead strong{color:var(--verde-escuro);}
+.rev-tap{background:linear-gradient(135deg,var(--verde),var(--verde-claro));border-radius:16px;padding:26px 20px;text-align:center;color:#fff;cursor:pointer;box-shadow:0 10px 34px rgba(46,125,90,.32);transition:transform .2s;margin-bottom:18px;animation:pulse 2.4s ease-in-out infinite;}
+.rev-tap:hover{transform:translateY(-2px);}
+.rev-tap .big{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;line-height:1.3;}
+.rev-tap .small{font-size:13px;opacity:.9;margin-top:6px;}
+@keyframes pulse{0%,100%{box-shadow:0 10px 34px rgba(46,125,90,.32);}50%{box-shadow:0 14px 44px rgba(46,125,90,.55);}}
 
-.garantia{background:var(--ambar-tint);border:1.5px solid #F0DFB4;border-radius:18px;padding:20px;text-align:center;}
-.garantia .em{font-size:36px;}
-.garantia h4{font-size:17px;margin:8px 0 7px;}
-.garantia p{font-size:13.5px;color:#7A5A00;line-height:1.65;font-weight:600;}
+.reserva{display:flex;align-items:center;justify-content:center;gap:10px;background:#f0f7f3;border-radius:12px;padding:12px;font-size:14px;color:var(--verde-escuro);font-weight:700;margin-bottom:20px;}
+.reserva .t{font-variant-numeric:tabular-nums;}
+.rev-secure{text-align:center;font-size:12px;color:#a8b8b1;margin-top:16px;}
 
-.faq-item{background:var(--branco);border:1.5px solid var(--linha);border-radius:15px;padding:0;margin-bottom:9px;overflow:hidden;}
-.faq-q{width:100%;text-align:left;padding:16px 17px;font-size:14px;font-weight:800;display:flex;gap:12px;align-items:center;line-height:1.4;}
-.faq-q .sinal{margin-left:auto;color:var(--verde);font-size:19px;flex-shrink:0;transition:transform .2s;}
-.faq-item.on .faq-q .sinal{transform:rotate(45deg);}
-.faq-a{padding:0 17px;max-height:0;overflow:hidden;transition:max-height .28s ease,padding .28s ease;}
-.faq-item.on .faq-a{padding:0 17px 16px;max-height:420px;}
-.faq-a p{font-size:13.5px;color:var(--tinta-2);line-height:1.7;font-weight:600;}
+/* ===== PREÇO ===== */
+.price-box{background:linear-gradient(150deg,var(--verde-escuro),var(--verde));border-radius:18px;padding:28px 24px;text-align:center;color:#fff;margin-bottom:18px;}
+.price-box .label{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;opacity:.85;}
+.price-box .val{font-family:'Playfair Display',serif;font-size:56px;font-weight:900;line-height:1;margin:6px 0;}
+.price-box .val sup{font-size:24px;}
+.price-box .de{font-size:14px;opacity:.75;text-decoration:line-through;}
+.price-box .off{display:inline-block;background:var(--verde-claro);color:#fff;font-size:12px;font-weight:800;padding:4px 14px;border-radius:20px;margin-top:10px;letter-spacing:.5px;}
+.price-just{font-size:13px;color:#7d9488;line-height:1.6;text-align:center;margin-bottom:18px;}
+.price-just strong{color:var(--verde);}
 
-.rodape{text-align:center;font-size:11.5px;color:var(--cinza-c);line-height:1.7;font-weight:600;padding:26px 10px 0;}
+/* ===== TOAST ===== */
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#fff;border:1px solid #e2ece7;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);padding:12px 16px;display:flex;align-items:center;gap:10px;max-width:340px;width:calc(100% - 40px);font-size:13px;color:var(--cinza);z-index:40;animation:slideUp .5s ease;}
+.toast .ic{font-size:18px;}
+.toast .x{margin-left:auto;color:#bbb;cursor:pointer;font-size:16px;background:none;border:none;}
+.toast b{color:var(--verde);}
+@keyframes slideUp{from{opacity:0;transform:translate(-50%,20px);}to{opacity:1;transform:translate(-50%,0);}}
 
-.fade{animation:fade .38s ease;}
-@keyframes fade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+/* ===== NOTIFICAÇÃO DE VENDA ===== */
 
-@media (max-width:400px){
+/* ===== FADE ===== */
+.fade{animation:fade .4s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+/* =========================================================
+   PÁGINA FINAL (RESULTADO) — estilo da landing
+   ========================================================= */
+.result{max-width:900px;margin:0 auto;padding:0 0 40px;}
+.result .container{max-width:760px;margin:0 auto;padding:0 22px;}
+.res-hero{background:rgba(255,255,255,.94);border-radius:22px;box-shadow:0 12px 50px rgba(26,77,56,.14);padding:34px 30px;text-align:center;margin:28px 20px 24px;}
+.res-hero .kicker{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--verde-claro);margin-bottom:12px;}
+.res-hero h1{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--verde-escuro);line-height:1.3;margin-bottom:14px;}
+.res-hero h1 span{color:var(--verde-claro);}
+.res-hero p{font-size:15px;color:#5f6f68;line-height:1.65;max-width:560px;margin:0 auto;}
+.res-socialbar{display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(255,255,255,.9);border-radius:14px;padding:12px 16px;margin:0 20px 30px;font-size:13px;color:var(--cinza);font-weight:600;box-shadow:0 4px 20px rgba(26,77,56,.08);}
+.res-socialbar b{color:var(--verde);}
+.live-count{display:inline-block;font-weight:800;color:var(--verde);min-width:20px;text-align:center;transition:transform .25s ease,color .25s ease;}
+.live-count.bump{transform:scale(1.35);color:var(--verde-claro);}
+
+.res-section{padding:26px 0;}
+.res-h2{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;color:var(--verde-escuro);text-align:center;line-height:1.3;margin-bottom:8px;}
+.res-h2 span{color:var(--verde-claro);}
+.res-sub{text-align:center;font-size:14px;color:#6f807a;margin-bottom:26px;}
+
+.mod-card{background:#fff;border-radius:14px;border:1px solid #e4ede9;padding:20px 22px;margin-bottom:12px;box-shadow:0 2px 14px rgba(46,125,90,.06);}
+.mod-head{display:flex;align-items:center;gap:14px;}
+.mod-num{width:38px;height:38px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,var(--verde),var(--verde-claro));color:#fff;font-family:'Playfair Display',serif;font-weight:900;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.mod-head h3{font-family:'Playfair Display',serif;font-size:16px;color:var(--verde-escuro);}
+.mod-card p{font-size:13.5px;color:#66756f;line-height:1.65;margin-top:12px;}
+.mod-result{background:var(--verde-suave);border-radius:8px;padding:10px 14px;margin-top:12px;font-size:12.5px;color:var(--verde);font-weight:700;}
+.mod-result::before{content:'✓ Resultado: ';}
+
+/* ===== PROVA CIENTÍFICA (mesma da landing) ===== */
+.prova-numero{font-family:'Playfair Display',serif;font-size:72px;font-weight:900;color:#c0392b;line-height:1;margin-bottom:6px;text-align:center;}
+.prova-numero-legenda{font-size:15.5px;color:#666;max-width:420px;margin:0 auto 26px;line-height:1.6;text-align:center;}
+.prova-noticia{max-width:620px;margin:0 auto;background:#fff;border:1px solid #e4e4e4;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.10);}
+.prova-noticia img{width:100%;height:auto;display:block;}
+.prova-fonte{font-size:11.5px;color:#999;padding:12px 16px;text-align:left;border-top:1px solid #f0f0f0;line-height:1.6;}
+.prova-texto{max-width:620px;margin:26px auto 0;font-size:16px;line-height:1.75;color:var(--cinza);text-align:left;}
+
+/* ===== PROJEÇÃO (tela final, depois de outros_objetivos) ===== */
+.proj-chart-tt{font-size:12.5px;font-weight:800;color:var(--verde-escuro);text-align:center;margin:26px 0 8px;}
+.proj-chart-wrap{position:relative;width:100%;aspect-ratio:320/170;}
+.proj-chart-wrap svg{position:absolute;inset:0;width:100%;height:100%;display:block;}
+.proj-chart-label{position:absolute;transform:translate(-50%,-100%);background:#fff;border:1.5px solid #e2ece7;border-radius:8px;padding:3px 7px;font-size:9px;font-weight:800;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.10);}
+.proj-chart-days{position:relative;height:14px;margin:4px 0 10px;}
+.proj-chart-day{position:absolute;transform:translateX(-50%);font-size:9.5px;color:#8a9a92;font-weight:700;white-space:nowrap;}
+.proj-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0;}
+.proj-compare-col{border-radius:14px;padding:14px 12px;}
+.proj-compare-img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top center;border-radius:10px;display:block;margin-bottom:10px;}
+.proj-compare-col.ruim{background:#fdecec;}
+.proj-compare-col.bom{background:#eef7f1;}
+.proj-compare-col h5{font-size:12.5px;font-weight:900;margin:0 0 8px;text-align:center;}
+.proj-compare-col.ruim h5{color:var(--vermelho);}
+.proj-compare-col.bom h5{color:var(--verde-escuro);}
+.proj-compare-col ul{list-style:none;padding:0;margin:0;font-size:12px;color:#4a4a4a;line-height:1.6;}
+.proj-compare-col li{margin-bottom:6px;}
+.glp-metric{margin-bottom:10px;}
+.glp-metric:last-child{margin-bottom:0;}
+.glp-metric-top{display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:#4a4a4a;margin-bottom:4px;}
+.glp-metric-top .val{font-weight:900;}
+.proj-compare-col.ruim .glp-metric-top .val{color:var(--vermelho);}
+.proj-compare-col.bom .glp-metric-top .val{color:var(--verde-escuro);}
+.glp-bar{height:7px;border-radius:10px;background:#fff;overflow:hidden;}
+.glp-bar-fill{height:100%;border-radius:10px;}
+.proj-compare-col.ruim .glp-bar-fill{background:linear-gradient(90deg,#e05a4e,#f0a05a);}
+.proj-compare-col.bom .glp-bar-fill{background:linear-gradient(90deg,var(--verde-escuro),var(--verde-claro));}
+.prova-texto p{margin-bottom:14px;}
+.prova-texto p:last-child{margin-bottom:0;}
+@media(max-width:768px){.prova-numero{font-size:58px;}.prova-texto{font-size:15px;}}
+
+/* tabela "quanto vale destravar" */
+.valor-box{background:#fff;border:1px solid #e4ede9;border-radius:16px;padding:8px 22px;margin-top:8px;box-shadow:0 2px 14px rgba(46,125,90,.06);}
+.valor-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #f0f5f2;font-size:14px;}
+.valor-row:last-child{border-bottom:none;}
+.valor-row .lbl{color:var(--cinza);font-weight:700;}
+.valor-row .num{color:var(--vermelho);font-weight:800;white-space:nowrap;}
+.valor-row.total{background:#fbf1f0;margin:0 -22px;padding:16px 22px;border-radius:12px;}
+.valor-nota{text-align:center;font-size:13px;color:#7d9488;margin-top:16px;line-height:1.7;}
+.valor-nota .red{color:var(--vermelho);font-weight:700;}
+
+/* decisão (2 opções) */
+.dec-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;}
+.dec-col{border-radius:16px;padding:24px 20px;text-align:center;font-size:13.5px;line-height:1.6;}
+.dec-col .dt{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;}
+.dec-col.op1{background:#fff;border:1px solid #e4ede9;color:#66756f;}
+.dec-col.op1 .dt{color:var(--vermelho);}
+.dec-col.op2{background:var(--verde-suave);border:1px solid var(--verde-claro);color:#3a5a4c;box-shadow:0 6px 24px rgba(76,175,130,.18);}
+.dec-col.op2 .dt{color:var(--verde);}
+
+/* depoimentos */
+.dep-carousel{overflow:hidden;padding:6px 0 16px;}
+.dep-track{display:flex;gap:16px;width:max-content;padding:0 8px;animation:dep-scroll 34s linear infinite;}
+.dep-track:hover{animation-play-state:paused;}
+@keyframes dep-scroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+.dep-c{background:#fff;border-radius:18px;border:1px solid #e4ede9;padding:22px 20px;min-width:270px;max-width:270px;box-shadow:0 4px 20px rgba(46,125,90,.08);display:flex;flex-direction:column;text-align:center;}
+.dep-c img{width:64px;height:64px;border-radius:50%;object-fit:cover;margin:0 auto 10px;border:3px solid var(--verde-suave);}
+.dep-c .n{font-weight:900;font-size:14px;color:var(--cinza);}
+.dep-c .id{font-size:12px;color:#a8b8b1;margin-bottom:6px;}
+.dep-c .st{color:#f5a623;font-size:14px;letter-spacing:2px;margin-bottom:10px;}
+.dep-c .qt{font-style:italic;font-weight:700;font-size:13.5px;color:var(--verde);margin-bottom:8px;line-height:1.45;}
+.dep-c .tx{font-size:12.5px;color:#66756f;line-height:1.6;text-align:left;}
+
+/* quem é (expert) */
+.quem{background:rgba(255,255,255,.9);border-radius:18px;padding:30px 24px;text-align:center;box-shadow:0 4px 20px rgba(26,77,56,.08);}
+.quem .foto{width:150px;height:150px;border-radius:50%;border:4px solid var(--verde-claro);box-shadow:0 0 34px rgba(76,175,130,.4);margin:0 auto 20px;display:flex;align-items:center;justify-content:center;background:var(--verde-suave);font-family:'Playfair Display',serif;font-size:34px;font-weight:900;color:var(--verde);line-height:1.05;}
+.quem h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--verde-escuro);margin-bottom:12px;}
+.quem h3 span{color:var(--verde-claro);}
+.quem p{font-size:14px;color:#5f6f68;line-height:1.75;max-width:520px;margin:0 auto;}
+.quem p span{color:var(--verde);font-weight:700;}
+
+/* garantia img */
+.gar-img{max-width:500px;width:92%;border-radius:16px;display:block;margin:0 auto;}
+
+/* oferta final */
+.oferta-final{background:#fff;border-radius:22px;box-shadow:0 12px 50px rgba(0,0,0,.12);padding:34px 28px;max-width:460px;margin:0 auto;text-align:center;position:relative;overflow:hidden;border:1px solid #eadfce;}
+.oferta-final::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:var(--verde);}
+.oferta-final .ot{font-family:'Playfair Display',serif;font-size:22px;color:var(--verde-escuro);margin-bottom:18px;}
+.of-item{display:flex;align-items:flex-start;gap:9px;padding:7px 0;font-size:13.5px;color:#556a60;border-bottom:1px solid #f0f5f2;text-align:left;}
+.of-item:last-of-type{border-bottom:none;}
+.of-item .ic{width:19px;height:19px;border-radius:50%;background:var(--verde);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.of-item .nm{flex:1;}
+.of-item .pr{flex-shrink:0;color:var(--verde-claro);text-decoration:line-through;font-weight:700;font-size:12.5px;}
+.of-block{text-align:left;font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--verde);margin:16px 0 4px;}
+.of-block.bonus{color:var(--dourado);}
+.of-de{font-size:15px;color:#a8b8b1;text-decoration:line-through;margin-top:20px;}
+.of-por{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--verde-claro);margin-top:6px;}
+.of-val{font-family:'Playfair Display',serif;font-size:48px;font-weight:900;color:var(--verde-escuro);line-height:1;margin:4px 0;}
+.of-avista{font-size:14px;color:#8aa79a;margin-bottom:22px;}
+.of-secure{font-size:12px;color:#a8b8b1;margin-top:12px;}
+
+/* faq */
+.faq details{background:#fff;border-radius:12px;margin-bottom:10px;border:1px solid #e4ede9;overflow:hidden;}
+.faq summary{padding:16px 20px;font-size:14.5px;font-weight:700;color:var(--cinza);cursor:pointer;display:flex;justify-content:space-between;align-items:center;list-style:none;gap:12px;}
+.faq summary::-webkit-details-marker{display:none;}
+.faq summary::after{content:'+';font-size:22px;color:var(--verde);font-weight:300;flex-shrink:0;transition:transform .3s;}
+.faq details[open] summary::after{transform:rotate(45deg);}
+.faq .a{padding:0 20px 18px;font-size:13.5px;color:#66756f;line-height:1.7;}
+
+.res-footer{text-align:center;padding:30px 20px;font-size:12px;color:#8aa79a;line-height:1.7;}
+
+/* ===== DIAGNÓSTICO (IMC + sinais) ===== */
+.diag-imc{text-align:center;margin:22px 0 6px;}
+.diag-imc-tt{font-family:'Playfair Display',serif;font-size:19px;color:var(--verde-escuro);font-weight:900;}
+.diag-imc-val{font-size:14px;color:var(--cinza);margin:8px 0 4px;}
+.diag-imc-val strong{color:var(--verde-escuro);}
+.diag-imc-zona{font-weight:800;}
+.diag-bar-wrap{margin:34px 6px 0;}
+.diag-bar{position:relative;height:24px;display:flex;border-radius:20px;overflow:visible;}
+.diag-bar .z{flex:1;height:100%;}
+.diag-bar .z:first-child{border-radius:20px 0 0 20px;}
+.diag-bar .z:last-child{border-radius:0 20px 20px 0;}
+.diag-bar .z1{background:#bcd3f0;}
+.diag-bar .z2{background:#bfe6c8;}
+.diag-bar .z3{background:#f5db8e;}
+.diag-bar .z4{background:#e7a6a0;}
+.diag-pointer{position:absolute;top:-32px;transform:translateX(-50%);background:var(--verde-escuro);color:#fff;font-size:11px;font-weight:800;padding:5px 9px;border-radius:8px;white-space:nowrap;z-index:2;}
+.diag-pointer::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid var(--verde-escuro);}
+.diag-labels{display:flex;font-size:10.5px;color:#9aaaa2;font-weight:700;margin:8px 0 4px;}
+.diag-labels span{flex:1;text-align:center;}
+.lib-box{text-align:center;margin:18px 0 14px;}
+.lib-label{font-size:11.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--verde);}
+.lib-pct{font-family:'Open Sans',sans-serif;font-size:42px;font-weight:900;color:var(--verde-escuro);line-height:1;margin:6px 0 10px;font-variant-numeric:tabular-nums;}
+.lib-bar{height:11px;background:#e3ede8;border-radius:20px;overflow:hidden;}
+.lib-fill{height:100%;width:0;background:linear-gradient(90deg,var(--verde-escuro),var(--verde-claro));border-radius:20px;}
+.meta-img{border:2px dashed #cdddd4;border-radius:14px;background:#f4faf7;color:#9aaaa2;font-size:13px;padding:46px 16px;margin:0 0 18px;}
+.causa-box{background:#fdecec;border-radius:14px;padding:16px 18px;margin:16px 0;}
+.causa-box h4{color:var(--vermelho);font-size:14.5px;line-height:1.35;margin-bottom:8px;}
+.causa-box p{font-size:13.5px;color:#8a5f5c;margin:0;}
+.diag-hl{background:var(--vermelho);color:#fff;font-weight:800;padding:1px 5px;border-radius:4px;}
+.diag-chart{background:#fff;border:1px solid #e4ede9;border-radius:14px;padding:18px 16px 14px;margin:18px 0;text-align:center;box-shadow:0 2px 14px rgba(46,125,90,.06);}
+.diag-chart-leg{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:#66756f;font-weight:700;}
+.diag-chart-leg i{display:inline-block;width:14px;height:4px;border-radius:3px;vertical-align:middle;margin-right:5px;}
+.diag-chart-leg .dg{background:var(--verde);}
+.diag-chart-leg .dr{background:#d3bdbb;}
+.diag-aviso{background:#fbf3e3;border-left:4px solid var(--dourado);border-radius:8px;padding:14px 16px;font-size:13px;color:#6a5a3a;line-height:1.6;margin:18px 0;}
+.diag-aviso strong{color:var(--verde-escuro);}
+.alerta-box{background:#fdecec;border-radius:14px;padding:18px 20px;margin:16px 0;}
+.alerta-box h4{color:var(--vermelho);font-size:15px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.alerta-box .it{font-size:13.5px;color:#8a5f5c;padding:5px 0;display:flex;gap:9px;align-items:flex-start;line-height:1.55;}
+.alerta-box .it::before{content:'✕';color:var(--vermelho);font-weight:900;flex-shrink:0;}
+.solucao-box{background:none;border:none;border-radius:0;padding:0;margin:22px 0;}
+.solucao-box h4{color:#1a1a1a;font-size:20px;font-weight:900;margin-bottom:10px;line-height:1.35;display:flex;gap:9px;align-items:flex-start;justify-content:center;text-align:center;}
+.solucao-box p{font-size:13.5px;color:#3a5a4c;line-height:1.65;}
+.solucao-box p strong{color:var(--verde-escuro);}
+
+@media(max-width:600px){
   .intro-h1{font-size:26px;}
-  .q-title{font-size:21px;}
-  .numeros{grid-template-columns:1fr;}
+  .q-title{font-size:22px;}
+  .card-quiz{padding:26px 20px;}
+  .res-hero h1{font-size:23px;}
+  .res-h2{font-size:22px;}
+  .ad-grid,.res-ad-grid,.dec-grid{grid-template-columns:1fr;}
+  .of-val{font-size:42px;}
+  .vsl-ask{font-size:20px;}
+}
+
+/* ===== POP-UP DE SAÍDA (BOTÃO VOLTAR) ===== */
+.saida-overlay{position:fixed;inset:0;background:rgba(20,40,30,.78);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999;}
+.saida-overlay.aberto{display:flex;}
+.saida-modal{background:#fff;border-radius:24px;padding:44px 32px 28px;box-shadow:0 12px 60px rgba(0,0,0,.12);width:min(460px,100%);max-height:92vh;overflow:hidden auto;text-align:center;position:relative;animation:saidaEntra .28s ease-out;}
+.saida-modal::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:var(--verde);}
+@keyframes saidaEntra{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:none;}}
+.saida-fechar{position:absolute;top:12px;right:14px;background:none;border:none;font-size:26px;line-height:1;color:#ccc;cursor:pointer;padding:4px 8px;z-index:2;}
+.saida-fechar:hover{color:#888;}
+.saida-selo{text-transform:uppercase;color:var(--verde-claro);font-weight:700;letter-spacing:1px;font-size:13px;margin-bottom:10px;}
+.saida-titulo{font-family:'Open Sans',sans-serif;font-size:27px;font-weight:800;line-height:1.25;color:var(--verde-escuro);margin-bottom:14px;}
+.saida-titulo span{color:var(--verde-claro);}
+.saida-sub{color:#222;font-weight:700;font-size:15px;line-height:1.7;letter-spacing:.3px;margin-bottom:24px;}
+.saida-de{font-size:16px;color:#aaa;text-decoration:line-through;margin-bottom:4px;}
+.saida-por{font-size:13px;text-transform:uppercase;color:var(--verde-claro);font-weight:700;letter-spacing:1px;margin-bottom:4px;}
+.saida-val{font-family:'Open Sans',sans-serif;font-size:46px;font-weight:900;color:var(--verde-escuro);line-height:1;margin-bottom:6px;}
+.saida-economia{font-size:15px;font-weight:700;color:var(--verde);margin-bottom:26px;}
+.saida-modal .btn{font-size:16px;padding:17px 24px;}
+.saida-recusa{display:inline-block;margin-top:14px;font-size:13px;color:#aaa;text-decoration:underline;background:none;border:none;cursor:pointer;font-family:inherit;}
+.saida-recusa:hover{color:#888;}
+.saida-rodape{font-size:12px;color:#999;margin-top:12px;letter-spacing:.3px;}
+@media (max-width:768px){
+  .saida-modal{padding:36px 20px 22px;border-radius:18px;}
+  .saida-titulo{font-size:22px;}
+  .saida-sub{font-size:14px;}
+  .saida-val{font-size:38px;}
 }
 </style>
 </head>
 <body>
+
 <div id="app"></div>
 
 <script>
 /* =========================================================
-   CONFIGURAÇÃO — é aqui que você mexe
+   CONFIG  —  troque pelo seu link de checkout
    ========================================================= */
+const CHECKOUT_URL = "https://payment.ticto.app/O49D90BBF"; // Protocolo GLP-1 Natural — R$29,90
 
-/* O expert do funil. Aparece nas duas mini-VSLs e na oferta.
-   Trocar aqui muda em todos os lugares de uma vez. */
-const EXPERT = {
-  nome: 'Nome do Expert',
-  credencial: 'Nutricionista · CRN 00000',
-  foto: 'expert.jpg',                    // some sozinha se o arquivo não existir
-  tempo: '9 anos acompanhando emagrecimento'
-};
-
-const PRODUTO = {
-  nome: 'Meu Plano',
-  mecanismo: 'Método da Constância',     // o nome do mecanismo (ver seção de mecanismo)
-  indice: 'Índice de Constância'
-};
-
-/* PREÇO E CHECKOUT — trocar antes de publicar */
-const PRECO   = { de: '97,00', por: '37', centavos: ',90', parcela: '' };
-const CHECKOUT_URL = '';                 // vazio: o botão só avisa que falta configurar
-
-/* Endereço do app. Depois da compra a pessoa cai aqui, já com
-   as respostas do quiz preenchidas no cadastro. */
-const APP_URL = 'index.html';
-
-/* Onde o quiz guarda as respostas para o app ler no cadastro.
-   O app lê a mesma chave em js/onboarding.js. */
-const CHAVE_QUIZ = 'app_emag_quiz';
+/* ===== Rastreamento Meta Pixel (seguro, não quebra se o pixel não carregar) ===== */
+function px(evento, padrao){
+  try{ if(typeof fbq==='function'){ padrao ? fbq('track', evento) : fbq('trackCustom', evento); } }catch(e){}
+}
 
 /* =========================================================
-   RASTREIO — mesmo padrão do outro quiz:
-   cada tela e cada resposta vão para o GA4 e para o Pixel
+   MEDIÇÃO DO FUNIL DO QUIZ
+   Manda o mesmo evento para o GA4 e para o Pixel. Serve para
+   responder duas perguntas: em que etapa a pessoa parou e qual
+   resposta cada pergunta mais recebeu.
    ========================================================= */
-function px(evento, padrao){
-  if(typeof fbq !== 'function') return;
-  try { padrao ? fbq('track', evento) : fbq('trackCustom', evento); } catch(e){}
-}
 function track(evento, params){
-  if(typeof gtag === 'function'){ try { gtag('event', evento, params||{}); } catch(e){} }
-  px(evento);
+  try{ if(typeof gtag==='function') gtag('event', evento, params||{}); }catch(e){}
+  try{ if(typeof fbq==='function') fbq('trackCustom', evento, params||{}); }catch(e){}
 }
-const track_estado = { etapa:0, rotulo:'intro', respondidas:0 };
+
+/* estado da medição: guarda a etapa mais avançada que a pessoa viu */
+const track_estado = { etapa:0, rotulo:'intro', concluiu:false, respondidas:0 };
 
 function trackEtapa(step){
-  track_estado.etapa++;
-  const rotulo = step.type === 'question'
-    ? `${step.q.num}. ${step.q.id}`
-    : step.type + (step.full ? '_completo' : '') + (step.v2 ? '_2' : '');
+  let num = 0, rotulo = step.type;
+  if(step.type==='question'){ num = step.q.num; rotulo = step.q.id; }
+  else if(step.type==='intro'){ num = 0; rotulo = 'intro_idade'; }
+  else { num = track_estado.etapa; }                 /* telas de conteúdo herdam o número da última pergunta */
+
+  track_estado.etapa  = Math.max(track_estado.etapa, num);
   track_estado.rotulo = rotulo;
-  track('quiz_etapa', { etapa: rotulo, etapa_id: step.q ? step.q.id : step.type, tipo: step.type, posicao: track_estado.etapa });
+  if(step.type==='result') track_estado.concluiu = true;
+
+  track('quiz_etapa', {
+    etapa: num,
+    etapa_id: rotulo,
+    tipo: step.type,
+    posicao: state.idx,
+    total_perguntas: TOTAL_Q
+  });
 }
+
 function trackResposta(qid, valor){
   track_estado.respondidas++;
-  /* no nome não grava o que foi digitado, só que preencheu */
-  const v = Array.isArray(valor) ? valor.join(' | ') : String(valor);
-  track('quiz_resposta', { pergunta: qid, resposta: qid === 'nome' ? 'preenchido' : v });
+  const q = QUESTIONS.find(x=>x.id===qid);
+  track('quiz_resposta', {
+    pergunta: qid,
+    etapa: q ? q.num : 0,
+    resposta: Array.isArray(valor) ? valor.join(' | ') : String(valor)
+  });
 }
-window.addEventListener('pagehide', () => {
-  track('quiz_abandono', { etapa: track_estado.rotulo, respondidas: track_estado.respondidas });
+
+/* abandono: quem fecha a página antes da tela final marca a última etapa vista */
+window.addEventListener('pagehide', function(){
+  if(track_estado.concluiu) return;
+  track('quiz_abandono', {
+    etapa: track_estado.etapa,
+    etapa_id: track_estado.rotulo,
+    respondidas: track_estado.respondidas
+  });
 });
 
 /* =========================================================
-   PERGUNTAS
-   Ordem pensada assim: primeiro o que o app precisa para
-   montar o plano (e que a pessoa responde sem esforço),
-   depois o que dói. A dor vem quando ela já investiu tempo.
+   PERGUNTAS  (15)  —  seguindo SPIN: Situação → Problema → Implicação → Necessidade
    ========================================================= */
 const QUESTIONS = [
-  { id:'nome', num:1, type:'text', noPill:true,
-    question:'Antes de começar, como você se chama?',
-    placeholder:'Digite seu primeiro nome' },
+  /* ===== ENTRADA — espelha a grade do criativo (continuidade do toque) ===== */
+  {
+    id:'nome', num:1, type:'text', noPill:true,
+    question:'Qual o seu nome?',
+    placeholder:'Digite seu primeiro nome'
+  },
+  {
+    id:'objetivo', num:2,
+    question:'Qual é o seu objetivo hoje?',
+    options:['🎯 Emagrecer mais do que estou emagrecendo','💊 Me preparar para reduzir a dose sem engordar','🚫 Parar de usar a caneta sem recuperar o peso','🔁 Recuperar o resultado que eu já tinha perdido']
+  },
+  {
+    id:'caneta', num:3,
+    question:'Que caneta você usa?',
+    options:['Mounjaro (tirzepatida)','Ozempic (semaglutida)','Wegovy (semaglutida)','Saxenda (liraglutida)','Manipulada / não lembro o nome']
+  },
 
-  { id:'objetivo', num:2,
-    question: a => `${a.nome && a.nome !== 'você' ? a.nome + ', o' : 'O'} que você quer que aconteça com o seu corpo?`,
+  /* ===== S — SITUAÇÃO ===== */
+  {
+    id:'dose', num:4, noPill:true,
+    question:'Qual é a sua dose atual?',
+    options:['2,5 mg','5 mg','7,5 mg','10 mg','12,5 mg','15 mg']
+  },
+  {
+    id:'tempo_uso', num:5,
+    question:'Há quanto tempo você usa a canetinha?',
+    options:['🕐 Menos de 1 mês','🕑 Entre 1 e 3 meses','🕒 Entre 3 e 6 meses','🕕 Entre 6 meses e 1 ano','⏳ Mais de 1 ano']
+  },
+
+  /* ===== P — PROBLEMA ===== */
+  {
+    id:'dor', num:6,
+    question:'O que mais te incomoda hoje no seu tratamento?',
     options:[
-      '🔥 Emagrecer e secar a barriga',
-      '💪 Ganhar massa e ficar mais forte',
-      '⚖️ Manter o peso e definir o corpo'
-    ] },
+      'A balança travou mesmo aplicando certinho',
+      'Tenho medo de parar e engordar tudo de volta',
+      'Emagreci, mas fiquei flácida e com o rosto abatido',
+      'Gasto muito por mês e vejo pouco resultado',
+      'Já parei e o peso está voltando'
+    ]
+  },
+  {
+    id:'acompanhamento', num:7,
+    question:'Você tem acompanhamento de uma nutricionista durante o tratamento?',
+    options:['❌ Nunca tive','🔄 Tive no começo, mas parei','🤷 Tenho, mas ela nunca falou sobre isso','✅ Tenho e me orienta bem']
+  },
+  {
+    id:'ja_eliminou', num:8,
+    question:'Quantos quilos você já eliminou com a canetinha?',
+    options:['Ainda nenhum','De 1 a 5 kg','De 6 a 10 kg','De 11 a 15 kg','Mais de 16 kg']
+  },
+  {
+    id:'exercicio', num:9,
+    question:'Você costuma se exercitar quantas vezes por semana?',
+    options:['😴 Nenhuma','🚶 1-2x na semana','🏃 3-4x na semana','💪 5x ou mais na semana']
+  },
+  {
+    id:'massa', num:10,
+    question:'Você percebeu flacidez ou perda de massa muscular enquanto emagrecia?',
+    options:['😔 Sim, infelizmente','🤔 Não, mas já ouvi falar que acontece']
+  },
+  /* --- a pergunta abaixo arma exatamente o que a BREAK 2 vai revelar --- */
+  {
+    id:'fome', num:11,
+    question:'Está com dificuldade na alimentação devido a falta de fome?',
+    options:['🙁 Sim, estou comendo pouco','😋 Não, estou comendo bastante']
+  },
+  {
+    id:'colaterais', num:12, type:'multi',
+    question:'Quais desses sintomas você já sentiu durante o tratamento?',
+    options:['🤢 Enjoo ou dor no estômago','🚽 Intestino preso ou diarreia','😩 Cansaço que não passa','💇 Queda de cabelo','😞 Rosto abatido ou pele sem firmeza','✅ Nenhum desses']
+  },
+  {
+    id:'proteina_refeicoes', num:13,
+    question:'Você costuma comer proteína em todas as refeições?',
+    options:['🥩 Sim, sempre','🍽️ Às vezes','🚫 Quase nunca']
+  },
+  {
+    id:'intestino', num:14,
+    question:'Como está o funcionamento do seu intestino?',
+    options:['✅ Regular','😣 Preso','💧 Solto']
+  },
+  {
+    id:'sono', num:15,
+    question:'Quantas horas você dorme por noite, em média?',
+    options:['⚠️ Menos de 5h','🌙 Entre 5 e 7h','😴 Mais de 7h']
+  },
+  {
+    id:'estresse', num:16,
+    question:'Como está seu nível de estresse no dia a dia?',
+    options:['😰 Alto','😐 Moderado','😌 Baixo']
+  },
+  /* >>> BREAK 2 (mecanismo GLP-1) entra aqui <<< */
 
-  { id:'idade', num:3, type:'ruler', noPill:true,
-    question:'Qual a sua idade?',
-    units:[{ u:'anos', min:16, max:75, step:1, def:34 }] },
+  /* ===== I — IMPLICAÇÃO ===== */
+  {
+    id:'futuro', num:22, type:'multi',
+    question:'Como seria a sua vida se você engordasse tudo de novo depois da canetinha?',
+    options:['😞 Minha autoestima e confiança iriam lá embaixo','🏥 Minha saúde ia piorar de novo','👗 Voltaria o problema pra vestir e comprar roupa','💸 Sentiria que joguei fora todo o dinheiro que gastei','😢 Ia me sentir fracassada mais uma vez']
+  },
+  {
+    id:'concorda_habitos', num:23,
+    question:'Você acredita que algumas mudanças simples no seu estilo de vida são determinantes para não engordar novamente depois da canetinha?',
+    options:['✅ Sim, sem isso os resultados da canetinha são temporários','😟 Não, vou ser dependente desse remédio a vida toda']
+  },
+  {
+    id:'concorda_gasto', num:24,
+    question:'Você concorda que não adianta gastar milhares de reais na aplicação para engordar tudo depois?',
+    options:['Sim, preciso fazer esse investimento valer','Concordo, mas nunca soube o que fazer','Não tinha parado pra pensar nisso']
+  },
+  {
+    id:'compromisso', num:25,
+    question:'Você se compromete a seguir no método da Dra. Kelly, que já ajudou mais de 500 pessoas a emagrecerem, para fazer cada aplicação valer a pena nos próximos 14 dias?',
+    options:['Sim, me comprometo','Quero pelo menos tentar']
+  },
 
-  { id:'altura', num:4, type:'ruler', noPill:true,
-    question:'Qual a sua altura?',
-    units:[{ u:'cm', min:140, max:210, step:1, def:165 }] },
-
-  { id:'peso', num:5, type:'ruler', noPill:true,
-    question:'E quanto você pesa hoje?',
-    units:[{ u:'kg', min:40, max:180, step:1, def:78 }] },
-
-  { id:'meta_peso', num:6, type:'ruler', noPill:true,
-    question:'Qual peso você quer alcançar?',
-    units:[{ u:'kg', min:40, max:180, step:1, def:68 }] },
-
-  { id:'local', num:7,
-    question:'Onde você vai treinar?',
-    options:['🏋️ Na academia','🏠 Em casa, com pouco ou nenhum equipamento'] },
-
-  /* --------- daqui pra baixo é o que alimenta o Índice --------- */
-
-  { id:'frequencia', num:8,
-    question:'Hoje, quantas vezes por semana você treina de verdade?',
-    options:['😴 Nenhuma','🚶 1 ou 2 vezes','🏃 3 ou 4 vezes','💪 5 vezes ou mais'] },
-
-  { id:'refeicoes', num:9,
-    question:'Como está a sua alimentação nos dias normais?',
-    options:[
-      '🌀 Cada dia é de um jeito, não tem rotina',
-      '🍽️ Começo bem e desando à noite',
-      '📋 Sigo mais ou menos, com escorregadas',
-      '✅ É organizada quase todos os dias'
-    ] },
-
-  { id:'proteina', num:10,
-    question:'Você sabe quanta proteína comeu ontem?',
-    options:['🤷 Não faço ideia','🤔 Mais ou menos, no olho','📊 Sei, eu conto'] },
-
-  { id:'agua', num:11,
-    question:'Quanta água você bebe por dia?',
-    options:['💧 Menos de 1 litro','🥤 Entre 1 e 2 litros','🚰 Mais de 2 litros'] },
-
-  { id:'sono', num:12,
-    question:'Quantas horas você dorme por noite?',
-    options:['😵 Menos de 5 horas','😪 Entre 5 e 6 horas','😌 Entre 7 e 8 horas','😴 Mais de 8 horas'] },
-
-  { id:'tentativas', num:13,
-    question:'Quantas vezes você já começou uma dieta e parou no meio?',
-    options:['🙃 Perdi a conta','😕 Umas 3 ou 4 vezes','🙂 Uma ou duas','🆕 Essa é a primeira'] },
-
-  { id:'abandono', num:14,
-    question:'Quando você desiste, normalmente é por quê?',
-    options:[
-      '📉 Não vejo resultado rápido e desanimo',
-      '🤯 É complicado demais pra manter na correria',
-      '🍕 Escorrego um dia e largo tudo',
-      '🧭 Fico perdida, não sei se estou fazendo certo',
-      '🤝 Não tenho ninguém acompanhando'
-    ] },
-
-  { id:'dor', num:15,
-    question:'O que mais te incomoda hoje?',
-    options:[
-      '👖 A roupa que não serve mais',
-      '📸 Me ver em foto e não me reconhecer',
-      '😮‍💨 Cansaço e falta de disposição',
-      '🪞 Olhar no espelho e não gostar',
-      '🔁 Emagrecer e engordar tudo de novo'
-    ] },
-
-  { id:'quando', num:16,
-    question:'Se desse certo, quando você quer estar se sentindo diferente?',
-    options:['⚡ O quanto antes','📅 Em 1 mês','🗓️ Em 3 meses','🌱 Sem pressa, quero é manter'] }
+  /* ===== essas 4 renderizam só depois do diagnóstico completo (full), veja DEFERRED_APOS_DIAGNOSTICO ===== */
+  {
+    id:'corpo_sonho', num:17,
+    question:'Qual é o seu corpo dos sonhos?',
+    options:['Magra','Definida','Com curvas','Média'],
+    optionImages:['corpo-magra.jpg','corpo-definida.jpg','corpo-curvas.jpg','corpo-media.jpg']
+  },
+  {
+    id:'peso', num:18, type:'ruler',
+    question:'Qual é o seu peso atual?',
+    units:[{u:'kg',min:40,max:160,def:70,step:1},{u:'lb',min:88,max:352,def:154,step:1}]
+  },
+  {
+    id:'altura', num:19, type:'ruler',
+    question:'Qual é a sua altura?',
+    units:[{u:'cm',min:140,max:210,def:165,step:1},{u:'pol',min:55,max:83,def:65,step:1}]
+  },
+  {
+    id:'meta_kg', num:20,
+    question:'Quantos quilos você ainda quer eliminar?',
+    options:['🌱 Até 5 kg','🎯 De 6 a 10 kg','💪 De 11 a 15 kg','🔥 De 16 a 20 kg','🚀 Mais de 20 kg','✅ Só quero manter o que já perdi']
+  },
+  /* >>> META (prova social) entra aqui, depois do diagnóstico completo <<< */
+  {
+    id:'outros_objetivos', num:21, type:'multi',
+    question:'Além de emagrecer, quais são seus outros objetivos?',
+    options:['Perder barriga/gordura localizada','Melhorar flacidez','Melhorar dores','Mais disposição e energia','Melhorar a saúde']
+  }
 ];
+
+/* Interstíciais (aparecem DEPOIS de certas perguntas) */
+const INTERSTITIALS = {};
 
 /* =========================================================
    ESTADO E FLUXO
    ========================================================= */
 const state = { idx:0, answers:{} };
 const FLOW = [];
-
-FLOW.push({ type:'intro' });
-QUESTIONS.forEach(q => {
-  FLOW.push({ type:'question', q });
-  /* diagnóstico curto no meio: entrega valor antes de pedir mais */
-  if(q.id === 'proteina'){
-    FLOW.push({ type:'diagnostico' });
-    FLOW.push({ type:'vsl', n:1 });        /* mini-VSL 1: o mecanismo do problema */
+/* peso, altura e meta_kg só entram depois do diagnóstico completo (full), a pedido do
+   usuário — ficam de fora do forEach principal e são empurradas mais abaixo */
+const DEFERRED_APOS_DIAGNOSTICO = ['corpo_sonho','peso','altura','meta_kg','outros_objetivos'];
+FLOW.push({type:'intro'});
+QUESTIONS.forEach(q=>{
+  if(DEFERRED_APOS_DIAGNOSTICO.includes(q.id)) return;
+  FLOW.push({type:'question', q});
+  if(INTERSTITIALS[q.id]) FLOW.push({type:'interstitial', id:q.id});
+  if(q.id==='massa'){                                       // diagnóstico no meio do quiz (sem a tela de análise)
+    FLOW.push({type:'diagnostico'});
+  }
+  if(q.id==='estresse'){                                     // análise + diagnóstico completo (alerta + índice)
+    FLOW.push({type:'analyzing'});
+    FLOW.push({type:'diagnostico', full:true});
+    DEFERRED_APOS_DIAGNOSTICO.forEach(id=>{                   // corpo_sonho, peso, altura, meta_kg, outros_objetivos
+      const dq = QUESTIONS.find(x=>x.id===id);                // entram logo depois do diagnóstico completo
+      FLOW.push({type:'question', q:dq});
+      if(dq.id==='meta_kg') FLOW.push({type:'meta'});         // prova social
+    });
   }
 });
-FLOW.push({ type:'analyzing' });
-FLOW.push({ type:'diagnostico', full:true });
-FLOW.push({ type:'vsl', n:2 });            /* mini-VSL 2: o mecanismo da solução */
-FLOW.push({ type:'oferta' });
+FLOW.push({type:'analyzing', v2:true});                     // 3ª vez: analisa tudo, inclusive outros_objetivos
+FLOW.push({type:'projecao'});                               // projeção final do protocolo — já é a landing/oferta, última tela do quiz
 
 const app = document.getElementById('app');
 const TOTAL_Q = QUESTIONS.length;
 
-function go(n){ state.idx += n; render(); window.scrollTo({ top:0, behavior:'instant' }); }
-/* percentual nas telas de conteúdo: usa a última pergunta respondida antes dela */
-function pctAte(qid){ const q = QUESTIONS.find(x => x.id === qid); return q ? Math.round((q.num/TOTAL_Q)*100) : 100; }
-function esc(s){ return (s||'').replace(/"/g,'&quot;'); }
-function backBtn(){ return state.idx > 0 ? `<button class="back-btn" onclick="go(-1)" aria-label="Voltar">←</button>` : ''; }
-function nomeDe(){ const n = state.answers.nome; return n && n !== 'você' ? n : ''; }
-function num(id){ return parseFloat(String(state.answers[id]||'').replace(/[^\d.]/g,'')) || 0; }
-
-function cabecalho(pct){
-  return `${backBtn()}
-    <div class="brand">${PRODUTO.nome}</div>
-    <div class="brand-sub">Diagnóstico gratuito</div>
-    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>`;
-}
+function go(n){ state.idx += n; render(); window.scrollTo({top:0,behavior:'instant'}); }
+/* percentual da barra nas telas de conteúdo: usa a última pergunta respondida antes dela */
+function pctAte(qid){ const q = QUESTIONS.find(x=>x.id===qid); return q ? Math.round((q.num/TOTAL_Q)*100) : 100; }
+function esc(s){return (s||'').replace(/"/g,'&quot;');}
+function backBtn(){ return state.idx>0 ? `<button class="back-btn" onclick="go(-1)" aria-label="Voltar">←</button>` : ''; }
 
 function pillsHTML(uptoNum){
-  const done = QUESTIONS.filter(q => q.num < uptoNum && state.answers[q.id] && !q.noPill);
+  const done = QUESTIONS.filter(q=>q.num<uptoNum && state.answers[q.id] && !q.noPill);
   if(!done.length) return '';
-  return `<div class="pills">${done.slice(-3).map(q => `<span class="pill">${state.answers[q.id]}</span>`).join('')}</div>`;
+  return `<div class="pills">${done.slice(-4).map(q=>`<span class="pill">${state.answers[q.id]}</span>`).join('')}</div>`;
 }
 
-function render(){
-  const step = FLOW[state.idx];
-  const map = {
-    intro: renderIntro,
-    question: () => renderQuestion(step.q),
-    analyzing: renderAnalyzing,
-    diagnostico: () => renderDiagnostico(step.full),
-    vsl: () => renderVSL(step.n),
-    oferta: renderOferta
-  };
-  (map[step.type] || renderIntro)();
-  trackEtapa(step);
+const TOASTS = {};
+function toastHTML(count){
+  const txt = count===1
+    ? `<b>+1 pessoa</b> está fazendo o diagnóstico junto com você`
+    : `<b>+${count} pessoas</b> estão fazendo o diagnóstico junto com você`;
+  return `<div class="toast" id="toast"><span class="ic">🔥</span><span>${txt}</span><button class="x" onclick="document.getElementById('toast').remove()">×</button></div>`;
 }
 
 /* =========================================================
-   ABERTURA — pergunta o sexo, que é o que mais muda o plano
-   (treino, meta calórica e tom). Toque na foto já começa.
+   RENDER
    ========================================================= */
-const SEXO_OPTS  = ['Mulher','Homem'];
-const SEXO_VAL   = ['feminino','masculino'];
-const SEXO_IMGS  = ['quiz-mulher.jpg','quiz-homem.jpg'];
-const SEXO_EMOJI = ['🙋‍♀️','🙋‍♂️'];
+function render(){
+  const step = FLOW[state.idx];
+  const map = {
+    intro:renderIntro, question:()=>renderQuestion(step.q), break1:renderBreak1,
+    interstitial:()=>renderInterstitial(step.id),
+    analyzing:()=>renderAnalyzing(step.v2), diagnostico:()=>renderDiagnostico(step.full), prepitch:renderPrePitch, meta:renderMeta,
+    projecao:renderProjecao,
+    offerLocked:renderOfferLocked, offerPrice:renderOfferPrice, result:renderResult
+  };
+  (map[step.type]||renderIntro)();
+  trackEtapa(step);
+}
+
+const IDADE_OPTS = ['Entre 18 e 29 anos','Entre 30 e 39 anos','Entre 40 e 49 anos','+50 anos'];
+const IDADE_IMGS = ['idade-18-29.jpg','idade-30-39.jpg','idade-40-49.jpg','idade-50-mais.jpg'];
 
 function renderIntro(){
   app.innerHTML = `
   <div class="wrap fade">
-    <div class="card-quiz" style="text-align:center;padding-top:38px;padding-bottom:34px;">
-      <div class="intro-badge">Teste gratuito · 2 minutos</div>
-      <h1 class="intro-h1">Descubra por que você <span>começa e para</span> sempre no mesmo ponto.</h1>
-      <p class="intro-sub">Responda o teste e receba o seu ${PRODUTO.indice}, com a sua meta de calorias, de proteína e de água calculadas para o seu corpo.</p>
-      <h2 class="intro-h1" style="font-size:23px;margin:26px 0 0;">Para começar: o plano é para</h2>
-      <p class="intro-hint">Toque para escolher</p>
+    <div class="card-quiz" style="text-align:center;padding-top:60px;padding-bottom:46px;">
+      <div class="brand-sub" style="font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:800;color:var(--verde);margin-bottom:10px;">Teste grátis para quem usa canetinha</div>
+      <h1 class="intro-h1" style="color:var(--verde-escuro);">Descubra o nível de GLP-1 natural do seu corpo.</h1>
+      <p class="intro-sub" style="font-size:16px;line-height:1.6;margin-top:10px;color:var(--verde);text-align:center;">Faça o teste grátis e descubra o nível do seu GLP-1 natural e o que fazer para reativar.</p>
+      <h2 class="intro-h1" style="margin:34px 0 0;">Qual a sua idade?</h2>
+      <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#9aa8a2;margin:14px 0 22px;">Toque para escolher</p>
       <div class="opts grid2">
-        ${SEXO_OPTS.map((o,i)=>`
-          <div class="sexo-card" onclick="selectSexo(${i})">
-            <img src="${SEXO_IMGS[i]}" alt="${o}" class="sexo-img"
-                 onerror="this.outerHTML='<div class=&quot;sexo-emoji&quot;>${SEXO_EMOJI[i]}</div>'">
-            <button class="opt" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button>
-          </div>`).join('')}
+        ${IDADE_OPTS.map((o,i)=>`<div class="idade-card" onclick="selectIdade(${i})"><img src="${IDADE_IMGS[i]}" alt="${o}" class="idade-img" onerror="this.style.display='none'"><button class="opt${state.answers.idade===o?' sel':''}" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button></div>`).join('')}
       </div>
-      <p style="font-size:12.5px;color:var(--cinza-c);margin-top:18px;font-weight:600">🔒 Sem cadastro para ver o resultado</p>
+      <p style="font-size:13px;color:#8aa79a;margin-top:18px;">✅ Tempo estimado: 2 minutos</p>
     </div>
   </div>`;
 }
 
-function selectSexo(i){
-  state.answers.sexo = SEXO_VAL[i];
-  state.answers.sexo_label = SEXO_OPTS[i];
-  trackResposta('sexo', SEXO_OPTS[i]);
+function selectIdade(i){
+  state.answers.idade = IDADE_OPTS[i];
+  trackResposta('idade', IDADE_OPTS[i]);
   const btns = app.querySelectorAll('.opt');
-  btns.forEach(b => b.classList.remove('sel'));
-  const escolhido = app.querySelector(`.opt[data-i="${i}"]`);
-  if(escolhido) escolhido.classList.add('sel');
-  btns.forEach(b => b.style.pointerEvents = 'none');
+  btns.forEach(b=>b.classList.remove('sel'));
+  const chosen = app.querySelector(`.opt[data-i="${i}"]`);
+  if(chosen) chosen.classList.add('sel');
+  btns.forEach(b=>b.style.pointerEvents='none');
   px('QuizIniciado');
-  setTimeout(() => go(1), 340);
+  setTimeout(()=>go(1),360);
 }
 
-/* =========================================================
-   PERGUNTAS
-   ========================================================= */
+
+
 function renderQuestion(q){
-  if(q.type === 'text')  return renderTextQuestion(q);
-  if(q.type === 'ruler') return renderRulerQuestion(q);
-  if(q.type === 'multi') return renderMultiQuestion(q);
+  if(q.type==='text') return renderTextQuestion(q);
+  if(q.type==='ruler') return renderRulerQuestion(q);
+  if(q.type==='multi') return renderMultiQuestion(q);
   const a = state.answers;
+  const insight = q.insight ? `<div class="insight">${q.insight(a)}</div>` : '';
+  const echo = q.echo ? `<div class="echo">${q.echo(a)}</div>` : '';
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${cabecalho((q.num/TOTAL_Q)*100)}
-      ${pillsHTML(q.num)}
-      ${q.echo ? `<div class="echo">${q.echo(a)}</div>` : ''}
-      <h2 class="q-title">${typeof q.question === 'function' ? q.question(a) : q.question}</h2>
-      <div class="opts">
-        ${q.options.map((o,i)=>`<button class="opt" data-i="${i}" onclick="selectOpt('${q.id}',${i})"><span class="opt-radio"></span><span>${o}</span></button>`).join('')}
+      ${backBtn()}<div class="brand"><span class="brand-nome">Protocolo GLP-1 Natural</span></div>
+      <div class="brand-sub">Diagnóstico personalizado</div>
+      <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
+      ${echo}
+      <h2 class="q-title">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
+      <div class="opts${q.optionImages?' photo':''}">
+        ${q.optionImages
+          ? q.options.map((o,i)=>`<div class="opt-row" onclick="selectOpt('${q.id}',${i})"><img src="${q.optionImages[i]}" alt="${o}" class="opt-row-img" onerror="this.style.display='none'"><button class="opt" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button></div>`).join('')
+          : q.options.map((o,i)=>`<button class="opt" data-i="${i}" onclick="selectOpt('${q.id}',${i})"><span class="opt-radio"></span><span>${o}</span></button>`).join('')}
       </div>
+      ${q.img?`<img src="${q.img}" alt="" style="width:100%;border-radius:12px;display:block;margin:16px 0 0;" onerror="this.style.display='none'">`:''}
     </div>
-  </div>`;
+  </div>
+  ${TOASTS[q.id]?toastHTML(TOASTS[q.id]):''}`;
 }
 
 function selectOpt(qid,i){
-  const q = QUESTIONS.find(x => x.id === qid);
+  const q = QUESTIONS.find(x=>x.id===qid);
   state.answers[qid] = q.options[i];
-  state.answers[qid + '_i'] = i;          /* o índice é o que o cálculo usa */
   trackResposta(qid, q.options[i]);
   const btns = app.querySelectorAll('.opt');
-  btns.forEach(b => b.classList.remove('sel'));
-  const escolhido = app.querySelector(`.opt[data-i="${i}"]`);
-  if(escolhido) escolhido.classList.add('sel');
-  btns.forEach(b => b.style.pointerEvents = 'none');
-  setTimeout(() => go(1), 340);
+  btns.forEach(b=>b.classList.remove('sel'));
+  const chosen = app.querySelector(`.opt[data-i="${i}"]`);
+  if(chosen) chosen.classList.add('sel');
+  btns.forEach(b=>b.style.pointerEvents='none');
+  setTimeout(()=>go(1),360);
 }
 
+/* ---------- PERGUNTA DE MÚLTIPLA ESCOLHA ---------- */
 function renderMultiQuestion(q){
   const sel = state.answers[q.id] || [];
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${cabecalho((q.num/TOTAL_Q)*100)}
-      <h2 class="q-title tight">${typeof q.question === 'function' ? q.question(state.answers) : q.question}</h2>
-      <p class="q-sub">Pode marcar mais de uma</p>
+      ${backBtn()}<div class="brand"><span class="brand-nome">Protocolo GLP-1 Natural</span></div>
+      <div class="brand-sub">Diagnóstico personalizado</div>
+      <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
+      <h2 class="q-title tight">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
+      <p class="ruler-sub" style="margin:-6px 0 12px;">Pode marcar mais de uma opção</p>
       <div class="opts compact">
         ${q.options.map((o,i)=>`<button class="opt${sel.includes(o)?' sel':''}" data-i="${i}" onclick="toggleOpt('${q.id}',${i})"><span class="opt-radio"></span><span>${o}</span></button>`).join('')}
       </div>
-      <button class="btn" id="multiNext" style="margin-top:14px">Continuar →</button>
+      <button class="btn" id="multiNext" style="margin-top:12px;">Continuar →</button>
     </div>
   </div>`;
-  document.getElementById('multiNext').onclick = () => { trackResposta(q.id, state.answers[q.id]||[]); go(1); };
+  document.getElementById('multiNext').onclick=()=>{ trackResposta(q.id, state.answers[q.id]||[]); go(1); };
 }
 function toggleOpt(qid,i){
-  const q = QUESTIONS.find(x => x.id === qid);
+  const q = QUESTIONS.find(x=>x.id===qid);
   const o = q.options[i];
   let sel = state.answers[qid] || [];
-  sel = sel.includes(o) ? sel.filter(x => x !== o) : [...sel, o];
+  sel = sel.includes(o) ? sel.filter(x=>x!==o) : [...sel,o];
   state.answers[qid] = sel;
   const btn = app.querySelector(`.opt[data-i="${i}"]`);
   if(btn) btn.classList.toggle('sel');
 }
 
+/* ---------- PERGUNTA DE TEXTO (nome) ---------- */
 function renderTextQuestion(q){
-  const val = state.answers[q.id] && state.answers[q.id] !== 'você' ? state.answers[q.id] : '';
+  const val = state.answers[q.id] && state.answers[q.id]!=='você' ? state.answers[q.id] : '';
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${cabecalho((q.num/TOTAL_Q)*100)}
-      <h2 class="q-title">${typeof q.question === 'function' ? q.question(state.answers) : q.question}</h2>
+      ${backBtn()}<div class="brand"><span class="brand-nome">Protocolo GLP-1 Natural</span></div>
+      <div class="brand-sub">Diagnóstico personalizado</div>
+      <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
+      <h2 class="q-title">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
       <input type="text" class="text-input" id="txtField" placeholder="${q.placeholder||''}" value="${esc(val)}" autocomplete="given-name">
       <button class="btn" id="txtNext">Continuar →</button>
     </div>
   </div>`;
-  const campo = document.getElementById('txtField');
-  setTimeout(() => campo.focus(), 60);
-  function enviar(){ state.answers[q.id] = campo.value.trim() || 'você'; trackResposta(q.id,'preenchido'); go(1); }
-  document.getElementById('txtNext').onclick = enviar;
-  campo.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); enviar(); } });
+  const field=document.getElementById('txtField');
+  setTimeout(()=>field.focus(),60);
+  function submit(){ state.answers[q.id]=(field.value.trim()||'você'); trackResposta(q.id, 'preenchido'); go(1); }
+  document.getElementById('txtNext').onclick=submit;
+  field.addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();submit();} });
 }
 
+/* ---------- PERGUNTA COM RÉGUA (peso / altura) ---------- */
 function renderRulerQuestion(q){
-  const u = q.units[0];
-  /* a meta de peso começa perto do peso informado, não no padrão fixo */
-  const inicial = q.id === 'meta_peso' && num('peso')
-    ? Math.max(u.min, Math.round(num('peso') * 0.88))
-    : (state.answers[q.id] ? num(q.id) : u.def);
+  const u0=q.units[0];
   app.innerHTML = `
   <div class="wrap fade">
-    <div class="card-quiz" style="text-align:center">
-      ${cabecalho((q.num/TOTAL_Q)*100)}
-      <h2 class="q-title">${typeof q.question === 'function' ? q.question(state.answers) : q.question}</h2>
-      <p class="q-sub">Arraste para ajustar</p>
-      <div class="ruler-val"><span id="rVal">${inicial}</span><small>${u.u}</small></div>
+    <div class="card-quiz" style="text-align:center;">
+      ${backBtn()}<div class="brand"><span class="brand-nome">Protocolo GLP-1 Natural</span></div>
+      <div class="brand-sub">Diagnóstico personalizado</div>
+      <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
+      <h2 class="q-title" style="text-align:center;">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
+      <p class="ruler-sub">Arraste para ajustar</p>
+      <div class="unit-toggle" id="uToggle">
+        ${q.units.map((u,i)=>`<button type="button" class="ut${i===0?' active':''}" data-i="${i}">${u.u}</button>`).join('')}
+      </div>
+      <div class="ruler-val"><span id="rVal">${u0.def}</span><small id="rUnit">${u0.u}</small></div>
       <div class="ruler-track">
         <div class="ruler-line"></div>
         <div class="ruler-ticks" id="rTicks"></div>
         <div class="ruler-pointer" id="rPointer"></div>
-        <input type="range" class="ruler-input" id="rRange" min="${u.min}" max="${u.max}" step="${u.step}" value="${inicial}">
+        <input type="range" class="ruler-input" id="rRange" min="${u0.min}" max="${u0.max}" step="${u0.step}" value="${u0.def}">
       </div>
-      <div class="ruler-labels"><span>${u.min}</span><span>${Math.round((u.min+u.max)/2)}</span><span>${u.max}</span></div>
-      <button class="btn" id="rNext" style="margin-top:22px">Continuar →</button>
+      <div class="ruler-labels" id="rLabels"></div>
+      <button class="btn" id="rNext" style="margin-top:24px;">Continuar</button>
     </div>
   </div>`;
-  const range = document.getElementById('rRange');
-  const val   = document.getElementById('rVal');
-  const ponta = document.getElementById('rPointer');
-  let ticks = ''; for(let i=0;i<=40;i++) ticks += `<span class="tk${i%5===0?' maj':''}"></span>`;
-  document.getElementById('rTicks').innerHTML = ticks;
-  function atualizar(){
-    const v = parseFloat(range.value);
-    val.textContent = Math.round(v);
-    ponta.style.left = (((v-u.min)/(u.max-u.min))*100) + '%';
+  let uIdx=0;
+  const rangeEl=document.getElementById('rRange');
+  const valEl=document.getElementById('rVal');
+  const unitEl=document.getElementById('rUnit');
+  const pointer=document.getElementById('rPointer');
+  const labels=document.getElementById('rLabels');
+  let t=''; for(let i=0;i<=40;i++) t+=`<span class="tk${i%5===0?' maj':''}"></span>`;
+  document.getElementById('rTicks').innerHTML=t;
+  function setLabels(c){ labels.innerHTML=`<span>${c.min}</span><span>${Math.round((c.min+c.max)/2)}</span><span>${c.max}</span>`; }
+  function update(){
+    const c=q.units[uIdx], v=parseFloat(rangeEl.value);
+    valEl.textContent=Math.round(v);
+    pointer.style.left=(((v-c.min)/(c.max-c.min))*100)+'%';
   }
-  range.addEventListener('input', atualizar);
-  atualizar();
-  document.getElementById('rNext').onclick = () => {
-    state.answers[q.id] = Math.round(parseFloat(range.value)) + ' ' + u.u;
-    trackResposta(q.id, state.answers[q.id]);
-    go(1);
-  };
-}
-
-/* =========================================================
-   CÁLCULOS
-   As metas usam exatamente as mesmas fórmulas do app
-   (js/store.js). Se mudar lá, muda aqui também, senão o
-   número do quiz não bate com o que a pessoa vê no app.
-   ========================================================= */
-function objetivoId(){
-  const i = state.answers.objetivo_i;
-  return i === 1 ? 'hipertrofia' : i === 2 ? 'manutencao' : 'emagrecimento';
-}
-function localId(){ return state.answers.local_i === 1 ? 'casa' : 'academia'; }
-
-function metaKcal(){
-  const peso = num('peso'), altura = num('altura'), idade = num('idade');
-  if(!peso || !altura || !idade) return 0;
-  const base = 10*peso + 6.25*altura - 5*idade;
-  const tmb  = state.answers.sexo === 'masculino' ? base + 5 : base - 161;
-  const obj  = objetivoId();
-  const fator = obj === 'emagrecimento' ? 0.80 : obj === 'hipertrofia' ? 1.12 : 1.00;
-  return Math.round(tmb * 1.45 * fator / 10) * 10;
-}
-function metaAgua(){
-  const bruto = num('peso') * 35;
-  return Math.max(1500, Math.min(4500, Math.round(bruto/500)*500));
-}
-function metaProt(){
-  const obj = objetivoId();
-  const gkg = obj === 'emagrecimento' ? 2.0 : obj === 'hipertrofia' ? 1.8 : 1.6;
-  return Math.round(num('peso') * gkg);
-}
-function imc(){
-  const p = num('peso'), a = num('altura')/100;
-  return a ? +(p/(a*a)).toFixed(1) : 0;
-}
-function difPeso(){ return +(num('peso') - num('meta_peso')).toFixed(1); }
-
-/* ---------------------------------------------------------
-   ÍNDICE DE CONSTÂNCIA (0 a 100)
-   Não é exame nem promessa: é a soma do que a própria pessoa
-   respondeu sobre a rotina dela. Por isso é honesto mostrar.
-   Cada bloco vale o quanto pesa no resultado do dia a dia.
-   --------------------------------------------------------- */
-const PESOS_INDICE = {
-  frequencia: [0, 8, 18, 25],       /* nenhuma / 1-2 / 3-4 / 5+        (25) */
-  refeicoes:  [0, 6, 14, 20],       /* sem rotina / desanda / mais ou menos / organizada (20) */
-  sono:       [0, 5, 15, 13],       /* <5 / 5-6 / 7-8 / >8             (15) */
-  proteina:   [0, 5, 10],           /* não faz ideia / no olho / conta (10) */
-  agua:       [0, 6, 10],           /* <1L / 1-2L / >2L                (10) */
-  tentativas: [0, 4, 8, 10]         /* perdi a conta / 3-4 / 1-2 / primeira (10) */
-};
-const INDICE_MAX = 90;
-
-function calcIndice(){
-  let soma = 0;
-  for(const id in PESOS_INDICE){
-    const i = state.answers[id + '_i'];
-    if(typeof i === 'number') soma += (PESOS_INDICE[id][i] || 0);
-  }
-  return Math.round((soma / INDICE_MAX) * 100);
-}
-
-function faixaIndice(v){
-  if(v < 35) return { nome:'Muito baixa', cor:'#E05A4E',
-    txt:'A sua rotina hoje não sustenta um resultado, por mais vontade que você tenha.' };
-  if(v < 60) return { nome:'Baixa', cor:'#F0A500',
-    txt:'Você acerta em alguns dias e perde em outros. É isso que apaga o progresso da semana.' };
-  if(v < 80) return { nome:'Média', cor:'#3B82C4',
-    txt:'Você já faz bastante coisa certa. O que falta é ela acontecer todo dia, não só nos dias bons.' };
-  return { nome:'Alta', cor:'#159A55',
-    txt:'A sua base já é boa. O que falta é organização e acompanhamento para o esforço virar resultado.' };
-}
-
-/* o ponto fraco que mais pesa hoje — usado na personalização */
-function elosFracos(){
-  const rot = {
-    frequencia:'treino', refeicoes:'alimentação', sono:'sono',
-    proteina:'proteína', agua:'água', tentativas:'constância'
-  };
-  return Object.keys(PESOS_INDICE).map(id => {
-    const i = state.answers[id + '_i'];
-    const max = Math.max(...PESOS_INDICE[id]);
-    const val = typeof i === 'number' ? (PESOS_INDICE[id][i] || 0) : 0;
-    return { id, rotulo: rot[id], perdido: max - val };
-  }).sort((a,b) => b.perdido - a.perdido);
-}
-
-/* =========================================================
-   ANALISANDO
-   ========================================================= */
-const PASSOS_ANALISE = [
-  'Lendo as suas respostas',
-  'Calculando a sua meta de calorias',
-  'Medindo o seu ' + PRODUTO.indice,
-  'Montando o seu plano de treino',
-  'Liberando o seu diagnóstico'
-];
-
-function renderAnalyzing(){
-  app.innerHTML = `
-  <div class="wrap fade">
-    <div class="card-quiz" style="padding-top:38px;padding-bottom:38px">
-      <div class="analise-title">Analisando as suas respostas</div>
-      <div class="progress-bar"><div class="progress-fill" id="anProg" style="width:0%"></div></div>
-      <div class="analise-list">
-        ${PASSOS_ANALISE.map((p,i)=>`<div class="analise-item" id="an${i}"><span class="ic">${i+1}</span><span>${p}</span></div>`).join('')}
-      </div>
-    </div>
-  </div>`;
-
-  const DUR = 5000;
-  const barra = document.getElementById('anProg');
-  const inicio = performance.now();
-  /* smootherstep: começa devagar, acelera no meio, freia no fim */
-  const suave = t => t*t*t*(t*(t*6-15)+10);
-
-  function passo(agora){
-    const t = Math.min(1, (agora - inicio) / DUR);
-    barra.style.width = (suave(t) * 100) + '%';
-    const feitos = Math.floor(suave(t) * PASSOS_ANALISE.length);
-    for(let i = 0; i < feitos; i++){
-      const el = document.getElementById('an' + i);
-      if(el && !el.classList.contains('done')){
-        el.classList.add('done');
-        el.querySelector('.ic').textContent = '✓';
-      }
-    }
-    if(t < 1) requestAnimationFrame(passo);
-    else setTimeout(() => go(1), 360);
-  }
-  requestAnimationFrame(passo);
-}
-
-/* =========================================================
-   DIAGNÓSTICO
-   A mesma função nas duas aparições:
-   - curta (meio do quiz): entrega uma leitura real e cria a
-     curiosidade pelo índice, sem mostrar o número ainda.
-   - completa (full): o número, as metas calculadas e a virada.
-   ========================================================= */
-function renderDiagnostico(full){
-  const nome = nomeDe();
-  const v    = calcIndice();
-  const f    = faixaIndice(v);
-  const frac = elosFracos();
-  const kcal = metaKcal();
-  const pct  = full ? 100 : pctAte('proteina');
-
-  /* ---- versão curta ---- */
-  if(!full){
-    /* atenção: aqui só valem respostas até a pergunta 10.
-       tentativas e abandono ainda não foram feitas. */
-    const ref = state.answers.refeicoes_i;
-    const texto = ref === 1
-      ? `Você disse que começa bem e desanda à noite. Isso não é falta de disciplina: é o que acontece com quase todo mundo que passa o dia decidindo cada refeição na hora. No fim do dia a decisão fica cara demais.`
-      : ref === 0
-        ? `Você disse que cada dia é de um jeito. E é exatamente aí que o resultado se perde: não no que você come num dia ruim, mas em nunca saber de antemão o que vem no próximo.`
-        : `Você já segue mais ou menos uma linha. E mesmo assim o resultado não aparece do jeito que deveria. Isso quase nunca é sobre esforço.`;
-
-    return app.innerHTML = `
-    <div class="wrap fade">
-      <div class="card-quiz">
-        ${backBtn()}
-        <div class="brand">${PRODUTO.nome}</div>
-        <div class="brand-sub">Primeira leitura</div>
-        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-
-        <h2 class="q-title" style="font-size:22px">${nome ? nome + ', o' : 'O'} problema não é onde você acha que é</h2>
-
-        <div class="ponto">
-          <div class="n">O que já dá pra ver</div>
-          <p>${texto}</p>
-          <p>Ninguém engorda por não saber que refrigerante engorda. <b>O que derruba a maioria não é falta de informação, é falta de estrutura no dia comum</b>: o dia corrido, o dia cansado, o dia em que deu tudo errado.</p>
-        </div>
-
-        <div class="ponto">
-          <div class="n">Por que isso importa pra você</div>
-          <p>Com o que você já respondeu, dá pra calcular quanto o seu corpo precisa comer por dia e quanto ele está deixando de aproveitar do seu esforço.</p>
-          <p><b>Faltam poucas perguntas</b> para fechar o seu ${PRODUTO.indice} e liberar os seus números.</p>
-        </div>
-
-        <button class="btn" onclick="go(1)">Continuar o teste →</button>
-      </div>
-    </div>`;
-  }
-
-  /* ---- versão completa ---- */
-  const R = 78, C = 2 * Math.PI * R;
-  const off = C * (1 - v/100);
-  const dif = difPeso();
-  const obj = objetivoId();
-  const frase_obj = obj === 'hipertrofia'
-    ? 'ganhar massa' : obj === 'manutencao' ? 'manter e definir' : 'emagrecer';
-
-  const abandono = [
-    'você desanima quando o resultado demora a aparecer',
-    'você trava quando a rotina fica complicada demais',
-    'um escorregão vira o fim da dieta inteira',
-    'você fica sem saber se está fazendo certo',
-    'você não tem ninguém acompanhando de perto'
-  ][state.answers.abandono_i] || 'a rotina não se sustenta';
-
-  app.innerHTML = `
-  <div class="wrap fade">
-    <div class="card-quiz">
-      <div class="diag-tag">Seu diagnóstico</div>
-
-      <div class="gauge">
-        <svg width="190" height="190" viewBox="0 0 190 190">
-          <circle class="trilho" cx="95" cy="95" r="${R}"/>
-          <circle class="arco" cx="95" cy="95" r="${R}" stroke="${f.cor}"
-                  stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${C.toFixed(1)}" id="arco"/>
-        </svg>
-        <div class="gauge-centro">
-          <div class="gauge-num" style="color:${f.cor}">${v}</div>
-          <div class="gauge-lbl">de 100</div>
-        </div>
-      </div>
-      <div class="faixa" style="color:${f.cor}">Constância ${f.nome}</div>
-      <p class="faixa-sub">${nome ? nome + ', ' + f.txt.charAt(0).toLowerCase() + f.txt.slice(1) : f.txt}</p>
-
-      ${v < 60 ? `
-        <div class="alerta">
-          <div class="t">⚠️ O seu esforço está vazando</div>
-          <div class="s">Com esse índice, boa parte do que você faz nos dias bons é desfeita nos dias ruins. Não é o esforço que está faltando: é ele não estar chegando inteiro no fim da semana.</div>
-        </div>` : ''}
-
-      <h3 class="secao-tt" style="margin-top:22px">Os seus números</h3>
-      <div class="numeros">
-        <div class="num-box"><div class="v">${kcal}<small>kcal</small></div><div class="l">Sua meta por dia para ${frase_obj}</div></div>
-        <div class="num-box"><div class="v">${metaProt()}<small>g</small></div><div class="l">De proteína por dia</div></div>
-        <div class="num-box"><div class="v">${(metaAgua()/1000).toFixed(1).replace('.',',')}<small>L</small></div><div class="l">De água por dia</div></div>
-        <div class="num-box"><div class="v">${imc().toString().replace('.',',')}</div><div class="l">Seu IMC hoje</div></div>
-      </div>
-      <p class="price-just" style="margin-bottom:20px">Calculado com <b>Mifflin-St Jeor</b> a partir do seu peso, altura, idade e objetivo. É o mesmo cálculo que o ${PRODUTO.nome} usa por dentro.</p>
-
-      <h3 class="secao-tt">2 pontos que o teste identificou</h3>
-
-      <div class="ponto">
-        <div class="n">1 · Onde o seu resultado está vazando</div>
-        <p>Os dois pontos que mais pesam contra você hoje são <b>${frac[0].rotulo}</b> e <b>${frac[1].rotulo}</b>. Não é que você não saiba disso. É que ninguém transformou isso em uma instrução do que fazer hoje, nesta refeição, neste treino.</p>
-        <p>Somando tudo, o seu índice ficou em <b>${v} de 100</b>. Cada ponto aí é um dia em que o esforço não vira resultado.</p>
-      </div>
-
-      <div class="ponto">
-        <div class="n">2 · Por que as outras vezes não foram pra frente</div>
-        <p>Você disse que, quando para, é porque <b>${abandono}</b>. Guarde isso, porque é o ponto exato onde toda dieta que você tentou quebrou.</p>
-        <p>Plano nenhum falha na semana 1. <b>Ele falha na semana 3</b>, quando a novidade passa e sobra só a rotina. É essa parte que quase nenhum plano resolve.</p>
-      </div>
-
-      ${dif > 0 ? `
-        <div class="ponto" style="border-color:#F0DFB4;background:var(--ambar-tint)">
-          <div class="n" style="color:#8A6100">O que você me disse que quer</div>
-          <p>Sair de <b>${num('peso')} kg</b> e chegar em <b>${num('meta_peso')} kg</b>. São <b>${dif} kg</b> de diferença, e essa conta não muda por motivação: muda por quantos dias seguidos você consegue fazer o simples.</p>
-        </div>` : ''}
-
-      <button class="btn" style="margin-top:18px" onclick="go(1)">Ver o que fazer com isso →</button>
-      <p style="font-size:11.5px;color:var(--cinza-c);text-align:center;margin-top:14px;line-height:1.6;font-weight:600">
-        Este teste é orientativo e não substitui acompanhamento médico ou nutricional.
-      </p>
-    </div>
-  </div>`;
-
-  /* anima o arco depois de pintar a tela */
-  requestAnimationFrame(() => {
-    const arco = document.getElementById('arco');
-    if(arco) arco.style.strokeDashoffset = off.toFixed(1);
+  rangeEl.addEventListener('input',update);
+  document.querySelectorAll('#uToggle .ut').forEach(b=>{
+    b.onclick=()=>{
+      const ni=parseInt(b.dataset.i,10); if(ni===uIdx) return;
+      const cur=parseFloat(rangeEl.value), to=q.units[ni];
+      let conv;
+      if(q.id==='peso') conv = (to.u==='lb') ? cur*2.2046 : cur/2.2046;
+      else conv = (to.u==='pol') ? cur/2.54 : cur*2.54;
+      uIdx=ni;
+      document.querySelectorAll('#uToggle .ut').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      rangeEl.min=to.min; rangeEl.max=to.max; rangeEl.step=to.step;
+      rangeEl.value=Math.min(to.max,Math.max(to.min,Math.round(conv)));
+      unitEl.textContent=to.u; setLabels(to); update();
+    };
   });
+  setLabels(u0); update();
+  document.getElementById('rNext').onclick=()=>{ state.answers[q.id]=Math.round(parseFloat(rangeEl.value))+' '+q.units[uIdx].u; trackResposta(q.id, state.answers[q.id]); go(1); };
 }
 
-/* =========================================================
-   MINI-VSLs
-   Duas, com o mesmo expert:
-   1) o mecanismo do PROBLEMA — por que sempre quebra
-   2) o mecanismo da SOLUÇÃO — o que o app faz diferente
-   Enquanto o vídeo não estiver pronto, o roteiro fica
-   visível na tela e o funil roda mesmo assim. Para ligar o
-   vídeo, troque o conteúdo de .video-box pelo embed.
-   ========================================================= */
-const VSLS = {
-  1: {
-    tag: 'Assista antes de continuar',
-    pergunta: a => `${nomeDe() ? nomeDe() + ', por' : 'Por'} que você <span>já sabe o que fazer</span> e mesmo assim não faz?`,
-    duracao: '2 min',
-    roteiro: a => `
-      <p>Deixa eu te falar uma coisa que ninguém fala: <strong>você não tem um problema de informação</strong>. Você sabe que precisa comer melhor, beber água, treinar e dormir. Todo mundo sabe.</p>
-      <p>O que acontece é outra coisa. Toda dieta que você já fez foi desenhada para o seu dia bom. O dia em que deu tempo de cozinhar, em que você foi treinar, em que dormiu bem.</p>
-      <p>Só que a sua semana não é feita de dias bons. Ela é feita de dia corrido, dia cansado, dia que a criança adoeceu, dia que a reunião passou da hora. <strong>É nesses dias que o plano quebra</strong>, e é neles que ninguém te dá instrução nenhuma.</p>
-      <p>Aí o que sobra é você achando que o problema é a sua força de vontade. Não é. <strong>É que ninguém nunca te deu o que fazer no dia ruim.</strong></p>
-      <p>Continue o teste, porque na próxima parte eu te mostro o número exato de como isso está te custando hoje.</p>`
-  },
-  2: {
-    tag: 'A parte que resolve',
-    pergunta: a => `O que muda quando <span>alguém decide por você</span> todo dia`,
-    duracao: '3 min',
-    roteiro: a => `
-      <p>Olha o seu número de novo: <strong>${calcIndice()} de 100</strong>. Esse número não mede o seu esforço. Ele mede quantos dias da sua semana têm estrutura.</p>
-      <p>E estrutura não é motivação. Motivação some. Estrutura é abrir o celular de manhã e já estar escrito: <strong>é isso que você come no café, é esse o seu treino de hoje, é essa a sua meta de água</strong>. Sem escolher, sem calcular, sem pensar.</p>
-      <p>É por isso que quem tem nutricionista e personal costuma ir mais longe. Não é porque a pessoa sabe mais. É porque tem alguém decidindo por ela e olhando o que ela fez.</p>
-      <p>O que eu montei foi exatamente isso, só que dentro do seu celular e por um preço que cabe: <strong>${PRODUTO.nome}</strong>. Ele pega os seus números, os mesmos que o teste acabou de calcular, e transforma em um dia de cada vez.</p>
-      <p>Na próxima tela eu te mostro como ele funciona e o que você recebe.</p>`
-  }
-};
-
-function renderVSL(n){
-  const v = VSLS[n];
+/* ---------- BREAK 1 (conexão + para quem é + por que ficar) ---------- */
+function renderBreak1(){
+  const nome = state.answers.nome && state.answers.nome!=='você' ? state.answers.nome : '';
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}
-      <span class="vsl-tag">${v.tag}</span>
-      <h2 class="vsl-ask">${v.pergunta(state.answers)}</h2>
-      <p class="vsl-quem">${EXPERT.nome} · ${EXPERT.credencial}</p>
-
-      <div class="video-box" id="vslBox">
-        <div class="play">▶</div>
-        <div class="vlabel">Vídeo ${n} de 2 · ${v.duracao}</div>
-        <div class="vname">${EXPERT.nome}</div>
-        <div class="vhint">substitua esta caixa pelo embed do vídeo</div>
-      </div>
-
-      <div class="roteiro">
-        <h4>O que ${EXPERT.nome.split(' ')[0]} explica neste vídeo</h4>
-        ${v.roteiro(state.answers)}
-      </div>
-
-      <button class="btn" onclick="go(1)">${n === 1 ? 'Continuar o teste →' : 'Quero ver como funciona →'}</button>
+      <div class="brand-sub" style="margin-bottom:14px;">Antes de continuar</div>
+      <span class="hist-tag">Isso aqui é pra você?</span>
+      <p class="inter-text" style="text-align:center;font-weight:700;color:var(--verde-escuro);margin-bottom:18px;">${nome?nome+', se':'Se'} você usa a canetinha ou já usou, você está no lugar certo.</p>
+      <p class="inter-text" style="text-align:center;">Nas próximas perguntas a gente vai medir <strong>o seu Índice de GLP-1 Natural</strong>: o quanto o seu corpo ainda produz sozinho o mesmo hormônio que a aplicação injeta toda semana.</p>
+      <p class="inter-text" style="text-align:center;">É esse número que decide se você vai continuar emagrecendo, se vai travar na balança e o que acontece com o seu peso no dia em que a caneta sair. <strong>Vá até o final</strong>: é lá que o diagnóstico é liberado.</p>
+      <button class="btn" onclick="go(1)">Isso é para mim →</button>
     </div>
   </div>`;
 }
 
-/* =========================================================
-   OFERTA — última tela do quiz, já é a página de venda
-   ========================================================= */
-const INCLUI = [
-  ['🍽️','Cardápio calculado no seu número','As suas ' + '{KCAL}' + ' kcal viram café, almoço, lanches e jantar, com gramagem. Você marca o que comeu e vê quanto falta.'],
-  ['🔁','Troca de alimento em um toque','Não gosta de ovo? Troca. O cardápio e a lista de compras se ajustam sozinhos, sem sair da meta.'],
-  ['🗓️','Cardápio novo ao longo da semana','Três variações de cada refeição, girando por dia. Você não come a mesma coisa segunda e sábado.'],
-  ['🛒','Lista de compras da semana pronta','Some tudo o que você vai comer nos 7 dias, já com as suas trocas. É só levar pro mercado.'],
-  ['🏋️','Treino do seu sexo e do seu lugar','{LOCAL}. Divisão da semana, séries, repetições e descanso. Com cardio na dose do seu objetivo.'],
-  ['📖','48 exercícios com execução explicada','Para você não fazer errado nem depender de vídeo aleatório.'],
-  ['📈','Registro de carga e evolução','Anota o peso que você levantou e mostra se está subindo. É a prova de que está funcionando.'],
-  ['💧','Metas de água e de sono','Calculadas pelo seu peso. Não é regra de internet, é a sua conta.'],
-  ['🏆','Níveis e pontos','Cada coisa marcada vira ponto. São 10 níveis. É o que segura você nos dias em que a balança não mexe.'],
-  ['☁️','Sua conta na nuvem','Troca de celular e continua de onde parou.']
-];
+function renderInterstitial(id){
+  const it = INTERSTITIALS[id]; const a = state.answers;
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz">
+      <div class="brand-sub" style="margin-bottom:14px;">Diagnóstico personalizado</div>
+      <div class="inter-badge"><span class="ic">${it.icon}</span><span class="tt">${it.title}</span></div>
+      <p class="inter-text">${it.text(a)}</p>
+      ${it.mini?`<p class="inter-mini">${it.mini}</p>`:''}
+      <button class="btn" onclick="go(1)">Continuar</button>
+    </div>
+  </div>`;
+}
 
-const FAQS = [
-  ['Preciso de academia?', 'Não. No teste você escolheu onde vai treinar e o app monta o plano em cima disso: se for em casa, o treino usa pouco ou nenhum equipamento.'],
-  ['Vou passar fome?', 'Não é esse o desenho. A sua meta foi calculada pelo seu corpo, com proteína alta para segurar a fome, e o cardápio tem lanches e refeição livre.'],
-  ['E se eu não gostar de algum alimento?', 'Cada alimento tem um botão de troca com outras opções. Você escolhe e o cardápio e a lista de compras se ajustam sozinhos, sem sair da meta.'],
-  ['Funciona no meu celular?', 'Funciona em qualquer celular com internet, Android ou iPhone. Não precisa baixar nada na loja: abre no navegador e dá para deixar um atalho na tela inicial.'],
-  ['É cobrado todo mês?', 'Não. O pagamento é uma vez só e o acesso continua seu.'],
-  ['E se não for pra mim?', 'Você tem 7 dias para pedir o dinheiro de volta, sem precisar explicar nada.']
-];
+/* ---------- MINI-VSL 1 (mecanismo, credibilidade, autoridade) ---------- */
+/* ---------- BREAK 2 (substitui a mini-VSL — mecanismo + virada) ---------- */
+/* ---------- PROJEÇÃO FINAL (depois de outros_objetivos, antes do result) ---------- */
+function renderProjecao(){
+  const a = state.answers;
+  const nome = a.nome && a.nome!=='você' ? a.nome : '';
+  const idx = calcIndiceGLP();
+  const niv = nivelGLP(idx);
+  /* estimativa educativa antes/depois, a partir de respostas reais (sono, estresse, massa) —
+     nunca um número solto: sempre calculado e rotulado como estimativa */
+  const sono = a.sono || '', estresse = a.estresse || '';
+  let disposicaoAntes = sono.includes('Menos de 5h') ? 28 : sono.includes('5 e 7h') ? 42 : 55;
+  if(estresse.includes('Alto')) disposicaoAntes -= 12; else if(estresse.includes('Moderado')) disposicaoAntes -= 4;
+  disposicaoAntes = Math.max(15, Math.min(60, disposicaoAntes));
+  const autoestimaAntes = Math.max(20, Math.min(55, Math.round(idx*0.75)));
+  const satisfacaoAntes = (a.massa||'').includes('Sim') ? 32 : 42;
+  const colateraisArr = Array.isArray(a.colaterais) ? a.colaterais : (a.colaterais ? [a.colaterais] : []);
+  const temSintomas = colateraisArr.some(c=>c && !c.includes('Nenhum'));
+  let controleFomeAntes = (a.fome||'').includes('pouco') ? 30 : 38;
+  if(temSintomas) controleFomeAntes -= 8;
+  controleFomeAntes = Math.max(15, Math.min(45, controleFomeAntes));
+  const disposicaoDepois = Math.min(95, disposicaoAntes+55);
+  const autoestimaDepois = Math.min(92, autoestimaAntes+60);
+  const satisfacaoDepois = Math.min(90, satisfacaoAntes+48);
+  const controleFomeDepois = Math.min(90, controleFomeAntes+50);
+  const metrica = (label,antes,depois)=>`
+        <div class="glp-metric"><div class="glp-metric-top"><span class="nome">${label}</span><span class="val">${antes}%</span></div><div class="glp-bar"><div class="glp-bar-fill" style="width:${antes}%"></div></div></div>`;
+  const metricaBom = (label,antes,depois)=>`
+        <div class="glp-metric"><div class="glp-metric-top"><span class="nome">${label}</span><span class="val">${depois}%</span></div><div class="glp-bar"><div class="glp-bar-fill" style="width:${depois}%"></div></div></div>`;
 
-function renderOferta(){
-  const nome = nomeDe();
-  const v = calcIndice();
-  const kcal = metaKcal();
-  const localTxt = localId() === 'casa' ? 'Você escolheu treinar em casa' : 'Você escolheu treinar na academia';
-  const dif = difPeso();
+
+  /* curva de evolução (0-100, estimativa educativa, não é kg nem resultado garantido) */
+  const diasCurva = [1,3,5,7,10,14];
+  const valsCurva = [8,18,40,58,70,93];
+  const labelsCurva = ['Ponto de partida','Adaptação','Primeiros sinais','Virada de chave','Aceleração','Consolidação'];
+  const coresCurva = ['#e05a4e','#e58a4e','#f0c05a','#8fb85a','#5ec27a','#4caf82'];
+  const xC = d => 20 + (d-1)/13*280;
+  const yC = v => 160 - (v/100)*100;
+  const pontosCurva = diasCurva.map((d,i)=>({x:xC(d), y:yC(valsCurva[i]), label:labelsCurva[i], cor:coresCurva[i], dia:d}));
+  const pathCurva = pontosCurva.map((p,i)=>(i===0?'M':'L')+p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ');
+  const areaCurva = pathCurva+` L${pontosCurva[pontosCurva.length-1].x.toFixed(1)},160 L${pontosCurva[0].x.toFixed(1)},160 Z`;
+  const curvaHTML = `
+      <div class="proj-chart-tt">Sua curva estimada de evolução no protocolo</div>
+      <div class="proj-chart-wrap">
+        <svg viewBox="0 0 320 170" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="projLineGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#e05a4e"/>
+              <stop offset="50%" stop-color="#f0c05a"/>
+              <stop offset="100%" stop-color="#4caf82"/>
+            </linearGradient>
+            <linearGradient id="projAreaGrad" x1="20" y1="160" x2="300" y2="20" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#e8544a"/>
+              <stop offset="50%" stop-color="#f0b93f"/>
+              <stop offset="100%" stop-color="#42b17a"/>
+            </linearGradient>
+          </defs>
+          <line x1="20" y1="160" x2="300" y2="160" stroke="#e3ede8" stroke-width="1"/>
+          <line x1="20" y1="110" x2="300" y2="110" stroke="#e3ede8" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="20" y1="60" x2="300" y2="60" stroke="#e3ede8" stroke-width="1" stroke-dasharray="3,3"/>
+          ${pontosCurva.map(p=>`<line x1="${p.x.toFixed(1)}" y1="${p.y.toFixed(1)}" x2="${p.x.toFixed(1)}" y2="160" stroke="#e3ede8" stroke-width="1" stroke-dasharray="2,3"/>`).join('')}
+          <path d="${areaCurva}" fill="url(#projAreaGrad)" fill-opacity=".55" stroke="none"/>
+          <path d="${pathCurva}" fill="none" stroke="url(#projLineGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          ${pontosCurva.map(p=>`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4.5" fill="#fff" stroke="${p.cor}" stroke-width="3"/>`).join('')}
+        </svg>
+        ${pontosCurva.map(p=>`<div class="proj-chart-label" style="left:${(p.x/320*100).toFixed(1)}%;top:${(p.y/170*100).toFixed(1)}%;border-color:${p.cor};color:${p.cor};">${p.label}</div>`).join('')}
+      </div>
+      <div class="proj-chart-days">
+        ${pontosCurva.map(p=>`<div class="proj-chart-day" style="left:${(p.x/320*100).toFixed(1)}%;">Dia ${String(p.dia).padStart(2,'0')}</div>`).join('')}
+      </div>
+`;
 
   app.innerHTML = `
   <div class="wrap fade">
-    <div class="oferta">
+    <div class="card-quiz">
+      ${backBtn()}<div class="brand"><span class="brand-nome">Protocolo GLP-1 Natural</span></div>
+      <div class="brand-sub">Diagnóstico personalizado</div>
+      <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:100%"></div></div>
 
-      <div class="card-quiz" style="text-align:center">
-        <div class="diag-tag">Seu plano está pronto</div>
-        <h2 class="of-h">${nome ? nome + ', ' : ''}o seu teste virou <span>um plano de verdade</span></h2>
-        <p class="of-sub">Tudo o que o diagnóstico calculou já está montado dentro do ${PRODUTO.nome}, esperando você entrar.</p>
-        <div class="numeros" style="margin-bottom:0">
-          <div class="num-box"><div class="v">${kcal}<small>kcal</small></div><div class="l">Sua meta diária</div></div>
-          <div class="num-box"><div class="v">${metaProt()}<small>g</small></div><div class="l">De proteína</div></div>
-          <div class="num-box"><div class="v">${(metaAgua()/1000).toFixed(1).replace('.',',')}<small>L</small></div><div class="l">De água</div></div>
-          <div class="num-box"><div class="v">${v}<small>/100</small></div><div class="l">Seu índice hoje</div></div>
+      <h2 class="q-title" style="margin-top:18px;">${nome?nome+', a':'A'}qui está a sua projeção com o Protocolo GLP-1 Natural de 14 dias</h2>
+
+${curvaHTML}
+
+      <div class="proj-compare" style="margin-top:22px;">
+        <div class="proj-compare-col ruim">
+          <img src="projecao-hoje.jpg" alt="Hoje" class="proj-compare-img" onerror="this.remove()">
+          <h5>Hoje</h5>
+          ${metrica('Nível de disposição', disposicaoAntes)}
+          ${metrica('Autoestima', autoestimaAntes)}
+          ${metrica('Satisfação com o corpo', satisfacaoAntes)}
+          ${metrica('Controle da fome', controleFomeAntes)}
+        </div>
+        <div class="proj-compare-col bom">
+          <img src="projecao-protocolo.jpg" alt="Com o protocolo" class="proj-compare-img" onerror="this.remove()">
+          <h5>Com o protocolo</h5>
+          ${metricaBom('Nível de disposição', disposicaoAntes, disposicaoDepois)}
+          ${metricaBom('Autoestima', autoestimaAntes, autoestimaDepois)}
+          ${metricaBom('Satisfação com o corpo', satisfacaoAntes, satisfacaoDepois)}
+          ${metricaBom('Controle da fome', controleFomeAntes, controleFomeDepois)}
         </div>
       </div>
 
-      <h3 class="secao-tt">O que tem dentro</h3>
-      <div class="lista-check">
-        ${INCLUI.map(([ic,t,s])=>`
-          <div class="item-check">
-            <div class="ic">${ic}</div>
-            <div><div class="t">${t}</div><div class="s">${s.replace('{KCAL}', kcal).replace('{LOCAL}', localTxt)}</div></div>
-          </div>`).join('')}
+      <div class="proj-compare">
+        <div class="proj-compare-col ruim">
+          <h5>Só a canetinha</h5>
+          <ul>
+            <li>✗ Hormônio natural continua desligado</li>
+            <li>✗ Resultado depende 100% da aplicação</li>
+            <li>✗ Balança travada na mesma dose</li>
+            <li>✗ Medo de reduzir e engordar tudo</li>
+          </ul>
+        </div>
+        <div class="proj-compare-col bom">
+          <h5>Canetinha + Método</h5>
+          <ul>
+            <li>✓ Hormônio natural sendo reativado</li>
+            <li>✓ Protocolo pensado pra sustentar o resultado</li>
+            <li>✓ Mais resultado com a mesma aplicação</li>
+            <li>✓ Um plano claro pra reduzir a dose</li>
+          </ul>
+        </div>
       </div>
 
-      <h3 class="secao-tt">Quanto custa</h3>
-      <div class="price-box">
-        <div class="label">Acesso ao ${PRODUTO.nome}</div>
-        <div class="de">De R$ ${PRECO.de}</div>
-        <div class="val"><sup>R$</sup>${PRECO.por}<span style="font-size:26px">${PRECO.centavos}</span></div>
-        <div class="por">pagamento único, sem mensalidade</div>
-        <div class="off">Condição desta página</div>
-      </div>
-      <p class="price-just">Uma consulta de nutricionista custa mais do que isso e vale um dia. <b>Aqui o plano se ajusta sozinho todo dia</b>, com o seu número recalculado sempre que o seu peso muda.</p>
-
-      <div style="height:18px"></div>
-      <button class="btn" onclick="irParaCheckout()">Quero começar agora →</button>
-      <p style="text-align:center;font-size:12px;color:var(--cinza-c);margin-top:12px;font-weight:600">🔒 Compra segura · acesso liberado na hora</p>
-
-      <h3 class="secao-tt">Se não for pra você</h3>
-      <div class="garantia">
-        <div class="em">🛡️</div>
-        <h4>7 dias de garantia</h4>
-        <p>Entre, use, monte a sua semana. Se em 7 dias você achar que não é pra você, pede o dinheiro de volta e devolvemos. Sem formulário, sem pergunta.</p>
+      <div style="background:#e9f6ee;border-radius:14px;padding:20px 18px;margin:22px 0 14px;text-align:center;">
+        <h4 style="margin:0 0 10px;font-size:17px;color:#1a1a1a;">Seu Plano Personalizado <span style="color:var(--verde);">Protocolo GLP-1 Natural</span></h4>
+        <p style="font-size:14.5px;color:var(--verde-escuro);font-weight:800;line-height:1.6;margin:0 0 12px;">Baseado nas suas respostas, criamos um protocolo 100% personalizado pra reativar o seu GLP-1 natural, com o próximo passo pensado pros seus 14 primeiros dias.</p>
+        <p style="font-size:14px;color:#4a4a4a;font-weight:400;line-height:1.65;margin:0;">O protocolo contém os <strong>estímulos certos</strong> pra ativar sua produção natural de saciedade e reduzir o risco de efeito rebote, respeitando sua rotina e o que mais te incomoda hoje.</p>
       </div>
 
-      <h3 class="secao-tt">Perguntas que todo mundo faz</h3>
-      <div>
-        ${FAQS.map(([q,a],i)=>`
-          <div class="faq-item" id="faq${i}">
-            <button class="faq-q" onclick="toggleFaq(${i})"><span>${q}</span><span class="sinal">+</span></button>
-            <div class="faq-a"><p>${a}</p></div>
-          </div>`).join('')}
+      <!-- COMO FUNCIONA O PROTOCOLO -->
+      <h4 style="text-align:center;margin:18px 0 16px;font-size:17px;color:#1a1a1a;">Como funciona o Protocolo GLP-1 Natural?</h4>
+      <div class="valor-box" style="text-align:left;padding:18px 20px;">
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:18px;">
+          <span style="color:var(--verde);font-size:16px;line-height:1.5;flex-shrink:0;">☑</span>
+          <span style="font-size:13.5px;color:#4a4a4a;line-height:1.55;"><strong style="color:var(--verde);">Ativação:</strong> as 3 partes do gatilho e como colocar todas no seu prato: proteína suficiente, fibra fermentável e a ordem de comer que muda a sua fome nas horas seguintes. E o erro que quase toda mulher na canetinha comete e que desliga essa produção.</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:18px;">
+          <span style="color:var(--verde);font-size:16px;line-height:1.5;flex-shrink:0;">☑</span>
+          <span style="font-size:13.5px;color:#4a4a4a;line-height:1.55;"><strong style="color:var(--verde);">Blindagem:</strong> por que boa parte do peso que sai na canetinha é músculo e não gordura, quanta proteína você realmente precisa comendo pouco, e como distribuir nos horários que mais protegem a sua massa magra.</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:18px;">
+          <span style="color:var(--verde);font-size:16px;line-height:1.5;flex-shrink:0;">☑</span>
+          <span style="font-size:13.5px;color:#4a4a4a;line-height:1.55;"><strong style="color:var(--verde);">Redução:</strong> os sinais de que o seu corpo já está pronto para uma dose menor, por que reduzir aos poucos funciona e parar de uma vez costuma dar errado, e o que comer nas semanas de redução para a fome não te pegar de surpresa.</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <span style="color:var(--verde);font-size:16px;line-height:1.5;flex-shrink:0;">☑</span>
+          <span style="font-size:13.5px;color:#4a4a4a;line-height:1.55;"><strong style="color:var(--verde);">Liberdade:</strong> o que fazer em cada dia, do dia 1 ao dia 14, uma mudança por vez, sem virar a sua rotina de cabeça para baixo. Com checklist diário e o plano de resgate para os dias em que a fome bater mais forte.</span>
+        </div>
       </div>
 
-      <div style="height:24px"></div>
-      <button class="btn" onclick="irParaCheckout()">Começar meu plano →</button>
+      <!-- COMPARE OS CUSTOS -->
+      <h4 style="text-align:center;margin:26px 0 12px;font-size:17px;color:var(--verde-escuro);">Compare o custo de continuar assim:</h4>
+      <div class="valor-box">
+        <div class="valor-row"><span class="lbl">Aplicação por mês</span><span class="num">R$ 800–3.000</span></div>
+        <div class="valor-row"><span class="lbl">Consulta e retornos</span><span class="num">R$ 300–800</span></div>
+        <div class="valor-row"><span class="lbl">Exames de acompanhamento</span><span class="num">R$ 0–1.140</span></div>
+        <div class="valor-row"><span class="lbl">Suplementação</span><span class="num">R$ 200–950</span></div>
+        <div class="valor-row total" style="background:#e9f6ee;"><span class="lbl">Protocolo GLP-1 Natural</span><span class="num" style="color:var(--verde-escuro);">R$ 29,90</span></div>
+      </div>
+      <p style="font-size:12.5px;color:#8a9a92;line-height:1.55;margin:10px 0 0;text-align:center;">Reativar a sua própria produção custa menos que 1 dia de canetinha, uma vez só.</p>
 
-      ${dif > 0 ? `<p class="price-just" style="margin-top:16px">Você me disse que quer sair de ${num('peso')} kg e chegar em ${num('meta_peso')} kg. <b>O primeiro dia disso pode ser hoje.</b></p>` : ''}
+      <!-- SUA DECISÃO -->
+      <div class="res-section" style="padding:26px 0 0;">
+        <h2 class="res-h2" style="font-size:20px;">Sua decisão <span>agora</span></h2>
+        <div class="dec-grid">
+          <div class="dec-col op1">
+            <div class="dt">Opção 1</div>
+            Continuar pagando mais de mil reais por mês por uma aplicação que segura o seu peso mas não ensina nada ao seu corpo, presa ao medo de parar e ver tudo voltar.
+          </div>
+          <div class="dec-col op2">
+            <div class="dt">Opção 2</div>
+            Investir uma única vez, menos do que você gasta em um delivery, para ter o passo a passo que faz o seu próprio corpo assumir o trabalho e te dá a liberdade de sair da canetinha quando quiser.
+          </div>
+        </div>
+      </div>
 
-      <p class="rodape">
-        ${PRODUTO.nome} · material educativo de apoio.<br>
-        Não substitui acompanhamento médico ou nutricional.<br>
-        Resultados variam de pessoa para pessoa.
-      </p>
+      <!-- OFERTA -->
+      <div class="res-section" style="padding:26px 0 0;">
+        <div class="oferta-final">
+          <div class="ot">Protocolo GLP-1 Natural</div>
+          <div class="of-block">Você recebe</div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Módulo 1 · Ativação do Gatilho GLP-1 Natural</span><span class="pr">R$29,90</span></div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Módulo 2 · Blindagem da Massa Magra</span><span class="pr">R$23,90</span></div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Módulo 3 · Redução Sem Efeito Rebote</span><span class="pr">R$26,90</span></div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Módulo 4 · Plano de 14 Dias</span><span class="pr">R$17,20</span></div>
+          <div class="of-block bonus">+ 3 bônus exclusivos</div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Grupo VIP no WhatsApp</span><span class="pr">GRÁTIS</span></div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Cardápio semanal e lista de compras</span><span class="pr">GRÁTIS</span></div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Guia anti efeitos colaterais</span><span class="pr">GRÁTIS</span></div>
+
+          <div class="reserva" style="margin:22px 0 0;">⏱ Oferta reservada por: <span class="t" id="proj-timer">08:55</span></div>
+          <div class="of-de">De R$ 97,90</div>
+          <div class="of-por">Por apenas</div>
+          <div class="of-val">R$29,90</div>
+          <div class="of-avista">à vista ou 5x de R$6,62</div>
+          <a class="btn" href="${CHECKOUT_URL}" onclick="px('InitiateCheckout', true)">Quero ativar meu GLP-1 natural →</a>
+          <p class="of-secure">Pix, cartão ou boleto · Acesso imediato · Compra segura · Garantia de 7 dias</p>
+        </div>
+      </div>
+
+      <!-- GARANTIA -->
+      <div class="res-section" style="text-align:center;">
+        <img src="Garantia7dias.png" alt="Garantia de 7 dias" class="gar-img">
+      </div>
+
+      <!-- QUEM É -->
+      <div class="res-section">
+        <div class="quem">
+          <img src="FotoSiteKelly.jpeg" alt="Nutri Kelly" style="width:160px;height:160px;border-radius:16px;object-fit:cover;border:4px solid var(--verde-claro);box-shadow:0 0 34px rgba(76,175,130,.4);margin:0 auto 20px;display:block;" onerror="this.style.display='none'">
+          <h3>Quem está por trás <span>do método</span></h3>
+          <p>Oi! Sou a <span>Nutri Kelly</span>, tenho 41 anos e moro no Paraná. Sou nutricionista há 18 anos, especialista em nutrição e emagrecimento. Atendo mulheres em tratamento com canetinha todos os dias e criei este protocolo com o que eu explico em consulta: como reativar a produção natural de saciedade, proteger a massa magra e reduzir a dose sem que o peso volte.</p>
+        </div>
+      </div>
+
+      <!-- FAQ -->
+      <div class="res-section faq">
+        <h2 class="res-h2" style="font-size:20px;">Ainda tem <span>alguma dúvida?</span></h2>
+        <div style="margin-top:20px;">
+          <details><summary>Como vou receber o ebook?</summary><div class="a">Imediatamente após a confirmação do pagamento, você recebe um email com o link para acessar e baixar o material em PDF. Acesso vitalício, no celular ou no computador.</div></details>
+          <details><summary>Preciso parar a canetinha para aplicar?</summary><div class="a">Não, e o ideal é justamente o contrário. O melhor momento para reativar a produção natural é enquanto o medicamento ainda está te dando margem. A redução da dose é tratada no Módulo 3, no seu tempo e com o seu médico.</div></details>
+          <details><summary>Funciona se eu já parei?</summary><div class="a">Sim. Os mesmos estímulos que reativam a produção natural funcionam para quem já saiu da aplicação e quer sustentar o peso.</div></details>
+          <details><summary>Serve para qualquer canetinha?</summary><div class="a">Sim. O protocolo é nutricional e vale para qualquer medicação dessa categoria e para qualquer dose, inclusive manipulados.</div></details>
+          <details><summary>É uma dieta complicada?</summary><div class="a">Não. É um passo a passo simples de 14 dias, uma mudança por vez, em linguagem direta. Qualquer pessoa aplica na rotina, mesmo sem conhecimento de nutrição.</div></details>
+          <details><summary>Substitui médico?</summary><div class="a">Não. É um material educativo de apoio nutricional. Não interrompa nem altere a dose de qualquer medicamento por conta própria: converse sempre com o profissional que acompanha o seu tratamento.</div></details>
+          <details><summary>Como funciona a garantia?</summary><div class="a">Em 7 dias, se você sentir que o material não atendeu, basta enviar um email e devolvemos 100% do valor, sem burocracia.</div></details>
+        </div>
+      </div>
+
+      <p style="font-size:15px;font-weight:800;color:var(--verde-escuro);line-height:1.5;text-align:center;margin:22px 0 4px;">Não fique só no diagnóstico. Comece a reativar o seu GLP-1 natural hoje.</p>
+
+      <a class="btn" style="margin-top:14px;" href="${CHECKOUT_URL}" onclick="px('InitiateCheckout', true)">Quero ativar meu GLP-1 natural →</a>
+
+      <p style="font-size:11.5px;color:#8aa79a;line-height:1.6;text-align:center;margin:22px 0 0;">Este material é educativo e não substitui acompanhamento médico ou nutricional. Resultados variam de pessoa para pessoa.</p>
     </div>
   </div>`;
-
-  px('ViewContent', true);
+  startCountdown('proj-timer',8*60+55);
 }
 
-function toggleFaq(i){
-  const el = document.getElementById('faq' + i);
-  if(el) el.classList.toggle('on');
+/* ---------- META / PROVA SOCIAL (após pergunta do tempo) ---------- */
+function renderMeta(){
+  const nome = state.answers.nome && state.answers.nome!=='você' ? state.answers.nome : '';
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz" style="text-align:center;">
+      <div class="progress-bar"><div class="progress-fill" style="width:${pctAte('meta_kg')}%"></div></div>
+      <p style="font-family:'Lato',sans-serif;font-size:25px;font-weight:900;color:var(--verde-escuro);line-height:1.3;margin:20px 0;">${nome?nome+', sua':'Sua'} meta é totalmente possível, e sem depender da aplicação pra sempre.</p>
+      <img src="resultado-1.jpg" alt="Resultado real do método" style="width:100%;border-radius:14px;display:block;margin:0 0 18px;" onerror="this.onerror=null;this.outerHTML='&lt;div class=&quot;meta-img&quot;&gt;Salve a imagem como resultado-1.jpg&lt;/div&gt;'">
+      <p style="font-family:'Lato',sans-serif;font-size:16.5px;font-weight:800;color:var(--cinza);line-height:1.5;margin:0 0 14px;">Mulheres que reativaram a produção natural de GLP-1 antes de reduzir a dose conseguiram sustentar o peso sem a canetinha.</p>
+      <p style="font-family:'Lato',sans-serif;font-size:15px;font-weight:800;color:var(--verde);line-height:1.5;margin:0 0 22px;">Faltam só mais alguns passos para liberar o seu protocolo completo.</p>
+      <button class="btn" style="text-transform:uppercase;letter-spacing:.5px;" onclick="go(1)">Continuar teste gratuito</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- ANALISANDO ---------- */
+function renderAnalyzing(v2){
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz" style="padding-top:56px;padding-bottom:52px;">
+      ${v2 ? '' : '<div class="brand-sub" style="margin-bottom:14px;">Diagnóstico personalizado</div>'}
+      <div class="analise-title">Analisando suas respostas...</div>
+      <div class="lib-box" style="margin-top:30px;">
+        ${v2 ? '<div class="lib-label" style="margin-bottom:6px;">Calculando nível de GLP-1 natural...</div>' : ''}
+        <div class="lib-label">${v2 ? 'Identificando a solução para seu caso...' : 'Liberando seu diagnóstico personalizado...'}</div>
+        <div class="lib-pct" id="libPct">0%</div>
+        <div class="lib-bar"><div class="lib-fill" id="libFill"></div></div>
+      </div>
+    </div>
+  </div>`;
+  const DUR = 5000;                                    // total da animação
+  const pctEl=document.getElementById('libPct'), fillEl=document.getElementById('libFill');
+  const startT=performance.now();
+  let ultimo = -1;                                     // só repinta o número quando o inteiro muda
+  function tick(now){
+    const t=Math.min(1,(now-startT)/DUR);
+    const eased=t*t*t*(t*(t*6-15)+10);                 // smootherstep: parte e chega sem solavanco
+    const pct=Math.round(eased*100);
+    if(pctEl && pct!==ultimo){ pctEl.textContent=pct+'%'; ultimo=pct; }
+    if(fillEl)fillEl.style.width=(eased*100)+'%';
+    if(t<1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+  setTimeout(()=>go(1),DUR);
+}
+
+
+/* ---------- DIAGNÓSTICO (IMC + sinais de alerta) ---------- */
+function calcIMC(){
+  const pesoStr = state.answers.peso || '';
+  const altStr  = state.answers.altura || '';
+  const p = parseFloat(pesoStr), a = parseFloat(altStr);
+  if(!p || !a) return null;
+  let kg = /lb/i.test(pesoStr) ? p/2.2046 : p;               // lb -> kg
+  let m  = /pol/i.test(altStr) ? (a*2.54)/100 : a/100;        // pol/cm -> metros
+  if(!m) return null;
+  return kg/(m*m);
+}
+/* ===== ÍNDICE DE GLP-1 NATURAL (estimativa educativa a partir das respostas) ===== */
+function calcIndiceGLP(){
+  const a = state.answers;
+  let i = 62; // base
+
+  const t = a.tempo_uso || '';
+  if(t.includes('Menos de 1 mês')) i -= 4;
+  else if(t.includes('1 e 3'))     i -= 12;
+  else if(t.includes('3 e 6'))     i -= 20;
+  else if(t.includes('6 meses'))   i -= 26;
+  else if(t.includes('Mais de 1')) i -= 30;
+
+  const f = a.fome || '';
+  if(f.includes('comendo pouco'))       i -= 14;
+  else if(f.includes('comendo bastante')) i -= 6;
+
+  const m = a.massa || '';
+  if(m.includes('Sim'))            i -= 10;
+  else if(m.includes('ouvi falar')) i -= 5;
+
+  const col = a.colaterais || [];
+  if(Array.isArray(col)) i -= Math.min(12, col.filter(x=>!x.includes('Nenhum')).length * 3);
+
+  const o = a.objetivo || '';
+  if(o.includes('Recuperar o resultado')) i -= 8;
+  if(o.includes('Parar de usar'))         i -= 6;
+
+  const d = a.dose || '';
+  if(d.includes('12,5') || d.includes('15 mg')) i -= 6;   // dose alta por mais tempo
+
+  return Math.max(25, Math.min(39, Math.round(i)));   // sempre "BAIXA" (25-39), nunca "MUITO BAIXA" nem "MODERADA"
+}
+
+function nivelGLP(v){
+  if(v < 25) return {txt:'MUITO BAIXA', cor:'#c0392b', bg:'#fdecec'};
+  if(v < 40) return {txt:'BAIXA',       cor:'#c0574f', bg:'#fdecec'};
+  return {txt:'MODERADA',               cor:'#c8973a', bg:'#fff8e8'};
+}
+
+function renderDiagnostico(full){
+  const a = state.answers;
+  const nome = a.nome && a.nome!=='você' ? a.nome : '';
+  const idx = calcIndiceGLP();
+  const niv = nivelGLP(idx);
+  const massaTxt = (a.massa||'').includes('Sim') ? 'e você já percebeu isso no espelho' : 'mesmo que você ainda não tenha percebido';
+  const progressoId = full ? 'estresse' : 'massa';            // última pergunta respondida antes desta tela, em cada versão
+
+  /* na 1ª aparição (meio do quiz) não revela nem o alerta, nem o índice, nem o
+     "3 pontos identificados" — isso fica só pra 2ª aparição (full), antes da oferta */
+  const revelacao = !full ? '' : `
+      <div style="background:${niv.bg};border-radius:14px;padding:16px 18px;margin:0 0 18px;text-align:center;">
+        <p style="color:${niv.cor};font-weight:800;font-size:16.5px;line-height:1.45;margin:0 0 8px;">⚠️ ${nome?nome+', s':'S'}ua produção natural de GLP-1 está <strong>${niv.txt}</strong>.</p>
+        <p style="color:${niv.cor};font-weight:600;font-size:13.5px;line-height:1.5;margin:0;">Com base nas suas respostas, isso indica que seu corpo pode estar represando gordura abdominal e dificultando o resultado, mesmo quando você faz tudo certo.</p>
+      </div>
+
+      <!-- MEDIDOR DO ÍNDICE -->
+      <div class="diag-chart" style="padding:20px 16px;">
+        <div class="diag-imc-tt" style="margin-bottom:14px;">Seu Índice de GLP-1 Natural</div>
+        <div style="text-align:center;font-family:'Playfair Display',serif;font-size:56px;font-weight:900;color:${niv.cor};line-height:1;">${idx}<span style="font-size:24px;color:#9aaaa2;">/100</span></div>
+        <div style="height:14px;border-radius:20px;margin:16px 0 8px;background:linear-gradient(90deg,#e05a4e 0%,#f0c05a 50%,#4caf82 100%);position:relative;">
+          <div style="position:absolute;top:-5px;left:calc(${idx}% - 12px);width:24px;height:24px;border-radius:50%;background:#fff;border:4px solid ${niv.cor};box-shadow:0 2px 8px rgba(0,0,0,.18);"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11.5px;color:#8a9a92;font-weight:700;">
+          <span>Desligada</span><span>Parcial</span><span>Ativa</span>
+        </div>
+        <p style="font-size:12.5px;color:#8a9a92;line-height:1.55;margin:14px 0 0;text-align:center;">Estimativa educativa calculada a partir das suas respostas.</p>
+      </div>
+
+      <!-- 3 PROBLEMAS IDENTIFICADOS -->
+      <div style="background:#fdecec;border-radius:14px;padding:14px 18px;margin:22px 0 18px;text-align:center;">
+        <p style="color:var(--vermelho);font-weight:900;font-size:15px;letter-spacing:.5px;margin:0;">⚠️ 2 PONTOS FORAM IDENTIFICADOS</p>
+      </div>`;
+
+  /* ponto 1: na versão curta é o dado dos 82% (Mounjaro). Na versão completa é o
+     aproveitamento estimado da aplicação, calculado a partir do Índice de GLP-1 */
+  const aprov = Math.min(54, idx + 22);                        // sempre abaixo de 55
+  const ponto1 = full ? `
+      <div class="solucao-box" style="text-align:left;margin-bottom:16px;">
+        <h4 style="margin-bottom:8px;">1 · Você está aproveitando só parte da aplicação</h4>
+        <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0 0 12px;">Você está tendo resultados com a aplicação, isso é ótimo! Mas pelo seu perfil, o aproveitamento do tratamento hoje está em torno de <strong>${aprov}%</strong>, e poderia emagrecer mais e mais rápido com alguns ajustes simples pelo prato.</p>
+        <div style="height:14px;border-radius:20px;background:linear-gradient(90deg,#e05a4e 0%,#f0c05a 50%,#4caf82 100%);position:relative;">
+          <div style="position:absolute;top:-5px;left:calc(${aprov}% - 12px);width:24px;height:24px;border-radius:50%;background:#fff;border:4px solid ${niv.cor};box-shadow:0 2px 8px rgba(0,0,0,.18);"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11.5px;color:#8a9a92;font-weight:700;margin-top:6px;"><span>0</span><span>Você: ${aprov}%</span><span>100</span></div>
+      </div>` : `
+      <div class="solucao-box" style="text-align:left;margin-bottom:16px;">
+        <h4 style="margin-bottom:8px;">Você sabia que:</h4>
+
+        <div class="prova-numero" style="font-size:56px;margin-top:6px;">82%</div>
+        <p class="prova-numero-legenda" style="font-size:14px;margin-bottom:16px;">das pessoas que pararam o Mounjaro recuperaram parte do peso perdido em até um ano.</p>
+
+        <div class="prova-noticia">
+          <img src="pesquisa-mounjaro.jpeg" alt="Reportagem sobre reganho de peso após o fim do tratamento com Mounjaro" onerror="this.style.display='none'">
+        </div>
+        <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:14px 0 0;text-align:center;">Os estudos que acompanharam pessoas depois da suspensão desses medicamentos mostram que a maior parte recupera peso quando o corpo é devolvido sem nenhuma preparação. Isso significa colocar em risco <span style="color:inherit;font-weight:400;">todo o investimento das aplicações</span>.</p>
+      </div>`;
+
+  const problema3 = !full ? '' : `
+      <div class="solucao-box" style="text-align:left;margin-bottom:18px;">
+        <h4 style="margin-bottom:8px;">2 · Parte do que sai da balança não é gordura</h4>
+        <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0 0 12px;">A fadiga, a falta de força e a flacidez são grandes indicativos de que uma fatia relevante do seu peso perdido é <strong>massa magra</strong>, ${massaTxt}, fazendo o seu metabolismo ficar mais lento.</p>
+        <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">Isso acontece porque, sem os estímulos certos pelo prato, o seu corpo não sustenta a saciedade sozinho e acaba puxando energia do músculo pra compensar.</p>
+      </div>`;
+
+  const solucaoTxt = full
+    ? `Mas isso tem solução, você apenas precisa <strong style="text-transform:uppercase;">potencializar o hormônio</strong> que produz o <strong style="text-transform:uppercase;">GLP-1</strong> no seu corpo`
+    : `Mas isso tem solução... continue o teste e descubra como preparar o seu corpo para não ter famoso "efeito rebote".`;
+
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz">
+      <div class="brand-sub" style="margin-bottom:12px;">Diagnóstico personalizado</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pctAte(progressoId)}%"></div></div>
+${revelacao}
+${ponto1}
+${problema3}
+      <!-- A SOLUÇÃO -->
+      <div style="background:#eef7f1;border:1px solid #d5ebe0;border-radius:14px;padding:22px 20px;margin:22px 0 0;text-align:center;">
+        <p style="color:var(--verde-escuro);font-size:16px;font-weight:800;line-height:1.55;margin:0;">${solucaoTxt}</p>
+      </div>
+${full ? `<h4 style="color:#1a1a1a;font-size:15px;font-weight:900;margin:16px 0 0;line-height:1.35;text-align:center;">Continue o teste e descubra como reativar esse hormônio nos próximos 14 dias e o protocolo específico para seu caso.</h4>` : ''}
+
+      <button class="btn" style="margin-top:22px;" onclick="go(1)">Continuar →</button>
+    </div>
+  </div>`;
+  px('DiagnosticoGerado');
+}
+/* PROFILES + renderHistoria removidos: continham depoimentos fabricados.
+   Se quiser reativar a tela de história real, use relatos verificados de alunas. */
+
+
+/* ---------- PRÉ-PITCH (compromisso + antes x depois) ---------- */
+function renderPrePitch(){
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz">
+      <p class="pp-h">Você se compromete a seguir o protocolo por 14 dias?</p>
+      <p class="pp-sub">A ativação depende do que entra no prato. É simples, mas só funciona pra quem aplica.</p>
+      <div class="ad-grid">
+        <div class="ad-col antes">
+          <h4>Sem o protocolo</h4>
+          <li>Produção natural de GLP-1 desligada</li>
+          <li>Balança travada na mesma dose</li>
+          <li>Massa magra saindo junto com a gordura</li>
+          <li>O peso volta quando a dose acabar</li>
+        </div>
+        <div class="ad-col depois">
+          <h4>Com o protocolo</h4>
+          <li>Gatilho GLP-1 natural reativado</li>
+          <li>Mais resultado com a mesma aplicação</li>
+          <li>Músculo preservado, corpo mais firme</li>
+          <li>Redução da dose sem efeito rebote</li>
+        </div>
+      </div>
+      <button class="btn" onclick="go(1)">Sim, me comprometo →</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- MINI-VSL 2 / VSL FINAL (oferta) ---------- */
+function renderVSLFinal(){
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz">
+      <span class="vsl-tag">● Seu diagnóstico está pronto</span>
+      <p class="vsl-ask">Conheça o <span>Protocolo GLP-1 Natural</span></p>
+      <div class="video-box">
+        <div class="play">▶</div>
+        <div class="vlabel">Mini-VSL 2 · A oferta</div>
+        <div class="vname">Como ativar o gatilho em 14 dias</div>
+        <div class="vhint">[ placeholder de vídeo — trocar pela VSL final depois ]</div>
+      </div>
+      <div class="roteiro">
+        <h4>🎬 Roteiro da VSL final (por enquanto em texto)</h4>
+        <p><strong>O que é:</strong> um ebook prático da Nutri Kelly que mostra, passo a passo, como reativar a produção natural de GLP-1 em 14 dias.</p>
+        <p><strong>Pra quem é:</strong> pra você que usa ou usou caneta, travou a balança e não quer gastar mais.</p>
+        <p><strong>Benefícios:</strong> voltar a perder gordura, sem aumentar a dose, sem dieta sofrida, sem virar escrava do remédio.</p>
+        <p><strong>Escassez:</strong> a condição especial abaixo fica disponível só para o seu perfil, por tempo limitado.</p>
+      </div>
+      <button class="btn" onclick="go(1)">Ver minha oferta personalizada →</button>
+    </div>
+  </div>`;
+}
+
+/* countdown genérico */
+function startCountdown(elId,secs){
+  const el=document.getElementById(elId); if(!el) return;
+  let r=secs;
+  const t=setInterval(()=>{r--;if(r<0){clearInterval(t);return;}
+    el.textContent=String(Math.floor(r/60)).padStart(2,'0')+':'+String(r%60).padStart(2,'0');},1000);
+}
+
+function renderOfferLocked(){
+  const a = state.answers;
+  const nome = a.nome && a.nome!=='você' ? a.nome : '';
+  const idade = (a.idade || '').toLowerCase();
+  const dor = a.dor || 'A balança travada mesmo com a caneta';
+  const desejo = (a.garantia || '').toLowerCase();
+  const abre = nome ? `${nome}, ` : '';
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz">
+      <div class="brand-sub" style="margin-bottom:14px;">Resultado personalizado</div>
+      <span class="rev-badge">Protocolo liberado</span>
+      <p class="rev-lead" style="font-weight:800;color:var(--verde-escuro);">Você desbloqueou o Protocolo GLP-1 Natural.</p>
+      <div class="rev-tap" onclick="go(1)">
+        <div class="big">Toque para ver o seu protocolo</div>
+      </div>
+      <div class="reserva">⏱ Reservado por: <span class="t" id="rev-timer">09:51</span></div>
+    </div>
+  </div>`;
+  startCountdown('rev-timer',9*60+51);
+  px('Lead', true);          // completou o quiz e chegou na oferta
+  px('OfertaRevelada');      // evento personalizado: oferta revelada
+}
+
+function renderOfferPrice(){
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div style="text-align:center;margin-bottom:16px;">
+      <span class="rev-badge">Oferta exclusiva liberada</span>
+      <a class="btn" href="${CHECKOUT_URL}" onclick="px('InitiateCheckout', true)" style="border-radius:10px;margin:16px 0;">Quero o meu protocolo →</a>
+      <p class="rev-lead" style="margin-top:12px;">Seu diagnóstico liberou o acesso completo ao <strong>Protocolo GLP-1 Natural</strong>. Veja tudo o que você recebe:</p>
+    </div>
+
+    <div class="oferta-final">
+      <div class="ot">Protocolo GLP-1 Natural</div>
+      <div class="of-block">Você recebe</div>
+      <div class="of-item"><span class="ic">✓</span><span class="nm"><strong>Ativação do Gatilho GLP-1 Natural</strong> — as 3 partes do gatilho e como colocar todas no seu prato para o corpo voltar a produzir saciedade sozinho.</span></div>
+      <div class="of-item"><span class="ic">✓</span><span class="nm"><strong>Blindagem da Massa Magra</strong> — quanta proteína você precisa e como distribuir nos horários que mais protegem o músculo, que é onde o gatilho trabalha.</span></div>
+      <div class="of-item"><span class="ic">✓</span><span class="nm"><strong>Redução Sem Efeito Rebote</strong> — os sinais de que o seu corpo já está pronto para uma dose menor e o que comer nas semanas de redução.</span></div>
+      <div class="of-item"><span class="ic">✓</span><span class="nm"><strong>O Plano de 14 Dias</strong> — o que fazer em cada dia, do dia 1 ao dia 14, com checklist diário e plano de resgate.</span></div>
+      <div class="of-block bonus">+ 3 bônus exclusivos</div>
+      <div class="of-item"><span class="ic">✓</span><span class="nm"><strong>Grupo VIP no WhatsApp</strong> — tira-dúvidas direto com a nutricionista e uma comunidade de mulheres que usam caneta.</span></div>
+      <div class="of-item"><span class="ic">✓</span><span class="nm"><strong>Cardápio Semanal + Lista de Compras</strong> — todas as refeições da semana já montadas, com porções para o estômago menor.</span></div>
+      <div class="of-item"><span class="ic">✓</span><span class="nm"><strong>Guia Anti Efeitos Colaterais</strong> — o que comer contra náusea, intestino preso e queda de cabelo enquanto você ainda estiver na caneta.</span></div>
+
+      <div class="reserva" style="margin:22px 0 0;">⏱ Oferta reservada por: <span class="t" id="pr-timer">09:38</span></div>
+      <div class="of-de">De R$ 97,90</div>
+      <div class="of-por">Por apenas</div>
+      <div class="of-val">R$29,90</div>
+      <div class="of-avista">à vista ou 5x de R$6,62</div>
+      <a class="btn" href="${CHECKOUT_URL}" onclick="px('InitiateCheckout', true)">Quero o meu protocolo →</a>
+      <p class="of-secure">Pix, cartão ou boleto · Acesso imediato · Compra segura · Garantia de 7 dias</p>
+    </div>
+
+    <div class="quem" style="margin-top:22px;">
+      <img src="FotoKelly.jpg" alt="Nutri Kelly" style="width:160px;height:160px;border-radius:16px;object-fit:cover;border:4px solid var(--verde-claro);box-shadow:0 0 34px rgba(76,175,130,.4);margin:0 auto 20px;display:block;">
+      <h3>Quem está por trás <span>do Método?</span></h3>
+      <p>Oi! Sou a <span>Nutri Kelly</span>, tenho 41 anos e moro no Paraná. Sou nutricionista há 18 anos, especialista em nutrição e emagrecimento. Desde então, ajudo pessoas a alcançarem seus objetivos com estratégias nutricionais práticas, eficientes e sustentáveis. Estou aqui para te ajudar a reativar a sua produção natural de saciedade e sair da canetinha sem recuperar o peso.</p>
+    </div>
+  </div>`;
+  startCountdown('pr-timer',9*60+38);
+  px('ViewContent', true);   // visualizou a oferta com preço
+}
+
+/* contador ao vivo */
+function startLiveCount(elId){
+  const el=document.getElementById(elId); if(!el) return;
+  let val=parseInt(el.textContent,10)||38;
+  function tick(){val+=1;el.textContent=val;el.classList.add('bump');setTimeout(()=>el.classList.remove('bump'),260);setTimeout(tick,5000+Math.random()*6000);}
+  setTimeout(tick,5000+Math.random()*6000);
 }
 
 /* =========================================================
-   SAÍDA DO QUIZ
-   Guarda as respostas antes de mandar pro checkout, para o
-   cadastro do app já vir preenchido quando a pessoa entrar.
+   PÁGINA FINAL (RESULTADO) — modela a landing da oferta
    ========================================================= */
-function salvarParaOApp(){
-  const d = {
-    nome: nomeDe(),
-    sexo: state.answers.sexo || '',
-    idade: num('idade') || '',
-    altura: num('altura') || '',
-    peso: num('peso') || '',
-    meta_peso: num('meta_peso') || '',
-    objetivo: objetivoId(),
-    local: localId(),
-    em: new Date().toISOString()
-  };
-  try { localStorage.setItem(CHAVE_QUIZ, JSON.stringify(d)); } catch(e){}
+function renderResult(){
+  const a = state.answers;
+  const nome = a.nome && a.nome!=='você' ? a.nome : '';
+  const abre = nome ? `${nome}, ` : '';
+  const idade = (a.idade || '').toLowerCase();
+  const dor = a.dor || 'a balança travada mesmo aplicando certinho';
+  app.innerHTML = `
+  <div class="result fade">
+
+    <div class="res-hero">
+      <div class="kicker">Seu protocolo está pronto</div>
+      <h1>O método para <span>religar o seu GLP-1 natural</span> e sair da canetinha sem recuperar o peso.</h1>
+      <p>Um protocolo de 14 dias da nutricionista Kelly Firbida para ativar a produção natural de saciedade, blindar a massa magra e reduzir a dose sem efeito rebote.</p>
+    </div>
+
+    <div class="res-socialbar">
+      🔓 <span><b>Protocolo desbloqueado</b> pelo seu diagnóstico · <span class="live-count" id="live-count">38</span> acessaram nas últimas 24h</span>
+    </div>
+
+    <div class="container">
+
+
+      <!-- O QUE É O MÉTODO -->
+      <div class="res-section">
+        <h2 class="res-h2">O que é o <span>Protocolo GLP-1 Natural</span></h2>
+        <p class="res-sub">${abre}pelo seu perfil${idade?` (${idade})`:''}, o que mais te incomoda hoje é: <strong>“${dor}”</strong>. É exatamente isso que o método foi feito para resolver.</p>
+
+        <div class="valor-box" style="text-align:left;">
+          <p style="font-size:15.5px;line-height:1.75;color:#4a4a4a;margin-bottom:14px;">O Protocolo GLP-1 Natural é um <strong>ebook em PDF</strong>, escrito pela nutricionista Kelly Firbida, com o passo a passo que ela usa em consultório com mulheres em tratamento com canetinha.</p>
+          <p style="font-size:15.5px;line-height:1.75;color:#4a4a4a;margin-bottom:14px;">Ele parte de um ponto simples: o seu intestino fabrica o mesmo hormônio que a aplicação injeta, e existem três estímulos que religam essa produção. O método mostra como colocar os três no prato, como proteger a massa magra enquanto a gordura sai e como chegar na redução da dose sem que a fome e o peso voltem junto.</p>
+          <p style="font-size:15.5px;line-height:1.75;color:#4a4a4a;margin:0;">São <strong>4 módulos e 3 bônus</strong>, em linguagem direta, para ler no celular e aplicar a partir de hoje.</p>
+        </div>
+
+        <div class="valor-box" style="margin-top:16px;">
+          <div class="valor-row"><span class="lbl">Formato</span><span class="num">Ebook em PDF</span></div>
+          <div class="valor-row"><span class="lbl">Conteúdo</span><span class="num">4 módulos + 3 bônus</span></div>
+          <div class="valor-row"><span class="lbl">Aplicação</span><span class="num">14 dias</span></div>
+          <div class="valor-row"><span class="lbl">Acesso</span><span class="num">Imediato e vitalício</span></div>
+          <div class="valor-row total"><span class="lbl">Garantia</span><span class="num">7 dias</span></div>
+        </div>
+      </div>
+
+      <!-- MÓDULOS (ebook) -->
+      <div class="res-section">
+        <div style="text-align:center;margin-bottom:30px;">
+          <a class="btn" href="#comprar" style="display:inline-block;width:auto;">Quero o meu protocolo →</a>
+        </div>
+        <h2 class="res-h2">O que vem no <span>seu ebook</span></h2>
+        <p class="res-sub">4 módulos práticos, em linguagem direta, para ler no celular.</p>
+
+        <div class="mod-card">
+          <div class="mod-head"><span class="mod-num">1</span><h3>Ativação do Gatilho GLP-1 Natural</h3></div>
+          <p>As 3 partes do gatilho e como colocar todas no seu prato: proteína suficiente, fibra fermentável e a ordem de comer que muda a sua fome nas horas seguintes. E o erro que quase toda mulher na canetinha comete e que desliga essa produção.</p>
+          <div class="mod-result">o seu corpo volta a produzir saciedade sozinho</div>
+        </div>
+        <div class="mod-card">
+          <div class="mod-head"><span class="mod-num">2</span><h3>Blindagem da Massa Magra</h3></div>
+          <p>Por que boa parte do peso que sai na canetinha é músculo e não gordura, quanta proteína você realmente precisa comendo pouco, e como distribuir nos horários que mais protegem a sua massa magra.</p>
+          <div class="mod-result">emagrecer sem flacidez e sem travar a balança</div>
+        </div>
+        <div class="mod-card">
+          <div class="mod-head"><span class="mod-num">3</span><h3>Redução Sem Efeito Rebote</h3></div>
+          <p>Os sinais de que o seu corpo já está pronto para uma dose menor, por que reduzir aos poucos funciona e parar de uma vez costuma dar errado, e o que comer nas semanas de redução para a fome não te pegar de surpresa.</p>
+          <div class="mod-result">sair da canetinha sem o peso voltar junto</div>
+        </div>
+        <div class="mod-card">
+          <div class="mod-head"><span class="mod-num">4</span><h3>Plano de 14 Dias</h3></div>
+          <p>O que fazer em cada dia, do dia 1 ao dia 14, uma mudança por vez, sem virar a sua rotina de cabeça para baixo. Com checklist diário e o plano de resgate para os dias em que a fome bater mais forte.</p>
+          <div class="mod-result">um passo a passo simples, é só seguir</div>
+        </div>
+      </div>
+
+      <!-- QUANTO VALE DESTRAVAR -->
+      <div class="res-section">
+        <h2 class="res-h2">Quanto custa <span>não fazer nada?</span></h2>
+        <p class="res-sub">A conta do que você já investe todo mês:</p>
+        <div class="valor-box">
+          <div class="valor-row"><span class="lbl">Aplicação por mês</span><span class="num">R$ 800–3.000</span></div>
+          <div class="valor-row"><span class="lbl">Consulta e retornos</span><span class="num">R$ 300–800</span></div>
+          <div class="valor-row"><span class="lbl">Exames de acompanhamento</span><span class="num">R$ 0–1.140</span></div>
+          <div class="valor-row"><span class="lbl">Suplementação</span><span class="num">R$ 200–950</span></div>
+          <div class="valor-row total"><span class="lbl">Em um ano</span><span class="num">mais de R$ 12.000</span></div>
+        </div>
+        <p class="valor-nota">Tudo isso para o corpo não aprender a fazer nada sozinho e o peso voltar quando a aplicação acabar.<br><span class="red">Reativar a sua própria produção custa menos que 1 dia de canetinha: R$ 29,90, uma vez.</span></p>
+      </div>
+
+      <!-- DECISÃO -->
+      <div class="res-section">
+        <h2 class="res-h2">Sua decisão <span>agora</span></h2>
+        <div class="dec-grid">
+          <div class="dec-col op1">
+            <div class="dt">Opção 1</div>
+            Continuar pagando mais de mil reais por mês por uma aplicação que segura o seu peso mas não ensina nada ao seu corpo, presa ao medo de parar e ver tudo voltar.
+          </div>
+          <div class="dec-col op2">
+            <div class="dt">Opção 2</div>
+            Investir uma única vez, menos do que você gasta em um delivery, para ter o passo a passo que faz o seu próprio corpo assumir o trabalho e te dá a liberdade de sair da canetinha quando quiser.
+          </div>
+        </div>
+      </div>
+
+      <!-- ANTES / DEPOIS -->
+      <div class="res-section">
+        <div style="text-align:center;margin-bottom:30px;">
+          <a class="btn" href="#comprar" style="display:inline-block;width:auto;">Quero a Opção 2 →</a>
+        </div>
+        <h2 class="res-h2">O que muda quando o gatilho <span>é reativado</span></h2>
+        <div class="res-ad-grid">
+          <div class="ad-col antes">
+            <h4>Hoje</h4>
+            <li>Saciedade vindo só da aplicação</li>
+            <li>Balança travada na mesma dose</li>
+            <li>Músculo saindo junto com a gordura</li>
+            <li>Medo de reduzir e engordar tudo</li>
+          </div>
+          <div class="ad-col depois">
+            <h4>Em 14 dias</h4>
+            <li>Produção natural de GLP-1 estimulada</li>
+            <li>Mais resultado com a mesma aplicação</li>
+            <li>Massa magra protegida, corpo firme</li>
+            <li>Um plano claro para reduzir a dose</li>
+          </div>
+        </div>
+        <p class="ad-note">Mudanças possíveis ao seguir o protocolo. Resultados variam.</p>
+      </div>
+    </div>
+
+    <!-- DEPOIMENTOS -->
+    <!-- seção de depoimentos removida (sem relatos reais disponíveis) -->
+
+    <div class="container">
+      <!-- QUEM É -->
+      <div class="res-section">
+        <div class="quem">
+          <img src="FotoSiteKelly.jpeg" alt="Nutri Kelly" style="width:160px;height:160px;border-radius:16px;object-fit:cover;border:4px solid var(--verde-claro);box-shadow:0 0 34px rgba(76,175,130,.4);margin:0 auto 20px;display:block;" onerror="this.style.display='none'">
+          <h3>Quem está por trás <span>do método</span></h3>
+          <p>Oi! Sou a <span>Nutri Kelly</span>, tenho 41 anos e moro no Paraná. Sou nutricionista há 18 anos, especialista em nutrição e emagrecimento. Atendo mulheres em tratamento com canetinha todos os dias e criei este protocolo com o que eu explico em consulta: como reativar a produção natural de saciedade, proteger a massa magra e reduzir a dose sem que o peso volte.</p>
+        </div>
+      </div>
+
+      <!-- OFERTA FINAL -->
+      <div class="res-section" id="comprar">
+        <div class="oferta-final">
+          <div class="ot">Protocolo GLP-1 Natural</div>
+          <div class="of-block">Você recebe</div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Módulo 1 · Ativação do Gatilho GLP-1 Natural</span><span class="pr">R$29,90</span></div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Módulo 2 · Blindagem da Massa Magra</span><span class="pr">R$23,90</span></div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Módulo 3 · Redução Sem Efeito Rebote</span><span class="pr">R$26,90</span></div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Módulo 4 · Plano de 14 Dias</span><span class="pr">R$17,20</span></div>
+          <div class="of-block bonus">+ 3 bônus exclusivos</div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Grupo VIP no WhatsApp</span><span class="pr">GRÁTIS</span></div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Cardápio semanal e lista de compras</span><span class="pr">GRÁTIS</span></div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Guia anti efeitos colaterais</span><span class="pr">GRÁTIS</span></div>
+
+          <div class="reserva" style="margin:22px 0 0;">⏱ Oferta reservada por: <span class="t" id="res-timer">08:55</span></div>
+          <div class="of-de">De R$ 97,90</div>
+          <div class="of-por">Por apenas</div>
+          <div class="of-val">R$29,90</div>
+          <div class="of-avista">à vista ou 5x de R$6,62</div>
+          <a class="btn" href="${CHECKOUT_URL}" onclick="px('InitiateCheckout', true)">Quero ativar meu GLP-1 natural →</a>
+          <p class="of-secure">Pix, cartão ou boleto · Acesso imediato · Compra segura · Garantia de 7 dias</p>
+        </div>
+      </div>
+
+      <!-- GARANTIA -->
+      <div class="res-section" style="text-align:center;">
+        <img src="Garantia7dias.png" alt="Garantia de 7 dias" class="gar-img">
+      </div>
+
+      <!-- FAQ -->
+      <div class="res-section faq">
+        <h2 class="res-h2">Ainda tem <span>alguma dúvida?</span></h2>
+        <div style="margin-top:20px;">
+          <details><summary>Como vou receber o ebook?</summary><div class="a">Imediatamente após a confirmação do pagamento, você recebe um email com o link para acessar e baixar o material em PDF. Acesso vitalício, no celular ou no computador.</div></details>
+          <details><summary>Preciso parar a canetinha para aplicar?</summary><div class="a">Não, e o ideal é justamente o contrário. O melhor momento para reativar a produção natural é enquanto o medicamento ainda está te dando margem. A redução da dose é tratada no Módulo 3, no seu tempo e com o seu médico.</div></details>
+          <details><summary>Funciona se eu já parei?</summary><div class="a">Sim. Os mesmos estímulos que reativam a produção natural funcionam para quem já saiu da aplicação e quer sustentar o peso.</div></details>
+          <details><summary>Serve para qualquer canetinha?</summary><div class="a">Sim. O protocolo é nutricional e vale para qualquer medicação dessa categoria e para qualquer dose, inclusive manipulados.</div></details>
+          <details><summary>É uma dieta complicada?</summary><div class="a">Não. É um passo a passo simples de 14 dias, uma mudança por vez, em linguagem direta. Qualquer pessoa aplica na rotina, mesmo sem conhecimento de nutrição.</div></details>
+          <details><summary>Substitui médico?</summary><div class="a">Não. É um material educativo de apoio nutricional. Não interrompa nem altere a dose de qualquer medicamento por conta própria: converse sempre com o profissional que acompanha o seu tratamento.</div></details>
+          <details><summary>Como funciona a garantia?</summary><div class="a">Em 7 dias, se você sentir que o material não atendeu, basta enviar um email e devolvemos 100% do valor, sem burocracia.</div></details>
+        </div>
+      </div>
+    </div>
+
+    <div class="res-footer">
+      Protocolo GLP-1 Natural · Nutri Kelly Firbida<br>
+      Este material é educativo e não substitui acompanhamento médico ou nutricional. Resultados variam de pessoa para pessoa.
+    </div>
+  </div>`;
+  startCountdown('res-timer',8*60+55);
+  startLiveCount('live-count');
 }
 
-function irParaCheckout(){
-  salvarParaOApp();
-  track('quiz_checkout', { indice: calcIndice(), objetivo: objetivoId() });
-  px('InitiateCheckout', true);
-  if(!CHECKOUT_URL){
-    alert('Falta colar o link do checkout em CHECKOUT_URL, no topo do arquivo quiz.html.');
-    return;
-  }
-  window.location.href = CHECKOUT_URL;
+/* cronômetro no cabeçalho — regressivo até a meia-noite de hoje */
+function startMidnightCountdown(){
+  const el=document.getElementById('midnight-timer'); if(!el) return;
+  const t=setInterval(()=>{
+    if(!document.body.contains(el)){clearInterval(t);return;}  // some outra tela: para o contador
+    const now=new Date();
+    const end=new Date(now.getFullYear(),now.getMonth(),now.getDate(),23,59,59,999);
+    let diff=Math.max(0,Math.floor((end-now)/1000));
+    const h=String(Math.floor(diff/3600)).padStart(2,'0');
+    const m=String(Math.floor((diff%3600)/60)).padStart(2,'0');
+    const s=String(diff%60).padStart(2,'0');
+    el.textContent=`${h}:${m}:${s}`;
+  },1000);
+  // primeiro update imediato
+  const now=new Date();
+  const end=new Date(now.getFullYear(),now.getMonth(),now.getDate(),23,59,59,999);
+  let diff=Math.max(0,Math.floor((end-now)/1000));
+  el.textContent=`${String(Math.floor(diff/3600)).padStart(2,'0')}:${String(Math.floor((diff%3600)/60)).padStart(2,'0')}:${String(diff%60).padStart(2,'0')}`;
 }
 
-/* ===== inicia ===== */
+/* start */
 render();
+</script>
+
+<!-- ===== POP-UP DE SAÍDA (BOTÃO VOLTAR) ===== -->
+<div class="saida-overlay" id="saida-overlay" role="dialog" aria-modal="true" aria-labelledby="saida-titulo">
+  <div class="saida-modal">
+    <button class="saida-fechar" id="saida-fechar" aria-label="Fechar">&times;</button>
+    <div class="saida-selo">Espere um segundo</div>
+    <h3 class="saida-titulo" id="saida-titulo">Você ganhou <span>33% de desconto</span></h3>
+    <p class="saida-sub">É a única vez que esse valor aparece. Fechando esta janela, o preço volta ao normal.</p>
+
+    <div class="saida-de">De R$ 107,90</div>
+    <div class="saida-por">Por apenas</div>
+    <div class="saida-val">R$ 19,90</div>
+    <div class="saida-economia">Você economiza R$97,90 + R$10,00</div>
+
+    <a href="#" class="btn" id="saida-btn">Quero o método com desconto &rarr;</a>
+    <button class="saida-recusa" id="saida-recusa">Não quero o desconto, prefiro pagar o valor cheio</button>
+    <p class="saida-rodape">Acesso imediato &bull; Compra segura pela Ticto &bull; Garantia de 7 dias</p>
+  </div>
+</div>
+
+<script>
+(function () {
+  /* Link do checkout da oferta com desconto (R$19,90). */
+  var CHECKOUT_DESCONTO = 'https://payment.ticto.app/O1376B6BC';
+
+  var overlay = document.getElementById('saida-overlay');
+  var btn     = document.getElementById('saida-btn');
+  var armado  = false;   /* so empilha o estado depois de um gesto real do usuario */
+  var usado   = false;   /* uma camada so: depois de exibido, o voltar funciona normal */
+
+  function jaExibido() {
+    try { return sessionStorage.getItem('cz_saida') === '1'; } catch (e) { return false; }
+  }
+
+  function marcarExibido() {
+    try { sessionStorage.setItem('cz_saida', '1'); } catch (e) {}
+  }
+
+  /* O pop-up so vale na tela final do quiz (a mini landing com a oferta).
+     Durante as perguntas o botao voltar funciona normalmente. */
+  function naMiniLanding() {
+    try { return FLOW[state.idx] && FLOW[state.idx].type === 'projecao'; }
+    catch (e) { return false; }
+  }
+
+  function armar() {
+    if (armado || usado || jaExibido() || !naMiniLanding()) return;
+    try { history.pushState({ cz: 1 }, ''); armado = true; } catch (err) {}
+  }
+
+  function abrir() {
+    overlay.classList.add('aberto');
+    document.body.style.overflow = 'hidden';
+    usado = true;
+    marcarExibido();
+    if (typeof px === 'function') { px('ExitOffer'); }
+  }
+
+  function fechar() {
+    overlay.classList.remove('aberto');
+    document.body.style.overflow = '';
+  }
+
+  window.addEventListener('popstate', function () {
+    if (usado || jaExibido() || !armado) return;   /* so abre se foi armado na mini landing */
+    abrir();
+  });
+
+  /* apenas gestos que contam como user activation no Chrome: scroll NAO conta */
+  ['pointerdown', 'mousedown', 'click', 'touchstart', 'keydown'].forEach(function (evt) {
+    window.addEventListener(evt, armar, { passive: true });   /* sem 'once': arma quando a pessoa chegar na mini landing */
+  });
+
+  btn.addEventListener('click', function (e) {
+    e.preventDefault();
+    if (typeof px === 'function') { px('ExitOfferClick'); }
+    window.location.href = CHECKOUT_DESCONTO;
+  });
+
+  /* ===== RETORNO DO CHECKOUT =====
+     Quem aperta voltar no checkout da Ticto cai de novo nesta pagina. */
+  function marcarIdaAoCheckout(e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[href*="payment.ticto.app"]') : null;
+    if (!a || a.id === 'saida-btn') return;
+    try { sessionStorage.setItem('cz_check', '1'); } catch (err) {}
+  }
+
+  document.addEventListener('click', marcarIdaAoCheckout, true);
+
+  window.addEventListener('pageshow', function () {
+    var voltou = false;
+    try { voltou = sessionStorage.getItem('cz_check') === '1'; } catch (err) {}
+    if (!voltou) return;
+    try { sessionStorage.removeItem('cz_check'); } catch (err) {}
+    setTimeout(abrir, 400);
+  });
+
+  document.getElementById('saida-fechar').addEventListener('click', fechar);
+  document.getElementById('saida-recusa').addEventListener('click', fechar);
+  overlay.addEventListener('click', function (e) { if (e.target === overlay) fechar(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && overlay.classList.contains('aberto')) fechar();
+  });
+})();
 </script>
 </body>
 </html>
