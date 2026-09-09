@@ -40,8 +40,6 @@
   --erro-tx:#A03A32;
   --nav-bg:rgba(255,255,255,.92);
   --tracejado:#C9D8D0;
-  --previa-a:#FBFCFB;
-  --previa-b:#F5F8F6;
   --brilho:rgba(21,154,85,.10);
 
   --r-sm:12px;
@@ -94,8 +92,6 @@
 
   --nav-bg:rgba(15,25,21,.92);
   --tracejado:#2E4139;
-  --previa-a:#101A16;
-  --previa-b:#16211C;
   --brilho:rgba(47,191,116,.13);
 
   --sombra:0 1px 2px rgba(0,0,0,.30), 0 8px 24px rgba(0,0,0,.34);
@@ -607,23 +603,6 @@ a{color:inherit;text-decoration:none;}
 }
 .toast.on{opacity:1;transform:translate(-50%,0);}
 .toast.verde{background:var(--verde-grad);}
-
-/* barra de prévia das animações (ferramenta de teste, some com MODO_PREVIA:false) */
-.previa{
-  border:1.5px dashed var(--tracejado);border-radius:16px;padding:12px 12px 14px;
-  margin-bottom:14px;background:repeating-linear-gradient(45deg,var(--previa-a),var(--previa-a) 8px,var(--previa-b) 8px,var(--previa-b) 16px);
-}
-.previa-tt{font-size:10.5px;font-weight:800;color:var(--cinza-c);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;text-align:center;}
-.previa-chips{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;}
-.previa-chips::-webkit-scrollbar{display:none;}
-.previa-chip{
-  flex-shrink:0;width:46px;height:52px;border-radius:13px;color:#fff;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
-  box-shadow:0 4px 12px rgba(15,28,23,.16);transition:transform .12s;
-}
-.previa-chip:active{transform:scale(.92);}
-.pc-ic{font-size:18px;line-height:1;}
-.pc-n{font-size:10px;font-weight:800;opacity:.9;}
 
 /* ---------- comemoração de subida de nível ---------- */
 .nivelup{

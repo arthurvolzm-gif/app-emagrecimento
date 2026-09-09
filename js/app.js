@@ -211,20 +211,6 @@ const App = {
     return true;
   },
 
-  /* prévia: mostra a animação de qualquer nível sem mexer no progresso real */
-  previaNivel(n) {
-    const base = NIVEIS[n - 1];
-    if (!base) return;
-    const proximo = NIVEIS[n] || null;
-    this.mostrarNivelUp({
-      ...base,
-      pontos: base.min,
-      totalNiveis: NIVEIS.length,
-      proximo,
-      faltam: proximo ? proximo.min - base.min : 0
-    });
-  },
-
   mostrarNivelUp(nv) {
     const el = document.getElementById('nivelup');
     const cores = [nv.cor2, '#FFFFFF', nv.cor1, '#FFD86B', nv.cor2];
