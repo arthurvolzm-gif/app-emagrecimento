@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Protocolo GLP-1 Natural — Diagnóstico do seu GLP-1 Natural</title>
+<title>Meu Plano — Descubra o seu plano personalizado</title>
 <meta name="facebook-domain-verification" content="1ghqwe79k59bfxj5rarqsz5i6aoug4" />
 <!-- Meta Pixel Code -->
 <script>
@@ -550,9 +550,17 @@ body{
 
 <script>
 /* =========================================================
-   CONFIG  —  troque pelo seu link de checkout
+   CONFIG  —  é só aqui que você mexe pra configurar o funil
    ========================================================= */
-const CHECKOUT_URL = "https://payment.ticto.app/O49D90BBF"; // Protocolo GLP-1 Natural — R$29,90
+const APP_NOME = 'Meu Plano';           // troque quando o nome do app for definido
+
+/* Se ainda não tem preço/checkout definido, deixe em branco: o CTA final
+   leva a pessoa direto pro cadastro do app (index.html), sem cobrar nada.
+   Quando decidir o modelo de cobrança, cole o link do checkout aqui. */
+const PRECO = { de:'', por:'' };        // ex.: { de:'97,00', por:'27,90' }
+const CHECKOUT_URL = '';                // ex.: 'https://payment.ticto.app/XXXX'
+const APP_URL = 'index.html';           // pra onde vai quem não tem checkout configurado
+const CHAVE_QUIZ = 'app_emag_quiz';     // onde as respostas ficam salvas pro cadastro do app já abrir preenchido
 
 /* ===== Rastreamento Meta Pixel (seguro, não quebra se o pixel não carregar) ===== */
 function px(evento, padrao){
@@ -613,156 +621,141 @@ window.addEventListener('pagehide', function(){
 });
 
 /* =========================================================
-   PERGUNTAS  (15)  —  seguindo SPIN: Situação → Problema → Implicação → Necessidade
+   PERGUNTAS
+   Ordem = ordem de execução: sem indireção de "perguntas adiadas",
+   pra ficar fácil de ler e de editar depois. Segue SPIN (Situação →
+   Problema → Implicação → Necessidade), igual ao quiz original, mas
+   nada aqui menciona canetinha: é sobre montar o plano do app.
    ========================================================= */
 const QUESTIONS = [
-  /* ===== ENTRADA — espelha a grade do criativo (continuidade do toque) ===== */
+  /* ===== S — SITUAÇÃO (o que o app precisa pra montar o plano) ===== */
   {
     id:'nome', num:1, type:'text', noPill:true,
-    question:'Qual o seu nome?',
+    question:'Antes de tudo, como você se chama?',
     placeholder:'Digite seu primeiro nome'
   },
   {
     id:'objetivo', num:2,
     question:'Qual é o seu objetivo hoje?',
-    options:['🎯 Emagrecer mais do que estou emagrecendo','💊 Me preparar para reduzir a dose sem engordar','🚫 Parar de usar a caneta sem recuperar o peso','🔁 Recuperar o resultado que eu já tinha perdido']
+    options:['🔥 Emagrecer e perder gordura','💪 Ganhar massa muscular','⚖️ Manter o peso e melhorar o condicionamento']
   },
   {
-    id:'caneta', num:3,
-    question:'Que caneta você usa?',
-    options:['Mounjaro (tirzepatida)','Ozempic (semaglutida)','Wegovy (semaglutida)','Saxenda (liraglutida)','Manipulada / não lembro o nome']
-  },
-
-  /* ===== S — SITUAÇÃO ===== */
-  {
-    id:'dose', num:4, noPill:true,
-    question:'Qual é a sua dose atual?',
-    options:['2,5 mg','5 mg','7,5 mg','10 mg','12,5 mg','15 mg']
+    id:'local', num:3,
+    question:'Onde você vai treinar?',
+    options:['🏋️ Na academia','🏠 Em casa, com pouco ou nenhum equipamento']
   },
   {
-    id:'tempo_uso', num:5,
-    question:'Há quanto tempo você usa a canetinha?',
-    options:['🕐 Menos de 1 mês','🕑 Entre 1 e 3 meses','🕒 Entre 3 e 6 meses','🕕 Entre 6 meses e 1 ano','⏳ Mais de 1 ano']
+    id:'corpo_hoje', num:4,
+    question:'Como você descreveria seu corpo hoje?',
+    options: a => a.sexo==='Homem'
+      ? ['😕 Magro, sem definição nenhuma','🤏 Alguns quilos a mais, principalmente na barriga','📈 Acima do peso, quero uma mudança grande','💪 Já tenho uma base, quero refinar o shape']
+      : ['😕 Magra, mas sem nenhuma definição','🤏 Alguns quilos a mais, principalmente na barriga','📈 Acima do peso, quero uma mudança grande','💪 Já tenho uma base, quero refinar o shape']
   },
 
   /* ===== P — PROBLEMA ===== */
   {
-    id:'dor', num:6,
-    question:'O que mais te incomoda hoje no seu tratamento?',
+    id:'frustracao', num:5,
+    question:'O que mais te impede de chegar no corpo que você quer?',
     options:[
-      'A balança travou mesmo aplicando certinho',
-      'Tenho medo de parar e engordar tudo de volta',
-      'Emagreci, mas fiquei flácida e com o rosto abatido',
-      'Gasto muito por mês e vejo pouco resultado',
-      'Já parei e o peso está voltando'
+      '⏰ Falta de tempo na rotina',
+      '🤷 Não sei o que comer nem como treinar direito',
+      '🔁 Começo com tudo e paro depois de um tempo',
+      '🧭 Falta alguém acompanhando de perto',
+      '😩 Já tentei de tudo e nada funcionou'
     ]
   },
   {
-    id:'acompanhamento', num:7,
-    question:'Você tem acompanhamento de uma nutricionista durante o tratamento?',
-    options:['❌ Nunca tive','🔄 Tive no começo, mas parei','🤷 Tenho, mas ela nunca falou sobre isso','✅ Tenho e me orienta bem']
-  },
-  {
-    id:'ja_eliminou', num:8,
-    question:'Quantos quilos você já eliminou com a canetinha?',
-    options:['Ainda nenhum','De 1 a 5 kg','De 6 a 10 kg','De 11 a 15 kg','Mais de 16 kg']
-  },
-  {
-    id:'exercicio', num:9,
-    question:'Você costuma se exercitar quantas vezes por semana?',
-    options:['😴 Nenhuma','🚶 1-2x na semana','🏃 3-4x na semana','💪 5x ou mais na semana']
-  },
-  {
-    id:'massa', num:10,
-    question:'Você percebeu flacidez ou perda de massa muscular enquanto emagrecia?',
-    options:['😔 Sim, infelizmente','🤔 Não, mas já ouvi falar que acontece']
-  },
-  /* --- a pergunta abaixo arma exatamente o que a BREAK 2 vai revelar --- */
-  {
-    id:'fome', num:11,
-    question:'Está com dificuldade na alimentação devido a falta de fome?',
-    options:['🙁 Sim, estou comendo pouco','😋 Não, estou comendo bastante']
-  },
-  {
-    id:'colaterais', num:12, type:'multi',
-    question:'Quais desses sintomas você já sentiu durante o tratamento?',
-    options:['🤢 Enjoo ou dor no estômago','🚽 Intestino preso ou diarreia','😩 Cansaço que não passa','💇 Queda de cabelo','😞 Rosto abatido ou pele sem firmeza','✅ Nenhum desses']
-  },
-  {
-    id:'proteina_refeicoes', num:13,
-    question:'Você costuma comer proteína em todas as refeições?',
-    options:['🥩 Sim, sempre','🍽️ Às vezes','🚫 Quase nunca']
-  },
-  {
-    id:'intestino', num:14,
-    question:'Como está o funcionamento do seu intestino?',
-    options:['✅ Regular','😣 Preso','💧 Solto']
-  },
-  {
-    id:'sono', num:15,
-    question:'Quantas horas você dorme por noite, em média?',
-    options:['⚠️ Menos de 5h','🌙 Entre 5 e 7h','😴 Mais de 7h']
-  },
-  {
-    id:'estresse', num:16,
-    question:'Como está seu nível de estresse no dia a dia?',
-    options:['😰 Alto','😐 Moderado','😌 Baixo']
-  },
-  /* >>> BREAK 2 (mecanismo GLP-1) entra aqui <<< */
-
-  /* ===== I — IMPLICAÇÃO ===== */
-  {
-    id:'futuro', num:22, type:'multi',
-    question:'Como seria a sua vida se você engordasse tudo de novo depois da canetinha?',
-    options:['😞 Minha autoestima e confiança iriam lá embaixo','🏥 Minha saúde ia piorar de novo','👗 Voltaria o problema pra vestir e comprar roupa','💸 Sentiria que joguei fora todo o dinheiro que gastei','😢 Ia me sentir fracassada mais uma vez']
-  },
-  {
-    id:'concorda_habitos', num:23,
-    question:'Você acredita que algumas mudanças simples no seu estilo de vida são determinantes para não engordar novamente depois da canetinha?',
-    options:['✅ Sim, sem isso os resultados da canetinha são temporários','😟 Não, vou ser dependente desse remédio a vida toda']
-  },
-  {
-    id:'concorda_gasto', num:24,
-    question:'Você concorda que não adianta gastar milhares de reais na aplicação para engordar tudo depois?',
-    options:['Sim, preciso fazer esse investimento valer','Concordo, mas nunca soube o que fazer','Não tinha parado pra pensar nisso']
-  },
-  {
-    id:'compromisso', num:25,
-    question:'Você se compromete a seguir no método da Dra. Kelly, que já ajudou mais de 500 pessoas a emagrecerem, para fazer cada aplicação valer a pena nos próximos 14 dias?',
-    options:['Sim, me comprometo','Quero pelo menos tentar']
+    id:'tentativas', num:6,
+    question:'Você já tentou mudar o corpo antes e não conseguiu manter o resultado?',
+    options:[
+      'Sim, perdi peso mas voltou tudo depois',
+      'Comecei, mas não consegui manter a rotina',
+      'Essa é a minha primeira tentativa séria',
+      'Já tentei várias formas, nada funcionou direito'
+    ]
   },
 
-  /* ===== essas 4 renderizam só depois do diagnóstico completo (full), veja DEFERRED_APOS_DIAGNOSTICO ===== */
+  /* peso, meta de peso e altura entram aqui (não adiadas): o diagnóstico
+     completo mostra calorias e proteína reais, e pra isso precisa desses
+     três números antes de chegar lá */
   {
-    id:'corpo_sonho', num:17,
-    question:'Qual é o seu corpo dos sonhos?',
-    options:['Magra','Definida','Com curvas','Média'],
-    optionImages:['corpo-magra.jpg','corpo-definida.jpg','corpo-curvas.jpg','corpo-media.jpg']
-  },
-  {
-    id:'peso', num:18, type:'ruler',
+    id:'peso', num:7, type:'ruler',
     question:'Qual é o seu peso atual?',
     units:[{u:'kg',min:40,max:160,def:70,step:1},{u:'lb',min:88,max:352,def:154,step:1}]
   },
   {
-    id:'altura', num:19, type:'ruler',
+    id:'meta_peso', num:8, type:'ruler',
+    question:'Qual peso você quer alcançar?',
+    units:[{u:'kg',min:40,max:160,def:65,step:1},{u:'lb',min:88,max:352,def:143,step:1}]
+  },
+  {
+    id:'altura', num:9, type:'ruler',
     question:'Qual é a sua altura?',
     units:[{u:'cm',min:140,max:210,def:165,step:1},{u:'pol',min:55,max:83,def:65,step:1}]
   },
+  /* >>> DIAGNÓSTICO CURTO entra aqui, depois de 'altura' <<< */
+
+  /* ===== hábitos — alimentam o Índice de Constância ===== */
   {
-    id:'meta_kg', num:20,
-    question:'Quantos quilos você ainda quer eliminar?',
-    options:['🌱 Até 5 kg','🎯 De 6 a 10 kg','💪 De 11 a 15 kg','🔥 De 16 a 20 kg','🚀 Mais de 20 kg','✅ Só quero manter o que já perdi']
+    id:'treino_frequencia', num:10,
+    question:'Hoje, quantas vezes por semana você treina de verdade?',
+    options:['😴 Nenhuma','🚶 1 ou 2 vezes','🏃 3 ou 4 vezes','💪 5 vezes ou mais']
   },
-  /* >>> META (prova social) entra aqui, depois do diagnóstico completo <<< */
   {
-    id:'outros_objetivos', num:21, type:'multi',
-    question:'Além de emagrecer, quais são seus outros objetivos?',
-    options:['Perder barriga/gordura localizada','Melhorar flacidez','Melhorar dores','Mais disposição e energia','Melhorar a saúde']
+    id:'alimentacao', num:11,
+    question:'Como está sua alimentação nos dias normais?',
+    options:[
+      '🌀 Cada dia é de um jeito, não tem rotina',
+      '🍽️ Começo bem e desando à noite',
+      '📋 Sigo mais ou menos, com escorregadas',
+      '✅ É organizada quase todos os dias'
+    ]
+  },
+  {
+    id:'agua', num:12,
+    question:'Quanta água você bebe por dia?',
+    options:['💧 Menos de 1 litro','🥤 Entre 1 e 2 litros','🚰 Mais de 2 litros']
+  },
+  {
+    id:'sono', num:13,
+    question:'Quantas horas você dorme por noite, em média?',
+    options:['⚠️ Menos de 5 horas','😪 Entre 5 e 6 horas','😌 Entre 7 e 8 horas','😴 Mais de 8 horas']
+  },
+  {
+    id:'tempo_disponivel', num:14,
+    question:'Quanto tempo você tem disponível pra treinar por dia?',
+    options:['Menos de 30 minutos','Entre 30 e 45 minutos','Entre 45 e 60 minutos','Mais de 60 minutos']
+  },
+  /* >>> ANALISANDO + DIAGNÓSTICO COMPLETO entram aqui, depois de 'tempo_disponivel' <<< */
+
+  /* ===== I — IMPLICAÇÃO ===== */
+  {
+    id:'futuro', num:15, type:'multi',
+    question:'Se nada mudar, como você acha que vai estar daqui a um ano?',
+    options:['😔 Ainda mais insatisfeito(a) com o corpo','🏥 Com a saúde pior','😞 Me sentindo pra baixo por causa disso','💸 Achando que joguei dinheiro fora nas tentativas']
+  },
+  {
+    id:'medo', num:16,
+    question:'Qual é o seu maior medo em relação a mudar de vez?',
+    options:['😩 Não conseguir de novo, já fracassei antes','⏰ Não ter tempo pra seguir na rotina','💸 Gastar e não ver resultado','🍽️ Passar fome ou sofrer demais']
+  },
+  /* >>> tela do app (compromisso) entra aqui, depois de 'medo' <<< */
+
+  /* corpo_sonho e outros_objetivos ficam pro fim de propósito: rendem mais
+     depois que a pessoa já viu os números reais dela no diagnóstico completo */
+  {
+    id:'corpo_sonho', num:17,
+    question:'Qual é o seu corpo dos sonhos?',
+    options: a => a.sexo==='Homem' ? ['Definido','Musculoso','Atlético e volumoso','Mantendo o shape atual'] : ['Magra','Definida','Com curvas','Média'],
+    optionImages: a => a.sexo==='Homem' ? null : ['corpo-magra.jpg','corpo-definida.jpg','corpo-curvas.jpg','corpo-media.jpg']
+  },
+  {
+    id:'outros_objetivos', num:18, type:'multi',
+    question:'Além de mudar o corpo, o que mais você quer conquistar?',
+    options:['⚡ Mais energia e disposição','😊 Me sentir bem em qualquer roupa','🪞 Me olhar no espelho e gostar do que vejo','💪 Mais força e resistência no dia a dia','🧘 Reduzir o estresse e dormir melhor']
   }
 ];
 
-/* Interstíciais (aparecem DEPOIS de certas perguntas) */
 const INTERSTITIALS = {};
 
 /* =========================================================
@@ -770,29 +763,26 @@ const INTERSTITIALS = {};
    ========================================================= */
 const state = { idx:0, answers:{} };
 const FLOW = [];
-/* peso, altura e meta_kg só entram depois do diagnóstico completo (full), a pedido do
-   usuário — ficam de fora do forEach principal e são empurradas mais abaixo */
-const DEFERRED_APOS_DIAGNOSTICO = ['corpo_sonho','peso','altura','meta_kg','outros_objetivos'];
+/* o array QUESTIONS já está na ordem de execução (veja o comentário lá em
+   cima) — o forEach só decide ONDE, entre uma pergunta e outra, entra uma
+   tela de conteúdo (diagnóstico, análise, a tela do app). */
 FLOW.push({type:'intro'});
+FLOW.push({type:'idade'});
 QUESTIONS.forEach(q=>{
-  if(DEFERRED_APOS_DIAGNOSTICO.includes(q.id)) return;
   FLOW.push({type:'question', q});
-  if(INTERSTITIALS[q.id]) FLOW.push({type:'interstitial', id:q.id});
-  if(q.id==='massa'){                                       // diagnóstico no meio do quiz (sem a tela de análise)
+  if(q.id==='altura'){                                      // diagnóstico curto, ainda sem números
     FLOW.push({type:'diagnostico'});
   }
-  if(q.id==='estresse'){                                     // análise + diagnóstico completo (alerta + índice)
+  if(q.id==='tempo_disponivel'){                             // análise + diagnóstico completo (índice + calorias reais)
     FLOW.push({type:'analyzing'});
     FLOW.push({type:'diagnostico', full:true});
-    DEFERRED_APOS_DIAGNOSTICO.forEach(id=>{                   // corpo_sonho, peso, altura, meta_kg, outros_objetivos
-      const dq = QUESTIONS.find(x=>x.id===id);                // entram logo depois do diagnóstico completo
-      FLOW.push({type:'question', q:dq});
-      if(dq.id==='meta_kg') FLOW.push({type:'meta'});         // prova social
-    });
+  }
+  if(q.id==='medo'){                                         // tela do app, estilo "isso ajudaria você?"
+    FLOW.push({type:'appTeaser'});
   }
 });
 FLOW.push({type:'analyzing', v2:true});                     // 3ª vez: analisa tudo, inclusive outros_objetivos
-FLOW.push({type:'projecao'});                               // projeção final do protocolo — já é a landing/oferta, última tela do quiz
+FLOW.push({type:'projecao'});                               // projeção final — já é a página de entrada no app, última tela do quiz
 
 const app = document.getElementById('app');
 const TOTAL_Q = QUESTIONS.length;
@@ -823,9 +813,10 @@ function toastHTML(count){
 function render(){
   const step = FLOW[state.idx];
   const map = {
-    intro:renderIntro, question:()=>renderQuestion(step.q), break1:renderBreak1,
+    intro:renderIntro, idade:renderIdade, question:()=>renderQuestion(step.q), break1:renderBreak1,
     interstitial:()=>renderInterstitial(step.id),
     analyzing:()=>renderAnalyzing(step.v2), diagnostico:()=>renderDiagnostico(step.full), prepitch:renderPrePitch, meta:renderMeta,
+    appTeaser:renderAppTeaser,
     projecao:renderProjecao,
     offerLocked:renderOfferLocked, offerPrice:renderOfferPrice, result:renderResult
   };
@@ -836,19 +827,48 @@ function render(){
 const IDADE_OPTS = ['Entre 18 e 29 anos','Entre 30 e 39 anos','Entre 40 e 49 anos','+50 anos'];
 const IDADE_IMGS = ['idade-18-29.jpg','idade-30-39.jpg','idade-40-49.jpg','idade-50-mais.jpg'];
 
+const SEXO_OPTS = ['Mulher','Homem'];
+const SEXO_IMGS = ['sexo-mulher.jpg','sexo-homem.jpg'];
+
 function renderIntro(){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz" style="text-align:center;padding-top:60px;padding-bottom:46px;">
-      <div class="brand-sub" style="font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:800;color:var(--verde);margin-bottom:10px;">Teste grátis para quem usa canetinha</div>
-      <h1 class="intro-h1" style="color:var(--verde-escuro);">Descubra o nível de GLP-1 natural do seu corpo.</h1>
-      <p class="intro-sub" style="font-size:16px;line-height:1.6;margin-top:10px;color:var(--verde);text-align:center;">Faça o teste grátis e descubra o nível do seu GLP-1 natural e o que fazer para reativar.</p>
-      <h2 class="intro-h1" style="margin:34px 0 0;">Qual a sua idade?</h2>
+      <div class="brand-sub" style="font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:800;color:var(--verde);margin-bottom:10px;">Teste grátis</div>
+      <h1 class="intro-h1" style="color:var(--verde-escuro);">Sua dieta e seu treino calculados pro seu corpo</h1>
+      <p class="intro-sub" style="font-size:16px;line-height:1.6;margin-top:10px;color:var(--verde);text-align:center;">Responda o questionário e receba um plano de emagrecimento completo + um diagnóstico personalizado do seu gasto calórico diário.</p>
+      <h2 class="intro-h1" style="margin:34px 0 0;">Você é</h2>
+      <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#9aa8a2;margin:14px 0 22px;">Toque para escolher</p>
+      <div class="opts grid2">
+        ${SEXO_OPTS.map((o,i)=>`<div class="idade-card" onclick="selectSexo(${i})"><img src="${SEXO_IMGS[i]}" alt="${o}" class="idade-img" onerror="this.style.display='none'"><button class="opt${state.answers.sexo===o?' sel':''}" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button></div>`).join('')}
+      </div>
+      <p style="font-size:13px;color:#8aa79a;margin-top:18px;">✅ Tempo estimado: 2 minutos</p>
+    </div>
+  </div>`;
+}
+
+function selectSexo(i){
+  state.answers.sexo = SEXO_OPTS[i];
+  trackResposta('sexo', SEXO_OPTS[i]);
+  const btns = app.querySelectorAll('.opt');
+  btns.forEach(b=>b.classList.remove('sel'));
+  const chosen = app.querySelector(`.opt[data-i="${i}"]`);
+  if(chosen) chosen.classList.add('sel');
+  btns.forEach(b=>b.style.pointerEvents='none');
+  px('QuizIniciado');
+  setTimeout(()=>go(1),360);
+}
+
+function renderIdade(){
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz" style="text-align:center;">
+      ${backBtn()}
+      <h2 class="intro-h1" style="margin-top:20px;">Qual a sua idade?</h2>
       <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#9aa8a2;margin:14px 0 22px;">Toque para escolher</p>
       <div class="opts grid2">
         ${IDADE_OPTS.map((o,i)=>`<div class="idade-card" onclick="selectIdade(${i})"><img src="${IDADE_IMGS[i]}" alt="${o}" class="idade-img" onerror="this.style.display='none'"><button class="opt${state.answers.idade===o?' sel':''}" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button></div>`).join('')}
       </div>
-      <p style="font-size:13px;color:#8aa79a;margin-top:18px;">✅ Tempo estimado: 2 minutos</p>
     </div>
   </div>`;
 }
@@ -861,11 +881,13 @@ function selectIdade(i){
   const chosen = app.querySelector(`.opt[data-i="${i}"]`);
   if(chosen) chosen.classList.add('sel');
   btns.forEach(b=>b.style.pointerEvents='none');
-  px('QuizIniciado');
   setTimeout(()=>go(1),360);
 }
 
 
+
+function opcoesDe(q){ return typeof q.options === 'function' ? q.options(state.answers) : q.options; }
+function imagensDe(q){ return typeof q.optionImages === 'function' ? q.optionImages(state.answers) : q.optionImages; }
 
 function renderQuestion(q){
   if(q.type==='text') return renderTextQuestion(q);
@@ -874,18 +896,19 @@ function renderQuestion(q){
   const a = state.answers;
   const insight = q.insight ? `<div class="insight">${q.insight(a)}</div>` : '';
   const echo = q.echo ? `<div class="echo">${q.echo(a)}</div>` : '';
+  const opts = opcoesDe(q), imgs = imagensDe(q);           /* algumas perguntas (ex.: corpo_sonho) variam por sexo */
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}<div class="brand"><span class="brand-nome">Protocolo GLP-1 Natural</span></div>
+      ${backBtn()}<div class="brand"><span class="brand-nome">${APP_NOME}</span></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
       ${echo}
       <h2 class="q-title">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
-      <div class="opts${q.optionImages?' photo':''}">
-        ${q.optionImages
-          ? q.options.map((o,i)=>`<div class="opt-row" onclick="selectOpt('${q.id}',${i})"><img src="${q.optionImages[i]}" alt="${o}" class="opt-row-img" onerror="this.style.display='none'"><button class="opt" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button></div>`).join('')
-          : q.options.map((o,i)=>`<button class="opt" data-i="${i}" onclick="selectOpt('${q.id}',${i})"><span class="opt-radio"></span><span>${o}</span></button>`).join('')}
+      <div class="opts${imgs?' photo':''}">
+        ${imgs
+          ? opts.map((o,i)=>`<div class="opt-row" onclick="selectOpt('${q.id}',${i})"><img src="${imgs[i]}" alt="${o}" class="opt-row-img" onerror="this.style.display='none'"><button class="opt" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button></div>`).join('')
+          : opts.map((o,i)=>`<button class="opt" data-i="${i}" onclick="selectOpt('${q.id}',${i})"><span class="opt-radio"></span><span>${o}</span></button>`).join('')}
       </div>
       ${q.img?`<img src="${q.img}" alt="" style="width:100%;border-radius:12px;display:block;margin:16px 0 0;" onerror="this.style.display='none'">`:''}
     </div>
@@ -895,8 +918,10 @@ function renderQuestion(q){
 
 function selectOpt(qid,i){
   const q = QUESTIONS.find(x=>x.id===qid);
-  state.answers[qid] = q.options[i];
-  trackResposta(qid, q.options[i]);
+  const opts = opcoesDe(q);
+  state.answers[qid] = opts[i];
+  state.answers[qid+'_i'] = i;              /* o índice é o que os cálculos usam */
+  trackResposta(qid, opts[i]);
   const btns = app.querySelectorAll('.opt');
   btns.forEach(b=>b.classList.remove('sel'));
   const chosen = app.querySelector(`.opt[data-i="${i}"]`);
@@ -911,7 +936,7 @@ function renderMultiQuestion(q){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}<div class="brand"><span class="brand-nome">Protocolo GLP-1 Natural</span></div>
+      ${backBtn()}<div class="brand"><span class="brand-nome">${APP_NOME}</span></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
       <h2 class="q-title tight">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
@@ -940,7 +965,7 @@ function renderTextQuestion(q){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}<div class="brand"><span class="brand-nome">Protocolo GLP-1 Natural</span></div>
+      ${backBtn()}<div class="brand"><span class="brand-nome">${APP_NOME}</span></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
       <h2 class="q-title">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
@@ -961,7 +986,7 @@ function renderRulerQuestion(q){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz" style="text-align:center;">
-      ${backBtn()}<div class="brand"><span class="brand-nome">Protocolo GLP-1 Natural</span></div>
+      ${backBtn()}<div class="brand"><span class="brand-nome">${APP_NOME}</span></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
       <h2 class="q-title" style="text-align:center;">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
@@ -1050,34 +1075,33 @@ function renderInterstitial(id){
 function renderProjecao(){
   const a = state.answers;
   const nome = a.nome && a.nome!=='você' ? a.nome : '';
-  const idx = calcIndiceGLP();
-  const niv = nivelGLP(idx);
-  /* estimativa educativa antes/depois, a partir de respostas reais (sono, estresse, massa) —
+  const idx = calcIndiceConstancia();
+  const niv = faixaIndice(idx);
+  const kcal = metaKcal();
+  const dif = difPeso();
+  const objFrase = objetivoId()==='hipertrofia' ? 'ganhar massa' : objetivoId()==='manutencao' ? 'manter e definir' : 'emagrecer';
+  const localTxt = localId()==='casa' ? 'em casa, com pouco ou nenhum equipamento' : 'na academia';
+
+  /* estimativa educativa antes/depois, a partir de respostas reais —
      nunca um número solto: sempre calculado e rotulado como estimativa */
-  const sono = a.sono || '', estresse = a.estresse || '';
-  let disposicaoAntes = sono.includes('Menos de 5h') ? 28 : sono.includes('5 e 7h') ? 42 : 55;
-  if(estresse.includes('Alto')) disposicaoAntes -= 12; else if(estresse.includes('Moderado')) disposicaoAntes -= 4;
+  const sonoAns = a.sono || '', freqAns = a.treino_frequencia || '';
+  let disposicaoAntes = sonoAns.includes('Menos de 5') ? 28 : sonoAns.includes('5 e 6') ? 40 : sonoAns.includes('7 e 8') ? 55 : 50;
+  if(freqAns.includes('Nenhuma')) disposicaoAntes -= 10;
   disposicaoAntes = Math.max(15, Math.min(60, disposicaoAntes));
-  const autoestimaAntes = Math.max(20, Math.min(55, Math.round(idx*0.75)));
-  const satisfacaoAntes = (a.massa||'').includes('Sim') ? 32 : 42;
-  const colateraisArr = Array.isArray(a.colaterais) ? a.colaterais : (a.colaterais ? [a.colaterais] : []);
-  const temSintomas = colateraisArr.some(c=>c && !c.includes('Nenhum'));
-  let controleFomeAntes = (a.fome||'').includes('pouco') ? 30 : 38;
-  if(temSintomas) controleFomeAntes -= 8;
-  controleFomeAntes = Math.max(15, Math.min(45, controleFomeAntes));
-  const disposicaoDepois = Math.min(95, disposicaoAntes+55);
-  const autoestimaDepois = Math.min(92, autoestimaAntes+60);
-  const satisfacaoDepois = Math.min(90, satisfacaoAntes+48);
-  const controleFomeDepois = Math.min(90, controleFomeAntes+50);
-  const metrica = (label,antes,depois)=>`
+  const constanciaAntes = Math.max(15, Math.min(60, idx));
+  const rotinaAntes = (a.alimentacao||'').includes('Cada dia') ? 25 : (a.alimentacao||'').includes('desando') ? 35 : 48;
+  const disposicaoDepois = Math.min(92, disposicaoAntes+45);
+  const constanciaDepois = Math.min(95, constanciaAntes+40);
+  const rotinaDepois = Math.min(90, rotinaAntes+42);
+
+  const metrica = (label,antes)=>`
         <div class="glp-metric"><div class="glp-metric-top"><span class="nome">${label}</span><span class="val">${antes}%</span></div><div class="glp-bar"><div class="glp-bar-fill" style="width:${antes}%"></div></div></div>`;
-  const metricaBom = (label,antes,depois)=>`
+  const metricaBom = (label,depois)=>`
         <div class="glp-metric"><div class="glp-metric-top"><span class="nome">${label}</span><span class="val">${depois}%</span></div><div class="glp-bar"><div class="glp-bar-fill" style="width:${depois}%"></div></div></div>`;
 
-
-  /* curva de evolução (0-100, estimativa educativa, não é kg nem resultado garantido) */
+  /* curva de evolução (0-100, fases qualitativas, sem prazo numérico de resultado) */
   const diasCurva = [1,3,5,7,10,14];
-  const valsCurva = [8,18,40,58,70,93];
+  const valsCurva = [10,22,38,55,72,90];
   const labelsCurva = ['Ponto de partida','Adaptação','Primeiros sinais','Virada de chave','Aceleração','Consolidação'];
   const coresCurva = ['#e05a4e','#e58a4e','#f0c05a','#8fb85a','#5ec27a','#4caf82'];
   const xC = d => 20 + (d-1)/13*280;
@@ -1086,7 +1110,7 @@ function renderProjecao(){
   const pathCurva = pontosCurva.map((p,i)=>(i===0?'M':'L')+p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ');
   const areaCurva = pathCurva+` L${pontosCurva[pontosCurva.length-1].x.toFixed(1)},160 L${pontosCurva[0].x.toFixed(1)},160 Z`;
   const curvaHTML = `
-      <div class="proj-chart-tt">Sua curva estimada de evolução no protocolo</div>
+      <div class="proj-chart-tt">Sua curva estimada com o ${APP_NOME}</div>
       <div class="proj-chart-wrap">
         <svg viewBox="0 0 320 170" preserveAspectRatio="none">
           <defs>
@@ -1116,145 +1140,124 @@ function renderProjecao(){
       </div>
 `;
 
+  const temCheckout = !!CHECKOUT_URL;
+  const destino = temCheckout ? CHECKOUT_URL : APP_URL;
+  const rotuloCTA = temCheckout ? 'Quero começar agora →' : `Começar agora no ${APP_NOME} →`;
+
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}<div class="brand"><span class="brand-nome">Protocolo GLP-1 Natural</span></div>
+      ${backBtn()}<div class="brand"><span class="brand-nome">${APP_NOME}</span></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:100%"></div></div>
 
-      <h2 class="q-title" style="margin-top:18px;">${nome?nome+', a':'A'}qui está a sua projeção com o Protocolo GLP-1 Natural de 14 dias</h2>
+      <h2 class="q-title" style="margin-top:18px;">${nome?nome+', a':'A'}qui está a sua projeção com o ${APP_NOME}</h2>
 
 ${curvaHTML}
 
       <div class="proj-compare" style="margin-top:22px;">
         <div class="proj-compare-col ruim">
-          <img src="projecao-hoje.jpg" alt="Hoje" class="proj-compare-img" onerror="this.remove()">
-          <h5>Hoje</h5>
-          ${metrica('Nível de disposição', disposicaoAntes)}
-          ${metrica('Autoestima', autoestimaAntes)}
-          ${metrica('Satisfação com o corpo', satisfacaoAntes)}
-          ${metrica('Controle da fome', controleFomeAntes)}
+          <h5>🙁 Hoje</h5>
+          ${metrica('Disposição', disposicaoAntes)}
+          ${metrica('Constância', constanciaAntes)}
+          ${metrica('Rotina organizada', rotinaAntes)}
         </div>
         <div class="proj-compare-col bom">
-          <img src="projecao-protocolo.jpg" alt="Com o protocolo" class="proj-compare-img" onerror="this.remove()">
-          <h5>Com o protocolo</h5>
-          ${metricaBom('Nível de disposição', disposicaoAntes, disposicaoDepois)}
-          ${metricaBom('Autoestima', autoestimaAntes, autoestimaDepois)}
-          ${metricaBom('Satisfação com o corpo', satisfacaoAntes, satisfacaoDepois)}
-          ${metricaBom('Controle da fome', controleFomeAntes, controleFomeDepois)}
+          <h5>💪 Com o ${APP_NOME}</h5>
+          ${metricaBom('Disposição', disposicaoDepois)}
+          ${metricaBom('Constância', constanciaDepois)}
+          ${metricaBom('Rotina organizada', rotinaDepois)}
         </div>
       </div>
 
       <div class="proj-compare">
         <div class="proj-compare-col ruim">
-          <h5>Só a canetinha</h5>
+          <h5>Sozinho(a)</h5>
           <ul>
-            <li>✗ Hormônio natural continua desligado</li>
-            <li>✗ Resultado depende 100% da aplicação</li>
-            <li>✗ Balança travada na mesma dose</li>
-            <li>✗ Medo de reduzir e engordar tudo</li>
+            <li>✗ Decide o que comer a cada refeição</li>
+            <li>✗ Treino genérico, sem saber se é o certo pro seu corpo</li>
+            <li>✗ Sem ninguém acompanhando os seus números</li>
+            <li>✗ Cada escorregada vira motivo pra desistir</li>
           </ul>
         </div>
         <div class="proj-compare-col bom">
-          <h5>Canetinha + Método</h5>
+          <h5>Com o ${APP_NOME}</h5>
           <ul>
-            <li>✓ Hormônio natural sendo reativado</li>
-            <li>✓ Protocolo pensado pra sustentar o resultado</li>
-            <li>✓ Mais resultado com a mesma aplicação</li>
-            <li>✓ Um plano claro pra reduzir a dose</li>
+            <li>✓ Cardápio já calculado na sua meta de calorias</li>
+            <li>✓ Treino no seu sexo e no seu local, dia por dia</li>
+            <li>✓ Progresso, água, sono e treino num só lugar</li>
+            <li>✓ Um plano de recuperar o dia ruim, não de zerar tudo</li>
           </ul>
         </div>
       </div>
 
       <div style="background:#e9f6ee;border-radius:14px;padding:20px 18px;margin:22px 0 14px;text-align:center;">
-        <h4 style="margin:0 0 10px;font-size:17px;color:#1a1a1a;">Seu Plano Personalizado <span style="color:var(--verde);">Protocolo GLP-1 Natural</span></h4>
-        <p style="font-size:14.5px;color:var(--verde-escuro);font-weight:800;line-height:1.6;margin:0 0 12px;">Baseado nas suas respostas, criamos um protocolo 100% personalizado pra reativar o seu GLP-1 natural, com o próximo passo pensado pros seus 14 primeiros dias.</p>
-        <p style="font-size:14px;color:#4a4a4a;font-weight:400;line-height:1.65;margin:0;">O protocolo contém os <strong>estímulos certos</strong> pra ativar sua produção natural de saciedade e reduzir o risco de efeito rebote, respeitando sua rotina e o que mais te incomoda hoje.</p>
+        <h4 style="margin:0 0 10px;font-size:17px;color:#1a1a1a;">Seu plano personalizado no <span style="color:var(--verde);">${APP_NOME}</span></h4>
+        <p style="font-size:14.5px;color:var(--verde-escuro);font-weight:800;line-height:1.6;margin:0 0 12px;">Com base nas suas respostas, o app já monta o seu cardápio, o seu treino e as suas metas de água e sono, ajustados pro seu objetivo de ${objFrase}.</p>
+        <p style="font-size:14px;color:#4a4a4a;font-weight:400;line-height:1.65;margin:0;">Você treina ${localTxt}, com uma meta diária de <strong>${kcal} kcal</strong>. Nada disso é genérico: é calculado a partir do que você respondeu aqui.</p>
       </div>
 
-      <!-- COMO FUNCIONA O PROTOCOLO -->
-      <h4 style="text-align:center;margin:18px 0 16px;font-size:17px;color:#1a1a1a;">Como funciona o Protocolo GLP-1 Natural?</h4>
+      <!-- COMO FUNCIONA O APP -->
+      <h4 style="text-align:center;margin:18px 0 16px;font-size:17px;color:#1a1a1a;">Como o ${APP_NOME} funciona?</h4>
       <div class="valor-box" style="text-align:left;padding:18px 20px;">
         <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:18px;">
           <span style="color:var(--verde);font-size:16px;line-height:1.5;flex-shrink:0;">☑</span>
-          <span style="font-size:13.5px;color:#4a4a4a;line-height:1.55;"><strong style="color:var(--verde);">Ativação:</strong> as 3 partes do gatilho e como colocar todas no seu prato: proteína suficiente, fibra fermentável e a ordem de comer que muda a sua fome nas horas seguintes. E o erro que quase toda mulher na canetinha comete e que desliga essa produção.</span>
+          <span style="font-size:13.5px;color:#4a4a4a;line-height:1.55;"><strong style="color:var(--verde);">Cardápio:</strong> café, almoço, lanches e jantar já calculados na sua meta, com gramagem. Não gosta de um alimento? Troca por outro com um toque, sem sair da meta.</span>
         </div>
         <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:18px;">
           <span style="color:var(--verde);font-size:16px;line-height:1.5;flex-shrink:0;">☑</span>
-          <span style="font-size:13.5px;color:#4a4a4a;line-height:1.55;"><strong style="color:var(--verde);">Blindagem:</strong> por que boa parte do peso que sai na canetinha é músculo e não gordura, quanta proteína você realmente precisa comendo pouco, e como distribuir nos horários que mais protegem a sua massa magra.</span>
+          <span style="font-size:13.5px;color:#4a4a4a;line-height:1.55;"><strong style="color:var(--verde);">Treino:</strong> montado pro seu sexo e pro seu local de treino, com exercícios explicados e o cardio na dose certa do seu objetivo.</span>
         </div>
         <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:18px;">
           <span style="color:var(--verde);font-size:16px;line-height:1.5;flex-shrink:0;">☑</span>
-          <span style="font-size:13.5px;color:#4a4a4a;line-height:1.55;"><strong style="color:var(--verde);">Redução:</strong> os sinais de que o seu corpo já está pronto para uma dose menor, por que reduzir aos poucos funciona e parar de uma vez costuma dar errado, e o que comer nas semanas de redução para a fome não te pegar de surpresa.</span>
+          <span style="font-size:13.5px;color:#4a4a4a;line-height:1.55;"><strong style="color:var(--verde);">Hábitos:</strong> metas diárias de água e de sono, calculadas pelo seu peso, marcadas com um toque.</span>
         </div>
         <div style="display:flex;align-items:flex-start;gap:10px;">
           <span style="color:var(--verde);font-size:16px;line-height:1.5;flex-shrink:0;">☑</span>
-          <span style="font-size:13.5px;color:#4a4a4a;line-height:1.55;"><strong style="color:var(--verde);">Liberdade:</strong> o que fazer em cada dia, do dia 1 ao dia 14, uma mudança por vez, sem virar a sua rotina de cabeça para baixo. Com checklist diário e o plano de resgate para os dias em que a fome bater mais forte.</span>
+          <span style="font-size:13.5px;color:#4a4a4a;line-height:1.55;"><strong style="color:var(--verde);">Evolução:</strong> pontos, níveis e o registro de cada pesagem e cada carga levantada. É a prova de que está funcionando, mesmo nas semanas em que a balança anda devagar.</span>
         </div>
       </div>
 
-      <!-- COMPARE OS CUSTOS -->
-      <h4 style="text-align:center;margin:26px 0 12px;font-size:17px;color:var(--verde-escuro);">Compare o custo de continuar assim:</h4>
+      <!-- COMPARE O CUSTO -->
+      <h4 style="text-align:center;margin:26px 0 12px;font-size:17px;color:var(--verde-escuro);">Compare com o que isso custaria fora do app:</h4>
       <div class="valor-box">
-        <div class="valor-row"><span class="lbl">Aplicação por mês</span><span class="num">R$ 800–3.000</span></div>
-        <div class="valor-row"><span class="lbl">Consulta e retornos</span><span class="num">R$ 300–800</span></div>
-        <div class="valor-row"><span class="lbl">Exames de acompanhamento</span><span class="num">R$ 0–1.140</span></div>
-        <div class="valor-row"><span class="lbl">Suplementação</span><span class="num">R$ 200–950</span></div>
-        <div class="valor-row total" style="background:#e9f6ee;"><span class="lbl">Protocolo GLP-1 Natural</span><span class="num" style="color:var(--verde-escuro);">R$ 29,90</span></div>
+        <div class="valor-row"><span class="lbl">Nutricionista (mensal)</span><span class="num">R$ 250–600</span></div>
+        <div class="valor-row"><span class="lbl">Personal trainer (mensal)</span><span class="num">R$ 300–900</span></div>
+        <div class="valor-row"><span class="lbl">App de contagem de calorias avulso</span><span class="num">R$ 30–60</span></div>
       </div>
-      <p style="font-size:12.5px;color:#8a9a92;line-height:1.55;margin:10px 0 0;text-align:center;">Reativar a sua própria produção custa menos que 1 dia de canetinha, uma vez só.</p>
+      <p style="font-size:12.5px;color:#8a9a92;line-height:1.55;margin:10px 0 0;text-align:center;">O ${APP_NOME} recalcula o seu plano sozinho toda vez que o seu peso muda, sem consulta nova.</p>
 
-      <!-- SUA DECISÃO -->
-      <div class="res-section" style="padding:26px 0 0;">
-        <h2 class="res-h2" style="font-size:20px;">Sua decisão <span>agora</span></h2>
-        <div class="dec-grid">
-          <div class="dec-col op1">
-            <div class="dt">Opção 1</div>
-            Continuar pagando mais de mil reais por mês por uma aplicação que segura o seu peso mas não ensina nada ao seu corpo, presa ao medo de parar e ver tudo voltar.
-          </div>
-          <div class="dec-col op2">
-            <div class="dt">Opção 2</div>
-            Investir uma única vez, menos do que você gasta em um delivery, para ter o passo a passo que faz o seu próprio corpo assumir o trabalho e te dá a liberdade de sair da canetinha quando quiser.
-          </div>
-        </div>
-      </div>
-
-      <!-- OFERTA -->
+      <!-- APP REVEAL / OFERTA -->
       <div class="res-section" style="padding:26px 0 0;">
         <div class="oferta-final">
-          <div class="ot">Protocolo GLP-1 Natural</div>
+          <div class="ot">${APP_NOME}</div>
           <div class="of-block">Você recebe</div>
-          <div class="of-item"><span class="ic">✓</span><span class="nm">Módulo 1 · Ativação do Gatilho GLP-1 Natural</span><span class="pr">R$29,90</span></div>
-          <div class="of-item"><span class="ic">✓</span><span class="nm">Módulo 2 · Blindagem da Massa Magra</span><span class="pr">R$23,90</span></div>
-          <div class="of-item"><span class="ic">✓</span><span class="nm">Módulo 3 · Redução Sem Efeito Rebote</span><span class="pr">R$26,90</span></div>
-          <div class="of-item"><span class="ic">✓</span><span class="nm">Módulo 4 · Plano de 14 Dias</span><span class="pr">R$17,20</span></div>
-          <div class="of-block bonus">+ 3 bônus exclusivos</div>
-          <div class="of-item"><span class="ic">✓</span><span class="nm">Grupo VIP no WhatsApp</span><span class="pr">GRÁTIS</span></div>
-          <div class="of-item"><span class="ic">✓</span><span class="nm">Cardápio semanal e lista de compras</span><span class="pr">GRÁTIS</span></div>
-          <div class="of-item"><span class="ic">✓</span><span class="nm">Guia anti efeitos colaterais</span><span class="pr">GRÁTIS</span></div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Cardápio calculado na sua meta, com troca de alimentos</span></div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Treino no seu sexo e no seu local</span></div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Metas de água e sono</span></div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Registro de progresso, pesagem e cargas</span></div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Níveis e pontos pra te manter no jogo</span></div>
 
-          <div class="reserva" style="margin:22px 0 0;">⏱ Oferta reservada por: <span class="t" id="proj-timer">08:55</span></div>
-          <div class="of-de">De R$ 97,90</div>
+          ${temCheckout ? `
+          <div class="of-de">De R$ ${PRECO.de}</div>
           <div class="of-por">Por apenas</div>
-          <div class="of-val">R$29,90</div>
-          <div class="of-avista">à vista ou 5x de R$6,62</div>
-          <a class="btn" href="${CHECKOUT_URL}" onclick="px('InitiateCheckout', true)">Quero ativar meu GLP-1 natural →</a>
-          <p class="of-secure">Pix, cartão ou boleto · Acesso imediato · Compra segura · Garantia de 7 dias</p>
+          <div class="of-val">R$${PRECO.por}</div>
+          ` : `
+          <p style="font-size:14px;color:var(--verde-escuro);font-weight:800;text-align:center;margin:18px 0 0;">Comece agora, sem pagar nada.</p>
+          `}
+          <a class="btn" href="${destino}" onclick="irParaApp(event)">${rotuloCTA}</a>
+          <p class="of-secure">${temCheckout ? 'Pix, cartão ou boleto · Acesso imediato · Compra segura' : 'Acesso imediato · Continue de onde parou em qualquer aparelho'}</p>
         </div>
       </div>
 
       <!-- GARANTIA -->
       <div class="res-section" style="text-align:center;">
-        <img src="Garantia7dias.png" alt="Garantia de 7 dias" class="gar-img">
-      </div>
-
-      <!-- QUEM É -->
-      <div class="res-section">
-        <div class="quem">
-          <img src="FotoSiteKelly.jpeg" alt="Nutri Kelly" style="width:160px;height:160px;border-radius:16px;object-fit:cover;border:4px solid var(--verde-claro);box-shadow:0 0 34px rgba(76,175,130,.4);margin:0 auto 20px;display:block;" onerror="this.style.display='none'">
-          <h3>Quem está por trás <span>do método</span></h3>
-          <p>Oi! Sou a <span>Nutri Kelly</span>, tenho 41 anos e moro no Paraná. Sou nutricionista há 18 anos, especialista em nutrição e emagrecimento. Atendo mulheres em tratamento com canetinha todos os dias e criei este protocolo com o que eu explico em consulta: como reativar a produção natural de saciedade, proteger a massa magra e reduzir a dose sem que o peso volte.</p>
+        <div style="background:#fff8e8;border:1px solid #f0dfb4;border-radius:16px;padding:22px 20px;">
+          <div style="font-size:34px;">🛡️</div>
+          <h4 style="margin:8px 0 8px;font-size:17px;color:#7a5a00;">${temCheckout ? '7 dias de garantia' : 'Sem compromisso'}</h4>
+          <p style="font-size:13.5px;color:#7a5a00;line-height:1.6;margin:0;">${temCheckout
+            ? 'Entre, use, monte a sua semana. Se em 7 dias achar que não é pra você, devolvemos o valor, sem burocracia.'
+            : 'Entre e monte o seu plano. Se não for pra você, é só parar de usar quando quiser.'}</p>
         </div>
       </div>
 
@@ -1262,27 +1265,45 @@ ${curvaHTML}
       <div class="res-section faq">
         <h2 class="res-h2" style="font-size:20px;">Ainda tem <span>alguma dúvida?</span></h2>
         <div style="margin-top:20px;">
-          <details><summary>Como vou receber o ebook?</summary><div class="a">Imediatamente após a confirmação do pagamento, você recebe um email com o link para acessar e baixar o material em PDF. Acesso vitalício, no celular ou no computador.</div></details>
-          <details><summary>Preciso parar a canetinha para aplicar?</summary><div class="a">Não, e o ideal é justamente o contrário. O melhor momento para reativar a produção natural é enquanto o medicamento ainda está te dando margem. A redução da dose é tratada no Módulo 3, no seu tempo e com o seu médico.</div></details>
-          <details><summary>Funciona se eu já parei?</summary><div class="a">Sim. Os mesmos estímulos que reativam a produção natural funcionam para quem já saiu da aplicação e quer sustentar o peso.</div></details>
-          <details><summary>Serve para qualquer canetinha?</summary><div class="a">Sim. O protocolo é nutricional e vale para qualquer medicação dessa categoria e para qualquer dose, inclusive manipulados.</div></details>
-          <details><summary>É uma dieta complicada?</summary><div class="a">Não. É um passo a passo simples de 14 dias, uma mudança por vez, em linguagem direta. Qualquer pessoa aplica na rotina, mesmo sem conhecimento de nutrição.</div></details>
-          <details><summary>Substitui médico?</summary><div class="a">Não. É um material educativo de apoio nutricional. Não interrompa nem altere a dose de qualquer medicamento por conta própria: converse sempre com o profissional que acompanha o seu tratamento.</div></details>
-          <details><summary>Como funciona a garantia?</summary><div class="a">Em 7 dias, se você sentir que o material não atendeu, basta enviar um email e devolvemos 100% do valor, sem burocracia.</div></details>
+          <details><summary>Preciso de academia?</summary><div class="a">Não. Você já disse no teste onde vai treinar, e o app monta o plano em cima disso: se for em casa, o treino usa pouco ou nenhum equipamento.</div></details>
+          <details><summary>Vou passar fome?</summary><div class="a">Não é esse o desenho. A sua meta foi calculada pelo seu corpo, com proteína alta pra segurar a fome.</div></details>
+          <details><summary>E se eu não gostar de algum alimento?</summary><div class="a">Cada alimento tem um botão de troca com outras opções. Você escolhe, e o cardápio e a lista de compras se ajustam sozinhos, sem sair da meta.</div></details>
+          <details><summary>Funciona no meu celular?</summary><div class="a">Sim, em qualquer celular com internet, Android ou iPhone. Não precisa baixar nada em loja de aplicativo.</div></details>
+          <details><summary>Serve para homem também?</summary><div class="a">Sim. O app calcula o plano pelo seu sexo, peso, altura e objetivo, e o treino já é diferente pra cada um.</div></details>
         </div>
       </div>
 
-      <p style="font-size:15px;font-weight:800;color:var(--verde-escuro);line-height:1.5;text-align:center;margin:22px 0 4px;">Não fique só no diagnóstico. Comece a reativar o seu GLP-1 natural hoje.</p>
+      <p style="font-size:15px;font-weight:800;color:var(--verde-escuro);line-height:1.5;text-align:center;margin:22px 0 4px;">Não fique só no diagnóstico. Comece hoje.</p>
 
-      <a class="btn" style="margin-top:14px;" href="${CHECKOUT_URL}" onclick="px('InitiateCheckout', true)">Quero ativar meu GLP-1 natural →</a>
+      <a class="btn" style="margin-top:14px;" href="${destino}" onclick="irParaApp(event)">${rotuloCTA}</a>
 
-      <p style="font-size:11.5px;color:#8aa79a;line-height:1.6;text-align:center;margin:22px 0 0;">Este material é educativo e não substitui acompanhamento médico ou nutricional. Resultados variam de pessoa para pessoa.</p>
+      <p style="font-size:11.5px;color:#8aa79a;line-height:1.6;text-align:center;margin:22px 0 0;">Material educativo de apoio. Não substitui acompanhamento médico ou nutricional. Resultados variam de pessoa para pessoa.</p>
     </div>
   </div>`;
-  startCountdown('proj-timer',8*60+55);
 }
 
-/* ---------- META / PROVA SOCIAL (após pergunta do tempo) ---------- */
+/* ---------- SAÍDA DO QUIZ ----------
+   Guarda as respostas antes de sair, pra o cadastro do app já abrir
+   preenchido (js/onboarding.js lê a mesma chave em dadosDoQuiz()). */
+function salvarParaOApp(){
+  const dados = {
+    nome: (state.answers.nome && state.answers.nome!=='você') ? state.answers.nome : '',
+    sexo: state.answers.sexo==='Homem' ? 'masculino' : 'feminino',
+    idade: idadeAprox(),
+    altura: numDe('altura') || '',
+    peso: numDe('peso') || '',
+    meta_peso: numDe('meta_peso') || '',
+    objetivo: objetivoId(),
+    local: localId()
+  };
+  try { localStorage.setItem(CHAVE_QUIZ, JSON.stringify(dados)); } catch(e){}
+}
+function irParaApp(ev){
+  salvarParaOApp();
+  track('quiz_checkout', { indice: calcIndiceConstancia(), objetivo: objetivoId() });
+  px('InitiateCheckout', true);
+}
+
 function renderMeta(){
   const nome = state.answers.nome && state.answers.nome!=='você' ? state.answers.nome : '';
   app.innerHTML = `
@@ -1306,7 +1327,7 @@ function renderAnalyzing(v2){
       ${v2 ? '' : '<div class="brand-sub" style="margin-bottom:14px;">Diagnóstico personalizado</div>'}
       <div class="analise-title">Analisando suas respostas...</div>
       <div class="lib-box" style="margin-top:30px;">
-        ${v2 ? '<div class="lib-label" style="margin-bottom:6px;">Calculando nível de GLP-1 natural...</div>' : ''}
+        ${v2 ? '<div class="lib-label" style="margin-bottom:6px;">Calculando o seu Índice de Constância...</div>' : ''}
         <div class="lib-label">${v2 ? 'Identificando a solução para seu caso...' : 'Liberando seu diagnóstico personalizado...'}</div>
         <div class="lib-pct" id="libPct">0%</div>
         <div class="lib-bar"><div class="lib-fill" id="libFill"></div></div>
@@ -1330,7 +1351,34 @@ function renderAnalyzing(v2){
 }
 
 
-/* ---------- DIAGNÓSTICO (IMC + sinais de alerta) ---------- */
+/* ---------- CÁLCULOS ----------
+   As metas de caloria, proteína e água usam as MESMAS fórmulas do app
+   (veja js/store.js: calcMetaKcal/calcMetaAgua/calcMetaProt). Se mudar a
+   fórmula lá, mude aqui também, senão o número do quiz não bate com o
+   que a pessoa vai ver depois dentro do app. */
+
+function numDe(id){
+  return parseFloat(String(state.answers[id]||'').replace(',','.')) || 0;
+}
+
+function objetivoId(){
+  const o = state.answers.objetivo || '';
+  if(o.includes('Ganhar massa')) return 'hipertrofia';
+  if(o.includes('Manter'))       return 'manutencao';
+  return 'emagrecimento';
+}
+function localId(){
+  return (state.answers.local||'').includes('casa') ? 'casa' : 'academia';
+}
+
+/* a idade vem por faixa (cartão com foto), não por número exato — a régua
+   de idade fica mais bonita e converte melhor, mas Mifflin-St Jeor precisa
+   de um número. Uso o meio de cada faixa: é uma estimativa, por isso o
+   texto do diagnóstico sempre fala em "estimativa a partir da sua faixa
+   etária", nunca finge ser exato. */
+const IDADE_MEIO = { 'Entre 18 e 29 anos':24, 'Entre 30 e 39 anos':35, 'Entre 40 e 49 anos':45, '+50 anos':55 };
+function idadeAprox(){ return IDADE_MEIO[state.answers.idade] || 30; }
+
 function calcIMC(){
   const pesoStr = state.answers.peso || '';
   const altStr  = state.answers.altura || '';
@@ -1341,133 +1389,206 @@ function calcIMC(){
   if(!m) return null;
   return kg/(m*m);
 }
-/* ===== ÍNDICE DE GLP-1 NATURAL (estimativa educativa a partir das respostas) ===== */
-function calcIndiceGLP(){
-  const a = state.answers;
-  let i = 62; // base
 
-  const t = a.tempo_uso || '';
-  if(t.includes('Menos de 1 mês')) i -= 4;
-  else if(t.includes('1 e 3'))     i -= 12;
-  else if(t.includes('3 e 6'))     i -= 20;
-  else if(t.includes('6 meses'))   i -= 26;
-  else if(t.includes('Mais de 1')) i -= 30;
+function metaKcal(){
+  const peso = numDe('peso'), altura = numDe('altura'), idade = idadeAprox();
+  if(!peso || !altura) return 0;
+  const base = 10*peso + 6.25*altura - 5*idade;
+  const tmb  = state.answers.sexo === 'Homem' ? base + 5 : base - 161;
+  const fator = objetivoId()==='emagrecimento' ? 0.80 : objetivoId()==='hipertrofia' ? 1.12 : 1.00;
+  return Math.round(tmb * 1.45 * fator / 10) * 10;
+}
+function metaAgua(){
+  const bruto = numDe('peso') * 35;
+  return Math.max(1500, Math.min(4500, Math.round(bruto/500)*500));
+}
+function metaProt(){
+  const gkg = objetivoId()==='emagrecimento' ? 2.0 : objetivoId()==='hipertrofia' ? 1.8 : 1.6;
+  return Math.round(numDe('peso') * gkg);
+}
+function difPeso(){ return +(numDe('peso') - numDe('meta_peso')).toFixed(1); }
 
-  const f = a.fome || '';
-  if(f.includes('comendo pouco'))       i -= 14;
-  else if(f.includes('comendo bastante')) i -= 6;
+/* ===== ÍNDICE DE CONSTÂNCIA (0 a 100) =====
+   Não é exame nem promessa de resultado: é a soma do que a própria pessoa
+   respondeu sobre a rotina dela hoje (treino, alimentação, sono, água e
+   histórico de tentativas). Nenhum número aqui é inventado — é só a rotina
+   dela devolvida como nota. Por isso dá pra mostrar o cálculo sem medo. */
+const PESOS_INDICE = {
+  treino_frequencia: [0, 12, 22, 30],   // nenhuma / 1-2x / 3-4x / 5x+           (30)
+  alimentacao:       [0,  8, 17, 25],   // sem rotina / desanda / mais ou menos / organizada (25)
+  sono:              [0,  8, 20, 17],   // <5h / 5-6h / 7-8h (ótimo) / >8h       (20)
+  agua:              [0,  8, 15],       // <1L / 1-2L / >2L                     (15)
+  tentativas:        [4,  2, 10,  0]    // perdeu e voltou / não manteve / 1ª vez / já tentou tudo (10)
+};
+const INDICE_MAX = 100;
 
-  const m = a.massa || '';
-  if(m.includes('Sim'))            i -= 10;
-  else if(m.includes('ouvi falar')) i -= 5;
-
-  const col = a.colaterais || [];
-  if(Array.isArray(col)) i -= Math.min(12, col.filter(x=>!x.includes('Nenhum')).length * 3);
-
-  const o = a.objetivo || '';
-  if(o.includes('Recuperar o resultado')) i -= 8;
-  if(o.includes('Parar de usar'))         i -= 6;
-
-  const d = a.dose || '';
-  if(d.includes('12,5') || d.includes('15 mg')) i -= 6;   // dose alta por mais tempo
-
-  return Math.max(25, Math.min(39, Math.round(i)));   // sempre "BAIXA" (25-39), nunca "MUITO BAIXA" nem "MODERADA"
+function calcIndiceConstancia(){
+  let soma = 0;
+  for(const id in PESOS_INDICE){
+    const i = state.answers[id+'_i'];
+    if(typeof i === 'number') soma += (PESOS_INDICE[id][i] || 0);
+  }
+  return Math.max(0, Math.min(100, Math.round(soma)));
 }
 
-function nivelGLP(v){
-  if(v < 25) return {txt:'MUITO BAIXA', cor:'#c0392b', bg:'#fdecec'};
-  if(v < 40) return {txt:'BAIXA',       cor:'#c0574f', bg:'#fdecec'};
-  return {txt:'MODERADA',               cor:'#c8973a', bg:'#fff8e8'};
+function faixaIndice(v){
+  if(v < 35) return { txt:'BAIXA',  cor:'#c0574f', bg:'#fdecec' };
+  if(v < 65) return { txt:'MÉDIA',  cor:'#c8973a', bg:'#fff8e8' };
+  return       { txt:'BOA',   cor:'#2e7d5a', bg:'#e9f6ee' };
+}
+
+/* o ponto fraco que mais pesa hoje, pra personalizar o diagnóstico completo */
+function elosFracos(){
+  const rotulo = { treino_frequencia:'o treino', alimentacao:'a alimentação', sono:'o sono', agua:'a água', tentativas:'a constância' };
+  return Object.keys(PESOS_INDICE).map(id=>{
+    const i = state.answers[id+'_i'];
+    const max = Math.max(...PESOS_INDICE[id]);
+    const val = typeof i === 'number' ? (PESOS_INDICE[id][i]||0) : 0;
+    return { id, rotulo: rotulo[id], perdido: max-val };
+  }).sort((a,b)=>b.perdido-a.perdido);
 }
 
 function renderDiagnostico(full){
   const a = state.answers;
   const nome = a.nome && a.nome!=='você' ? a.nome : '';
-  const idx = calcIndiceGLP();
-  const niv = nivelGLP(idx);
-  const massaTxt = (a.massa||'').includes('Sim') ? 'e você já percebeu isso no espelho' : 'mesmo que você ainda não tenha percebido';
-  const progressoId = full ? 'estresse' : 'massa';            // última pergunta respondida antes desta tela, em cada versão
+  const progressoId = full ? 'tempo_disponivel' : 'altura';   // última pergunta respondida antes desta tela, em cada versão
 
-  /* na 1ª aparição (meio do quiz) não revela nem o alerta, nem o índice, nem o
-     "3 pontos identificados" — isso fica só pra 2ª aparição (full), antes da oferta */
-  const revelacao = !full ? '' : `
+  /* ---- versão curta: entrega uma leitura real, sem número nenhum ainda ---- */
+  if(!full){
+    const frust = a.frustracao || '';
+    const texto = frust.includes('Não sei o que comer')
+      ? `Você não sabe exatamente o que comer nem como treinar, e por isso cada dia vira uma decisão nova. Isso cansa mais do que o treino em si.`
+      : frust.includes('Começo com tudo')
+      ? `Você começa com tudo e para depois de um tempo. Isso não é falta de força de vontade: é o que acontece quando ninguém te dá o próximo passo pronto.`
+      : frust.includes('Falta de tempo')
+      ? `A sua rotina não sobra tempo, e todo plano que você já tentou foi pensado pra quem tem uma hora livre por dia. Você não tem, e o plano quebrou por isso.`
+      : `Você já tentou de tudo e nada funcionou direito. Isso quase nunca é sobre esforço: é sobre ninguém ter calculado o que o SEU corpo precisa.`;
+
+    return app.innerHTML = `
+    <div class="wrap fade">
+      <div class="card-quiz">
+        ${backBtn()}<div class="brand"><span class="brand-nome">${APP_NOME}</span></div>
+        <div class="brand-sub">Primeira leitura</div>
+        <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${pctAte(progressoId)}%"></div></div>
+
+        <h2 class="q-title" style="font-size:22px;">${nome?nome+', o':'O'} problema não é onde você acha que é</h2>
+
+        <div class="solucao-box" style="text-align:left;margin-bottom:16px;">
+          <h4 style="margin-bottom:8px;">O que já dá pra ver</h4>
+          <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">${texto}</p>
+        </div>
+
+        <div class="solucao-box" style="text-align:left;margin-bottom:16px;">
+          <h4 style="margin-bottom:8px;">Por que isso importa pra você</h4>
+          <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">Com o seu peso, altura e objetivo, já dá pra calcular quantas calorias e quanta proteína o seu corpo precisa por dia. Faltam só mais algumas perguntas pra fechar o seu Índice de Constância e liberar esses números.</p>
+        </div>
+
+        <button class="btn" onclick="go(1)">Continuar o teste →</button>
+      </div>
+    </div>`;
+  }
+
+  /* ---- versão completa: índice, números reais e os 2 pontos identificados ---- */
+  const idx = calcIndiceConstancia();
+  const niv = faixaIndice(idx);
+  const frac = elosFracos();
+  const kcal = metaKcal();
+  const dif  = difPeso();
+  const objFrase = objetivoId()==='hipertrofia' ? 'ganhar massa' : objetivoId()==='manutencao' ? 'manter e definir' : 'emagrecer';
+
+  /* usa 'tentativas', não 'medo': na hora dessa tela 'medo' ainda não foi
+     perguntado (ele vem depois no fluxo, junto de 'futuro') */
+  const abandonoTxt = {
+    'Sim, perdi peso mas voltou tudo depois':'o resultado não se sustentar depois que a motivação inicial passa',
+    'Comecei, mas não consegui manter a rotina':'a rotina não se sustentar',
+    'Essa é a minha primeira tentativa séria':'nunca ter tido um plano pensado pro seu dia a dia real',
+    'Já tentei várias formas, nada funcionou direito':'nenhum método ter sido pensado especificamente pro seu corpo'
+  }[a.tentativas] || 'a rotina não se sustentar';
+
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz">
       <div style="background:${niv.bg};border-radius:14px;padding:16px 18px;margin:0 0 18px;text-align:center;">
-        <p style="color:${niv.cor};font-weight:800;font-size:16.5px;line-height:1.45;margin:0 0 8px;">⚠️ ${nome?nome+', s':'S'}ua produção natural de GLP-1 está <strong>${niv.txt}</strong>.</p>
-        <p style="color:${niv.cor};font-weight:600;font-size:13.5px;line-height:1.5;margin:0;">Com base nas suas respostas, isso indica que seu corpo pode estar represando gordura abdominal e dificultando o resultado, mesmo quando você faz tudo certo.</p>
+        <p style="color:${niv.cor};font-weight:800;font-size:16.5px;line-height:1.45;margin:0 0 8px;">${nome?nome+', s':'S'}ua Constância hoje está <strong>${niv.txt}</strong>.</p>
+        <p style="color:${niv.cor};font-weight:600;font-size:13.5px;line-height:1.5;margin:0;">${idx<65 ? 'Isso significa que boa parte do que você faz nos dias bons está sendo desfeita nos dias ruins.' : 'A sua base já é boa. O que falta é ela virar rotina todo dia, não só nos dias fáceis.'}</p>
       </div>
 
-      <!-- MEDIDOR DO ÍNDICE -->
       <div class="diag-chart" style="padding:20px 16px;">
-        <div class="diag-imc-tt" style="margin-bottom:14px;">Seu Índice de GLP-1 Natural</div>
+        <div class="diag-imc-tt" style="margin-bottom:14px;">Seu Índice de Constância</div>
         <div style="text-align:center;font-family:'Playfair Display',serif;font-size:56px;font-weight:900;color:${niv.cor};line-height:1;">${idx}<span style="font-size:24px;color:#9aaaa2;">/100</span></div>
         <div style="height:14px;border-radius:20px;margin:16px 0 8px;background:linear-gradient(90deg,#e05a4e 0%,#f0c05a 50%,#4caf82 100%);position:relative;">
           <div style="position:absolute;top:-5px;left:calc(${idx}% - 12px);width:24px;height:24px;border-radius:50%;background:#fff;border:4px solid ${niv.cor};box-shadow:0 2px 8px rgba(0,0,0,.18);"></div>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:11.5px;color:#8a9a92;font-weight:700;">
-          <span>Desligada</span><span>Parcial</span><span>Ativa</span>
+          <span>Baixa</span><span>Média</span><span>Boa</span>
         </div>
-        <p style="font-size:12.5px;color:#8a9a92;line-height:1.55;margin:14px 0 0;text-align:center;">Estimativa educativa calculada a partir das suas respostas.</p>
+        <p style="font-size:12.5px;color:#8a9a92;line-height:1.55;margin:14px 0 0;text-align:center;">Calculado a partir do que você respondeu sobre treino, alimentação, sono, água e tentativas anteriores.</p>
       </div>
 
-      <!-- 3 PROBLEMAS IDENTIFICADOS -->
-      <div style="background:#fdecec;border-radius:14px;padding:14px 18px;margin:22px 0 18px;text-align:center;">
-        <p style="color:var(--vermelho);font-weight:900;font-size:15px;letter-spacing:.5px;margin:0;">⚠️ 2 PONTOS FORAM IDENTIFICADOS</p>
-      </div>`;
+      <div style="background:${idx<65?'#fdecec':'#e9f6ee'};border-radius:14px;padding:14px 18px;margin:22px 0 18px;text-align:center;">
+        <p style="color:${idx<65?'var(--vermelho)':'var(--verde-escuro)'};font-weight:900;font-size:15px;letter-spacing:.5px;margin:0;">${idx<65?'⚠️ 2 PONTOS FORAM IDENTIFICADOS':'✅ SUA BASE JÁ É BOA — 1 AJUSTE PRA DESTRAVAR'}</p>
+      </div>
 
-  /* ponto 1: na versão curta é o dado dos 82% (Mounjaro). Na versão completa é o
-     aproveitamento estimado da aplicação, calculado a partir do Índice de GLP-1 */
-  const aprov = Math.min(54, idx + 22);                        // sempre abaixo de 55
-  const ponto1 = full ? `
       <div class="solucao-box" style="text-align:left;margin-bottom:16px;">
-        <h4 style="margin-bottom:8px;">1 · Você está aproveitando só parte da aplicação</h4>
-        <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0 0 12px;">Você está tendo resultados com a aplicação, isso é ótimo! Mas pelo seu perfil, o aproveitamento do tratamento hoje está em torno de <strong>${aprov}%</strong>, e poderia emagrecer mais e mais rápido com alguns ajustes simples pelo prato.</p>
-        <div style="height:14px;border-radius:20px;background:linear-gradient(90deg,#e05a4e 0%,#f0c05a 50%,#4caf82 100%);position:relative;">
-          <div style="position:absolute;top:-5px;left:calc(${aprov}% - 12px);width:24px;height:24px;border-radius:50%;background:#fff;border:4px solid ${niv.cor};box-shadow:0 2px 8px rgba(0,0,0,.18);"></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:11.5px;color:#8a9a92;font-weight:700;margin-top:6px;"><span>0</span><span>Você: ${aprov}%</span><span>100</span></div>
-      </div>` : `
-      <div class="solucao-box" style="text-align:left;margin-bottom:16px;">
-        <h4 style="margin-bottom:8px;">Você sabia que:</h4>
+        <h4 style="margin-bottom:8px;">1 · ${idx<65 ? 'Onde o seu esforço está vazando' : 'O que ainda não virou rotina'}</h4>
+        <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0 0 12px;">${idx<65
+          ? `Os dois pontos que mais pesam contra você hoje são <strong>${frac[0].rotulo}</strong> e <strong>${frac[1].rotulo}</strong>. Não é que você não saiba disso: é que ninguém transformou isso numa instrução do que fazer hoje, nesta refeição, neste treino.`
+          : `Você já manda bem na maior parte da rotina. O ponto que ainda puxa o seu índice pra baixo é <strong>${frac[0].rotulo}</strong> — é a única coisa entre você e um índice ainda mais alto.`}</p>
+        <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">Somando tudo, o seu índice ficou em <strong>${idx} de 100</strong>. ${idx<65 ? 'Cada ponto aí é um dia em que o esforço não vira resultado.' : 'Poucos chegam nesse número sozinhos — e é exatamente esse tipo de rotina que o app existe pra sustentar.'}</p>
+      </div>
 
-        <div class="prova-numero" style="font-size:56px;margin-top:6px;">82%</div>
-        <p class="prova-numero-legenda" style="font-size:14px;margin-bottom:16px;">das pessoas que pararam o Mounjaro recuperaram parte do peso perdido em até um ano.</p>
-
-        <div class="prova-noticia">
-          <img src="pesquisa-mounjaro.jpeg" alt="Reportagem sobre reganho de peso após o fim do tratamento com Mounjaro" onerror="this.style.display='none'">
-        </div>
-        <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:14px 0 0;text-align:center;">Os estudos que acompanharam pessoas depois da suspensão desses medicamentos mostram que a maior parte recupera peso quando o corpo é devolvido sem nenhuma preparação. Isso significa colocar em risco <span style="color:inherit;font-weight:400;">todo o investimento das aplicações</span>.</p>
-      </div>`;
-
-  const problema3 = !full ? '' : `
       <div class="solucao-box" style="text-align:left;margin-bottom:18px;">
-        <h4 style="margin-bottom:8px;">2 · Parte do que sai da balança não é gordura</h4>
-        <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0 0 12px;">A fadiga, a falta de força e a flacidez são grandes indicativos de que uma fatia relevante do seu peso perdido é <strong>massa magra</strong>, ${massaTxt}, fazendo o seu metabolismo ficar mais lento.</p>
-        <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">Isso acontece porque, sem os estímulos certos pelo prato, o seu corpo não sustenta a saciedade sozinho e acaba puxando energia do músculo pra compensar.</p>
-      </div>`;
-
-  const solucaoTxt = full
-    ? `Mas isso tem solução, você apenas precisa <strong style="text-transform:uppercase;">potencializar o hormônio</strong> que produz o <strong style="text-transform:uppercase;">GLP-1</strong> no seu corpo`
-    : `Mas isso tem solução... continue o teste e descubra como preparar o seu corpo para não ter famoso "efeito rebote".`;
-
-  app.innerHTML = `
-  <div class="wrap fade">
-    <div class="card-quiz">
-      <div class="brand-sub" style="margin-bottom:12px;">Diagnóstico personalizado</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${pctAte(progressoId)}%"></div></div>
-${revelacao}
-${ponto1}
-${problema3}
-      <!-- A SOLUÇÃO -->
-      <div style="background:#eef7f1;border:1px solid #d5ebe0;border-radius:14px;padding:22px 20px;margin:22px 0 0;text-align:center;">
-        <p style="color:var(--verde-escuro);font-size:16px;font-weight:800;line-height:1.55;margin:0;">${solucaoTxt}</p>
+        <h4 style="margin-bottom:8px;">2 · Por que as outras vezes não foram pra frente</h4>
+        <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">Você disse que, quando desiste, é por causa de <strong>${abandonoTxt}</strong>. Guarde isso: é exatamente aí que todo plano que você já tentou quebrou. Plano nenhum falha na semana 1 — ele falha na semana 3, quando a novidade passa e sobra só a rotina.</p>
       </div>
-${full ? `<h4 style="color:#1a1a1a;font-size:15px;font-weight:900;margin:16px 0 0;line-height:1.35;text-align:center;">Continue o teste e descubra como reativar esse hormônio nos próximos 14 dias e o protocolo específico para seu caso.</h4>` : ''}
+
+      <h4 style="text-align:center;margin:22px 0 16px;font-size:17px;color:#1a1a1a;">Os seus números</h4>
+      <div class="valor-box" style="text-align:left;padding:18px 20px;">
+        <div class="valor-row"><span class="lbl">Sua meta por dia, pra ${objFrase}</span><span class="num" style="color:var(--verde-escuro);">${kcal} kcal</span></div>
+        <div class="valor-row"><span class="lbl">Proteína por dia</span><span class="num">${metaProt()}g</span></div>
+        <div class="valor-row"><span class="lbl">Água por dia</span><span class="num">${(metaAgua()/1000).toFixed(1).replace('.',',')}L</span></div>
+      </div>
+      <p style="font-size:12.5px;color:#8a9a92;line-height:1.55;margin:10px 0 0;text-align:center;">Estimativa a partir do seu peso, altura e faixa etária, pela fórmula de Mifflin-St Jeor. É o mesmo cálculo que o ${APP_NOME} usa por dentro.</p>
+
+      ${dif>0 ? `
+      <div class="solucao-box" style="text-align:left;margin-top:18px;background:#fff8e8;border-color:#f0dfb4;">
+        <h4 style="margin-bottom:8px;">O que você me disse que quer</h4>
+        <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">Sair de <strong>${numDe('peso')} kg</strong> e chegar em <strong>${numDe('meta_peso')} kg</strong>. São <strong>${dif} kg</strong> de diferença, e essa conta não muda por motivação: muda por quantos dias seguidos você faz o simples.</p>
+      </div>` : ''}
 
       <button class="btn" style="margin-top:22px;" onclick="go(1)">Continuar →</button>
+      <p style="font-size:11.5px;color:#8aa79a;line-height:1.6;text-align:center;margin-top:14px;">Este teste é orientativo e não substitui acompanhamento médico ou nutricional.</p>
     </div>
   </div>`;
   px('DiagnosticoGerado');
 }
+
+/* ---------- TELA DO APP (compromisso) ----------
+   Entra depois de 'medo'. Pergunta simples de sim/não, no molde de quiz
+   que funciona: sem vídeo, sem prova fabricada — só a pergunta certa na
+   hora certa, apontando pro que o app realmente faz. */
+function renderAppTeaser(){
+  const nome = state.answers.nome && state.answers.nome!=='você' ? state.answers.nome : '';
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz" style="text-align:center;">
+      ${backBtn()}
+      <div class="brand-sub" style="margin-bottom:14px;">Antes de continuar</div>
+      <div style="font-size:52px;margin-bottom:6px;">📱</div>
+      <h2 class="q-title" style="font-size:22px;">${nome?nome+', se':'Se'} o ${APP_NOME} te entregasse pronto, todo dia, exatamente o que comer e treinar pro seu objetivo, isso mudaria o jogo pra você?</h2>
+      <div class="opts" style="margin-top:6px;">
+        <button class="opt" onclick="selectAppTeaser(1)"><span class="opt-radio"></span><span>✅ Sim, com certeza</span></button>
+        <button class="opt" onclick="selectAppTeaser(0)"><span class="opt-radio"></span><span>🤔 Não sei se funcionaria pra mim</span></button>
+      </div>
+    </div>
+  </div>`;
+}
+function selectAppTeaser(v){
+  state.answers.app_teaser = v ? 'sim' : 'nao';
+  trackResposta('app_teaser', state.answers.app_teaser);
+  go(1);
+}
+
 /* PROFILES + renderHistoria removidos: continham depoimentos fabricados.
    Se quiser reativar a tela de história real, use relatos verificados de alunas. */
 
