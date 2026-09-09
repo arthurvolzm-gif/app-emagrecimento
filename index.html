@@ -17,6 +17,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="css/app.css">
+
+<!-- lê o tema antes de qualquer coisa aparecer, senão a tela pisca branca -->
+<script>try{if(localStorage.getItem('app_emag_tema')==='escuro'){document.documentElement.dataset.tema='escuro';document.querySelector('meta[name=theme-color]').setAttribute('content','#0B1310');}}catch(e){}</script>
 </head>
 <body>
 

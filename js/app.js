@@ -18,6 +18,7 @@ const App = {
   /* ---------- inicialização ---------- */
   async iniciar() {
     Store.load();
+    this.aplicarTema();
     await Backend.carregarLib();
     const temBackend = Backend.init();
 
@@ -42,7 +43,24 @@ const App = {
       this.modoLocal = true;
     }
 
+    this.aplicarTema();          /* de novo: o tema pode ter vindo da nuvem */
     this.diaTreino = this.indiceHoje();
+    this.render();
+  },
+
+  /* ---------- tema claro / escuro ---------- */
+  aplicarTema() {
+    const t = Store.tema();
+    document.documentElement.dataset.tema = t;
+    try { localStorage.setItem('app_emag_tema', t); } catch (e) {}
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', t === 'escuro' ? '#0B1310' : '#159A55');
+  },
+
+  alternarTema() {
+    Store.definirTema(Store.tema() === 'escuro' ? 'claro' : 'escuro');
+    this.aplicarTema();
+    Backend.agendarSync();
     this.render();
   },
 

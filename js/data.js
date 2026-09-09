@@ -15,7 +15,7 @@ const NIVEIS = [
   { n:4,  nome:'Consistente',  min:1500,  icone:'🎯', cor1:'#106A67', cor2:'#3CB9C4', frase:'Você aparece até nos dias difíceis.' },
   { n:5,  nome:'Imbatível',    min:2800,  icone:'💪', cor1:'#155E7C', cor2:'#3FA3D4', frase:'Um mês inteiro de escolhas certas.' },
   { n:6,  nome:'Imparável',    min:4800,  icone:'🚀', cor1:'#2B4E96', cor2:'#5B86E0', frase:'Nada mais tira você do trilho.' },
-  { n:7,  nome:'Inabalável',   min:7500,  icone:'🛡️', cor1:'#4A3E9E', cor2:'#8A72E8', frase:'O corpo mudou e a cabeça também.' },
+  { n:7,  nome:'Inabalável',   min:7500,  icone:'🪨', cor1:'#4A3E9E', cor2:'#8A72E8', frase:'O corpo mudou e a cabeça também.' },
   { n:8,  nome:'Referência',   min:11000, icone:'⭐', cor1:'#7A3A8E', cor2:'#C06BD8', frase:'As pessoas à sua volta já repararam.' },
   { n:9,  nome:'Elite',        min:15500, icone:'💎', cor1:'#9E3A63', cor2:'#E0709C', frase:'Poucos chegam onde você chegou.' },
   { n:10, nome:'Lenda',        min:21000, icone:'👑', cor1:'#A8641A', cor2:'#F0B23F', frase:'Outro corpo, outra pessoa.' }

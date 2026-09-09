@@ -32,7 +32,7 @@ const Telas = {
           <div class="previa">
             <div class="previa-tt">Prévia das animações · desligue em config.js</div>
             <div class="previa-chips">
-              ${NIVEIS.map(n => `
+              ${NIVEIS.filter(n => n.n === 10).map(n => `
                 <button class="previa-chip" style="background:linear-gradient(140deg, ${n.cor1}, ${n.cor2})"
                         onclick="App.previaNivel(${n.n})" title="${n.nome}">
                   <span class="pc-ic">${n.icone}</span>
@@ -177,7 +177,7 @@ const Telas = {
 
         <div class="card livre-card">
           <div class="card-tt" style="margin-bottom:8px">🍕 Refeição livre</div>
-          <p style="font-size:13.5px;color:#4a4a4a;line-height:1.6;font-weight:600;margin:0">
+          <p style="font-size:13.5px;color:var(--tinta-2);line-height:1.6;font-weight:600;margin:0">
             ${Store.planoBase().livre}
           </p>
         </div>
@@ -261,7 +261,7 @@ const Telas = {
 
           <div class="card livre-card">
             <div class="card-tt" style="margin-bottom:8px">🍕 Refeição livre</div>
-            <p style="font-size:13.5px;color:#4a4a4a;line-height:1.6;font-weight:600;margin:0">${Store.planoBase().livre}</p>
+            <p style="font-size:13.5px;color:var(--tinta-2);line-height:1.6;font-weight:600;margin:0">${Store.planoBase().livre}</p>
           </div>
         `}
       </div>`;
@@ -673,16 +673,6 @@ const Telas = {
           <div class="nivel-falta">${nv.proximo ? `Faltam ${nv.faltam} pontos para <b>${nv.proximo.nome}</b>` : 'Nível máximo. 👑'}</div>
         </div>
 
-        <h3 class="secao-tt">Como ganhar pontos</h3>
-        <div class="card">
-          <div class="lista-item"><span class="lista-k">Marcar um alimento</span><span class="lista-v">+${PONTOS.alimento}</span></div>
-          <div class="lista-item"><span class="lista-k">Concluir uma refeição inteira</span><span class="lista-v">+${PONTOS.refeicao}</span></div>
-          <div class="lista-item"><span class="lista-k">Bater a meta de água</span><span class="lista-v">+${PONTOS.agua}</span></div>
-          <div class="lista-item"><span class="lista-k">Bater a meta de sono</span><span class="lista-v">+${PONTOS.sono}</span></div>
-          <div class="lista-item"><span class="lista-k">Concluir o treino do dia</span><span class="lista-v">+${PONTOS.treino}</span></div>
-          <div class="lista-item"><span class="lista-k">Registrar uma pesagem</span><span class="lista-v">+${PONTOS.pesagem}</span></div>
-        </div>
-
         <h3 class="secao-tt">Todos os níveis</h3>
         <div class="card">
           ${NIVEIS.map(n => `
@@ -696,6 +686,16 @@ const Telas = {
                 ${nv.pontos >= n.min ? '✓' : n.min + ' pts'}
               </span>
             </div>`).join('')}
+        </div>
+
+        <h3 class="secao-tt">Como ganhar pontos</h3>
+        <div class="card">
+          <div class="lista-item"><span class="lista-k">Marcar um alimento</span><span class="lista-v">+${PONTOS.alimento}</span></div>
+          <div class="lista-item"><span class="lista-k">Concluir uma refeição inteira</span><span class="lista-v">+${PONTOS.refeicao}</span></div>
+          <div class="lista-item"><span class="lista-k">Bater a meta de água</span><span class="lista-v">+${PONTOS.agua}</span></div>
+          <div class="lista-item"><span class="lista-k">Bater a meta de sono</span><span class="lista-v">+${PONTOS.sono}</span></div>
+          <div class="lista-item"><span class="lista-k">Concluir o treino do dia</span><span class="lista-v">+${PONTOS.treino}</span></div>
+          <div class="lista-item"><span class="lista-k">Registrar uma pesagem</span><span class="lista-v">+${PONTOS.pesagem}</span></div>
         </div>
       </div>`;
   },
@@ -751,6 +751,7 @@ const Telas = {
     const p = Store.db.perfil;
     const nv = Store.nivel();
     const email = Backend.emailAtual();
+    const escuro = Store.tema() === 'escuro';
 
     return `
       <div class="tela stagger" style="padding-top:26px">
@@ -772,6 +773,19 @@ const Telas = {
           <div class="lista-item"><span class="lista-k">Meta de peso</span><span class="lista-v">${p.meta_peso} kg</span></div>
           <div class="lista-item"><span class="lista-k">Objetivo</span><span class="lista-v">${App.rotuloObjetivo()}</span></div>
           <div class="lista-item"><span class="lista-k">Local de treino</span><span class="lista-v">${p.local === 'casa' ? 'Em casa' : 'Academia'}</span></div>
+        </div>
+
+        <h3 class="secao-tt">Aparência</h3>
+        <div class="card">
+          <div class="tema-linha">
+            <div class="tema-ic">${escuro ? '🌙' : '☀️'}</div>
+            <div class="tema-txt">
+              <div class="t">Modo escuro</div>
+              <div class="s">${escuro ? 'Ligado. Melhor pra usar à noite.' : 'Desligado. O app fica claro.'}</div>
+            </div>
+            <button class="switch ${escuro ? 'on' : ''}" onclick="App.alternarTema()"
+                    aria-label="Alternar modo escuro"><i></i></button>
+          </div>
         </div>
 
         <button class="btn sec" onclick="App.abrirEditar()">Editar meus dados</button>
