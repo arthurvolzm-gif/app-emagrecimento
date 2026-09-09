@@ -2,9 +2,31 @@
    LOGIN + CADASTRO (onboarding em 3 passos)
    ========================================================= */
 
+/* chave onde o quiz (quiz.html) deixa as respostas.
+   Se a pessoa veio de lá, o cadastro já abre preenchido em vez
+   de pedir de novo o que ela acabou de responder. */
+const CHAVE_QUIZ = 'app_emag_quiz';
+
+function dadosDoQuiz() {
+  const vazio = { nome:'', idade:'', sexo:'', peso:'', altura:'', meta_peso:'', objetivo:'', local:'' };
+  try {
+    const bruto = localStorage.getItem(CHAVE_QUIZ);
+    if (!bruto) return vazio;
+    const q = JSON.parse(bruto);
+    const campos = {};
+    for (const k in vazio) {
+      if (q[k] !== undefined && q[k] !== null && q[k] !== '') campos[k] = String(q[k]);
+    }
+    return Object.assign(vazio, campos);
+  } catch (e) {
+    return vazio;
+  }
+}
+
 const Onb = {
-  /* rascunho do cadastro enquanto a pessoa preenche */
-  dados: { nome:'', idade:'', sexo:'', peso:'', altura:'', meta_peso:'', objetivo:'', local:'' },
+  /* rascunho do cadastro enquanto a pessoa preenche
+     (já vem preenchido quando a pessoa chegou pelo quiz) */
+  dados: dadosDoQuiz(),
   erro: '',
 
   /* ---------- tela de login / criar conta ---------- */
