@@ -463,11 +463,10 @@ const Telas = {
               ${d.diaLongo}
               ${i === App.indiceHoje() ? '<span class="hoje-tag">hoje</span>' : ''}
             </div>
-            <select class="sel-dia ${d.descanso ? 'sel-descanso' : ''}" onchange="App.trocarDiaTreino(${i}, this.value)">
-              ${plano.dias.map((op, idx) => `
-                <option value="${idx}" ${ordem[i] === idx ? 'selected' : ''}>${rotulos[idx]}</option>
-              `).join('')}
-            </select>
+            <button class="sel-dia ${d.descanso ? 'sel-descanso' : ''}" onclick="App.abrirDiaTreino(${i})">
+              <span class="sd-txt">${rotulos[ordem[i]]}</span>
+              <span class="sd-seta">▾</span>
+            </button>
           </div>`).join('')}
 
         ${padrao ? '' : `

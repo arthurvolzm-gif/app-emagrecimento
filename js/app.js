@@ -139,6 +139,54 @@ const App = {
   selDia(i) { this.diaTreino = i; this.render(); },
 
   /* ---------- organização da semana ---------- */
+
+  /* folha de escolha do treino de um dia. Substitui o <select> nativo,
+     que o navegador desenha do jeito dele e ignora o tema do app. */
+  abrirDiaTreino(posicao) {
+    const plano  = Store.planoTreino();
+    const ordem  = Store.ordemTreino();
+    const atual  = ordem[posicao];
+
+    let nDesc = 0;
+    const rotulos = plano.dias.map(d => d.descanso ? `Descanso ${++nDesc}` : d.foco);
+
+    this.modal(`
+      <h3 class="display">${DIAS_SEMANA_LONGO[posicao]}</h3>
+      <p class="m-sub">Escolha o que fica neste dia. O treino que estiver aqui hoje vai para o dia de onde você tirou o novo, então a semana mantém o mesmo volume.</p>
+
+      <div class="troca-lista">
+        ${plano.dias.map((op, idx) => {
+          const onde = ordem.indexOf(idx);
+          const ehAtual = idx === atual;
+          const dia = DIAS_SEMANA_LONGO[onde];
+          /* Sábado e Domingo são masculinos: "no Sábado", não "na Sábado" */
+          const em = (dia === 'Sábado' || dia === 'Domingo' ? 'no ' : 'na ') + dia;
+          return `
+            <button class="troca-op ${ehAtual ? 'on' : ''}" onclick="App.escolherDiaTreino(${posicao}, ${idx})">
+              <span class="to-check">${ehAtual ? '✓' : ''}</span>
+              <span class="to-txt">
+                <b>${rotulos[idx]}</b>
+                <small>${
+                  ehAtual
+                    ? 'É o que está neste dia'
+                    : op.descanso
+                      ? `Dia de descanso · está ${em}`
+                      : `${op.exercicios.length} exercícios · está ${em}`
+                }</small>
+              </span>
+            </button>`;
+        }).join('')}
+      </div>
+
+      <button class="btn sec" onclick="App.fecharModal()">Cancelar</button>
+    `);
+  },
+
+  escolherDiaTreino(posicao, idxTreino) {
+    this.fecharModal();
+    this.trocarDiaTreino(posicao, idxTreino);
+  },
+
   trocarDiaTreino(posicao, idxTreino) {
     const trocou = Store.trocarDiaTreino(posicao, idxTreino);
     Backend.agendarSync();
