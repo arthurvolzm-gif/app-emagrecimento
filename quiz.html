@@ -1457,7 +1457,9 @@ function renderDiagnostico(full){
   /* ---- versão curta: entrega uma leitura real, sem número nenhum ainda ---- */
   if(!full){
     const frust = a.frustracao || '';
-    const texto = frust.includes('Não sei o que comer')
+    const texto = objetivoId()==='hipertrofia'
+      ? `Ter um shape em V, com costas mais largas, ombros mais cheios e a cintura visualmente mais seca, não depende de treinar mais horas nem mais pesado. Depende de treinar com direção: a ordem certa dos exercícios, o volume certo pra cada grupo muscular e constância nisso, mesmo com a rotina corrida. É isso que costuma faltar, não esforço.`
+      : frust.includes('Não sei o que comer')
       ? `Você não sabe exatamente o que comer nem como treinar, e por isso cada dia vira uma decisão nova. Isso cansa mais do que o treino em si.`
       : frust.includes('Começo com tudo')
       ? `Você começa com tudo e para depois de um tempo. Isso não é falta de força de vontade: é o que acontece quando ninguém te dá o próximo passo pronto.`
