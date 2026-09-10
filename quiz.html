@@ -1549,15 +1549,20 @@ function renderDiagnostico(full){
         <div class="valor-row"><span class="lbl">Proteína por dia</span><span class="num">${metaProt()}g</span></div>
         <div class="valor-row"><span class="lbl">Água por dia</span><span class="num">${(metaAgua()/1000).toFixed(1).replace('.',',')}L</span></div>
       </div>
-      <p style="font-size:12.5px;color:#8a9a92;line-height:1.55;margin:10px 0 0;text-align:center;">Estimativa a partir do seu peso, altura e faixa etária, pela fórmula de Mifflin-St Jeor. É o mesmo cálculo que o ${APP_NOME} usa por dentro.</p>
+      <p style="font-size:12.5px;color:#8a9a92;line-height:1.55;margin:10px 0 0;text-align:center;">Estimativa a partir do seu peso, altura e faixa etária, pela fórmula de Mifflin-St Jeor.</p>
+
+      <div class="solucao-box" style="text-align:left;margin-top:18px;background:#eef7f1;border-color:#d5ebe0;">
+        <h4 style="margin-bottom:8px;">Só que um número sozinho não emagrece ninguém</h4>
+        <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">Saber que precisa de ${kcal} kcal por dia não adianta nada se ninguém te disser o que colocar no prato pra bater esse número, nem qual treino fazer hoje. É exatamente isso que o <strong>${APP_NOME}</strong> faz sozinho: transforma esse número em cardápio, treino e checklist do seu dia, sem você ter que calcular nada.</p>
+      </div>
 
       ${dif>0 ? `
-      <div class="solucao-box" style="text-align:left;margin-top:18px;background:#fff8e8;border-color:#f0dfb4;">
+      <div class="solucao-box" style="text-align:left;margin-top:16px;background:#fff8e8;border-color:#f0dfb4;">
         <h4 style="margin-bottom:8px;">O que você me disse que quer</h4>
         <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">Sair de <strong>${numDe('peso')} kg</strong> e chegar em <strong>${numDe('meta_peso')} kg</strong>. São <strong>${dif} kg</strong> de diferença, e essa conta não muda por motivação: muda por quantos dias seguidos você faz o simples.</p>
       </div>` : ''}
 
-      <button class="btn" style="margin-top:22px;" onclick="go(1)">Continuar →</button>
+      <button class="btn" style="margin-top:22px;" onclick="go(1)">Continuar e ver o ${APP_NOME} em ação →</button>
       <p style="font-size:11.5px;color:#8aa79a;line-height:1.6;text-align:center;margin-top:14px;">Este teste é orientativo e não substitui acompanhamento médico ou nutricional.</p>
     </div>
   </div>`;
@@ -1575,7 +1580,7 @@ function renderAppTeaser(){
     <div class="card-quiz" style="text-align:center;">
       ${backBtn()}
       <div class="brand-sub" style="margin-bottom:14px;">Antes de continuar</div>
-      <div style="font-size:52px;margin-bottom:6px;">📱</div>
+      <img src="app-teaser.jpg" alt="${APP_NOME}" style="width:100%;border-radius:20px;display:block;margin:0 0 20px;box-shadow:0 16px 40px rgba(21,154,85,.22);" onerror="this.outerHTML='<div style=&quot;font-size:52px;margin-bottom:6px;&quot;>📱</div>'">
       <h2 class="q-title" style="font-size:22px;">${nome?nome+', se':'Se'} o ${APP_NOME} te entregasse pronto, todo dia, exatamente o que comer e treinar pro seu objetivo, isso mudaria o jogo pra você?</h2>
       <div class="opts" style="margin-top:6px;">
         <button class="opt" onclick="selectAppTeaser(1)"><span class="opt-radio"></span><span>✅ Sim, com certeza</span></button>
