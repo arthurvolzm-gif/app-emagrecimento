@@ -1,6 +1,6 @@
 {
-  "name": "Meu Plano · Emagrecimento",
-  "short_name": "Meu Plano",
+  "name": "Fit Day · Emagrecimento",
+  "short_name": "Fit Day",
   "description": "Seu plano alimentar, treinos e progresso em um só lugar.",
   "start_url": "/",
   "display": "standalone",
