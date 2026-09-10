@@ -640,12 +640,7 @@ const QUESTIONS = [
     options:['🔥 Emagrecer e perder gordura','💪 Ganhar massa muscular','⚖️ Manter o peso e melhorar o condicionamento']
   },
   {
-    id:'local', num:3,
-    question:'Onde você vai treinar?',
-    options:['🏋️ Na academia','🏠 Em casa, com pouco ou nenhum equipamento']
-  },
-  {
-    id:'corpo_hoje', num:4,
+    id:'corpo_hoje', num:3,
     question:'Como você descreveria seu corpo hoje?',
     options: a => a.sexo==='Homem'
       ? ['😕 Magro, sem definição nenhuma','🤏 Alguns quilos a mais, principalmente na barriga','📈 Acima do peso, quero uma mudança grande','💪 Já tenho uma base, quero refinar o shape']
@@ -657,7 +652,7 @@ const QUESTIONS = [
 
   /* ===== P — PROBLEMA ===== */
   {
-    id:'frustracao', num:5,
+    id:'frustracao', num:4,
     question:'O que mais te impede de chegar no corpo que você quer?',
     options:[
       '⏰ Falta de tempo na rotina',
@@ -668,7 +663,7 @@ const QUESTIONS = [
     ]
   },
   {
-    id:'tentativas', num:6,
+    id:'tentativas', num:5,
     question:'Você já tentou mudar o corpo antes e não conseguiu manter o resultado?',
     options:[
       'Sim, perdi peso mas voltou tudo depois',
@@ -682,17 +677,17 @@ const QUESTIONS = [
      completo mostra calorias e proteína reais, e pra isso precisa desses
      três números antes de chegar lá */
   {
-    id:'peso', num:7, type:'ruler',
+    id:'peso', num:6, type:'ruler',
     question:'Qual é o seu peso atual?',
     units:[{u:'kg',min:40,max:160,def:70,step:1},{u:'lb',min:88,max:352,def:154,step:1}]
   },
   {
-    id:'meta_peso', num:8, type:'ruler',
+    id:'meta_peso', num:7, type:'ruler',
     question:'Qual peso você quer alcançar?',
     units:[{u:'kg',min:40,max:160,def:65,step:1},{u:'lb',min:88,max:352,def:143,step:1}]
   },
   {
-    id:'altura', num:9, type:'ruler',
+    id:'altura', num:8, type:'ruler',
     question:'Qual é a sua altura?',
     units:[{u:'cm',min:140,max:210,def:165,step:1},{u:'pol',min:55,max:83,def:65,step:1}]
   },
@@ -700,12 +695,12 @@ const QUESTIONS = [
 
   /* ===== hábitos — alimentam o Índice de Constância ===== */
   {
-    id:'treino_frequencia', num:10,
+    id:'treino_frequencia', num:9,
     question:'Hoje, quantas vezes por semana você treina de verdade?',
     options:['😴 Nenhuma','🚶 1 ou 2 vezes','🏃 3 ou 4 vezes','💪 5 vezes ou mais']
   },
   {
-    id:'alimentacao', num:11,
+    id:'alimentacao', num:10,
     question:'Como está sua alimentação nos dias normais?',
     options:[
       '🌀 Cada dia é de um jeito, não tem rotina',
@@ -715,17 +710,17 @@ const QUESTIONS = [
     ]
   },
   {
-    id:'agua', num:12,
+    id:'agua', num:11,
     question:'Quanta água você bebe por dia?',
     options:['💧 Menos de 1 litro','🥤 Entre 1 e 2 litros','🚰 Mais de 2 litros']
   },
   {
-    id:'sono', num:13,
+    id:'sono', num:12,
     question:'Quantas horas você dorme por noite, em média?',
     options:['⚠️ Menos de 5 horas','😪 Entre 5 e 6 horas','😌 Entre 7 e 8 horas','😴 Mais de 8 horas']
   },
   {
-    id:'tempo_disponivel', num:14,
+    id:'tempo_disponivel', num:13,
     question:'Quanto tempo você tem disponível pra treinar por dia?',
     options:['Menos de 30 minutos','Entre 30 e 45 minutos','Entre 45 e 60 minutos','Mais de 60 minutos']
   },
@@ -733,12 +728,12 @@ const QUESTIONS = [
 
   /* ===== I — IMPLICAÇÃO ===== */
   {
-    id:'futuro', num:15, type:'multi',
+    id:'futuro', num:14, type:'multi',
     question:'Se nada mudar, como você acha que vai estar daqui a um ano?',
     options:['😔 Ainda mais insatisfeito(a) com o corpo','🏥 Com a saúde pior','😞 Me sentindo pra baixo por causa disso','💸 Achando que joguei dinheiro fora nas tentativas']
   },
   {
-    id:'medo', num:16,
+    id:'medo', num:15,
     question:'Qual é o seu maior medo em relação a mudar de vez?',
     options:['😩 Não conseguir de novo, já fracassei antes','⏰ Não ter tempo pra seguir na rotina','💸 Gastar e não ver resultado','🍽️ Passar fome ou sofrer demais']
   },
@@ -747,13 +742,13 @@ const QUESTIONS = [
   /* corpo_sonho e outros_objetivos ficam pro fim de propósito: rendem mais
      depois que a pessoa já viu os números reais dela no diagnóstico completo */
   {
-    id:'corpo_sonho', num:17,
+    id:'corpo_sonho', num:16,
     question:'Qual é o seu corpo dos sonhos?',
     options: a => a.sexo==='Homem' ? ['Definido','Musculoso','Atlético e volumoso','Mantendo o shape atual'] : ['Magra','Definida','Com curvas','Média'],
     optionImages: a => a.sexo==='Homem' ? null : ['corpo-magra.jpg','corpo-definida.jpg','corpo-curvas.jpg','corpo-media.jpg']
   },
   {
-    id:'outros_objetivos', num:18, type:'multi',
+    id:'outros_objetivos', num:17, type:'multi',
     question:'Além de mudar o corpo, o que mais você quer conquistar?',
     options:['⚡ Mais energia e disposição','😊 Me sentir bem em qualquer roupa','🪞 Me olhar no espelho e gostar do que vejo','💪 Mais força e resistência no dia a dia','🧘 Reduzir o estresse e dormir melhor']
   }
@@ -1085,7 +1080,6 @@ function renderProjecao(){
   const kcal = metaKcal();
   const dif = difPeso();
   const objFrase = objetivoId()==='hipertrofia' ? 'ganhar massa' : objetivoId()==='manutencao' ? 'manter e definir' : 'emagrecer';
-  const localTxt = localId()==='casa' ? 'em casa, com pouco ou nenhum equipamento' : 'na academia';
 
   /* estimativa educativa antes/depois, a partir de respostas reais —
      nunca um número solto: sempre calculado e rotulado como estimativa */
@@ -1199,7 +1193,7 @@ ${curvaHTML}
       <div style="background:#e9f6ee;border-radius:14px;padding:20px 18px;margin:22px 0 14px;text-align:center;">
         <h4 style="margin:0 0 10px;font-size:17px;color:#1a1a1a;">Seu plano personalizado no <span style="color:var(--verde);">${APP_NOME}</span></h4>
         <p style="font-size:14.5px;color:var(--verde-escuro);font-weight:800;line-height:1.6;margin:0 0 12px;">Com base nas suas respostas, o app já monta o seu cardápio, o seu treino e as suas metas de água e sono, ajustados pro seu objetivo de ${objFrase}.</p>
-        <p style="font-size:14px;color:#4a4a4a;font-weight:400;line-height:1.65;margin:0;">Você treina ${localTxt}, com uma meta diária de <strong>${kcal} kcal</strong>. Nada disso é genérico: é calculado a partir do que você respondeu aqui.</p>
+        <p style="font-size:14px;color:#4a4a4a;font-weight:400;line-height:1.65;margin:0;">A sua meta diária é de <strong>${kcal} kcal</strong>. Nada disso é genérico: é calculado a partir do que você respondeu aqui.</p>
       </div>
 
       <!-- COMO FUNCIONA O APP -->
@@ -1270,7 +1264,7 @@ ${curvaHTML}
       <div class="res-section faq">
         <h2 class="res-h2" style="font-size:20px;">Ainda tem <span>alguma dúvida?</span></h2>
         <div style="margin-top:20px;">
-          <details><summary>Preciso de academia?</summary><div class="a">Não. Você já disse no teste onde vai treinar, e o app monta o plano em cima disso: se for em casa, o treino usa pouco ou nenhum equipamento.</div></details>
+          <details><summary>Preciso de academia?</summary><div class="a">Não. No cadastro do app você escolhe se vai treinar na academia ou em casa, e o plano se ajusta: em casa, o treino usa pouco ou nenhum equipamento.</div></details>
           <details><summary>Vou passar fome?</summary><div class="a">Não é esse o desenho. A sua meta foi calculada pelo seu corpo, com proteína alta pra segurar a fome.</div></details>
           <details><summary>E se eu não gostar de algum alimento?</summary><div class="a">Cada alimento tem um botão de troca com outras opções. Você escolhe, e o cardápio e a lista de compras se ajustam sozinhos, sem sair da meta.</div></details>
           <details><summary>Funciona no meu celular?</summary><div class="a">Sim, em qualquer celular com internet, Android ou iPhone. Não precisa baixar nada em loja de aplicativo.</div></details>
@@ -1298,8 +1292,7 @@ function salvarParaOApp(){
     altura: numDe('altura') || '',
     peso: numDe('peso') || '',
     meta_peso: numDe('meta_peso') || '',
-    objetivo: objetivoId(),
-    local: localId()
+    objetivo: objetivoId()
   };
   try { localStorage.setItem(CHAVE_QUIZ, JSON.stringify(dados)); } catch(e){}
 }
@@ -1371,9 +1364,6 @@ function objetivoId(){
   if(o.includes('Ganhar massa')) return 'hipertrofia';
   if(o.includes('Manter'))       return 'manutencao';
   return 'emagrecimento';
-}
-function localId(){
-  return (state.answers.local||'').includes('casa') ? 'casa' : 'academia';
 }
 
 /* a idade vem por faixa (cartão com foto), não por número exato — a régua
