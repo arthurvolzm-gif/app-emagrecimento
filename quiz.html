@@ -674,9 +674,10 @@ const QUESTIONS = [
   },
   /* >>> DIAGNÓSTICO CURTO entra aqui, depois de 'tentativas' <<< */
 
-  /* peso, altura e meta de peso entram aqui (não adiadas): o diagnóstico
-     completo mostra calorias e proteína reais, e pra isso precisa desses
-     três números antes de chegar lá */
+  /* peso e altura entram aqui (não adiadas): o diagnóstico completo mostra
+     calorias e proteína reais, e pra isso precisa desses dois números
+     antes de chegar lá. meta_peso vem só lá embaixo, logo antes do
+     diagnóstico completo — veja o comentário perto de 'tempo_disponivel' */
   {
     id:'peso', num:6, type:'ruler',
     question:'Qual é o seu peso atual?',
@@ -687,20 +688,15 @@ const QUESTIONS = [
     question:'Qual é a sua altura?',
     units:[{u:'cm',min:140,max:210,def:165,step:1},{u:'pol',min:55,max:83,def:65,step:1}]
   },
-  {
-    id:'meta_peso', num:8, type:'ruler',
-    question:'Qual peso você quer alcançar?',
-    units:[{u:'kg',min:40,max:160,def:65,step:1},{u:'lb',min:88,max:352,def:143,step:1}]
-  },
 
   /* ===== hábitos — alimentam o Índice de Constância ===== */
   {
-    id:'treino_frequencia', num:9,
+    id:'treino_frequencia', num:8,
     question:'Hoje, quantas vezes por semana você treina de verdade?',
     options:['😴 Nenhuma','🚶 1 ou 2 vezes','🏃 3 ou 4 vezes','💪 5 vezes ou mais']
   },
   {
-    id:'alimentacao', num:10,
+    id:'alimentacao', num:9,
     question:'Como está sua alimentação nos dias normais?',
     options:[
       '🌀 Cada dia é de um jeito, não tem rotina',
@@ -710,21 +706,29 @@ const QUESTIONS = [
     ]
   },
   {
-    id:'agua', num:11,
+    id:'agua', num:10,
     question:'Quanta água você bebe por dia?',
     options:['💧 Menos de 1 litro','🥤 Entre 1 e 2 litros','🚰 Mais de 2 litros']
   },
   {
-    id:'sono', num:12,
+    id:'sono', num:11,
     question:'Quantas horas você dorme por noite, em média?',
     options:['⚠️ Menos de 5 horas','😪 Entre 5 e 6 horas','😌 Entre 7 e 8 horas','😴 Mais de 8 horas']
   },
   {
-    id:'tempo_disponivel', num:13,
+    id:'tempo_disponivel', num:12,
     question:'Quanto tempo você tem disponível pra treinar por dia?',
     options:['Menos de 30 minutos','Entre 30 e 45 minutos','Entre 45 e 60 minutos','Mais de 60 minutos']
   },
-  /* >>> ANALISANDO + DIAGNÓSTICO COMPLETO entram aqui, depois de 'tempo_disponivel' <<< */
+  /* meta_peso fica aqui, não lá em cima com peso/altura: assim é a última
+     pergunta antes do diagnóstico completo, que mostra a diferença entre
+     o peso atual e a meta logo em seguida */
+  {
+    id:'meta_peso', num:13, type:'ruler',
+    question:'Qual peso você quer alcançar?',
+    units:[{u:'kg',min:40,max:160,def:65,step:1},{u:'lb',min:88,max:352,def:143,step:1}]
+  },
+  /* >>> ANALISANDO + DIAGNÓSTICO COMPLETO entram aqui, depois de 'meta_peso' <<< */
 
   /* corpo_sonho e outros_objetivos vêm logo depois do diagnóstico completo
      de propósito: rendem mais depois que a pessoa já viu os números
@@ -773,7 +777,7 @@ QUESTIONS.forEach(q=>{
   if(q.id==='tentativas'){                                   // diagnóstico curto, ainda sem números
     FLOW.push({type:'diagnostico'});
   }
-  if(q.id==='tempo_disponivel'){                             // análise + diagnóstico completo (índice + calorias reais)
+  if(q.id==='meta_peso'){                                    // análise + diagnóstico completo (índice + calorias reais)
     FLOW.push({type:'analyzing'});
     FLOW.push({type:'diagnostico', full:true});
   }
@@ -1448,7 +1452,7 @@ function elosFracos(){
 function renderDiagnostico(full){
   const a = state.answers;
   const nome = a.nome && a.nome!=='você' ? a.nome : '';
-  const progressoId = full ? 'tempo_disponivel' : 'tentativas';   // última pergunta respondida antes desta tela, em cada versão
+  const progressoId = full ? 'meta_peso' : 'tentativas';   // última pergunta respondida antes desta tela, em cada versão
 
   /* ---- versão curta: entrega uma leitura real, sem número nenhum ainda ---- */
   if(!full){
