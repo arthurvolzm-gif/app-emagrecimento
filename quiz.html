@@ -649,7 +649,10 @@ const QUESTIONS = [
     question:'Como você descreveria seu corpo hoje?',
     options: a => a.sexo==='Homem'
       ? ['😕 Magro, sem definição nenhuma','🤏 Alguns quilos a mais, principalmente na barriga','📈 Acima do peso, quero uma mudança grande','💪 Já tenho uma base, quero refinar o shape']
-      : ['😕 Magra, mas sem nenhuma definição','🤏 Alguns quilos a mais, principalmente na barriga','📈 Acima do peso, quero uma mudança grande','💪 Já tenho uma base, quero refinar o shape']
+      : ['😕 Magra, mas sem nenhuma definição','🤏 Alguns quilos a mais, principalmente na barriga','📈 Acima do peso, quero uma mudança grande','💪 Já tenho uma base, quero refinar o shape'],
+    optionImages: a => a.sexo==='Homem'
+      ? ['corpo-hoje-homem-magro.jpg','corpo-hoje-homem-gordinho.jpg','corpo-hoje-homem-sobrepeso.jpg','corpo-hoje-homem-definido.jpg']
+      : ['corpo-hoje-mulher-magra.jpg','corpo-hoje-mulher-gordinha.jpg','corpo-hoje-mulher-sobrepeso.jpg','corpo-hoje-mulher-definida.jpg']
   },
 
   /* ===== P — PROBLEMA ===== */
@@ -825,7 +828,9 @@ function render(){
 }
 
 const IDADE_OPTS = ['Entre 18 e 29 anos','Entre 30 e 39 anos','Entre 40 e 49 anos','+50 anos'];
-const IDADE_IMGS = ['idade-18-29.jpg','idade-30-39.jpg','idade-40-49.jpg','idade-50-mais.jpg'];
+const IDADE_IMGS_MULHER = ['idade-18-29.jpg','idade-30-39.jpg','idade-40-49.jpg','idade-50-mais.jpg'];
+const IDADE_IMGS_HOMEM  = ['idade-homem-18-29.jpg','idade-homem-30-39.jpg','idade-homem-40-49.jpg','idade-homem-50-mais.jpg'];
+function idadeImgsDe(){ return state.answers.sexo==='Homem' ? IDADE_IMGS_HOMEM : IDADE_IMGS_MULHER; }
 
 const SEXO_OPTS = ['Mulher','Homem'];
 const SEXO_IMGS = ['sexo-mulher.jpg','sexo-homem.jpg'];
@@ -867,7 +872,7 @@ function renderIdade(){
       <h2 class="intro-h1" style="margin-top:20px;">Qual a sua idade?</h2>
       <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#9aa8a2;margin:14px 0 22px;">Toque para escolher</p>
       <div class="opts grid2">
-        ${IDADE_OPTS.map((o,i)=>`<div class="idade-card" onclick="selectIdade(${i})"><img src="${IDADE_IMGS[i]}" alt="${o}" class="idade-img" onerror="this.style.display='none'"><button class="opt${state.answers.idade===o?' sel':''}" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button></div>`).join('')}
+        ${(()=>{ const imgs=idadeImgsDe(); return IDADE_OPTS.map((o,i)=>`<div class="idade-card" onclick="selectIdade(${i})"><img src="${imgs[i]}" alt="${o}" class="idade-img" onerror="this.style.display='none'"><button class="opt${state.answers.idade===o?' sel':''}" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button></div>`).join(''); })()}
       </div>
     </div>
   </div>`;
