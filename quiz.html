@@ -672,8 +672,9 @@ const QUESTIONS = [
       'Já tentei várias formas, nada funcionou direito'
     ]
   },
+  /* >>> DIAGNÓSTICO CURTO entra aqui, depois de 'tentativas' <<< */
 
-  /* peso, meta de peso e altura entram aqui (não adiadas): o diagnóstico
+  /* peso, altura e meta de peso entram aqui (não adiadas): o diagnóstico
      completo mostra calorias e proteína reais, e pra isso precisa desses
      três números antes de chegar lá */
   {
@@ -682,16 +683,15 @@ const QUESTIONS = [
     units:[{u:'kg',min:40,max:160,def:70,step:1},{u:'lb',min:88,max:352,def:154,step:1}]
   },
   {
-    id:'meta_peso', num:7, type:'ruler',
-    question:'Qual peso você quer alcançar?',
-    units:[{u:'kg',min:40,max:160,def:65,step:1},{u:'lb',min:88,max:352,def:143,step:1}]
-  },
-  {
-    id:'altura', num:8, type:'ruler',
+    id:'altura', num:7, type:'ruler',
     question:'Qual é a sua altura?',
     units:[{u:'cm',min:140,max:210,def:165,step:1},{u:'pol',min:55,max:83,def:65,step:1}]
   },
-  /* >>> DIAGNÓSTICO CURTO entra aqui, depois de 'altura' <<< */
+  {
+    id:'meta_peso', num:8, type:'ruler',
+    question:'Qual peso você quer alcançar?',
+    units:[{u:'kg',min:40,max:160,def:65,step:1},{u:'lb',min:88,max:352,def:143,step:1}]
+  },
 
   /* ===== hábitos — alimentam o Índice de Constância ===== */
   {
@@ -726,32 +726,34 @@ const QUESTIONS = [
   },
   /* >>> ANALISANDO + DIAGNÓSTICO COMPLETO entram aqui, depois de 'tempo_disponivel' <<< */
 
+  /* corpo_sonho e outros_objetivos vêm logo depois do diagnóstico completo
+     de propósito: rendem mais depois que a pessoa já viu os números
+     reais dela, e fecham esse bloco numa nota positiva antes da
+     implicação (futuro/medo) que vem a seguir */
+  {
+    id:'corpo_sonho', num:14,
+    question:'Qual é o seu corpo dos sonhos?',
+    options: a => a.sexo==='Homem' ? ['Definido','Musculoso','Atlético e volumoso','Mantendo o shape atual'] : ['Magra','Definida','Com curvas','Média'],
+    optionImages: a => a.sexo==='Homem' ? ['corpo-homem-definido.jpg','corpo-homem-musculoso.jpg','corpo-homem-atletico.jpg','corpo-homem-atual.jpg'] : ['corpo-magra.jpg','corpo-definida.jpg','corpo-curvas.jpg','corpo-media.jpg']
+  },
+  {
+    id:'outros_objetivos', num:15, type:'multi',
+    question:'Além de mudar o corpo, o que mais você quer conquistar?',
+    options:['⚡ Mais energia e disposição','😊 Me sentir bem em qualquer roupa','🪞 Me olhar no espelho e gostar do que vejo','💪 Mais força e resistência no dia a dia','🧘 Reduzir o estresse e dormir melhor']
+  },
+
   /* ===== I — IMPLICAÇÃO ===== */
   {
-    id:'futuro', num:14, type:'multi',
+    id:'futuro', num:16, type:'multi',
     question:'Se nada mudar, como você acha que vai estar daqui a um ano?',
     options:['😔 Ainda mais insatisfeito(a) com o corpo','🏥 Com a saúde pior','😞 Me sentindo pra baixo por causa disso','💸 Achando que joguei dinheiro fora nas tentativas']
   },
   {
-    id:'medo', num:15,
+    id:'medo', num:17,
     question:'Qual é o seu maior medo em relação a mudar de vez?',
     options:['😩 Não conseguir de novo, já fracassei antes','⏰ Não ter tempo pra seguir na rotina','💸 Gastar e não ver resultado','🍽️ Passar fome ou sofrer demais']
-  },
-  /* >>> tela do app (compromisso) entra aqui, depois de 'medo' <<< */
-
-  /* corpo_sonho e outros_objetivos ficam pro fim de propósito: rendem mais
-     depois que a pessoa já viu os números reais dela no diagnóstico completo */
-  {
-    id:'corpo_sonho', num:16,
-    question:'Qual é o seu corpo dos sonhos?',
-    options: a => a.sexo==='Homem' ? ['Definido','Musculoso','Atlético e volumoso','Mantendo o shape atual'] : ['Magra','Definida','Com curvas','Média'],
-    optionImages: a => a.sexo==='Homem' ? null : ['corpo-magra.jpg','corpo-definida.jpg','corpo-curvas.jpg','corpo-media.jpg']
-  },
-  {
-    id:'outros_objetivos', num:17, type:'multi',
-    question:'Além de mudar o corpo, o que mais você quer conquistar?',
-    options:['⚡ Mais energia e disposição','😊 Me sentir bem em qualquer roupa','🪞 Me olhar no espelho e gostar do que vejo','💪 Mais força e resistência no dia a dia','🧘 Reduzir o estresse e dormir melhor']
   }
+  /* >>> tela do app (compromisso) entra aqui, depois de 'medo' <<< */
 ];
 
 const INTERSTITIALS = {};
@@ -768,7 +770,7 @@ FLOW.push({type:'intro'});
 FLOW.push({type:'idade'});
 QUESTIONS.forEach(q=>{
   FLOW.push({type:'question', q});
-  if(q.id==='altura'){                                      // diagnóstico curto, ainda sem números
+  if(q.id==='tentativas'){                                   // diagnóstico curto, ainda sem números
     FLOW.push({type:'diagnostico'});
   }
   if(q.id==='tempo_disponivel'){                             // análise + diagnóstico completo (índice + calorias reais)
@@ -1446,7 +1448,7 @@ function elosFracos(){
 function renderDiagnostico(full){
   const a = state.answers;
   const nome = a.nome && a.nome!=='você' ? a.nome : '';
-  const progressoId = full ? 'tempo_disponivel' : 'altura';   // última pergunta respondida antes desta tela, em cada versão
+  const progressoId = full ? 'tempo_disponivel' : 'tentativas';   // última pergunta respondida antes desta tela, em cada versão
 
   /* ---- versão curta: entrega uma leitura real, sem número nenhum ainda ---- */
   if(!full){
