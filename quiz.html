@@ -757,7 +757,8 @@ QUESTIONS.forEach(q=>{
   if(q.id==='tentativas'){                                   // diagnóstico curto, ainda sem números
     FLOW.push({type:'diagnostico'});
   }
-  if(q.id==='outros_objetivos'){                             // tela do app, estilo "isso ajudaria você?"
+  if(q.id==='outros_objetivos'){                             // analisando + tela do app, estilo "isso ajudaria você?"
+    FLOW.push({type:'analyzing'});
     FLOW.push({type:'appTeaser'});
   }
 });
@@ -1323,7 +1324,6 @@ function renderAnalyzing(v2){
       ${v2 ? '' : '<div class="brand-sub" style="margin-bottom:14px;">Diagnóstico personalizado</div>'}
       <div class="analise-title">Analisando suas respostas...</div>
       <div class="lib-box" style="margin-top:30px;">
-        ${v2 ? '<div class="lib-label" style="margin-bottom:6px;">Calculando o seu Índice de Potencial...</div>' : ''}
         <div class="lib-label">${v2 ? 'Identificando a solução para seu caso...' : 'Liberando seu diagnóstico personalizado...'}</div>
         <div class="lib-pct" id="libPct">0%</div>
         <div class="lib-bar"><div class="lib-fill" id="libFill"></div></div>
