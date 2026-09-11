@@ -906,7 +906,7 @@ function renderQuestion(q){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}<div class="brand"><span class="brand-nome">${APP_NOME}</span></div>
+      ${backBtn()}<div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
       ${echo}
@@ -942,7 +942,7 @@ function renderMultiQuestion(q){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}<div class="brand"><span class="brand-nome">${APP_NOME}</span></div>
+      ${backBtn()}<div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
       <h2 class="q-title tight">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
@@ -971,7 +971,7 @@ function renderTextQuestion(q){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}<div class="brand"><span class="brand-nome">${APP_NOME}</span></div>
+      ${backBtn()}<div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
       <h2 class="q-title">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
@@ -992,7 +992,7 @@ function renderRulerQuestion(q){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz" style="text-align:center;">
-      ${backBtn()}<div class="brand"><span class="brand-nome">${APP_NOME}</span></div>
+      ${backBtn()}<div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
       <h2 class="q-title" style="text-align:center;">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
@@ -1152,7 +1152,7 @@ function renderProjecao(){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}<div class="brand"><span class="brand-nome">${APP_NOME}</span></div>
+      ${backBtn()}<div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:100%"></div></div>
 
@@ -1500,19 +1500,19 @@ function renderDiagnostico(full){
     return app.innerHTML = `
     <div class="wrap fade">
       <div class="card-quiz">
-        ${backBtn()}<div class="brand"><span class="brand-nome">${APP_NOME}</span></div>
+        ${backBtn()}<div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
         <div class="brand-sub">Primeira leitura</div>
         <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${pctAte(progressoId)}%"></div></div>
 
         <h2 class="q-title" style="font-size:22px;text-align:center;">${TITULO}</h2>
 
         <div class="solucao-box" style="text-align:center;margin-bottom:16px;">
-          <p style="font-size:19px;font-weight:800;color:#4a4a4a;line-height:1.55;margin:0;">Esse plano é pensado pra quem quer ${PUBLICO}, mesmo com a rotina corrida do dia a dia, ${objecao}. Tudo isso porque você passa a ter direção, constância e estratégia.</p>
+          <p style="font-size:19px;font-weight:600;color:#4a4a4a;line-height:1.55;margin:0;">Esse plano é pensado pra quem quer ${PUBLICO}, mesmo com a rotina corrida do dia a dia, ${objecao}. Tudo isso porque você passa a ter direção, constância e estratégia.</p>
         </div>
 
         <div class="solucao-box" style="text-align:center;margin-bottom:16px;">
           <p style="font-size:24px;font-weight:800;color:#4a4a4a;line-height:1.4;margin:0 0 14px;">${RESULTADO_GERUNDIO}</p>
-          <p style="font-size:19px;font-weight:800;color:#4a4a4a;line-height:1.55;margin:0 0 12px;">Seguindo um plano pronto todo dia, sem calcular nada sozinho. Calorias e quantidade de proteína calculadas exatamente para o que seu corpo precisa.</p>
+          <p style="font-size:19px;font-weight:600;color:#4a4a4a;line-height:1.55;margin:0 0 12px;">Seguindo um plano pronto todo dia, sem calcular nada sozinho. Calorias e quantidade de proteína calculadas exatamente para o que seu corpo precisa.</p>
           <p style="font-size:12.5px;font-weight:600;color:#8a9a92;line-height:1.55;margin:0;">Faltam só mais algumas perguntas pra fechar o seu Índice de Constância e liberar esses números.</p>
         </div>
 
