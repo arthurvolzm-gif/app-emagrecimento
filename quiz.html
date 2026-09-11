@@ -1474,11 +1474,30 @@ function renderDiagnostico(full){
      objetivo tinha um texto próprio, ver histórico do arquivo). */
   if(!full){
     const sozinho = a.sexo==='Homem' ? 'sozinho' : 'sozinha';
-    const TITULO = `${nome?nome+', v':'V'}ocê não está ${sozinho}`;
+    const TITULO = `${nome?nome+', v':'V'}ocê não está ${sozinho} nisso`;
+
+    /* personaliza com a resposta real de 'frustracao' (pergunta 4, já
+       respondida antes dessa tela) — não usa 'tentativas' aqui porque
+       'tentativas' já personaliza o ponto 2 do diagnóstico completo mais
+       à frente (abandonoTxt); usar os dois textos na mesma resposta ia
+       ficar redundante entre as duas telas. */
+    const frust = a.frustracao || '';
+    const PERSONALIZA = frust.includes('Falta de tempo')
+      ? 'Pelo que você respondeu, o seu maior entrave hoje é o tempo. Isso nunca foi falta de disciplina: é nunca ter tido um plano que coubesse de verdade na sua rotina.'
+      : frust.includes('Não sei o que comer')
+      ? 'Pelo que você respondeu, o que mais pesa é não saber exatamente o que fazer. Faz sentido: ninguém mantém uma rotina que exige adivinhar a cada refeição e a cada treino.'
+      : frust.includes('Começo com tudo')
+      ? 'Pelo que você respondeu, o seu padrão é começar forte e perder o fôlego no meio do caminho. Isso não é falta de força de vontade: é a falta de algo te segurando justamente quando o ânimo cai.'
+      : frust.includes('Falta alguém acompanhando')
+      ? 'Pelo que você respondeu, o que faltou nas outras vezes foi alguém acompanhando de perto. É exatamente essa peça que estava faltando até agora.'
+      : 'Pelo que você respondeu, você já tentou várias formas e nenhuma pegou. Faz sentido: o problema nunca foi tentar, foi nenhum método ter sido pensado pro seu dia a dia real.';
 
     const ITENS_PLANO = [
-      ['📅','Sua rotina'], ['🔁','Seus hábitos'], ['⏱️','Seu tempo livre'],
-      ['🎯','Suas metas'], ['🚫','Suas restrições']
+      ['📅','Sua rotina','pra caber na sua semana, não pra brigar com ela'],
+      ['🔁','Seus hábitos','pra construir em cima do que já funciona, sem começar do zero'],
+      ['⏱️','Seu tempo livre','pra pedir só o que você de fato tem pra dar'],
+      ['🎯','Suas metas','pra apontar todo dia na direção certa'],
+      ['🚫','Suas restrições','pra nunca te indicar o que você não pode ou não quer fazer']
     ];
 
     return app.innerHTML = `
@@ -1494,16 +1513,20 @@ function renderDiagnostico(full){
         <p class="prova-numero-legenda">pessoas que emagrecem não conseguem manter o resultado, e a maioria volta ao peso original em menos de um ano.</p>
 
         <div class="solucao-box" style="text-align:center;margin-bottom:16px;">
-          <p style="font-size:19px;font-weight:600;color:#4a4a4a;line-height:1.55;margin:0;">Não é falta de força de vontade. É falta de um acompanhamento de verdade: alguém — ou alguma coisa — dizendo o que fazer a cada dia, e ajustando o plano conforme a sua rotina muda.</p>
+          <p style="font-size:19px;font-weight:600;color:#4a4a4a;line-height:1.55;margin:0;">Não é falta de força de vontade. É falta de um acompanhamento de verdade: alguém — ou alguma coisa — te dizendo exatamente o que fazer a cada dia, e ajustando o plano conforme a sua rotina muda.</p>
+        </div>
+
+        <div class="solucao-box" style="text-align:center;margin-bottom:16px;">
+          <p style="font-size:15.5px;font-weight:600;color:#3a5a4c;line-height:1.6;margin:0;">${PERSONALIZA}</p>
         </div>
 
         <div class="solucao-box" style="text-align:center;margin-bottom:16px;">
           <p style="font-size:19px;font-weight:800;color:#4a4a4a;line-height:1.5;margin:0 0 14px;">É exatamente isso que o ${APP_NOME} faz por você.</p>
           <div class="valor-box" style="text-align:left;padding:6px 18px;margin-bottom:14px;">
-            ${ITENS_PLANO.map(([ic,txt])=>`<div class="valor-row"><span class="lbl">${ic} ${txt}</span></div>`).join('')}
+            ${ITENS_PLANO.map(([ic,txt,sub])=>`<div class="valor-row" style="display:block;padding:12px 0;"><div class="lbl">${ic} ${txt}</div><div style="font-weight:400;color:#8a9a92;font-size:12.5px;margin-top:3px;">${sub}</div></div>`).join('')}
           </div>
           <p style="font-size:19px;font-weight:600;color:#4a4a4a;line-height:1.55;margin:0 0 12px;">Um plano montado em cima de tudo isso, que te acompanha e direciona os seus próximos passos rumo ao seu objetivo — sem você ter que calcular nada sozinho.</p>
-          <p style="font-size:12.5px;font-weight:600;color:#8a9a92;line-height:1.55;margin:0;">Faltam só mais algumas perguntas pra fechar o seu Índice de Potencial e liberar esses números.</p>
+          <p style="font-size:12.5px;font-weight:600;color:#8a9a92;line-height:1.55;margin:0;">Faltam só mais algumas perguntas pra fechar o seu Índice de Potencial e liberar esses números — e mostrar exatamente onde está o seu maior ponto de perda hoje.</p>
         </div>
 
         <button class="btn" onclick="go(1)">Continuar o teste →</button>
