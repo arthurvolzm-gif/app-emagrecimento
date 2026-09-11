@@ -1333,7 +1333,7 @@ function renderAnalyzing(){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz" style="padding-top:44px;padding-bottom:52px;">
-      <div class="progress-bar"><div class="progress-fill" id="topoFill" style="width:0%"></div></div>
+      <div class="progress-bar"><div class="progress-fill" id="topoFill" style="width:0%;transition:none;"></div></div>
       <div class="analise-title" style="margin-top:22px;">Analisando suas respostas...</div>
       <p style="text-align:center;font-size:16px;font-weight:800;color:#3a5a4c;line-height:1.4;margin:0 0 26px;">Em poucos segundos o seu plano personalizado fica pronto.</p>
       ${ANALISANDO_ITENS.map(([label],i)=>`
@@ -1348,19 +1348,24 @@ function renderAnalyzing(){
   </div>`;
   const DUR = 5000;                                    // total da animação
   const topoFill = document.getElementById('topoFill');
+  const itens = ANALISANDO_ITENS.map((item,i)=>({
+    alvo: item[1],
+    pctEl: document.getElementById('itemPct'+i),
+    fillEl: document.getElementById('itemFill'+i),
+    ultimo: -1
+  }));
   const startT = performance.now();
-  const ultimos = ANALISANDO_ITENS.map(()=>-1);
   function tick(now){
     const t = Math.min(1,(now-startT)/DUR);
     const eased = t*t*t*(t*(t*6-15)+10);               // smootherstep: parte e chega sem solavanco
     if(topoFill) topoFill.style.width = (eased*100)+'%';
-    ANALISANDO_ITENS.forEach(([,alvo],i)=>{
-      const pct = Math.round(eased*alvo);
-      if(pct!==ultimos[i]){
-        const pctEl=document.getElementById('itemPct'+i), fillEl=document.getElementById('itemFill'+i);
-        if(pctEl) pctEl.textContent = pct+'%';
-        if(fillEl) fillEl.style.width = pct+'%';
-        ultimos[i]=pct;
+    itens.forEach(it=>{
+      const exato = eased*it.alvo;
+      if(it.fillEl) it.fillEl.style.width = exato+'%';        // largura sempre com precisão de fração, pra não travar
+      const pct = Math.round(exato);
+      if(pct!==it.ultimo){
+        if(it.pctEl) it.pctEl.textContent = pct+'%';           // número só repinta quando o inteiro muda
+        it.ultimo = pct;
       }
     });
     if(t<1) requestAnimationFrame(tick);
