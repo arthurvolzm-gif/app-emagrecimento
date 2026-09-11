@@ -1455,21 +1455,40 @@ function renderDiagnostico(full){
   const progressoId = full ? 'meta_peso' : 'tentativas';   // última pergunta respondida antes desta tela, em cada versão
 
   /* ---- versão curta: entrega uma leitura real, sem número nenhum ainda ----
-     as 5 opções de 'frustracao' viram 5 leituras diferentes, todas na mesma
-     ideia (o que falta não é esforço, é [direção/estrutura/estratégia]),
-     nunca sobre um treino específico — o app cobre dieta, treino e hábito
-     igual pra qualquer objetivo, então o texto não pode falar só de treino. */
+     estrutura copiada da copy de referência do Shape em V (headline de
+     resultado+estratégia -> público+objeção -> mecanismo em 3 qualidades
+     -> resultado concreto), com o CONTEÚDO trocado pro Fit Day: nada de
+     treino específico, dieta+treino+hábito servem pros 3 objetivos e
+     pros dois sexos. Personaliza por objetivo (o resultado) e por
+     frustracao (a objeção que o plano precisa superar). */
   if(!full){
+    const obj = objetivoId();
+    const PUBLICO = {
+      emagrecimento: 'perder peso de forma real',
+      hipertrofia: 'construir mais músculo',
+      manutencao: 'manter o shape que já tem'
+    }[obj];
+    const RESULTADO = {
+      emagrecimento: ['perder gordura de verdade', 'sem perder a massa magra junto', 'sem passar fome o dia todo'],
+      hipertrofia: ['ganhar massa de verdade', 'definir mais o shape', 'treinar com mais força'],
+      manutencao: ['manter o peso sem sofrer', 'melhorar o condicionamento', 'ter mais energia no dia a dia']
+    }[obj];
+    const HEADLINE = {
+      emagrecimento: 'você pode emagrecer de vez, com mais estratégia',
+      hipertrofia: 'você pode ganhar massa de verdade, com mais estratégia',
+      manutencao: 'você pode manter o resultado, com mais estratégia'
+    }[obj];
+
     const frust = a.frustracao || '';
-    const texto = frust.includes('Falta de tempo')
-      ? `O problema nunca foi a sua rotina corrida. Foi todo plano que você já tentou ter sido pensado pra quem tem uma hora livre por dia. Você não tem, e é exatamente aí que ele sempre quebrou.`
+    const objecao = frust.includes('Falta de tempo')
+      ? 'sem depender de uma rotina que você não tem tempo de seguir'
       : frust.includes('Não sei o que comer')
-      ? `Não é falta de esforço, é falta de direção. Sem saber exatamente o que comer e o que treinar hoje, cada dia vira uma decisão nova, e decidir tudo sozinho cansa mais do que o treino em si.`
+      ? 'sem ter que adivinhar o que comer ou como treinar'
       : frust.includes('Começo com tudo')
-      ? `Você começa com tudo e para depois de um tempo. Isso não é falta de força de vontade: é o que acontece quando ninguém te entrega o próximo passo já pronto.`
+      ? 'sem precisar recomeçar do zero toda vez que a motivação cai'
       : frust.includes('Falta alguém acompanhando')
-      ? `Sem alguém acompanhando de perto, cada ajuste fica só por sua conta, e é fácil perder o rumo sem nem perceber. Não é falta de comprometimento: é falta de um olhar de fora.`
-      : `Você já tentou de tudo e nada funcionou direito. Isso quase nunca é sobre esforço: é sobre nenhum desses planos ter sido calculado pro SEU corpo.`;
+      ? 'sem fazer tudo sozinho, sem ninguém acompanhando de perto'
+      : 'sem repetir os mesmos métodos genéricos que já não funcionaram';
 
     return app.innerHTML = `
     <div class="wrap fade">
@@ -1478,16 +1497,16 @@ function renderDiagnostico(full){
         <div class="brand-sub">Primeira leitura</div>
         <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${pctAte(progressoId)}%"></div></div>
 
-        <h2 class="q-title" style="font-size:22px;text-align:center;">${nome?nome+', o':'O'} problema não é onde você acha que é</h2>
+        <h2 class="q-title" style="font-size:22px;text-align:center;">${nome?nome+', ':''}${HEADLINE}</h2>
 
         <div class="solucao-box" style="text-align:center;margin-bottom:16px;">
-          <h4 style="margin-bottom:8px;">O que já dá pra ver</h4>
-          <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">${texto}</p>
+          <h4 style="margin-bottom:8px;">Pra quem é isso</h4>
+          <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">Esse plano é pensado pra quem quer ${PUBLICO}, mesmo com a rotina corrida do dia a dia, ${objecao}. Tudo isso porque você passa a ter direção, constância e estratégia — não mais esforço, um plano certo.</p>
         </div>
 
         <div class="solucao-box" style="text-align:center;margin-bottom:16px;">
-          <h4 style="margin-bottom:8px;">Por que isso importa pra você</h4>
-          <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">Com o seu peso, altura e objetivo, já dá pra calcular quantas calorias e quanta proteína o seu corpo precisa por dia. Faltam só mais algumas perguntas pra fechar o seu Índice de Constância e liberar esses números.</p>
+          <h4 style="margin-bottom:8px;">O que você ganha com isso</h4>
+          <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">Com isso, dá pra ${RESULTADO[0]}, ${RESULTADO[1]} e ${RESULTADO[2]}, seguindo um plano pronto todo dia, sem calcular nada sozinho. Com o seu peso, altura e objetivo, já dá pra calcular exatamente quantas calorias e quanta proteína o seu corpo precisa. Faltam só mais algumas perguntas pra fechar o seu Índice de Constância e liberar esses números.</p>
         </div>
 
         <button class="btn" onclick="go(1)">Continuar o teste →</button>
