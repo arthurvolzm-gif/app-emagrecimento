@@ -1445,21 +1445,9 @@ function renderDiagnostico(){
     const sozinho = a.sexo==='Homem' ? 'sozinho' : 'sozinha';
     const TITULO = `${nome?nome+', v':'V'}ocê não está ${sozinho} nisso`;
 
-    /* personaliza com a resposta real de 'frustracao' (pergunta 4, já
-       respondida antes dessa tela) — não usa 'tentativas' aqui porque
-       'tentativas' já personaliza o ponto 2 do diagnóstico completo mais
-       à frente (abandonoTxt); usar os dois textos na mesma resposta ia
-       ficar redundante entre as duas telas. */
-    const frust = a.frustracao || '';
-    const PERSONALIZA = frust.includes('Falta de tempo')
-      ? 'Pelo que você respondeu, o seu maior entrave hoje é o tempo. Isso nunca foi falta de disciplina: é nunca ter tido um plano que coubesse de verdade na sua rotina.'
-      : frust.includes('Não sei o que comer')
-      ? 'Pelo que você respondeu, o que mais pesa é não saber exatamente o que fazer. Faz sentido: ninguém mantém uma rotina que exige adivinhar a cada refeição e a cada treino.'
-      : frust.includes('Começo com tudo')
-      ? 'Pelo que você respondeu, o seu padrão é começar forte e perder o fôlego no meio do caminho. Isso não é falta de força de vontade: é a falta de algo te segurando justamente quando o ânimo cai.'
-      : frust.includes('Falta alguém acompanhando')
-      ? 'Pelo que você respondeu, o que faltou nas outras vezes foi alguém acompanhando de perto. É exatamente essa peça que estava faltando até agora.'
-      : 'Pelo que você respondeu, você já tentou várias formas e nenhuma pegou. Faz sentido: o problema nunca foi tentar, foi nenhum método ter sido pensado pro seu dia a dia real.';
+    /* texto padrão, em tom neutro, que serve pra qualquer resposta dada
+       em 'frustracao' — não personaliza mais por opção marcada. */
+    const PERSONALIZA = 'Pelo que você respondeu, o que mais pesa hoje não é falta de esforço: é não ter um plano pensado especificamente pra sua rotina. Faz sentido: ninguém mantém uma mudança sem saber exatamente o que fazer a cada dia.';
 
     const ITENS_PLANO = [
       ['📅','Sua rotina','pra caber na sua semana, não pra brigar com ela'],
@@ -1494,8 +1482,8 @@ function renderDiagnostico(){
           <div class="valor-box" style="text-align:left;padding:6px 18px;margin-bottom:14px;">
             ${ITENS_PLANO.map(([ic,txt,sub])=>`<div class="valor-row" style="display:block;padding:12px 0;"><div class="lbl">${ic} ${txt}</div><div style="font-weight:400;color:#8a9a92;font-size:12.5px;margin-top:3px;">${sub}</div></div>`).join('')}
           </div>
-          <p style="font-size:19px;font-weight:600;color:#4a4a4a;line-height:1.55;margin:0 0 12px;">Um plano montado em cima de tudo isso, que te acompanha e direciona os seus próximos passos rumo ao seu objetivo — sem você ter que calcular nada sozinho.</p>
-          <p style="font-size:12.5px;font-weight:600;color:#8a9a92;line-height:1.55;margin:0;">Faltam só mais algumas perguntas pra fechar o seu Índice de Potencial e liberar esses números — e mostrar exatamente onde está o seu maior ponto de perda hoje.</p>
+          <p style="font-size:19px;font-weight:600;color:#4a4a4a;line-height:1.55;margin:0 0 12px;">Um plano montado em cima de tudo isso, que te acompanha e direciona os seus próximos passos rumo ao seu objetivo.</p>
+          <p style="font-size:12.5px;font-weight:600;color:#8a9a92;line-height:1.55;margin:0;">Faltam só mais algumas perguntas pra calcular a sua meta certa e te mostrar o seu plano personalizado.</p>
         </div>
 
         <button class="btn" onclick="go(1)">Continuar o teste →</button>
