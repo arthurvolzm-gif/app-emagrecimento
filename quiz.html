@@ -1091,10 +1091,36 @@ function renderProjecao(){
   const constanciaDepois = Math.min(95, constanciaAntes+40);
   const rotinaDepois = Math.min(90, rotinaAntes+42);
 
-  const metrica = (label,antes)=>`
-        <div class="glp-metric"><div class="glp-metric-top"><span class="nome">${label}</span><span class="val">${antes}%</span></div><div class="glp-bar"><div class="glp-bar-fill" style="width:${antes}%"></div></div></div>`;
-  const metricaBom = (label,depois)=>`
-        <div class="glp-metric"><div class="glp-metric-top"><span class="nome">${label}</span><span class="val">${depois}%</span></div><div class="glp-bar"><div class="glp-bar-fill" style="width:${depois}%"></div></div></div>`;
+  /* foto real de 'corpo_hoje'/'corpo_sonho' (já escolhidas pela pessoa,
+     variam por sexo) — usadas no antes/depois da projeção, no lugar de
+     um avatar genérico. */
+  const imgDe = qid => {
+    const q = QUESTIONS.find(x=>x.id===qid);
+    const i = a[qid+'_i'];
+    const imgs = q && imagensDe(q);
+    return (imgs && typeof i==='number') ? imgs[i] : '';
+  };
+  const imgHoje = imgDe('corpo_hoje');
+  const imgSonho = imgDe('corpo_sonho');
+
+  const sliderRow = (label, antes, depois) => `
+      <div style="margin-bottom:16px;">
+        <div style="font-size:12.5px;font-weight:800;color:#4a4a4a;margin-bottom:6px;">${label}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:var(--vermelho);margin-bottom:5px;"><span>Baixa</span><span>${antes}%</span></div>
+            <div style="position:relative;height:6px;border-radius:10px;background:linear-gradient(90deg,#e05a4e,#f0a05a);">
+              <div style="position:absolute;top:50%;left:${antes}%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid var(--vermelho);box-shadow:0 1px 4px rgba(0,0,0,.2);"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:var(--verde-escuro);margin-bottom:5px;"><span>Alta</span><span>${depois}%</span></div>
+            <div style="position:relative;height:6px;border-radius:10px;background:linear-gradient(90deg,#e05a4e,#f0c05a,#4caf82);">
+              <div style="position:absolute;top:50%;left:${depois}%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid var(--verde-escuro);box-shadow:0 1px 4px rgba(0,0,0,.2);"></div>
+            </div>
+          </div>
+        </div>
+      </div>`;
 
   /* curva de evolução (0-100, fases qualitativas, sem prazo numérico de resultado) */
   const diasCurva = [1,3,5,7,10,14];
@@ -1154,17 +1180,27 @@ ${curvaHTML}
 
       <div class="proj-compare" style="margin-top:22px;">
         <div class="proj-compare-col ruim">
-          <h5>🙁 Hoje</h5>
-          ${metrica('Disposição', disposicaoAntes)}
-          ${metrica('Potencial', constanciaAntes)}
-          ${metrica('Rotina organizada', rotinaAntes)}
+          <h5 style="background:var(--verde-claro);color:#fff;border-radius:20px;padding:6px 0;font-size:13px;">Antes</h5>
+          ${imgHoje ? `<img class="proj-compare-img" src="${imgHoje}" alt="Antes" onerror="this.remove()">` : ''}
+          <div style="background:#fff;border-radius:10px;padding:10px 8px;text-align:center;">
+            <div style="font-size:11px;color:#8a9a92;font-weight:700;">Peso atual</div>
+            <div style="font-size:18px;font-weight:900;color:#1a1a1a;">${numDe('peso') || '--'}kg</div>
+          </div>
         </div>
         <div class="proj-compare-col bom">
-          <h5>💪 Com o ${APP_NOME}</h5>
-          ${metricaBom('Disposição', disposicaoDepois)}
-          ${metricaBom('Potencial', constanciaDepois)}
-          ${metricaBom('Rotina organizada', rotinaDepois)}
+          <h5 style="background:var(--verde-claro);color:#fff;border-radius:20px;padding:6px 0;font-size:13px;">Depois</h5>
+          ${imgSonho ? `<img class="proj-compare-img" src="${imgSonho}" alt="Depois" onerror="this.remove()">` : ''}
+          <div style="background:#fff;border-radius:10px;padding:10px 8px;text-align:center;">
+            <div style="font-size:11px;color:#8a9a92;font-weight:700;">Meta de peso</div>
+            <div style="font-size:18px;font-weight:900;color:#1a1a1a;">${numDe('meta_peso') || '--'}kg</div>
+          </div>
         </div>
+      </div>
+
+      <div style="margin-top:18px;">
+        ${sliderRow('Disposição', disposicaoAntes, disposicaoDepois)}
+        ${sliderRow('Potencial', constanciaAntes, constanciaDepois)}
+        ${sliderRow('Rotina organizada', rotinaAntes, rotinaDepois)}
       </div>
 
       <div class="proj-compare">
@@ -1215,64 +1251,7 @@ ${curvaHTML}
         </div>
       </div>
 
-      <!-- COMPARE O CUSTO -->
-      <h4 style="text-align:center;margin:26px 0 12px;font-size:17px;color:var(--verde-escuro);">Compare com o que isso custaria fora do app:</h4>
-      <div class="valor-box">
-        <div class="valor-row"><span class="lbl">Nutricionista (mensal)</span><span class="num">R$ 250–600</span></div>
-        <div class="valor-row"><span class="lbl">Personal trainer (mensal)</span><span class="num">R$ 300–900</span></div>
-        <div class="valor-row"><span class="lbl">App de contagem de calorias avulso</span><span class="num">R$ 30–60</span></div>
-      </div>
-      <p style="font-size:12.5px;color:#8a9a92;line-height:1.55;margin:10px 0 0;text-align:center;">O ${APP_NOME} recalcula o seu plano sozinho toda vez que o seu peso muda, sem consulta nova.</p>
-
-      <!-- APP REVEAL / OFERTA -->
-      <div class="res-section" style="padding:26px 0 0;">
-        <div class="oferta-final">
-          <div class="ot">${APP_NOME}</div>
-          <div class="of-block">Você recebe</div>
-          <div class="of-item"><span class="ic">✓</span><span class="nm">Cardápio calculado na sua meta, com troca de alimentos</span></div>
-          <div class="of-item"><span class="ic">✓</span><span class="nm">Treino no seu sexo e no seu local</span></div>
-          <div class="of-item"><span class="ic">✓</span><span class="nm">Metas de água e sono</span></div>
-          <div class="of-item"><span class="ic">✓</span><span class="nm">Registro de progresso, pesagem e cargas</span></div>
-          <div class="of-item"><span class="ic">✓</span><span class="nm">Níveis e pontos pra te manter no jogo</span></div>
-
-          ${temCheckout ? `
-          <div class="of-de">De R$ ${PRECO.de}</div>
-          <div class="of-por">Por apenas</div>
-          <div class="of-val">R$${PRECO.por}</div>
-          ` : `
-          <p style="font-size:14px;color:var(--verde-escuro);font-weight:800;text-align:center;margin:18px 0 0;">Comece agora, sem pagar nada.</p>
-          `}
-          <a class="btn" href="${destino}" onclick="irParaApp(event)">${rotuloCTA}</a>
-          <p class="of-secure">${temCheckout ? 'Pix, cartão ou boleto · Acesso imediato · Compra segura' : 'Acesso imediato · Continue de onde parou em qualquer aparelho'}</p>
-        </div>
-      </div>
-
-      <!-- GARANTIA -->
-      <div class="res-section" style="text-align:center;">
-        <div style="background:#fff8e8;border:1px solid #f0dfb4;border-radius:16px;padding:22px 20px;">
-          <div style="font-size:34px;">🛡️</div>
-          <h4 style="margin:8px 0 8px;font-size:17px;color:#7a5a00;">${temCheckout ? '7 dias de garantia' : 'Sem compromisso'}</h4>
-          <p style="font-size:13.5px;color:#7a5a00;line-height:1.6;margin:0;">${temCheckout
-            ? 'Entre, use, monte a sua semana. Se em 7 dias achar que não é pra você, devolvemos o valor, sem burocracia.'
-            : 'Entre e monte o seu plano. Se não for pra você, é só parar de usar quando quiser.'}</p>
-        </div>
-      </div>
-
-      <!-- FAQ -->
-      <div class="res-section faq">
-        <h2 class="res-h2" style="font-size:20px;">Ainda tem <span>alguma dúvida?</span></h2>
-        <div style="margin-top:20px;">
-          <details><summary>Preciso de academia?</summary><div class="a">Não. No cadastro do app você escolhe se vai treinar na academia ou em casa, e o plano se ajusta: em casa, o treino usa pouco ou nenhum equipamento.</div></details>
-          <details><summary>Vou passar fome?</summary><div class="a">Não é esse o desenho. A sua meta foi calculada pelo seu corpo, com proteína alta pra segurar a fome.</div></details>
-          <details><summary>E se eu não gostar de algum alimento?</summary><div class="a">Cada alimento tem um botão de troca com outras opções. Você escolhe, e o cardápio e a lista de compras se ajustam sozinhos, sem sair da meta.</div></details>
-          <details><summary>Funciona no meu celular?</summary><div class="a">Sim, em qualquer celular com internet, Android ou iPhone. Não precisa baixar nada em loja de aplicativo.</div></details>
-          <details><summary>Serve para homem também?</summary><div class="a">Sim. O app calcula o plano pelo seu sexo, peso, altura e objetivo, e o treino já é diferente pra cada um.</div></details>
-        </div>
-      </div>
-
-      <p style="font-size:15px;font-weight:800;color:var(--verde-escuro);line-height:1.5;text-align:center;margin:22px 0 4px;">Não fique só no diagnóstico. Comece hoje.</p>
-
-      <a class="btn" style="margin-top:14px;" href="${destino}" onclick="irParaApp(event)">${rotuloCTA}</a>
+      <a class="btn" style="margin-top:22px;" href="${destino}" onclick="irParaApp(event)">${rotuloCTA}</a>
 
       <p style="font-size:11.5px;color:#8aa79a;line-height:1.6;text-align:center;margin:22px 0 0;">Material educativo de apoio. Não substitui acompanhamento médico ou nutricional. Resultados variam de pessoa para pessoa.</p>
     </div>
