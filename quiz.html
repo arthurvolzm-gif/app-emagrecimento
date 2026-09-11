@@ -1317,29 +1317,53 @@ function renderMeta(){
 }
 
 /* ---------- ANALISANDO ---------- */
+/* itens reais do que o app calcula/monta a partir das respostas — nada
+   fabricado, só nomes honestos pros passos que 'metaKcal()', o plano de
+   treino/cardápio e o sistema de pontos do próprio Fit Day já fazem. As
+   porcentagens finais variam só pra dar textura visual à animação, sem
+   virar uma métrica que aparece em outra tela. */
+const ANALISANDO_ITENS = [
+  ['Perfil analisado', 92],
+  ['Meta calórica calculada', 100],
+  ['Plano de treino montado', 78],
+  ['Cardápio personalizado gerado', 85],
+  ['Sistema de pontos e níveis ativado', 64]
+];
+
 function renderAnalyzing(v2){
   app.innerHTML = `
   <div class="wrap fade">
-    <div class="card-quiz" style="padding-top:56px;padding-bottom:52px;">
-      ${v2 ? '' : '<div class="brand-sub" style="margin-bottom:14px;">Diagnóstico personalizado</div>'}
-      <div class="analise-title">Analisando suas respostas...</div>
-      <div class="lib-box" style="margin-top:30px;">
-        <div class="lib-label">${v2 ? 'Identificando a solução para seu caso...' : 'Liberando seu diagnóstico personalizado...'}</div>
-        <div class="lib-pct" id="libPct">0%</div>
-        <div class="lib-bar"><div class="lib-fill" id="libFill"></div></div>
-      </div>
+    <div class="card-quiz" style="padding-top:44px;padding-bottom:52px;">
+      <div class="progress-bar"><div class="progress-fill" id="topoFill" style="width:0%"></div></div>
+      <div class="analise-title" style="margin-top:22px;">Analisando suas respostas...</div>
+      <p style="text-align:center;font-size:16px;font-weight:800;color:#3a5a4c;line-height:1.4;margin:0 0 26px;">Em poucos segundos o seu ${v2?'plano':'diagnóstico'} personalizado fica pronto.</p>
+      ${ANALISANDO_ITENS.map(([label],i)=>`
+      <div class="lib-item" style="margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;font-weight:700;color:var(--verde-escuro);margin-bottom:6px;">
+          <span>✅ ${label}...</span>
+          <span id="itemPct${i}" style="font-variant-numeric:tabular-nums;">0%</span>
+        </div>
+        <div class="lib-bar"><div class="lib-fill" id="itemFill${i}"></div></div>
+      </div>`).join('')}
     </div>
   </div>`;
   const DUR = 5000;                                    // total da animação
-  const pctEl=document.getElementById('libPct'), fillEl=document.getElementById('libFill');
-  const startT=performance.now();
-  let ultimo = -1;                                     // só repinta o número quando o inteiro muda
+  const topoFill = document.getElementById('topoFill');
+  const startT = performance.now();
+  const ultimos = ANALISANDO_ITENS.map(()=>-1);
   function tick(now){
-    const t=Math.min(1,(now-startT)/DUR);
-    const eased=t*t*t*(t*(t*6-15)+10);                 // smootherstep: parte e chega sem solavanco
-    const pct=Math.round(eased*100);
-    if(pctEl && pct!==ultimo){ pctEl.textContent=pct+'%'; ultimo=pct; }
-    if(fillEl)fillEl.style.width=(eased*100)+'%';
+    const t = Math.min(1,(now-startT)/DUR);
+    const eased = t*t*t*(t*(t*6-15)+10);               // smootherstep: parte e chega sem solavanco
+    if(topoFill) topoFill.style.width = (eased*100)+'%';
+    ANALISANDO_ITENS.forEach(([,alvo],i)=>{
+      const pct = Math.round(eased*alvo);
+      if(pct!==ultimos[i]){
+        const pctEl=document.getElementById('itemPct'+i), fillEl=document.getElementById('itemFill'+i);
+        if(pctEl) pctEl.textContent = pct+'%';
+        if(fillEl) fillEl.style.width = pct+'%';
+        ultimos[i]=pct;
+      }
+    });
     if(t<1) requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);
