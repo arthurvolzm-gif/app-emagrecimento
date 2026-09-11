@@ -757,11 +757,11 @@ QUESTIONS.forEach(q=>{
   if(q.id==='tentativas'){                                   // diagnóstico curto, ainda sem números
     FLOW.push({type:'diagnostico'});
   }
-  if(q.id==='outros_objetivos'){                             // tela do app, estilo "isso ajudaria você?"
+  if(q.id==='outros_objetivos'){                             // analisando + tela do app, estilo "isso ajudaria você?"
+    FLOW.push({type:'analyzing'});
     FLOW.push({type:'appTeaser'});
   }
 });
-FLOW.push({type:'analyzing'});                              // analisa tudo, inclusive outros_objetivos
 FLOW.push({type:'projecao'});                               // projeção final — já é a página de entrada no app, última tela do quiz
 
 const app = document.getElementById('app');
@@ -1318,15 +1318,15 @@ function renderMeta(){
 /* ---------- ANALISANDO ---------- */
 /* itens reais do que o app calcula/monta a partir das respostas — nada
    fabricado, só nomes honestos pros passos que 'metaKcal()', o plano de
-   treino/cardápio e o sistema de pontos do próprio Fit Day já fazem. As
-   porcentagens finais variam só pra dar textura visual à animação, sem
-   virar uma métrica que aparece em outra tela. */
+   treino/cardápio e o sistema de pontos do próprio Fit Day já fazem.
+   Todas chegam a 100% (ver EXPOENTES em renderAnalyzing, que dá uma
+   velocidade própria pra cada uma sem desalinhar do fim da animação). */
 const ANALISANDO_ITENS = [
-  ['Perfil analisado', 100],
-  ['Meta calórica calculada', 100],
-  ['Plano de treino montado', 100],
-  ['Cardápio personalizado gerado', 100],
-  ['Sistema de pontos e níveis ativado', 100]
+  'Perfil analisado',
+  'Meta calórica calculada',
+  'Plano de treino montado',
+  'Cardápio personalizado gerado',
+  'Sistema de pontos e níveis ativado'
 ];
 
 function renderAnalyzing(){
@@ -1336,7 +1336,7 @@ function renderAnalyzing(){
       <div class="progress-bar"><div class="progress-fill" id="topoFill" style="width:0%;transition:none;"></div></div>
       <div class="analise-title" style="margin-top:22px;">Analisando suas respostas...</div>
       <p style="text-align:center;font-size:16px;font-weight:800;color:#3a5a4c;line-height:1.4;margin:0 0 26px;">Em poucos segundos o seu plano personalizado fica pronto.</p>
-      ${ANALISANDO_ITENS.map(([label],i)=>`
+      ${ANALISANDO_ITENS.map((label,i)=>`
       <div class="lib-item" style="margin-bottom:16px;">
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;font-weight:700;color:var(--verde-escuro);margin-bottom:6px;">
           <span>✅ ${label}...</span>
@@ -1348,19 +1348,25 @@ function renderAnalyzing(){
   </div>`;
   const DUR = 5000;                                    // total da animação
   const topoFill = document.getElementById('topoFill');
+  /* cada item usa um expoente diferente pra "dobrar" o tempo antes de
+     aplicar o smootherstep — isso faz cada barra ter sua própria
+     velocidade (uma dispara na frente, outra demora pra engatar), mas
+     como pow(0,k)=0 e pow(1,k)=1 pra qualquer k>0, todas ainda chegam
+     exatas a 100% no mesmo instante final, sem desalinhar do timer. */
+  const EXPOENTES = [0.5, 1.5, 0.75, 1.9, 1.1];
   const itens = ANALISANDO_ITENS.map((item,i)=>({
-    alvo: item[1],
+    k: EXPOENTES[i % EXPOENTES.length],
     pctEl: document.getElementById('itemPct'+i),
     fillEl: document.getElementById('itemFill'+i),
     ultimo: -1
   }));
+  const smootherstep = x => x*x*x*(x*(x*6-15)+10);
   const startT = performance.now();
   function tick(now){
     const t = Math.min(1,(now-startT)/DUR);
-    const eased = t*t*t*(t*(t*6-15)+10);               // smootherstep: parte e chega sem solavanco
-    if(topoFill) topoFill.style.width = (eased*100)+'%';
+    if(topoFill) topoFill.style.width = (smootherstep(t)*100)+'%';
     itens.forEach(it=>{
-      const exato = eased*it.alvo;
+      const exato = smootherstep(Math.pow(t, it.k))*100;
       if(it.fillEl) it.fillEl.style.width = exato+'%';        // largura sempre com precisão de fração, pra não travar
       const pct = Math.round(exato);
       if(pct!==it.ultimo){
