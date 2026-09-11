@@ -1164,13 +1164,13 @@ ${curvaHTML}
         <div class="proj-compare-col ruim">
           <h5>🙁 Hoje</h5>
           ${metrica('Disposição', disposicaoAntes)}
-          ${metrica('Constância', constanciaAntes)}
+          ${metrica('Potencial', constanciaAntes)}
           ${metrica('Rotina organizada', rotinaAntes)}
         </div>
         <div class="proj-compare-col bom">
           <h5>💪 Com o ${APP_NOME}</h5>
           ${metricaBom('Disposição', disposicaoDepois)}
-          ${metricaBom('Constância', constanciaDepois)}
+          ${metricaBom('Potencial', constanciaDepois)}
           ${metricaBom('Rotina organizada', rotinaDepois)}
         </div>
       </div>
@@ -1331,7 +1331,7 @@ function renderAnalyzing(v2){
       ${v2 ? '' : '<div class="brand-sub" style="margin-bottom:14px;">Diagnóstico personalizado</div>'}
       <div class="analise-title">Analisando suas respostas...</div>
       <div class="lib-box" style="margin-top:30px;">
-        ${v2 ? '<div class="lib-label" style="margin-bottom:6px;">Calculando o seu Índice de Constância...</div>' : ''}
+        ${v2 ? '<div class="lib-label" style="margin-bottom:6px;">Calculando o seu Índice de Potencial...</div>' : ''}
         <div class="lib-label">${v2 ? 'Identificando a solução para seu caso...' : 'Liberando seu diagnóstico personalizado...'}</div>
         <div class="lib-pct" id="libPct">0%</div>
         <div class="lib-bar"><div class="lib-fill" id="libFill"></div></div>
@@ -1438,6 +1438,19 @@ function faixaIndice(v){
   return       { txt:'BOA',   cor:'#2e7d5a', bg:'#e9f6ee' };
 }
 
+/* o Índice de Potencial mostrado na tela do diagnóstico completo é
+   sempre "média" (nunca baixa, nunca boa) — por isso o nome é
+   "Potencial", não "Constância": não é um veredito sobre o passado da
+   pessoa, é o tanto que ainda dá pra destravar. Isso evita duas coisas
+   ruins: alguém disciplinado se sentir mal vendo "BAIXA", e alguém
+   relaxado achar que "BOA" já resolveu, sem precisar do app. O score
+   bruto (0-100) continua existindo e é ele que decide QUAIS pontos
+   fracos aparecem no texto (elosFracos) — só o número exibido é
+   comprimido pra sempre cair na faixa média (42 a 62). */
+function indicePotencial(bruto){
+  return Math.round(42 + (bruto/100) * 20);
+}
+
 /* o ponto fraco que mais pesa hoje, pra personalizar o diagnóstico completo */
 function elosFracos(){
   const rotulo = { treino_frequencia:'o treino', alimentacao:'a alimentação', sono:'o sono', agua:'a água', tentativas:'a constância' };
@@ -1455,47 +1468,18 @@ function renderDiagnostico(full){
   const progressoId = full ? 'meta_peso' : 'tentativas';   // última pergunta respondida antes desta tela, em cada versão
 
   /* ---- versão curta: entrega uma leitura real, sem número nenhum ainda ----
-     estrutura copiada da copy de referência do Shape em V (headline de
-     resultado+estratégia -> público+objeção -> mecanismo em 3 qualidades
-     -> resultado concreto), com o CONTEÚDO trocado pro Fit Day: nada de
-     treino específico, dieta+treino+hábito servem pros 3 objetivos e
-     pros dois sexos. Personaliza por objetivo (o resultado) e por
-     frustracao (a objeção que o plano precisa superar). */
+     "você não está sozinho(a)" + estatística de recaída (8 em cada 10) +
+     como o Fit Day resolve isso. A frase de gênero muda por sexo; o resto
+     é fixo, igual pros 3 objetivos (a pedido do usuário — antes cada
+     objetivo tinha um texto próprio, ver histórico do arquivo). */
   if(!full){
-    const obj = objetivoId();
-    const PUBLICO = {
-      emagrecimento: 'perder peso de forma real',
-      hipertrofia: 'construir mais músculo',
-      manutencao: 'manter o shape que já tem'
-    }[obj];
-    /* frase no gerúndio, uma por objetivo (não dá pra templatizar com um
-       prefixo só tipo "Construindo X, Y e Z": o verbo muda por objetivo —
-       "perdendo" pra quem quer emagrecer, "construindo" pra quem quer
-       ganhar massa, "mantendo" pra quem quer manter) */
-    const RESULTADO_GERUNDIO = {
-      emagrecimento: 'Perdendo gordura de verdade, sem perder a massa magra junto e sem passar fome o dia todo.',
-      hipertrofia: 'Construindo massa de verdade, definindo mais o shape e treinando com mais força.',
-      manutencao: 'Mantendo o peso sem sofrer, melhorando o condicionamento e tendo mais energia no dia a dia.'
-    }[obj];
-    /* hipertrofia usa frase no imperativo ("Construa..."), por isso monta o
-       nome+título junto aqui — nas outras duas o nome vira só um vocativo
-       normal na frente de "você pode..." */
-    const TITULO = {
-      emagrecimento: `${nome?nome+', ':''}você pode emagrecer de vez, com mais estratégia`,
-      hipertrofia: `${nome?nome+', c':'C'}onstrua um corpo mais forte, seco e atraente com a estratégia certa`,
-      manutencao: `${nome?nome+', ':''}você pode manter o resultado, com mais estratégia`
-    }[obj];
+    const sozinho = a.sexo==='Homem' ? 'sozinho' : 'sozinha';
+    const TITULO = `${nome?nome+', v':'V'}ocê não está ${sozinho}`;
 
-    const frust = a.frustracao || '';
-    const objecao = frust.includes('Falta de tempo')
-      ? 'sem depender de uma rotina que você não tem tempo de seguir'
-      : frust.includes('Não sei o que comer')
-      ? 'sem ter que adivinhar o que comer ou como treinar'
-      : frust.includes('Começo com tudo')
-      ? 'sem precisar recomeçar do zero toda vez que a motivação cai'
-      : frust.includes('Falta alguém acompanhando')
-      ? 'sem fazer tudo sozinho, sem ninguém acompanhando de perto'
-      : 'sem repetir os mesmos métodos genéricos que já não funcionaram';
+    const ITENS_PLANO = [
+      ['📅','Sua rotina'], ['🔁','Seus hábitos'], ['⏱️','Seu tempo livre'],
+      ['🎯','Suas metas'], ['🚫','Suas restrições']
+    ];
 
     return app.innerHTML = `
     <div class="wrap fade">
@@ -1506,14 +1490,20 @@ function renderDiagnostico(full){
 
         <h2 class="q-title" style="font-size:22px;text-align:center;">${TITULO}</h2>
 
+        <div class="prova-numero">8 em 10</div>
+        <p class="prova-numero-legenda">pessoas que emagrecem não conseguem manter o resultado, e a maioria volta ao peso original em menos de um ano.</p>
+
         <div class="solucao-box" style="text-align:center;margin-bottom:16px;">
-          <p style="font-size:19px;font-weight:600;color:#4a4a4a;line-height:1.55;margin:0;">Esse plano é pensado pra quem quer ${PUBLICO}, mesmo com a rotina corrida do dia a dia, ${objecao}. Tudo isso porque você passa a ter direção, constância e estratégia.</p>
+          <p style="font-size:19px;font-weight:600;color:#4a4a4a;line-height:1.55;margin:0;">Não é falta de força de vontade. É falta de um acompanhamento de verdade: alguém — ou alguma coisa — dizendo o que fazer a cada dia, e ajustando o plano conforme a sua rotina muda.</p>
         </div>
 
         <div class="solucao-box" style="text-align:center;margin-bottom:16px;">
-          <p style="font-size:24px;font-weight:800;color:#4a4a4a;line-height:1.4;margin:0 0 14px;">${RESULTADO_GERUNDIO}</p>
-          <p style="font-size:19px;font-weight:600;color:#4a4a4a;line-height:1.55;margin:0 0 12px;">Seguindo um plano pronto todo dia, sem calcular nada sozinho. Calorias e quantidade de proteína calculadas exatamente para o que seu corpo precisa.</p>
-          <p style="font-size:12.5px;font-weight:600;color:#8a9a92;line-height:1.55;margin:0;">Faltam só mais algumas perguntas pra fechar o seu Índice de Constância e liberar esses números.</p>
+          <p style="font-size:19px;font-weight:800;color:#4a4a4a;line-height:1.5;margin:0 0 14px;">É exatamente isso que o ${APP_NOME} faz por você.</p>
+          <div class="valor-box" style="text-align:left;padding:6px 18px;margin-bottom:14px;">
+            ${ITENS_PLANO.map(([ic,txt])=>`<div class="valor-row"><span class="lbl">${ic} ${txt}</span></div>`).join('')}
+          </div>
+          <p style="font-size:19px;font-weight:600;color:#4a4a4a;line-height:1.55;margin:0 0 12px;">Um plano montado em cima de tudo isso, que te acompanha e direciona os seus próximos passos rumo ao seu objetivo — sem você ter que calcular nada sozinho.</p>
+          <p style="font-size:12.5px;font-weight:600;color:#8a9a92;line-height:1.55;margin:0;">Faltam só mais algumas perguntas pra fechar o seu Índice de Potencial e liberar esses números.</p>
         </div>
 
         <button class="btn" onclick="go(1)">Continuar o teste →</button>
@@ -1522,7 +1512,8 @@ function renderDiagnostico(full){
   }
 
   /* ---- versão completa: índice, números reais e os 2 pontos identificados ---- */
-  const idx = calcIndiceConstancia();
+  const idxBruto = calcIndiceConstancia();   // decide os pontos fracos (elosFracos), nunca aparece cru na tela
+  const idx = indicePotencial(idxBruto);     // o que a pessoa vê: sempre entre 42 e 62 (média)
   const niv = faixaIndice(idx);
   const frac = elosFracos();
   const kcal = metaKcal();
@@ -1542,12 +1533,12 @@ function renderDiagnostico(full){
   <div class="wrap fade">
     <div class="card-quiz">
       <div style="background:${niv.bg};border-radius:14px;padding:16px 18px;margin:0 0 18px;text-align:center;">
-        <p style="color:${niv.cor};font-weight:800;font-size:16.5px;line-height:1.45;margin:0 0 8px;">${nome?nome+', s':'S'}ua Constância hoje está <strong>${niv.txt}</strong>.</p>
+        <p style="color:${niv.cor};font-weight:800;font-size:16.5px;line-height:1.45;margin:0 0 8px;">${nome?nome+', s':'S'}eu Potencial hoje está <strong>${niv.txt}</strong>.</p>
         <p style="color:${niv.cor};font-weight:600;font-size:13.5px;line-height:1.5;margin:0;">${idx<65 ? 'Isso significa que boa parte do que você faz nos dias bons está sendo desfeita nos dias ruins.' : 'A sua base já é boa. O que falta é ela virar rotina todo dia, não só nos dias fáceis.'}</p>
       </div>
 
       <div class="diag-chart" style="padding:20px 16px;">
-        <div class="diag-imc-tt" style="margin-bottom:14px;">Seu Índice de Constância</div>
+        <div class="diag-imc-tt" style="margin-bottom:14px;">Seu Índice de Potencial</div>
         <div style="text-align:center;font-family:'Playfair Display',serif;font-size:56px;font-weight:900;color:${niv.cor};line-height:1;">${idx}<span style="font-size:24px;color:#9aaaa2;">/100</span></div>
         <div style="height:14px;border-radius:20px;margin:16px 0 8px;background:linear-gradient(90deg,#e05a4e 0%,#f0c05a 50%,#4caf82 100%);position:relative;">
           <div style="position:absolute;top:-5px;left:calc(${idx}% - 12px);width:24px;height:24px;border-radius:50%;background:#fff;border:4px solid ${niv.cor};box-shadow:0 2px 8px rgba(0,0,0,.18);"></div>
