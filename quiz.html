@@ -41,7 +41,7 @@ src="https://www.facebook.com/tr?id=1021851947333727&ev=PageView&noscript=1"
 </script>
 <!-- End GA4 -->
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800;900&family=Playfair+Display:wght@400;700;900&family=Lato:wght@300;400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800;900&family=Playfair+Display:wght@400;700;900&family=Lato:wght@300;400;700;900&family=Baloo+2:wght@600;700;800&display=swap');
 
 *{margin:0;padding:0;box-sizing:border-box;}
 
@@ -217,6 +217,8 @@ body{
 .intro-h1{font-family:'Open Sans',sans-serif;font-size:32px;font-weight:900;color:var(--verde-escuro);line-height:1.25;margin-bottom:16px;text-align:center;}
 .intro-h1 span{color:var(--verde-claro);}
 .intro-sub{font-size:16px;color:#5f6f68;text-align:center;line-height:1.65;margin-bottom:26px;}
+.hero-h1{font-family:'Baloo 2',sans-serif;font-size:30px;font-weight:800;color:var(--verde-escuro);line-height:1.25;text-align:center;margin-bottom:18px;}
+.hero-sub{font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:600;color:#3a5a4c;line-height:1.55;text-align:center;margin:20px 0 22px;}
 .intro-secure{text-align:center;font-size:12px;color:#98a89f;margin-top:12px;}
 
 /* ===== INTERSTICIAL ===== */
@@ -771,6 +773,7 @@ const FLOW = [];
    cima) — o forEach só decide ONDE, entre uma pergunta e outra, entra uma
    tela de conteúdo (diagnóstico, análise, a tela do app). */
 FLOW.push({type:'intro'});
+FLOW.push({type:'sexo'});
 FLOW.push({type:'idade'});
 QUESTIONS.forEach(q=>{
   FLOW.push({type:'question', q});
@@ -817,7 +820,7 @@ function toastHTML(count){
 function render(){
   const step = FLOW[state.idx];
   const map = {
-    intro:renderIntro, idade:renderIdade, question:()=>renderQuestion(step.q), break1:renderBreak1,
+    intro:renderIntro, sexo:renderSexo, idade:renderIdade, question:()=>renderQuestion(step.q), break1:renderBreak1,
     interstitial:()=>renderInterstitial(step.id),
     analyzing:()=>renderAnalyzing(step.v2), diagnostico:()=>renderDiagnostico(step.full), prepitch:renderPrePitch, meta:renderMeta,
     appTeaser:renderAppTeaser,
@@ -836,14 +839,30 @@ function idadeImgsDe(){ return state.answers.sexo==='Homem' ? IDADE_IMGS_HOMEM :
 const SEXO_OPTS = ['Mulher','Homem'];
 const SEXO_IMGS = ['sexo-mulher.jpg','sexo-homem.jpg'];
 
+/* abertura: só headline + imagem + subheadline + CTA, sem pergunta
+   nenhuma ainda (a pergunta "Você é" virou a tela seguinte, renderSexo)
+   — estilo inspirado numa referência de quiz de inglês: fonte
+   arredondada e mais robusta (Baloo 2) só nessa tela de entrada. */
 function renderIntro(){
   app.innerHTML = `
   <div class="wrap fade">
-    <div class="card-quiz" style="text-align:center;padding-top:60px;padding-bottom:46px;">
-      <div class="brand-sub" style="font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:800;color:var(--verde);margin-bottom:10px;">Teste grátis</div>
-      <h1 class="intro-h1" style="color:var(--verde-escuro);">Sua dieta e seu treino calculados pro seu corpo</h1>
-      <p class="intro-sub" style="font-size:16px;line-height:1.6;margin-top:10px;color:var(--verde);text-align:center;">Responda o questionário e receba um plano de emagrecimento completo + um diagnóstico personalizado do seu gasto calórico diário.</p>
-      <h2 class="intro-h1" style="margin:34px 0 0;">Você é</h2>
+    <div class="card-quiz" style="text-align:center;padding-top:40px;padding-bottom:46px;">
+      <div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      <h1 class="hero-h1" style="margin-top:18px;">Sua dieta e seu treino calculados pro seu corpo</h1>
+      <img src="app-mockup.jpg" alt="${APP_NOME}" style="width:100%;border-radius:20px;display:block;margin:20px 0;" onerror="this.outerHTML='<div style=&quot;font-size:52px;margin:20px 0;&quot;>📱</div>'">
+      <p class="hero-sub">Responda o questionário e receba um plano de emagrecimento personalizado, através do ${APP_NOME}.</p>
+      <p style="font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:#9aa8a2;margin-bottom:16px;">Toque no botão abaixo:</p>
+      <button class="btn" onclick="go(1)">Continuar</button>
+    </div>
+  </div>`;
+}
+
+function renderSexo(){
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz" style="text-align:center;">
+      ${backBtn()}
+      <h2 class="intro-h1" style="margin-top:20px;">Você é</h2>
       <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#9aa8a2;margin:14px 0 22px;">Toque para escolher</p>
       <div class="opts grid2">
         ${SEXO_OPTS.map((o,i)=>`<div class="idade-card" onclick="selectSexo(${i})"><img src="${SEXO_IMGS[i]}" alt="${o}" class="idade-img" onerror="this.style.display='none'"><button class="opt${state.answers.sexo===o?' sel':''}" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button></div>`).join('')}
