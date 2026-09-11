@@ -1468,10 +1468,14 @@ function renderDiagnostico(full){
       hipertrofia: 'construir mais músculo',
       manutencao: 'manter o shape que já tem'
     }[obj];
-    const RESULTADO = {
-      emagrecimento: ['perder gordura de verdade', 'sem perder a massa magra junto', 'sem passar fome o dia todo'],
-      hipertrofia: ['ganhar massa de verdade', 'definir mais o shape', 'treinar com mais força'],
-      manutencao: ['manter o peso sem sofrer', 'melhorar o condicionamento', 'ter mais energia no dia a dia']
+    /* frase no gerúndio, uma por objetivo (não dá pra templatizar com um
+       prefixo só tipo "Construindo X, Y e Z": o verbo muda por objetivo —
+       "perdendo" pra quem quer emagrecer, "construindo" pra quem quer
+       ganhar massa, "mantendo" pra quem quer manter) */
+    const RESULTADO_GERUNDIO = {
+      emagrecimento: 'Perdendo gordura de verdade, sem perder a massa magra junto e sem passar fome o dia todo.',
+      hipertrofia: 'Construindo massa de verdade, definindo mais o shape e treinando com mais força.',
+      manutencao: 'Mantendo o peso sem sofrer, melhorando o condicionamento e tendo mais energia no dia a dia.'
     }[obj];
     /* hipertrofia usa frase no imperativo ("Construa..."), por isso monta o
        nome+título junto aqui — nas outras duas o nome vira só um vocativo
@@ -1507,8 +1511,9 @@ function renderDiagnostico(full){
         </div>
 
         <div class="solucao-box" style="text-align:center;margin-bottom:16px;">
-          <p style="font-size:19px;font-weight:800;color:#4a4a4a;line-height:1.55;margin:0 0 12px;">Com isso, dá pra ${RESULTADO[0]}, ${RESULTADO[1]} e ${RESULTADO[2]}, seguindo um plano pronto todo dia, sem calcular nada sozinho. Com o seu peso, altura e objetivo, já dá pra calcular exatamente quantas calorias e quanta proteína o seu corpo precisa.</p>
-          <p style="font-size:19px;font-weight:800;color:#4a4a4a;line-height:1.55;margin:0;">Faltam só mais algumas perguntas pra fechar o seu Índice de Constância e liberar esses números.</p>
+          <p style="font-size:24px;font-weight:800;color:#4a4a4a;line-height:1.4;margin:0 0 14px;">${RESULTADO_GERUNDIO}</p>
+          <p style="font-size:19px;font-weight:800;color:#4a4a4a;line-height:1.55;margin:0 0 12px;">Seguindo um plano pronto todo dia, sem calcular nada sozinho. Calorias e quantidade de proteína calculadas exatamente para o que seu corpo precisa.</p>
+          <p style="font-size:12.5px;font-weight:600;color:#8a9a92;line-height:1.55;margin:0;">Faltam só mais algumas perguntas pra fechar o seu Índice de Constância e liberar esses números.</p>
         </div>
 
         <button class="btn" onclick="go(1)">Continuar o teste →</button>
