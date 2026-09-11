@@ -1075,7 +1075,6 @@ function renderProjecao(){
   const nome = a.nome && a.nome!=='você' ? a.nome : '';
   const idx = calcIndiceConstancia();
   const niv = faixaIndice(idx);
-  const kcal = metaKcal();
   const dif = difPeso();
   const objFrase = objetivoId()==='hipertrofia' ? 'ganhar massa' : objetivoId()==='manutencao' ? 'manter e definir' : 'emagrecer';
 
@@ -1176,11 +1175,9 @@ function renderProjecao(){
 
       <h2 class="q-title" style="margin-top:18px;">${nome?nome+', a':'A'}qui está a sua projeção com o ${APP_NOME}</h2>
 
-${curvaHTML}
-
       <div class="proj-compare" style="margin-top:22px;">
         <div class="proj-compare-col ruim">
-          <h5 style="background:var(--verde-claro);color:#fff;border-radius:20px;padding:6px 0;font-size:13px;">Antes</h5>
+          <h5 style="background:var(--verde-claro);color:#fff;border-radius:20px;padding:16px 0;font-size:17px;">Antes</h5>
           ${imgHoje ? `<img class="proj-compare-img" src="${imgHoje}" alt="Antes" onerror="this.remove()">` : ''}
           <div style="background:#fff;border-radius:10px;padding:10px 8px;text-align:center;">
             <div style="font-size:11px;color:#8a9a92;font-weight:700;">Peso atual</div>
@@ -1188,7 +1185,7 @@ ${curvaHTML}
           </div>
         </div>
         <div class="proj-compare-col bom">
-          <h5 style="background:var(--verde-claro);color:#fff;border-radius:20px;padding:6px 0;font-size:13px;">Depois</h5>
+          <h5 style="background:var(--verde-claro);color:#fff;border-radius:20px;padding:16px 0;font-size:17px;">Depois</h5>
           ${imgSonho ? `<img class="proj-compare-img" src="${imgSonho}" alt="Depois" onerror="this.remove()">` : ''}
           <div style="background:#fff;border-radius:10px;padding:10px 8px;text-align:center;">
             <div style="font-size:11px;color:#8a9a92;font-weight:700;">Meta de peso</div>
@@ -1203,32 +1200,12 @@ ${curvaHTML}
         ${sliderRow('Rotina organizada', rotinaAntes, rotinaDepois)}
       </div>
 
-      <div class="proj-compare">
-        <div class="proj-compare-col ruim">
-          <h5>Sozinho(a)</h5>
-          <ul>
-            <li>✗ Decide o que comer a cada refeição</li>
-            <li>✗ Treino genérico, sem saber se é o certo pro seu corpo</li>
-            <li>✗ Sem ninguém acompanhando os seus números</li>
-            <li>✗ Cada escorregada vira motivo pra desistir</li>
-          </ul>
-        </div>
-        <div class="proj-compare-col bom">
-          <h5>Com o ${APP_NOME}</h5>
-          <ul>
-            <li>✓ Cardápio já calculado na sua meta de calorias</li>
-            <li>✓ Treino no seu sexo e no seu local, dia por dia</li>
-            <li>✓ Progresso, água, sono e treino num só lugar</li>
-            <li>✓ Um plano de recuperar o dia ruim, não de zerar tudo</li>
-          </ul>
-        </div>
-      </div>
-
       <div style="background:#e9f6ee;border-radius:14px;padding:20px 18px;margin:22px 0 14px;text-align:center;">
         <h4 style="margin:0 0 10px;font-size:17px;color:#1a1a1a;">Seu plano personalizado no <span style="color:var(--verde);">${APP_NOME}</span></h4>
-        <p style="font-size:14.5px;color:var(--verde-escuro);font-weight:800;line-height:1.6;margin:0 0 12px;">Com base nas suas respostas, o app já monta o seu cardápio, o seu treino e as suas metas de água e sono, ajustados pro seu objetivo de ${objFrase}.</p>
-        <p style="font-size:14px;color:#4a4a4a;font-weight:400;line-height:1.65;margin:0;">A sua meta diária é de <strong>${kcal} kcal</strong>. Nada disso é genérico: é calculado a partir do que você respondeu aqui.</p>
+        <p style="font-size:14.5px;color:var(--verde-escuro);font-weight:800;line-height:1.6;margin:0;">Com base nas suas respostas, o app já monta o seu cardápio, o seu treino e as suas metas de água e sono, ajustados pro seu objetivo de ${objFrase}.</p>
       </div>
+
+${curvaHTML}
 
       <!-- COMO FUNCIONA O APP -->
       <h4 style="text-align:center;margin:18px 0 16px;font-size:17px;color:#1a1a1a;">Como o ${APP_NOME} funciona?</h4>
