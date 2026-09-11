@@ -1454,18 +1454,22 @@ function renderDiagnostico(full){
   const nome = a.nome && a.nome!=='você' ? a.nome : '';
   const progressoId = full ? 'meta_peso' : 'tentativas';   // última pergunta respondida antes desta tela, em cada versão
 
-  /* ---- versão curta: entrega uma leitura real, sem número nenhum ainda ---- */
+  /* ---- versão curta: entrega uma leitura real, sem número nenhum ainda ----
+     as 5 opções de 'frustracao' viram 5 leituras diferentes, todas na mesma
+     ideia (o que falta não é esforço, é [direção/estrutura/estratégia]),
+     nunca sobre um treino específico — o app cobre dieta, treino e hábito
+     igual pra qualquer objetivo, então o texto não pode falar só de treino. */
   if(!full){
     const frust = a.frustracao || '';
-    const texto = objetivoId()==='hipertrofia'
-      ? `Ter um shape em V, com costas mais largas, ombros mais cheios e a cintura visualmente mais seca, não depende de treinar mais horas nem mais pesado. Depende de treinar com direção: a ordem certa dos exercícios, o volume certo pra cada grupo muscular e constância nisso, mesmo com a rotina corrida. É isso que costuma faltar, não esforço.`
+    const texto = frust.includes('Falta de tempo')
+      ? `O problema nunca foi a sua rotina corrida. Foi todo plano que você já tentou ter sido pensado pra quem tem uma hora livre por dia. Você não tem, e é exatamente aí que ele sempre quebrou.`
       : frust.includes('Não sei o que comer')
-      ? `Você não sabe exatamente o que comer nem como treinar, e por isso cada dia vira uma decisão nova. Isso cansa mais do que o treino em si.`
+      ? `Não é falta de esforço, é falta de direção. Sem saber exatamente o que comer e o que treinar hoje, cada dia vira uma decisão nova, e decidir tudo sozinho cansa mais do que o treino em si.`
       : frust.includes('Começo com tudo')
-      ? `Você começa com tudo e para depois de um tempo. Isso não é falta de força de vontade: é o que acontece quando ninguém te dá o próximo passo pronto.`
-      : frust.includes('Falta de tempo')
-      ? `A sua rotina não sobra tempo, e todo plano que você já tentou foi pensado pra quem tem uma hora livre por dia. Você não tem, e o plano quebrou por isso.`
-      : `Você já tentou de tudo e nada funcionou direito. Isso quase nunca é sobre esforço: é sobre ninguém ter calculado o que o SEU corpo precisa.`;
+      ? `Você começa com tudo e para depois de um tempo. Isso não é falta de força de vontade: é o que acontece quando ninguém te entrega o próximo passo já pronto.`
+      : frust.includes('Falta alguém acompanhando')
+      ? `Sem alguém acompanhando de perto, cada ajuste fica só por sua conta, e é fácil perder o rumo sem nem perceber. Não é falta de comprometimento: é falta de um olhar de fora.`
+      : `Você já tentou de tudo e nada funcionou direito. Isso quase nunca é sobre esforço: é sobre nenhum desses planos ter sido calculado pro SEU corpo.`;
 
     return app.innerHTML = `
     <div class="wrap fade">
@@ -1474,14 +1478,14 @@ function renderDiagnostico(full){
         <div class="brand-sub">Primeira leitura</div>
         <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${pctAte(progressoId)}%"></div></div>
 
-        <h2 class="q-title" style="font-size:22px;">${nome?nome+', o':'O'} problema não é onde você acha que é</h2>
+        <h2 class="q-title" style="font-size:22px;text-align:center;">${nome?nome+', o':'O'} problema não é onde você acha que é</h2>
 
-        <div class="solucao-box" style="text-align:left;margin-bottom:16px;">
+        <div class="solucao-box" style="text-align:center;margin-bottom:16px;">
           <h4 style="margin-bottom:8px;">O que já dá pra ver</h4>
           <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">${texto}</p>
         </div>
 
-        <div class="solucao-box" style="text-align:left;margin-bottom:16px;">
+        <div class="solucao-box" style="text-align:center;margin-bottom:16px;">
           <h4 style="margin-bottom:8px;">Por que isso importa pra você</h4>
           <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">Com o seu peso, altura e objetivo, já dá pra calcular quantas calorias e quanta proteína o seu corpo precisa por dia. Faltam só mais algumas perguntas pra fechar o seu Índice de Constância e liberar esses números.</p>
         </div>
