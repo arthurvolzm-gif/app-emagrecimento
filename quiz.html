@@ -632,17 +632,12 @@ window.addEventListener('pagehide', function(){
 const QUESTIONS = [
   /* ===== S — SITUAÇÃO (o que o app precisa pra montar o plano) ===== */
   {
-    id:'nome', num:1, type:'text', noPill:true,
-    question:'Antes de tudo, como você se chama?',
-    placeholder:'Digite seu primeiro nome'
-  },
-  {
-    id:'objetivo', num:2,
+    id:'objetivo', num:1,
     question:'Qual é o seu objetivo hoje?',
     options:['🔥 Emagrecer e perder gordura','💪 Ganhar massa muscular','⚖️ Manter o peso e melhorar o condicionamento']
   },
   {
-    id:'corpo_hoje', num:3,
+    id:'corpo_hoje', num:2,
     question:'Como você descreveria seu corpo hoje?',
     options: a => a.sexo==='Homem'
       ? ['😕 Magro, sem definição nenhuma','🤏 Alguns quilos a mais, principalmente na barriga','📈 Acima do peso, quero uma mudança grande','💪 Já tenho uma base, quero refinar o shape']
@@ -654,7 +649,7 @@ const QUESTIONS = [
 
   /* ===== P — PROBLEMA ===== */
   {
-    id:'frustracao', num:4,
+    id:'frustracao', num:3,
     question:'O que mais te impede de chegar no corpo que você quer?',
     options:[
       '⏰ Falta de tempo na rotina',
@@ -665,7 +660,7 @@ const QUESTIONS = [
     ]
   },
   {
-    id:'tentativas', num:5,
+    id:'tentativas', num:4,
     question:'Você já tentou mudar o corpo antes e não conseguiu manter o resultado?',
     options:[
       'Sim, perdi peso mas voltou tudo depois',
@@ -679,26 +674,26 @@ const QUESTIONS = [
   /* peso e altura entram aqui (não adiadas): o diagnóstico completo mostra
      calorias e proteína reais, e pra isso precisa desses dois números
      antes de chegar lá. meta_peso vem só lá embaixo, logo antes do
-     diagnóstico completo — veja o comentário perto de 'tempo_disponivel' */
+     diagnóstico completo — veja o comentário perto dela */
   {
-    id:'peso', num:6, type:'ruler',
+    id:'peso', num:5, type:'ruler',
     question:'Qual é o seu peso atual?',
     units:[{u:'kg',min:40,max:160,def:70,step:1},{u:'lb',min:88,max:352,def:154,step:1}]
   },
   {
-    id:'altura', num:7, type:'ruler',
+    id:'altura', num:6, type:'ruler',
     question:'Qual é a sua altura?',
     units:[{u:'cm',min:140,max:210,def:165,step:1},{u:'pol',min:55,max:83,def:65,step:1}]
   },
 
   /* ===== hábitos — alimentam o Índice de Constância ===== */
   {
-    id:'treino_frequencia', num:8,
+    id:'treino_frequencia', num:7,
     question:'Hoje, quantas vezes por semana você treina de verdade?',
     options:['😴 Nenhuma','🚶 1 ou 2 vezes','🏃 3 ou 4 vezes','💪 5 vezes ou mais']
   },
   {
-    id:'alimentacao', num:9,
+    id:'alimentacao', num:8,
     question:'Como está sua alimentação nos dias normais?',
     options:[
       '🌀 Cada dia é de um jeito, não tem rotina',
@@ -708,25 +703,20 @@ const QUESTIONS = [
     ]
   },
   {
-    id:'agua', num:10,
+    id:'agua', num:9,
     question:'Quanta água você bebe por dia?',
     options:['💧 Menos de 1 litro','🥤 Entre 1 e 2 litros','🚰 Mais de 2 litros']
   },
   {
-    id:'sono', num:11,
+    id:'sono', num:10,
     question:'Quantas horas você dorme por noite, em média?',
     options:['⚠️ Menos de 5 horas','😪 Entre 5 e 6 horas','😌 Entre 7 e 8 horas','😴 Mais de 8 horas']
-  },
-  {
-    id:'tempo_disponivel', num:12,
-    question:'Quanto tempo você tem disponível pra treinar por dia?',
-    options:['Menos de 30 minutos','Entre 30 e 45 minutos','Entre 45 e 60 minutos','Mais de 60 minutos']
   },
   /* meta_peso fica aqui, não lá em cima com peso/altura: assim é a última
      pergunta antes do diagnóstico completo, que mostra a diferença entre
      o peso atual e a meta logo em seguida */
   {
-    id:'meta_peso', num:13, type:'ruler',
+    id:'meta_peso', num:11, type:'ruler',
     question:'Qual peso você quer alcançar?',
     units:[{u:'kg',min:40,max:160,def:65,step:1},{u:'lb',min:88,max:352,def:143,step:1}]
   },
@@ -734,32 +724,19 @@ const QUESTIONS = [
 
   /* corpo_sonho e outros_objetivos vêm logo depois do diagnóstico completo
      de propósito: rendem mais depois que a pessoa já viu os números
-     reais dela, e fecham esse bloco numa nota positiva antes da
-     implicação (futuro/medo) que vem a seguir */
+     reais dela, e fecham o quiz numa nota positiva */
   {
-    id:'corpo_sonho', num:14,
+    id:'corpo_sonho', num:12,
     question:'Qual é o seu corpo dos sonhos?',
     options: a => a.sexo==='Homem' ? ['Definido','Musculoso','Atlético e volumoso','Mantendo o shape atual'] : ['Magra','Definida','Com curvas','Média'],
     optionImages: a => a.sexo==='Homem' ? ['corpo-homem-definido.jpg','corpo-homem-musculoso.jpg','corpo-homem-atletico.jpg','corpo-homem-atual.jpg'] : ['corpo-magra.jpg','corpo-definida.jpg','corpo-curvas.jpg','corpo-media.jpg']
   },
   {
-    id:'outros_objetivos', num:15, type:'multi',
+    id:'outros_objetivos', num:13, type:'multi',
     question:'Além de mudar o corpo, o que mais você quer conquistar?',
     options:['⚡ Mais energia e disposição','😊 Me sentir bem em qualquer roupa','🪞 Me olhar no espelho e gostar do que vejo','💪 Mais força e resistência no dia a dia','🧘 Reduzir o estresse e dormir melhor']
-  },
-
-  /* ===== I — IMPLICAÇÃO ===== */
-  {
-    id:'futuro', num:16, type:'multi',
-    question:'Se nada mudar, como você acha que vai estar daqui a um ano?',
-    options:['😔 Ainda mais insatisfeito(a) com o corpo','🏥 Com a saúde pior','😞 Me sentindo pra baixo por causa disso','💸 Achando que joguei dinheiro fora nas tentativas']
-  },
-  {
-    id:'medo', num:17,
-    question:'Qual é o seu maior medo em relação a mudar de vez?',
-    options:['😩 Não conseguir de novo, já fracassei antes','⏰ Não ter tempo pra seguir na rotina','💸 Gastar e não ver resultado','🍽️ Passar fome ou sofrer demais']
   }
-  /* >>> tela do app (compromisso) entra aqui, depois de 'medo' <<< */
+  /* >>> tela do app (compromisso) entra aqui, depois de 'outros_objetivos' <<< */
 ];
 
 const INTERSTITIALS = {};
@@ -780,11 +757,7 @@ QUESTIONS.forEach(q=>{
   if(q.id==='tentativas'){                                   // diagnóstico curto, ainda sem números
     FLOW.push({type:'diagnostico'});
   }
-  if(q.id==='meta_peso'){                                    // análise + diagnóstico completo (índice + calorias reais)
-    FLOW.push({type:'analyzing'});
-    FLOW.push({type:'diagnostico', full:true});
-  }
-  if(q.id==='medo'){                                         // tela do app, estilo "isso ajudaria você?"
+  if(q.id==='outros_objetivos'){                             // tela do app, estilo "isso ajudaria você?"
     FLOW.push({type:'appTeaser'});
   }
 });
@@ -822,7 +795,7 @@ function render(){
   const map = {
     intro:renderIntro, sexo:renderSexo, idade:renderIdade, question:()=>renderQuestion(step.q), break1:renderBreak1,
     interstitial:()=>renderInterstitial(step.id),
-    analyzing:()=>renderAnalyzing(step.v2), diagnostico:()=>renderDiagnostico(step.full), prepitch:renderPrePitch, meta:renderMeta,
+    analyzing:()=>renderAnalyzing(step.v2), diagnostico:renderDiagnostico, prepitch:renderPrePitch, meta:renderMeta,
     appTeaser:renderAppTeaser,
     projecao:renderProjecao,
     offerLocked:renderOfferLocked, offerPrice:renderOfferPrice, result:renderResult
@@ -850,9 +823,10 @@ function renderIntro(){
       <div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <h1 class="hero-h1" style="margin-top:18px;">Sua dieta e seu treino calculados pro seu corpo</h1>
       <img src="app-mockup.jpg" alt="${APP_NOME}" style="width:100%;border-radius:20px;display:block;margin:20px 0;" onerror="this.outerHTML='<div style=&quot;font-size:52px;margin:20px 0;&quot;>📱</div>'">
-      <p class="hero-sub">Responda o questionário e receba um plano de emagrecimento personalizado, através do ${APP_NOME}.</p>
+      <p class="hero-sub">Responda o questionário e receba um plano de emagrecimento personalizado por meio do aplicativo "${APP_NOME}".</p>
       <p style="font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:#9aa8a2;margin-bottom:16px;">Toque no botão abaixo:</p>
       <button class="btn" onclick="go(1)">Continuar</button>
+      <p style="font-size:13px;color:#8aa79a;margin-top:16px;">✅ Tempo estimado: 2 minutos</p>
     </div>
   </div>`;
 }
@@ -867,7 +841,6 @@ function renderSexo(){
       <div class="opts grid2">
         ${SEXO_OPTS.map((o,i)=>`<div class="idade-card" onclick="selectSexo(${i})"><img src="${SEXO_IMGS[i]}" alt="${o}" class="idade-img" onerror="this.style.display='none'"><button class="opt${state.answers.sexo===o?' sel':''}" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button></div>`).join('')}
       </div>
-      <p style="font-size:13px;color:#8aa79a;margin-top:18px;">✅ Tempo estimado: 2 minutos</p>
     </div>
   </div>`;
 }
@@ -1457,41 +1430,18 @@ function faixaIndice(v){
   return       { txt:'BOA',   cor:'#2e7d5a', bg:'#e9f6ee' };
 }
 
-/* o Índice de Potencial mostrado na tela do diagnóstico completo é
-   sempre "média" (nunca baixa, nunca boa) — por isso o nome é
-   "Potencial", não "Constância": não é um veredito sobre o passado da
-   pessoa, é o tanto que ainda dá pra destravar. Isso evita duas coisas
-   ruins: alguém disciplinado se sentir mal vendo "BAIXA", e alguém
-   relaxado achar que "BOA" já resolveu, sem precisar do app. O score
-   bruto (0-100) continua existindo e é ele que decide QUAIS pontos
-   fracos aparecem no texto (elosFracos) — só o número exibido é
-   comprimido pra sempre cair na faixa média (42 a 62). */
-function indicePotencial(bruto){
-  return Math.round(42 + (bruto/100) * 20);
-}
-
-/* o ponto fraco que mais pesa hoje, pra personalizar o diagnóstico completo */
-function elosFracos(){
-  const rotulo = { treino_frequencia:'o treino', alimentacao:'a alimentação', sono:'o sono', agua:'a água', tentativas:'a constância' };
-  return Object.keys(PESOS_INDICE).map(id=>{
-    const i = state.answers[id+'_i'];
-    const max = Math.max(...PESOS_INDICE[id]);
-    const val = typeof i === 'number' ? (PESOS_INDICE[id][i]||0) : 0;
-    return { id, rotulo: rotulo[id], perdido: max-val };
-  }).sort((a,b)=>b.perdido-a.perdido);
-}
-
-function renderDiagnostico(full){
+/* diagnóstico único: "você não está sozinho(a)" + estatística de recaída
+   (8 em cada 10) + como o Fit Day resolve isso. A frase de gênero muda por
+   sexo; o resto é fixo, igual pros 3 objetivos. O diagnóstico completo
+   (índice, "2 pontos identificados", kcal/proteína/água) foi removido do
+   quiz a pedido do usuário — a meta de kcal calculada continua aparecendo
+   na projeção final (renderProjecao). */
+function renderDiagnostico(){
   const a = state.answers;
   const nome = a.nome && a.nome!=='você' ? a.nome : '';
-  const progressoId = full ? 'meta_peso' : 'tentativas';   // última pergunta respondida antes desta tela, em cada versão
+  const progressoId = 'tentativas';   // última pergunta respondida antes desta tela
 
-  /* ---- versão curta: entrega uma leitura real, sem número nenhum ainda ----
-     "você não está sozinho(a)" + estatística de recaída (8 em cada 10) +
-     como o Fit Day resolve isso. A frase de gênero muda por sexo; o resto
-     é fixo, igual pros 3 objetivos (a pedido do usuário — antes cada
-     objetivo tinha um texto próprio, ver histórico do arquivo). */
-  if(!full){
+  {
     const sozinho = a.sexo==='Homem' ? 'sozinho' : 'sozinha';
     const TITULO = `${nome?nome+', v':'V'}ocê não está ${sozinho} nisso`;
 
@@ -1552,90 +1502,10 @@ function renderDiagnostico(full){
       </div>
     </div>`;
   }
-
-  /* ---- versão completa: índice, números reais e os 2 pontos identificados ---- */
-  const idxBruto = calcIndiceConstancia();   // decide os pontos fracos (elosFracos), nunca aparece cru na tela
-  const idx = indicePotencial(idxBruto);     // o que a pessoa vê: sempre entre 42 e 62 (média)
-  const niv = faixaIndice(idx);
-  const frac = elosFracos();
-  const kcal = metaKcal();
-  const dif  = difPeso();
-  const objFrase = objetivoId()==='hipertrofia' ? 'ganhar massa' : objetivoId()==='manutencao' ? 'manter e definir' : 'emagrecer';
-
-  /* usa 'tentativas', não 'medo': na hora dessa tela 'medo' ainda não foi
-     perguntado (ele vem depois no fluxo, junto de 'futuro') */
-  const abandonoTxt = {
-    'Sim, perdi peso mas voltou tudo depois':'o resultado não se sustentar depois que a motivação inicial passa',
-    'Comecei, mas não consegui manter a rotina':'a rotina não se sustentar',
-    'Essa é a minha primeira tentativa séria':'nunca ter tido um plano pensado pro seu dia a dia real',
-    'Já tentei várias formas, nada funcionou direito':'nenhum método ter sido pensado especificamente pro seu corpo'
-  }[a.tentativas] || 'a rotina não se sustentar';
-
-  app.innerHTML = `
-  <div class="wrap fade">
-    <div class="card-quiz">
-      <div style="background:${niv.bg};border-radius:14px;padding:16px 18px;margin:0 0 18px;text-align:center;">
-        <p style="color:${niv.cor};font-weight:800;font-size:16.5px;line-height:1.45;margin:0 0 8px;">${nome?nome+', s':'S'}eu Potencial hoje está <strong>${niv.txt}</strong>.</p>
-        <p style="color:${niv.cor};font-weight:600;font-size:13.5px;line-height:1.5;margin:0;">${idx<65 ? 'Isso significa que boa parte do que você faz nos dias bons está sendo desfeita nos dias ruins.' : 'A sua base já é boa. O que falta é ela virar rotina todo dia, não só nos dias fáceis.'}</p>
-      </div>
-
-      <div class="diag-chart" style="padding:20px 16px;">
-        <div class="diag-imc-tt" style="margin-bottom:14px;">Seu Índice de Potencial</div>
-        <div style="text-align:center;font-family:'Playfair Display',serif;font-size:56px;font-weight:900;color:${niv.cor};line-height:1;">${idx}<span style="font-size:24px;color:#9aaaa2;">/100</span></div>
-        <div style="height:14px;border-radius:20px;margin:16px 0 8px;background:linear-gradient(90deg,#e05a4e 0%,#f0c05a 50%,#4caf82 100%);position:relative;">
-          <div style="position:absolute;top:-5px;left:calc(${idx}% - 12px);width:24px;height:24px;border-radius:50%;background:#fff;border:4px solid ${niv.cor};box-shadow:0 2px 8px rgba(0,0,0,.18);"></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:11.5px;color:#8a9a92;font-weight:700;">
-          <span>Baixa</span><span>Média</span><span>Boa</span>
-        </div>
-        <p style="font-size:12.5px;color:#8a9a92;line-height:1.55;margin:14px 0 0;text-align:center;">Calculado a partir do que você respondeu sobre treino, alimentação, sono, água e tentativas anteriores.</p>
-      </div>
-
-      <div style="background:${idx<65?'#fdecec':'#e9f6ee'};border-radius:14px;padding:14px 18px;margin:22px 0 18px;text-align:center;">
-        <p style="color:${idx<65?'var(--vermelho)':'var(--verde-escuro)'};font-weight:900;font-size:15px;letter-spacing:.5px;margin:0;">${idx<65?'⚠️ 2 PONTOS FORAM IDENTIFICADOS':'✅ SUA BASE JÁ É BOA — 1 AJUSTE PRA DESTRAVAR'}</p>
-      </div>
-
-      <div class="solucao-box" style="text-align:left;margin-bottom:16px;">
-        <h4 style="margin-bottom:8px;">1 · ${idx<65 ? 'Onde o seu esforço está vazando' : 'O que ainda não virou rotina'}</h4>
-        <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0 0 12px;">${idx<65
-          ? `Os dois pontos que mais pesam contra você hoje são <strong>${frac[0].rotulo}</strong> e <strong>${frac[1].rotulo}</strong>. Não é que você não saiba disso: é que ninguém transformou isso numa instrução do que fazer hoje, nesta refeição, neste treino.`
-          : `Você já manda bem na maior parte da rotina. O ponto que ainda puxa o seu índice pra baixo é <strong>${frac[0].rotulo}</strong> — é a única coisa entre você e um índice ainda mais alto.`}</p>
-        <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">Somando tudo, o seu índice ficou em <strong>${idx} de 100</strong>. ${idx<65 ? 'Cada ponto aí é um dia em que o esforço não vira resultado.' : 'Poucos chegam nesse número sozinhos — e é exatamente esse tipo de rotina que o app existe pra sustentar.'}</p>
-      </div>
-
-      <div class="solucao-box" style="text-align:left;margin-bottom:18px;">
-        <h4 style="margin-bottom:8px;">2 · Por que as outras vezes não foram pra frente</h4>
-        <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">Você disse que, quando desiste, é por causa de <strong>${abandonoTxt}</strong>. Guarde isso: é exatamente aí que todo plano que você já tentou quebrou. Plano nenhum falha na semana 1 — ele falha na semana 3, quando a novidade passa e sobra só a rotina.</p>
-      </div>
-
-      <h4 style="text-align:center;margin:22px 0 16px;font-size:17px;color:#1a1a1a;">Os seus números</h4>
-      <div class="valor-box" style="text-align:left;padding:18px 20px;">
-        <div class="valor-row"><span class="lbl">Sua meta por dia, pra ${objFrase}</span><span class="num" style="color:var(--verde-escuro);">${kcal} kcal</span></div>
-        <div class="valor-row"><span class="lbl">Proteína por dia</span><span class="num">${metaProt()}g</span></div>
-        <div class="valor-row"><span class="lbl">Água por dia</span><span class="num">${(metaAgua()/1000).toFixed(1).replace('.',',')}L</span></div>
-      </div>
-      <p style="font-size:12.5px;color:#8a9a92;line-height:1.55;margin:10px 0 0;text-align:center;">Estimativa a partir do seu peso, altura e faixa etária, pela fórmula de Mifflin-St Jeor.</p>
-
-      <div class="solucao-box" style="text-align:left;margin-top:18px;background:#eef7f1;border-color:#d5ebe0;">
-        <h4 style="margin-bottom:8px;">Só que um número sozinho não emagrece ninguém</h4>
-        <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">Saber que precisa de ${kcal} kcal por dia não adianta nada se ninguém te disser o que colocar no prato pra bater esse número, nem qual treino fazer hoje. É exatamente isso que o <strong>${APP_NOME}</strong> faz sozinho: transforma esse número em cardápio, treino e checklist do seu dia, sem você ter que calcular nada.</p>
-      </div>
-
-      ${dif>0 ? `
-      <div class="solucao-box" style="text-align:left;margin-top:16px;background:#fff8e8;border-color:#f0dfb4;">
-        <h4 style="margin-bottom:8px;">O que você me disse que quer</h4>
-        <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">Sair de <strong>${numDe('peso')} kg</strong> e chegar em <strong>${numDe('meta_peso')} kg</strong>. São <strong>${dif} kg</strong> de diferença, e essa conta não muda por motivação: muda por quantos dias seguidos você faz o simples.</p>
-      </div>` : ''}
-
-      <button class="btn" style="margin-top:22px;" onclick="go(1)">Continuar e ver o ${APP_NOME} em ação →</button>
-      <p style="font-size:11.5px;color:#8aa79a;line-height:1.6;text-align:center;margin-top:14px;">Este teste é orientativo e não substitui acompanhamento médico ou nutricional.</p>
-    </div>
-  </div>`;
-  px('DiagnosticoGerado');
 }
 
 /* ---------- TELA DO APP (compromisso) ----------
-   Entra depois de 'medo'. Pergunta simples de sim/não, no molde de quiz
+   Entra depois de 'outros_objetivos'. Pergunta simples de sim/não, no molde de quiz
    que funciona: sem vídeo, sem prova fabricada — só a pergunta certa na
    hora certa, apontando pro que o app realmente faz. */
 function renderAppTeaser(){
