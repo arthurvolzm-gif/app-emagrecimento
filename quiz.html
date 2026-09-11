@@ -1473,10 +1473,13 @@ function renderDiagnostico(full){
       hipertrofia: ['ganhar massa de verdade', 'definir mais o shape', 'treinar com mais força'],
       manutencao: ['manter o peso sem sofrer', 'melhorar o condicionamento', 'ter mais energia no dia a dia']
     }[obj];
-    const HEADLINE = {
-      emagrecimento: 'você pode emagrecer de vez, com mais estratégia',
-      hipertrofia: 'você pode ganhar massa de verdade, com mais estratégia',
-      manutencao: 'você pode manter o resultado, com mais estratégia'
+    /* hipertrofia usa frase no imperativo ("Construa..."), por isso monta o
+       nome+título junto aqui — nas outras duas o nome vira só um vocativo
+       normal na frente de "você pode..." */
+    const TITULO = {
+      emagrecimento: `${nome?nome+', ':''}você pode emagrecer de vez, com mais estratégia`,
+      hipertrofia: `${nome?nome+', c':'C'}onstrua um corpo mais forte, seco e atraente com a estratégia certa`,
+      manutencao: `${nome?nome+', ':''}você pode manter o resultado, com mais estratégia`
     }[obj];
 
     const frust = a.frustracao || '';
@@ -1497,16 +1500,15 @@ function renderDiagnostico(full){
         <div class="brand-sub">Primeira leitura</div>
         <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${pctAte(progressoId)}%"></div></div>
 
-        <h2 class="q-title" style="font-size:22px;text-align:center;">${nome?nome+', ':''}${HEADLINE}</h2>
+        <h2 class="q-title" style="font-size:22px;text-align:center;">${TITULO}</h2>
 
         <div class="solucao-box" style="text-align:center;margin-bottom:16px;">
-          <h4 style="margin-bottom:8px;">Pra quem é isso</h4>
-          <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">Esse plano é pensado pra quem quer ${PUBLICO}, mesmo com a rotina corrida do dia a dia, ${objecao}. Tudo isso porque você passa a ter direção, constância e estratégia.</p>
+          <p style="font-size:19px;font-weight:800;color:#4a4a4a;line-height:1.55;margin:0;">Esse plano é pensado pra quem quer ${PUBLICO}, mesmo com a rotina corrida do dia a dia, ${objecao}. Tudo isso porque você passa a ter direção, constância e estratégia.</p>
         </div>
 
         <div class="solucao-box" style="text-align:center;margin-bottom:16px;">
-          <h4 style="margin-bottom:8px;">O que você ganha com isso</h4>
-          <p style="font-size:14px;color:#4a4a4a;line-height:1.65;margin:0;">Com isso, dá pra ${RESULTADO[0]}, ${RESULTADO[1]} e ${RESULTADO[2]}, seguindo um plano pronto todo dia, sem calcular nada sozinho. Com o seu peso, altura e objetivo, já dá pra calcular exatamente quantas calorias e quanta proteína o seu corpo precisa. Faltam só mais algumas perguntas pra fechar o seu Índice de Constância e liberar esses números.</p>
+          <p style="font-size:19px;font-weight:800;color:#4a4a4a;line-height:1.55;margin:0 0 12px;">Com isso, dá pra ${RESULTADO[0]}, ${RESULTADO[1]} e ${RESULTADO[2]}, seguindo um plano pronto todo dia, sem calcular nada sozinho. Com o seu peso, altura e objetivo, já dá pra calcular exatamente quantas calorias e quanta proteína o seu corpo precisa.</p>
+          <p style="font-size:19px;font-weight:800;color:#4a4a4a;line-height:1.55;margin:0;">Faltam só mais algumas perguntas pra fechar o seu Índice de Constância e liberar esses números.</p>
         </div>
 
         <button class="btn" onclick="go(1)">Continuar o teste →</button>
