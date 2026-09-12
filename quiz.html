@@ -671,10 +671,6 @@ const QUESTIONS = [
   },
   /* >>> DIAGNÓSTICO CURTO entra aqui, depois de 'tentativas' <<< */
 
-  /* peso e altura entram aqui (não adiadas): o diagnóstico completo mostra
-     calorias e proteína reais, e pra isso precisa desses dois números
-     antes de chegar lá. meta_peso vem só lá embaixo, logo antes do
-     diagnóstico completo — veja o comentário perto dela */
   {
     id:'peso', num:5, type:'ruler',
     question:'Qual é o seu peso atual?',
@@ -685,15 +681,20 @@ const QUESTIONS = [
     question:'Qual é a sua altura?',
     units:[{u:'cm',min:140,max:210,def:165,step:1},{u:'pol',min:55,max:83,def:65,step:1}]
   },
+  {
+    id:'meta_peso', num:7, type:'ruler',
+    question:'Qual peso você quer alcançar?',
+    units:[{u:'kg',min:40,max:160,def:65,step:1},{u:'lb',min:88,max:352,def:143,step:1}]
+  },
 
   /* ===== hábitos — alimentam o Índice de Constância ===== */
   {
-    id:'treino_frequencia', num:7,
+    id:'treino_frequencia', num:8,
     question:'Hoje, quantas vezes por semana você treina de verdade?',
     options:['😴 Nenhuma','🚶 1 ou 2 vezes','🏃 3 ou 4 vezes','💪 5 vezes ou mais']
   },
   {
-    id:'alimentacao', num:8,
+    id:'alimentacao', num:9,
     question:'Como está sua alimentação nos dias normais?',
     options:[
       '🌀 Cada dia é de um jeito, não tem rotina',
@@ -703,28 +704,18 @@ const QUESTIONS = [
     ]
   },
   {
-    id:'agua', num:9,
+    id:'agua', num:10,
     question:'Quanta água você bebe por dia?',
     options:['💧 Menos de 1 litro','🥤 Entre 1 e 2 litros','🚰 Mais de 2 litros']
   },
   {
-    id:'sono', num:10,
+    id:'sono', num:11,
     question:'Quantas horas você dorme por noite, em média?',
     options:['⚠️ Menos de 5 horas','😪 Entre 5 e 6 horas','😌 Entre 7 e 8 horas','😴 Mais de 8 horas']
   },
-  /* meta_peso fica aqui, não lá em cima com peso/altura: assim é a última
-     pergunta antes do diagnóstico completo, que mostra a diferença entre
-     o peso atual e a meta logo em seguida */
-  {
-    id:'meta_peso', num:11, type:'ruler',
-    question:'Qual peso você quer alcançar?',
-    units:[{u:'kg',min:40,max:160,def:65,step:1},{u:'lb',min:88,max:352,def:143,step:1}]
-  },
-  /* >>> ANALISANDO + DIAGNÓSTICO COMPLETO entram aqui, depois de 'meta_peso' <<< */
 
-  /* corpo_sonho e outros_objetivos vêm logo depois do diagnóstico completo
-     de propósito: rendem mais depois que a pessoa já viu os números
-     reais dela, e fecham o quiz numa nota positiva */
+  /* corpo_sonho e outros_objetivos fecham o quiz numa nota positiva,
+     depois de todas as perguntas de hábito/dado */
   {
     id:'corpo_sonho', num:12,
     question:'Qual é o seu corpo dos sonhos?',
@@ -1499,7 +1490,7 @@ function renderAppTeaser(){
       <h2 class="q-title" style="font-size:22px;">${nome?nome+', se':'Se'} o ${APP_NOME} te entregasse pronto, todo dia, exatamente o que comer e treinar pro seu objetivo, isso mudaria o jogo pra você?</h2>
       <div class="opts" style="margin-top:6px;">
         <button class="opt" onclick="selectAppTeaser(1)"><span class="opt-radio"></span><span>✅ Sim, com certeza</span></button>
-        <button class="opt" onclick="selectAppTeaser(0)"><span class="opt-radio"></span><span>🤔 Não sei se funcionaria pra mim</span></button>
+        <button class="opt" onclick="selectAppTeaser(0)"><span class="opt-radio"></span><span>🤔 Quero descobrir</span></button>
       </div>
     </div>
   </div>`;
