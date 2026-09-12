@@ -1101,12 +1101,12 @@ function renderProjecao(){
      visual entre "45%" e a barra parecer mais ou menos cheia que isso. */
   const GRAD_TRILHA = 'linear-gradient(90deg,#e05a4e 0%,#f0a05a 25%,#f0c05a 50%,#8fb85a 75%,#4caf82 100%)';
   const trilha = pct => `
-        <div style="height:7px;border-radius:6px;background:rgba(255,255,255,.1);overflow:hidden;">
+        <div style="height:7px;border-radius:6px;background:#e6ece8;overflow:hidden;">
           <div style="height:100%;width:${pct}%;background-image:${GRAD_TRILHA};background-size:${pct?(10000/pct):0}% 100%;border-radius:6px;"></div>
         </div>`;
   const sliderRow = (label, antes, depois) => `
       <div style="margin-bottom:18px;">
-        <div style="font-size:12.5px;font-weight:800;color:#dfeae4;margin-bottom:6px;">${label}</div>
+        <div style="font-size:12.5px;font-weight:800;color:#4a4a4a;margin-bottom:6px;">${label}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
           <div>
             <div style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:var(--vermelho);margin-bottom:6px;"><span>Baixa</span><span>${antes}%</span></div>
@@ -1151,17 +1151,17 @@ function renderProjecao(){
         <div class="proj-compare-col ruim">
           <h5 style="background:#22c55e;color:#fff;border-radius:20px;padding:16px 0;font-size:17px;">Antes</h5>
           ${imgHoje ? `<img class="proj-compare-img" src="${imgHoje}" alt="Antes" onerror="this.remove()">` : ''}
-          <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:10px 8px;text-align:center;">
-            <div style="font-size:11px;color:#9fb0a7;font-weight:700;">Peso atual</div>
-            <div style="font-size:18px;font-weight:900;color:#eef5f0;">${numDe('peso') || '--'}kg</div>
+          <div style="background:#fff;border-radius:10px;padding:10px 8px;text-align:center;">
+            <div style="font-size:11px;color:#8a9a92;font-weight:700;">Peso atual</div>
+            <div style="font-size:18px;font-weight:900;color:#1a1a1a;">${numDe('peso') || '--'}kg</div>
           </div>
         </div>
         <div class="proj-compare-col bom">
           <h5 style="background:#22c55e;color:#fff;border-radius:20px;padding:16px 0;font-size:17px;">Depois</h5>
           ${imgSonho ? `<img class="proj-compare-img" src="${imgSonho}" alt="Depois" onerror="this.remove()">` : ''}
-          <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:10px 8px;text-align:center;">
-            <div style="font-size:11px;color:#9fb0a7;font-weight:700;">Meta de peso</div>
-            <div style="font-size:18px;font-weight:900;color:#eef5f0;">${numDe('meta_peso') || '--'}kg</div>
+          <div style="background:#fff;border-radius:10px;padding:10px 8px;text-align:center;">
+            <div style="font-size:11px;color:#8a9a92;font-weight:700;">Meta de peso</div>
+            <div style="font-size:18px;font-weight:900;color:#1a1a1a;">${numDe('meta_peso') || '--'}kg</div>
           </div>
         </div>
       </div>
@@ -1172,16 +1172,16 @@ function renderProjecao(){
         ${sliderRow('Rotina organizada', rotinaAntes, rotinaDepois)}
       </div>
 
-      <div style="background:rgba(76,175,130,.12);border-radius:14px;padding:20px 18px;margin:22px 0 14px;text-align:center;">
-        <h4 style="margin:0 0 10px;font-size:17px;color:#eef5f0;">Seu plano personalizado no <span style="color:var(--verde-claro);">${APP_NOME}</span></h4>
-        <p style="font-size:14.5px;color:var(--verde-claro);font-weight:800;line-height:1.6;margin:0;">Com base nas suas respostas, o app já monta o seu cardápio, o seu treino e as suas metas de água e sono, ajustados pro seu objetivo de ${objFrase}.</p>
+      <div style="background:#e9f6ee;border-radius:14px;padding:20px 18px;margin:22px 0 14px;text-align:center;">
+        <h4 style="margin:0 0 10px;font-size:17px;color:#1a1a1a;">Seu plano personalizado no <span style="color:var(--verde);">${APP_NOME}</span></h4>
+        <p style="font-size:14.5px;color:var(--verde-escuro);font-weight:800;line-height:1.6;margin:0;">Com base nas suas respostas, o app já monta o seu cardápio, o seu treino e as suas metas de água e sono, ajustados pro seu objetivo de ${objFrase}.</p>
       </div>
 
       <!-- COMO FUNCIONA O APP -->
       <h4 style="text-align:center;margin:18px 0 16px;font-size:24px;font-weight:900;color:#22c55e;">Como o ${APP_NOME} funciona?</h4>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
         ${COMO_FUNCIONA.map(([titulo,img,emoji,resumo])=>`
-        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px 12px;text-align:center;box-shadow:0 2px 14px rgba(0,0,0,.2);">
+        <div style="background:#fff;border:1px solid #e4ede9;border-radius:16px;padding:16px 12px;text-align:center;box-shadow:0 2px 14px rgba(46,125,90,.06);">
           <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:22px;color:#22c55e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;line-height:1.1;">${titulo}</div>
           <img src="${img}" alt="${titulo}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;display:block;margin-bottom:12px;" onerror="this.outerHTML='<div style=&quot;font-size:48px;margin-bottom:12px;&quot;>${emoji}</div>'">
           <div style="font-size:13px;font-weight:800;color:#22c55e;text-align:center;line-height:1.4;">${resumo}</div>
@@ -1254,13 +1254,13 @@ function renderAnalyzing(){
     <div class="card-quiz" style="padding-top:44px;padding-bottom:52px;">
       <div class="progress-bar"><div class="progress-fill" id="topoFill" style="width:0%;transition:none;"></div></div>
       <div class="analise-title" style="margin-top:22px;">Analisando suas respostas...</div>
-      <p style="text-align:center;font-size:16px;font-weight:800;color:#c3d4cb;line-height:1.4;margin:0 0 26px;">Em poucos segundos o seu plano personalizado fica pronto.</p>
+      <p style="text-align:center;font-size:16px;font-weight:800;color:#3a5a4c;line-height:1.4;margin:0 0 26px;">Em poucos segundos o seu plano personalizado fica pronto.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px 10px;">
         ${ANALISANDO_ITENS.map((label,i)=>`
         <div style="text-align:center;${i===ANALISANDO_ITENS.length-1 && ANALISANDO_ITENS.length%2===1 ? 'grid-column:1/-1;' : ''}">
           <div style="position:relative;width:104px;height:104px;margin:0 auto 10px;">
             <svg width="104" height="104" viewBox="0 0 104 104" style="transform:rotate(-90deg);">
-              <circle cx="52" cy="52" r="${RAIO}" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="9"/>
+              <circle cx="52" cy="52" r="${RAIO}" fill="none" stroke="#e6ece8" stroke-width="9"/>
               <circle cx="52" cy="52" r="${RAIO}" fill="none" stroke="url(#circGrad)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${CIRC}" stroke-dashoffset="${CIRC}" id="itemCirc${i}"/>
             </svg>
             <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:#22c55e;font-variant-numeric:tabular-nums;" id="itemPct${i}">0%</div>
