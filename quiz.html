@@ -1093,20 +1093,28 @@ function renderProjecao(){
   const imgHoje = imgDe('corpo_hoje');
   const imgSonho = imgDe('corpo_sonho');
 
+  /* trilha em 5 blocos discretos (não gradiente contínuo), só os blocos até
+     o valor ficam coloridos — visual replicado de uma referência enviada
+     pelo usuário, adaptado pro fundo claro do quiz (blocos "apagados"
+     ficam cinza-claro em vez de cinza-escuro) */
+  const CORES_TRILHA = ['#e05a4e','#f0a05a','#f0c05a','#8fb85a','#4caf82'];
+  const trilha = pct => CORES_TRILHA.map((c,i)=>`<div style="flex:1;height:7px;border-radius:6px;background:${pct>i*20?c:'#e6ece8'};"></div>`).join('');
   const sliderRow = (label, antes, depois) => `
-      <div style="margin-bottom:16px;">
+      <div style="margin-bottom:18px;">
         <div style="font-size:12.5px;font-weight:800;color:#4a4a4a;margin-bottom:6px;">${label}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
           <div>
-            <div style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:var(--vermelho);margin-bottom:5px;"><span>Baixa</span><span>${antes}%</span></div>
-            <div style="position:relative;height:6px;border-radius:10px;background:linear-gradient(90deg,#e05a4e,#f0a05a);">
-              <div style="position:absolute;top:50%;left:${antes}%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid var(--vermelho);box-shadow:0 1px 4px rgba(0,0,0,.2);"></div>
+            <div style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:var(--vermelho);margin-bottom:6px;"><span>Baixa</span><span>${antes}%</span></div>
+            <div style="position:relative;">
+              <div style="display:flex;gap:3px;">${trilha(antes)}</div>
+              <div style="position:absolute;top:50%;left:${antes}%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--vermelho);box-shadow:0 0 0 4px rgba(224,90,78,.18);"></div>
             </div>
           </div>
           <div>
-            <div style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:var(--verde-escuro);margin-bottom:5px;"><span>Alta</span><span>${depois}%</span></div>
-            <div style="position:relative;height:6px;border-radius:10px;background:linear-gradient(90deg,#e05a4e,#f0c05a,#4caf82);">
-              <div style="position:absolute;top:50%;left:${depois}%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid var(--verde-escuro);box-shadow:0 1px 4px rgba(0,0,0,.2);"></div>
+            <div style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:var(--verde-escuro);margin-bottom:6px;"><span>Alta</span><span>${depois}%</span></div>
+            <div style="position:relative;">
+              <div style="display:flex;gap:3px;">${trilha(depois)}</div>
+              <div style="position:absolute;top:50%;left:${depois}%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--verde-escuro);box-shadow:0 0 0 4px rgba(46,125,90,.22);"></div>
             </div>
           </div>
         </div>
@@ -1165,7 +1173,7 @@ function renderProjecao(){
       </div>
 
       <!-- COMO FUNCIONA O APP -->
-      <h4 style="text-align:center;margin:18px 0 16px;font-size:17px;color:#1a1a1a;">Como o ${APP_NOME} funciona?</h4>
+      <h4 style="text-align:center;margin:18px 0 16px;font-size:24px;font-weight:900;color:#22c55e;">Como o ${APP_NOME} funciona?</h4>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
         ${COMO_FUNCIONA.map(([titulo,img,emoji,desc])=>`
         <div style="background:#fff;border-radius:16px;padding:16px 12px;text-align:center;box-shadow:0 2px 14px rgba(46,125,90,.06);">
