@@ -1097,8 +1097,10 @@ function renderProjecao(){
      o valor ficam coloridos — visual replicado de uma referência enviada
      pelo usuário, adaptado pro fundo claro do quiz (blocos "apagados"
      ficam cinza-claro em vez de cinza-escuro) */
-  const CORES_TRILHA = ['#e05a4e','#f0a05a','#f0c05a','#8fb85a','#4caf82'];
-  const trilha = pct => CORES_TRILHA.map((c,i)=>`<div style="flex:1;height:7px;border-radius:6px;background:${pct>i*20?c:'#e6ece8'};"></div>`).join('');
+  /* cada bloco tem um leve degradê (claro em cima, cor base embaixo) em vez
+     de cor sólida chapada, pra suavizar visualmente a trilha em blocos */
+  const CORES_TRILHA = [['#eb8074','#e05a4e'],['#f4bb85','#f0a05a'],['#f4d485','#f0c05a'],['#aecb85','#8fb85a'],['#7ac3a3','#4caf82']];
+  const trilha = pct => CORES_TRILHA.map(([clara,base],i)=>`<div style="flex:1;height:7px;border-radius:6px;background:${pct>i*20?`linear-gradient(180deg,${clara},${base})`:'#e6ece8'};"></div>`).join('');
   const sliderRow = (label, antes, depois) => `
       <div style="margin-bottom:18px;">
         <div style="font-size:12.5px;font-weight:800;color:#4a4a4a;margin-bottom:6px;">${label}</div>
