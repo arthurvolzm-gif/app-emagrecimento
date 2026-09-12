@@ -1175,11 +1175,10 @@ function renderProjecao(){
       <!-- COMO FUNCIONA O APP -->
       <h4 style="text-align:center;margin:18px 0 16px;font-size:24px;font-weight:900;color:#22c55e;">Como o ${APP_NOME} funciona?</h4>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-        ${COMO_FUNCIONA.map(([titulo,img,emoji,desc])=>`
+        ${COMO_FUNCIONA.map(([titulo,img,emoji])=>`
         <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px 12px;text-align:center;box-shadow:0 2px 14px rgba(0,0,0,.2);">
-          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:22px;color:var(--verde-claro);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;line-height:1.1;">${titulo}</div>
-          <img src="${img}" alt="${titulo}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;display:block;margin-bottom:12px;" onerror="this.outerHTML='<div style=&quot;font-size:48px;margin-bottom:12px;&quot;>${emoji}</div>'">
-          <p style="font-size:12.5px;color:#c3d4cb;line-height:1.55;margin:0;text-align:left;">${desc}</p>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:22px;color:#22c55e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;line-height:1.1;">${titulo}</div>
+          <img src="${img}" alt="${titulo}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;display:block;" onerror="this.outerHTML='<div style=&quot;font-size:48px;&quot;>${emoji}</div>'">
         </div>`).join('')}
       </div>
 
