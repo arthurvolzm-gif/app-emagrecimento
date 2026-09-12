@@ -644,8 +644,8 @@ const QUESTIONS = [
       ? ['😕 Magro, sem definição nenhuma','🤏 Alguns quilos a mais, principalmente na barriga','📈 Acima do peso, quero uma mudança grande','💪 Já tenho uma base, quero refinar o shape']
       : ['😕 Magra, mas sem nenhuma definição','🤏 Alguns quilos a mais, principalmente na barriga','📈 Acima do peso, quero uma mudança grande','💪 Já tenho uma base, quero refinar o shape'],
     optionImages: a => a.sexo==='Homem'
-      ? ['corpo-hoje-homem-magro.jpg','corpo-hoje-homem-gordinho.jpg','corpo-hoje-homem-sobrepeso.jpg','corpo-hoje-homem-definido.jpg']
-      : ['corpo-hoje-mulher-magra.jpg','corpo-hoje-mulher-gordinha.jpg','corpo-hoje-mulher-sobrepeso.jpg','corpo-hoje-mulher-definida.jpg']
+      ? ['/corpo-hoje-homem-magro.jpg','/corpo-hoje-homem-gordinho.jpg','/corpo-hoje-homem-sobrepeso.jpg','/corpo-hoje-homem-definido.jpg']
+      : ['/corpo-hoje-mulher-magra.jpg','/corpo-hoje-mulher-gordinha.jpg','/corpo-hoje-mulher-sobrepeso.jpg','/corpo-hoje-mulher-definida.jpg']
   },
 
   {
@@ -721,7 +721,7 @@ const QUESTIONS = [
     id:'corpo_sonho', num:12,
     question:'Qual é o seu corpo dos sonhos?',
     options: a => a.sexo==='Homem' ? ['Definido','Musculoso','Atlético e volumoso','Mantendo o shape atual'] : ['Magra','Definida','Com curvas','Média'],
-    optionImages: a => a.sexo==='Homem' ? ['corpo-homem-definido.jpg','corpo-homem-musculoso.jpg','corpo-homem-atletico.jpg','corpo-homem-atual.jpg'] : ['corpo-magra.jpg','corpo-definida.jpg','corpo-curvas.jpg','corpo-media.jpg']
+    optionImages: a => a.sexo==='Homem' ? ['/corpo-homem-definido.jpg','/corpo-homem-musculoso.jpg','/corpo-homem-atletico.jpg','/corpo-homem-atual.jpg'] : ['/corpo-magra.jpg','/corpo-definida.jpg','/corpo-curvas.jpg','/corpo-media.jpg']
   },
   {
     id:'outros_objetivos', num:13, type:'multi',
@@ -794,12 +794,12 @@ function render(){
 }
 
 const IDADE_OPTS = ['Entre 18 e 29 anos','Entre 30 e 39 anos','Entre 40 e 49 anos','+50 anos'];
-const IDADE_IMGS_MULHER = ['idade-18-29.jpg','idade-30-39.jpg','idade-40-49.jpg','idade-50-mais.jpg'];
-const IDADE_IMGS_HOMEM  = ['idade-homem-18-29.jpg','idade-homem-30-39.jpg','idade-homem-40-49.jpg','idade-homem-50-mais.jpg'];
+const IDADE_IMGS_MULHER = ['/idade-18-29.jpg','/idade-30-39.jpg','/idade-40-49.jpg','/idade-50-mais.jpg'];
+const IDADE_IMGS_HOMEM  = ['/idade-homem-18-29.jpg','/idade-homem-30-39.jpg','/idade-homem-40-49.jpg','/idade-homem-50-mais.jpg'];
 function idadeImgsDe(){ return state.answers.sexo==='Homem' ? IDADE_IMGS_HOMEM : IDADE_IMGS_MULHER; }
 
 const SEXO_OPTS = ['Mulher','Homem'];
-const SEXO_IMGS = ['sexo-mulher.jpg','sexo-homem.jpg'];
+const SEXO_IMGS = ['/sexo-mulher.jpg','/sexo-homem.jpg'];
 
 /* abertura: só headline + imagem + subheadline + CTA, sem pergunta
    nenhuma ainda (a pergunta "Você é" virou a tela seguinte, renderSexo)
@@ -809,9 +809,9 @@ function renderIntro(){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz" style="text-align:center;padding-top:40px;padding-bottom:46px;">
-      <div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      <div class="brand"><img src="/Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <h1 class="hero-h1" style="margin-top:18px;">Sua dieta e seu treino calculados pro seu corpo</h1>
-      <img src="app-mockup.jpg" alt="${APP_NOME}" style="width:100%;border-radius:20px;display:block;margin:20px 0;" onerror="this.outerHTML='<div style=&quot;font-size:52px;margin:20px 0;&quot;>📱</div>'">
+      <img src="/app-mockup.jpg" alt="${APP_NOME}" style="width:100%;border-radius:20px;display:block;margin:20px 0;" onerror="this.outerHTML='<div style=&quot;font-size:52px;margin:20px 0;&quot;>📱</div>'">
       <p class="hero-sub">Responda o questionário e receba um plano de emagrecimento personalizado por meio do aplicativo "${APP_NOME}".</p>
       <p style="font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:#9aa8a2;margin-bottom:16px;">Toque no botão abaixo:</p>
       <button class="btn" onclick="go(1)">Continuar</button>
@@ -887,7 +887,7 @@ function renderQuestion(q){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}<div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      ${backBtn()}<div class="brand"><img src="/Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
       ${echo}
@@ -923,7 +923,7 @@ function renderMultiQuestion(q){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}<div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      ${backBtn()}<div class="brand"><img src="/Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
       <h2 class="q-title tight">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
@@ -952,7 +952,7 @@ function renderTextQuestion(q){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}<div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      ${backBtn()}<div class="brand"><img src="/Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
       <h2 class="q-title">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
@@ -973,7 +973,7 @@ function renderRulerQuestion(q){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz" style="text-align:center;">
-      ${backBtn()}<div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      ${backBtn()}<div class="brand"><img src="/Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
       <h2 class="q-title" style="text-align:center;">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
@@ -1129,10 +1129,10 @@ function renderProjecao(){
   /* imagens totalmente personalizadas por tópico (ver prompts enviados
      ao usuário) — enquanto não forem enviadas, cai no emoji de fallback */
   const COMO_FUNCIONA = [
-    ['Cardápio', 'icone-cardapio.jpg', '🍽️', 'Calculado na sua meta, com troca de alimentos'],
-    ['Treino', 'icone-treino.jpg', '🏋️', 'Montado pro seu sexo e seu local de treino'],
-    ['Hábitos', 'icone-habitos.jpg', '💧', 'Metas diárias de água e sono'],
-    ['Evolução', 'icone-evolucao.jpg', '📈', 'Pontos, níveis e registro de progresso']
+    ['Cardápio', '/icone-cardapio-escuro.jpg', '🍽️', 'Calculado na sua meta, com troca de alimentos'],
+    ['Treino', '/icone-treino-escuro.jpg', '🏋️', 'Montado pro seu sexo e seu local de treino'],
+    ['Hábitos', '/icone-habitos-escuro.jpg', '💧', 'Metas diárias de água e sono'],
+    ['Evolução', '/icone-evolucao-escuro.jpg', '📈', 'Pontos, níveis e registro de progresso']
   ];
 
   const temCheckout = !!CHECKOUT_URL;
@@ -1142,7 +1142,7 @@ function renderProjecao(){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}<div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      ${backBtn()}<div class="brand"><img src="/Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:100%"></div></div>
 
@@ -1189,7 +1189,7 @@ function renderProjecao(){
         </div>`).join('')}
       </div>
 
-      <img src="fit-day-promo.jpg" alt="${APP_NOME}" style="width:100%;border-radius:16px;display:block;margin:22px 0 0;" onerror="this.remove()">
+      <img src="/fit-day-promo-escuro.jpg" alt="${APP_NOME}" style="width:100%;border-radius:16px;display:block;margin:22px 0 0;" onerror="this.remove()">
 
       <a class="btn" style="margin-top:22px;" href="${destino}" onclick="irParaApp(event)">${rotuloCTA}</a>
 
@@ -1226,7 +1226,7 @@ function renderMeta(){
     <div class="card-quiz" style="text-align:center;">
       <div class="progress-bar"><div class="progress-fill" style="width:${pctAte('meta_kg')}%"></div></div>
       <p style="font-family:'Lato',sans-serif;font-size:25px;font-weight:900;color:var(--verde-escuro);line-height:1.3;margin:20px 0;">${nome?nome+', sua':'Sua'} meta é totalmente possível, e sem depender da aplicação pra sempre.</p>
-      <img src="resultado-1.jpg" alt="Resultado real do método" style="width:100%;border-radius:14px;display:block;margin:0 0 18px;" onerror="this.onerror=null;this.outerHTML='&lt;div class=&quot;meta-img&quot;&gt;Salve a imagem como resultado-1.jpg&lt;/div&gt;'">
+      <img src="/resultado-1.jpg" alt="Resultado real do método" style="width:100%;border-radius:14px;display:block;margin:0 0 18px;" onerror="this.onerror=null;this.outerHTML='&lt;div class=&quot;meta-img&quot;&gt;Salve a imagem como resultado-1.jpg&lt;/div&gt;'">
       <p style="font-family:'Lato',sans-serif;font-size:16.5px;font-weight:800;color:var(--cinza);line-height:1.5;margin:0 0 14px;">Mulheres que reativaram a produção natural de GLP-1 antes de reduzir a dose conseguiram sustentar o peso sem a canetinha.</p>
       <p style="font-family:'Lato',sans-serif;font-size:15px;font-weight:800;color:var(--verde);line-height:1.5;margin:0 0 22px;">Faltam só mais alguns passos para liberar o seu protocolo completo.</p>
       <button class="btn" style="text-transform:uppercase;letter-spacing:.5px;" onclick="go(1)">Continuar teste gratuito</button>
@@ -1409,7 +1409,7 @@ function renderAppTeaser(){
     <div class="card-quiz" style="text-align:center;">
       ${backBtn()}
       <div class="brand-sub" style="margin-bottom:14px;">Antes de continuar</div>
-      <img src="app-teaser.jpg" alt="${APP_NOME}" style="width:100%;border-radius:20px;display:block;margin:0 0 20px;box-shadow:0 16px 40px rgba(21,154,85,.22);" onerror="this.outerHTML='<div style=&quot;font-size:52px;margin-bottom:6px;&quot;>📱</div>'">
+      <img src="/app-teaser.jpg" alt="${APP_NOME}" style="width:100%;border-radius:20px;display:block;margin:0 0 20px;box-shadow:0 16px 40px rgba(21,154,85,.22);" onerror="this.outerHTML='<div style=&quot;font-size:52px;margin-bottom:6px;&quot;>📱</div>'">
       <h2 class="q-title" style="font-size:22px;">${nome?nome+', se':'Se'} o ${APP_NOME} te entregasse pronto, todo dia, exatamente o que comer e treinar pro seu objetivo, isso mudaria o jogo pra você?</h2>
       <div class="opts" style="margin-top:6px;">
         <button class="opt" onclick="selectAppTeaser(1)"><span class="opt-radio"></span><span>✅ Sim, com certeza</span></button>
@@ -1544,7 +1544,7 @@ function renderOfferPrice(){
     </div>
 
     <div class="quem" style="margin-top:22px;">
-      <img src="FotoKelly.jpg" alt="Nutri Kelly" style="width:160px;height:160px;border-radius:16px;object-fit:cover;border:4px solid var(--verde-claro);box-shadow:0 0 34px rgba(76,175,130,.4);margin:0 auto 20px;display:block;">
+      <img src="/FotoKelly.jpg" alt="Nutri Kelly" style="width:160px;height:160px;border-radius:16px;object-fit:cover;border:4px solid var(--verde-claro);box-shadow:0 0 34px rgba(76,175,130,.4);margin:0 auto 20px;display:block;">
       <h3>Quem está por trás <span>do Método?</span></h3>
       <p>Oi! Sou a <span>Nutri Kelly</span>, tenho 41 anos e moro no Paraná. Sou nutricionista há 18 anos, especialista em nutrição e emagrecimento. Desde então, ajudo pessoas a alcançarem seus objetivos com estratégias nutricionais práticas, eficientes e sustentáveis. Estou aqui para te ajudar a reativar a sua produção natural de saciedade e sair da canetinha sem recuperar o peso.</p>
     </div>
@@ -1698,7 +1698,7 @@ function renderResult(){
       <!-- QUEM É -->
       <div class="res-section">
         <div class="quem">
-          <img src="FotoSiteKelly.jpeg" alt="Nutri Kelly" style="width:160px;height:160px;border-radius:16px;object-fit:cover;border:4px solid var(--verde-claro);box-shadow:0 0 34px rgba(76,175,130,.4);margin:0 auto 20px;display:block;" onerror="this.style.display='none'">
+          <img src="/FotoSiteKelly.jpeg" alt="Nutri Kelly" style="width:160px;height:160px;border-radius:16px;object-fit:cover;border:4px solid var(--verde-claro);box-shadow:0 0 34px rgba(76,175,130,.4);margin:0 auto 20px;display:block;" onerror="this.style.display='none'">
           <h3>Quem está por trás <span>do método</span></h3>
           <p>Oi! Sou a <span>Nutri Kelly</span>, tenho 41 anos e moro no Paraná. Sou nutricionista há 18 anos, especialista em nutrição e emagrecimento. Atendo mulheres em tratamento com canetinha todos os dias e criei este protocolo com o que eu explico em consulta: como reativar a produção natural de saciedade, proteger a massa magra e reduzir a dose sem que o peso volte.</p>
         </div>
@@ -1730,7 +1730,7 @@ function renderResult(){
 
       <!-- GARANTIA -->
       <div class="res-section" style="text-align:center;">
-        <img src="Garantia7dias.png" alt="Garantia de 7 dias" class="gar-img">
+        <img src="/Garantia7dias.png" alt="Garantia de 7 dias" class="gar-img">
       </div>
 
       <!-- FAQ -->

@@ -63,12 +63,12 @@ html{scroll-behavior:smooth;}
 
 body{
   font-family:'Lato',sans-serif;
-  background-color:#0a0f0c;
-  background-image:radial-gradient(ellipse at top, #142a1f 0%, #0a0f0c 65%);
+  background-color:#f3f8f5;
+  background-image:url('/bg-vegetal.jpg');
   background-attachment:fixed;
   background-size:cover;
   background-position:center;
-  color:#cfe0d6;
+  color:var(--cinza);
   line-height:1.6;
   min-height:100vh;
 }
@@ -97,41 +97,40 @@ body{
 }
 
 .card-quiz{
-  background:rgba(19,29,24,.92);
+  background:rgba(250,249,240,.96);
   border-radius:22px;
-  box-shadow:0 12px 50px rgba(0,0,0,.55), 0 0 40px rgba(76,175,130,.06);
+  box-shadow:0 12px 50px rgba(26,77,56,.14);
   padding:34px 30px;
   backdrop-filter:blur(2px);
   position:relative;
-  border:1px solid rgba(76,175,130,.14);
 }
 
 /* seta de voltar */
-.back-btn{position:absolute;left:16px;top:14px;background:none;border:none;color:#7c9186;font-size:24px;line-height:1;cursor:pointer;padding:4px 8px;z-index:5;transition:color .18s;}
-.back-btn:hover{color:var(--verde-claro);}
+.back-btn{position:absolute;left:16px;top:14px;background:none;border:none;color:#9aaaa2;font-size:24px;line-height:1;cursor:pointer;padding:4px 8px;z-index:5;transition:color .18s;}
+.back-btn:hover{color:var(--verde);}
 
 .brand{text-align:center;margin-bottom:6px;}
-.brand-nome{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--verde-claro);}
+.brand-nome{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--verde-escuro);}
 .brand-logo{height:54px;display:block;margin:0 auto;}
-.brand-sub{font-size:13px;color:#7c9186;margin-bottom:20px;text-align:center;}
+.brand-sub{font-size:13px;color:#8aa79a;margin-bottom:20px;text-align:center;}
 
 /* ===== PROGRESSO ===== */
 .progress-head{display:flex;justify-content:flex-end;font-size:13px;color:var(--dourado);font-weight:700;margin-bottom:8px;}
-.progress-bar{height:7px;background:rgba(255,255,255,.08);border-radius:20px;overflow:hidden;margin-bottom:26px;}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--verde),var(--verde-claro));border-radius:20px;transition:width .5s ease;}
+.progress-bar{height:7px;background:#e3ede8;border-radius:20px;overflow:hidden;margin-bottom:26px;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--verde-escuro),var(--verde-claro));border-radius:20px;transition:width .5s ease;}
 
 /* ===== PILLS ===== */
 .pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
-.pill{background:rgba(76,175,130,.12);border:1px solid rgba(76,175,130,.3);color:var(--verde-claro);font-size:12px;font-weight:700;padding:6px 12px;border-radius:20px;}
+.pill{background:#f0f7f3;border:1px solid #d9ebe2;color:var(--verde);font-size:12px;font-weight:700;padding:6px 12px;border-radius:20px;}
 
 /* ===== INSIGHT BOX ===== */
-.insight{background:rgba(76,175,130,.1);border-left:4px solid var(--verde-claro);border-radius:8px;padding:14px 16px;font-size:14px;color:#cfe0d6;line-height:1.6;margin-bottom:20px;}
-.insight strong{color:var(--verde-claro);}
+.insight{background:#eef7f1;border-left:4px solid var(--verde-claro);border-radius:8px;padding:14px 16px;font-size:14px;color:#3a5a4c;line-height:1.6;margin-bottom:20px;}
+.insight strong{color:var(--verde);}
 
-.echo{font-size:14px;color:#8fa79c;margin-bottom:6px;}
+.echo{font-size:14px;color:#7d9488;margin-bottom:6px;}
 
 /* ===== PERGUNTA ===== */
-.q-title{font-family:'Open Sans',sans-serif;font-size:26px;font-weight:900;color:var(--verde-claro);line-height:1.25;margin-bottom:22px;text-align:center;}
+.q-title{font-family:'Open Sans',sans-serif;font-size:26px;font-weight:900;color:var(--verde-escuro);line-height:1.25;margin-bottom:22px;text-align:center;}
 
 /* ===== OPÇÕES ===== */
 .opts{display:flex;flex-direction:column;gap:12px;}
@@ -159,14 +158,14 @@ body{
 .opts.grid2 .idade-card:last-child:nth-child(odd){grid-column:1 / -1;justify-self:center;width:calc(50% - 5px);}
 .opt{
   display:flex;align-items:center;gap:14px;
-  background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);border-radius:14px;
-  padding:17px 18px;font-size:15px;font-weight:600;color:#dfeae4;
+  background:#fff;border:1.5px solid #e2ece7;border-radius:14px;
+  padding:17px 18px;font-size:15px;font-weight:600;color:var(--cinza);
   cursor:pointer;transition:all .18s ease;text-align:left;
 }
-.opt:hover{border-color:var(--verde-claro);box-shadow:0 6px 20px rgba(76,175,130,.18);transform:translateY(-1px);}
-.opt-radio{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.25);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .18s ease;}
-.opt.sel{border-color:var(--verde-claro);background:rgba(76,175,130,.16);}
-.opt.sel .opt-radio{border-color:var(--verde-claro);background:var(--verde);}
+.opt:hover{border-color:var(--verde-claro);box-shadow:0 6px 20px rgba(76,175,130,.12);transform:translateY(-1px);}
+.opt-radio{width:24px;height:24px;border-radius:50%;border:2px solid #cdddd4;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .18s ease;}
+.opt.sel{border-color:var(--verde);background:var(--verde-suave);}
+.opt.sel .opt-radio{border-color:var(--verde);background:var(--verde);}
 .opt.sel .opt-radio::after{content:'✓';color:#fff;font-size:13px;font-weight:700;}
 
 /* variação com foto colada à esquerda de cada opção (lista vertical) */
@@ -185,41 +184,41 @@ body{
   box-shadow:0 8px 30px rgba(46,125,90,.32);transition:transform .2s,box-shadow .2s;letter-spacing:.3px;
 }
 .btn:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(46,125,90,.45);}
-.btn-ghost{background:rgba(255,255,255,.04);color:var(--verde-claro);border:1.5px solid rgba(255,255,255,.12);box-shadow:none;margin-top:12px;}
-.btn-ghost:hover{background:rgba(255,255,255,.07);box-shadow:none;}
+.btn-ghost{background:#fff;color:var(--verde);border:1.5px solid #d9ebe2;box-shadow:none;margin-top:12px;}
+.btn-ghost:hover{background:#f4faf7;box-shadow:none;}
 
 /* ===== INPUT DE TEXTO (nome) ===== */
-.text-input{width:100%;border:1.5px solid rgba(255,255,255,.12);border-radius:14px;padding:16px 18px;font-size:16px;font-family:'Lato',sans-serif;color:#eef5f0;background:rgba(255,255,255,.05);margin-bottom:14px;outline:none;transition:border-color .18s,box-shadow .18s;}
-.text-input:focus{border-color:var(--verde-claro);box-shadow:0 6px 20px rgba(76,175,130,.18);}
-.text-input::placeholder{color:#6f8579;}
+.text-input{width:100%;border:1.5px solid #e2ece7;border-radius:14px;padding:16px 18px;font-size:16px;font-family:'Lato',sans-serif;color:var(--cinza);background:#fff;margin-bottom:14px;outline:none;transition:border-color .18s,box-shadow .18s;}
+.text-input:focus{border-color:var(--verde);box-shadow:0 6px 20px rgba(76,175,130,.12);}
+.text-input::placeholder{color:#b7c6bf;}
 
 /* ===== RÉGUA (peso / altura) ===== */
-.ruler-sub{font-size:14px;color:#8fa79c;margin:-8px 0 18px;}
-.unit-toggle{display:inline-flex;background:rgba(255,255,255,.06);border-radius:30px;padding:4px;margin-bottom:6px;}
-.unit-toggle .ut{border:none;background:transparent;color:#8fa79c;font-weight:800;font-size:14px;padding:8px 26px;border-radius:24px;cursor:pointer;transition:all .18s;}
+.ruler-sub{font-size:14px;color:#7d9488;margin:-8px 0 18px;}
+.unit-toggle{display:inline-flex;background:#e3ede8;border-radius:30px;padding:4px;margin-bottom:6px;}
+.unit-toggle .ut{border:none;background:transparent;color:#7d9488;font-weight:800;font-size:14px;padding:8px 26px;border-radius:24px;cursor:pointer;transition:all .18s;}
 .unit-toggle .ut.active{background:var(--verde);color:#fff;box-shadow:0 4px 14px rgba(46,125,90,.3);}
-.ruler-val{font-family:'Playfair Display',serif;font-size:46px;font-weight:900;color:var(--verde-claro);margin:16px 0 6px;line-height:1;}
-.ruler-val small{font-size:20px;color:var(--verde-claro);margin-left:3px;font-weight:700;}
+.ruler-val{font-family:'Playfair Display',serif;font-size:46px;font-weight:900;color:var(--verde-escuro);margin:16px 0 6px;line-height:1;}
+.ruler-val small{font-size:20px;color:var(--verde);margin-left:3px;font-weight:700;}
 .ruler-track{position:relative;height:52px;margin:6px 6px 0;}
-.ruler-line{position:absolute;left:0;right:0;bottom:16px;height:2px;background:rgba(255,255,255,.15);}
+.ruler-line{position:absolute;left:0;right:0;bottom:16px;height:2px;background:#e2ece7;}
 .ruler-ticks{position:absolute;left:0;right:0;bottom:16px;height:26px;display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none;}
-.ruler-ticks .tk{width:1px;height:12px;background:rgba(255,255,255,.2);}
-.ruler-ticks .tk.maj{height:24px;width:2px;background:rgba(255,255,255,.35);}
-.ruler-pointer{position:absolute;top:0;bottom:16px;width:3px;background:var(--verde-claro);transform:translateX(-50%);pointer-events:none;border-radius:2px;transition:left .05s linear;}
-.ruler-pointer::after{content:'';position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);border-left:8px solid transparent;border-right:8px solid transparent;border-top:12px solid var(--verde-claro);}
+.ruler-ticks .tk{width:1px;height:12px;background:#cdddd4;}
+.ruler-ticks .tk.maj{height:24px;width:2px;background:#9bb3a8;}
+.ruler-pointer{position:absolute;top:0;bottom:16px;width:3px;background:var(--verde);transform:translateX(-50%);pointer-events:none;border-radius:2px;transition:left .05s linear;}
+.ruler-pointer::after{content:'';position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);border-left:8px solid transparent;border-right:8px solid transparent;border-top:12px solid var(--verde);}
 .ruler-input{position:absolute;left:0;right:0;top:0;width:100%;height:100%;margin:0;opacity:0;cursor:grab;z-index:5;-webkit-appearance:none;appearance:none;background:transparent;}
 .ruler-input:active{cursor:grabbing;}
 .ruler-input::-webkit-slider-thumb{-webkit-appearance:none;width:40px;height:52px;background:transparent;cursor:grab;}
 .ruler-input::-moz-range-thumb{width:40px;height:52px;border:none;background:transparent;cursor:grab;}
-.ruler-labels{display:flex;justify-content:space-between;font-size:13px;color:#8fa79c;font-weight:700;margin-top:6px;}
+.ruler-labels{display:flex;justify-content:space-between;font-size:13px;color:#9aaaa2;font-weight:700;margin-top:6px;}
 
 /* ===== INTRO ===== */
-.intro-badge{display:inline-block;background:rgba(76,175,130,.14);color:var(--verde-claro);font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:7px 18px;border-radius:20px;margin-bottom:22px;}
-.intro-h1{font-family:'Open Sans',sans-serif;font-size:32px;font-weight:900;color:var(--verde-claro);line-height:1.25;margin-bottom:16px;text-align:center;}
+.intro-badge{display:inline-block;background:var(--verde-suave);color:var(--verde);font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:7px 18px;border-radius:20px;margin-bottom:22px;}
+.intro-h1{font-family:'Open Sans',sans-serif;font-size:32px;font-weight:900;color:var(--verde-escuro);line-height:1.25;margin-bottom:16px;text-align:center;}
 .intro-h1 span{color:var(--verde-claro);}
-.intro-sub{font-size:16px;color:#a9bcb2;text-align:center;line-height:1.65;margin-bottom:26px;}
-.hero-h1{font-family:'Baloo 2',sans-serif;font-size:30px;font-weight:800;color:var(--verde-claro);line-height:1.25;text-align:center;margin-bottom:18px;}
-.hero-sub{font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:600;color:#c3d4cb;line-height:1.55;text-align:center;margin:20px 0 22px;}
+.intro-sub{font-size:16px;color:#5f6f68;text-align:center;line-height:1.65;margin-bottom:26px;}
+.hero-h1{font-family:'Baloo 2',sans-serif;font-size:30px;font-weight:800;color:var(--verde-escuro);line-height:1.25;text-align:center;margin-bottom:18px;}
+.hero-sub{font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:600;color:#3a5a4c;line-height:1.55;text-align:center;margin:20px 0 22px;}
 .intro-secure{text-align:center;font-size:12px;color:#98a89f;margin-top:12px;}
 
 /* ===== INTERSTICIAL ===== */
@@ -232,7 +231,7 @@ body{
 .inter-mini{font-size:13px;color:#9aaaa2;margin-bottom:22px;}
 
 /* ===== ANALISANDO ===== */
-.analise-title{text-align:center;font-size:13px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--verde-claro);margin-bottom:26px;}
+.analise-title{text-align:center;font-size:13px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--verde-escuro);margin-bottom:26px;}
 .analise-list{display:flex;flex-direction:column;gap:16px;}
 .analise-item{display:flex;align-items:center;gap:14px;font-size:15px;color:#9aaaa2;font-weight:600;opacity:.5;transition:all .4s ease;}
 .analise-item .ic{width:28px;height:28px;border-radius:50%;border:2px solid #d5e2db;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;}
@@ -355,8 +354,8 @@ body{
 .mod-result::before{content:'✓ Resultado: ';}
 
 /* ===== PROVA CIENTÍFICA (mesma da landing) ===== */
-.prova-numero{font-family:'Playfair Display',serif;font-size:72px;font-weight:900;color:#ff6f61;line-height:1;margin-bottom:6px;text-align:center;}
-.prova-numero-legenda{font-size:15.5px;color:#a9bcb2;max-width:420px;margin:0 auto 26px;line-height:1.6;text-align:center;}
+.prova-numero{font-family:'Playfair Display',serif;font-size:72px;font-weight:900;color:#c0392b;line-height:1;margin-bottom:6px;text-align:center;}
+.prova-numero-legenda{font-size:15.5px;color:#666;max-width:420px;margin:0 auto 26px;line-height:1.6;text-align:center;}
 .prova-noticia{max-width:620px;margin:0 auto;background:#fff;border:1px solid #e4e4e4;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.10);}
 .prova-noticia img{width:100%;height:auto;display:block;}
 .prova-fonte{font-size:11.5px;color:#999;padding:12px 16px;text-align:left;border-top:1px solid #f0f0f0;line-height:1.6;}
@@ -372,12 +371,12 @@ body{
 .proj-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0;}
 .proj-compare-col{border-radius:14px;padding:14px 12px;}
 .proj-compare-img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top center;border-radius:10px;display:block;margin-bottom:10px;}
-.proj-compare-col.ruim{background:rgba(192,87,79,.14);}
-.proj-compare-col.bom{background:rgba(76,175,130,.12);}
+.proj-compare-col.ruim{background:#fdecec;}
+.proj-compare-col.bom{background:#eef7f1;}
 .proj-compare-col h5{font-size:12.5px;font-weight:900;margin:0 0 8px;text-align:center;}
 .proj-compare-col.ruim h5{color:var(--vermelho);}
 .proj-compare-col.bom h5{color:var(--verde-escuro);}
-.proj-compare-col ul{list-style:none;padding:0;margin:0;font-size:12px;color:#cfe0d6;line-height:1.6;}
+.proj-compare-col ul{list-style:none;padding:0;margin:0;font-size:12px;color:#4a4a4a;line-height:1.6;}
 .proj-compare-col li{margin-bottom:6px;}
 .glp-metric{margin-bottom:10px;}
 .glp-metric:last-child{margin-bottom:0;}
@@ -394,10 +393,10 @@ body{
 @media(max-width:768px){.prova-numero{font-size:58px;}.prova-texto{font-size:15px;}}
 
 /* tabela "quanto vale destravar" */
-.valor-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:8px 22px;margin-top:8px;box-shadow:0 2px 14px rgba(0,0,0,.2);}
-.valor-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:14px;}
+.valor-box{background:#fff;border:1px solid #e4ede9;border-radius:16px;padding:8px 22px;margin-top:8px;box-shadow:0 2px 14px rgba(46,125,90,.06);}
+.valor-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #f0f5f2;font-size:14px;}
 .valor-row:last-child{border-bottom:none;}
-.valor-row .lbl{color:#dfeae4;font-weight:700;}
+.valor-row .lbl{color:var(--cinza);font-weight:700;}
 .valor-row .num{color:var(--vermelho);font-weight:800;white-space:nowrap;}
 .valor-row.total{background:#fbf1f0;margin:0 -22px;padding:16px 22px;border-radius:12px;}
 .valor-nota{text-align:center;font-size:13px;color:#7d9488;margin-top:16px;line-height:1.7;}
@@ -504,9 +503,9 @@ body{
 .alerta-box .it{font-size:13.5px;color:#8a5f5c;padding:5px 0;display:flex;gap:9px;align-items:flex-start;line-height:1.55;}
 .alerta-box .it::before{content:'✕';color:var(--vermelho);font-weight:900;flex-shrink:0;}
 .solucao-box{background:none;border:none;border-radius:0;padding:0;margin:22px 0;}
-.solucao-box h4{color:#eef5f0;font-size:20px;font-weight:900;margin-bottom:10px;line-height:1.35;display:flex;gap:9px;align-items:flex-start;justify-content:center;text-align:center;}
-.solucao-box p{font-size:13.5px;color:#c3d4cb;line-height:1.65;}
-.solucao-box p strong{color:var(--verde-claro);}
+.solucao-box h4{color:#1a1a1a;font-size:20px;font-weight:900;margin-bottom:10px;line-height:1.35;display:flex;gap:9px;align-items:flex-start;justify-content:center;text-align:center;}
+.solucao-box p{font-size:13.5px;color:#3a5a4c;line-height:1.65;}
+.solucao-box p strong{color:var(--verde-escuro);}
 
 @media(max-width:600px){
   .intro-h1{font-size:26px;}
@@ -644,8 +643,8 @@ const QUESTIONS = [
       ? ['😕 Magro, sem definição nenhuma','🤏 Alguns quilos a mais, principalmente na barriga','📈 Acima do peso, quero uma mudança grande','💪 Já tenho uma base, quero refinar o shape']
       : ['😕 Magra, mas sem nenhuma definição','🤏 Alguns quilos a mais, principalmente na barriga','📈 Acima do peso, quero uma mudança grande','💪 Já tenho uma base, quero refinar o shape'],
     optionImages: a => a.sexo==='Homem'
-      ? ['corpo-hoje-homem-magro.jpg','corpo-hoje-homem-gordinho.jpg','corpo-hoje-homem-sobrepeso.jpg','corpo-hoje-homem-definido.jpg']
-      : ['corpo-hoje-mulher-magra.jpg','corpo-hoje-mulher-gordinha.jpg','corpo-hoje-mulher-sobrepeso.jpg','corpo-hoje-mulher-definida.jpg']
+      ? ['/corpo-hoje-homem-magro.jpg','/corpo-hoje-homem-gordinho.jpg','/corpo-hoje-homem-sobrepeso.jpg','/corpo-hoje-homem-definido.jpg']
+      : ['/corpo-hoje-mulher-magra.jpg','/corpo-hoje-mulher-gordinha.jpg','/corpo-hoje-mulher-sobrepeso.jpg','/corpo-hoje-mulher-definida.jpg']
   },
 
   {
@@ -721,7 +720,7 @@ const QUESTIONS = [
     id:'corpo_sonho', num:12,
     question:'Qual é o seu corpo dos sonhos?',
     options: a => a.sexo==='Homem' ? ['Definido','Musculoso','Atlético e volumoso','Mantendo o shape atual'] : ['Magra','Definida','Com curvas','Média'],
-    optionImages: a => a.sexo==='Homem' ? ['corpo-homem-definido.jpg','corpo-homem-musculoso.jpg','corpo-homem-atletico.jpg','corpo-homem-atual.jpg'] : ['corpo-magra.jpg','corpo-definida.jpg','corpo-curvas.jpg','corpo-media.jpg']
+    optionImages: a => a.sexo==='Homem' ? ['/corpo-homem-definido.jpg','/corpo-homem-musculoso.jpg','/corpo-homem-atletico.jpg','/corpo-homem-atual.jpg'] : ['/corpo-magra.jpg','/corpo-definida.jpg','/corpo-curvas.jpg','/corpo-media.jpg']
   },
   {
     id:'outros_objetivos', num:13, type:'multi',
@@ -794,12 +793,12 @@ function render(){
 }
 
 const IDADE_OPTS = ['Entre 18 e 29 anos','Entre 30 e 39 anos','Entre 40 e 49 anos','+50 anos'];
-const IDADE_IMGS_MULHER = ['idade-18-29.jpg','idade-30-39.jpg','idade-40-49.jpg','idade-50-mais.jpg'];
-const IDADE_IMGS_HOMEM  = ['idade-homem-18-29.jpg','idade-homem-30-39.jpg','idade-homem-40-49.jpg','idade-homem-50-mais.jpg'];
+const IDADE_IMGS_MULHER = ['/idade-18-29.jpg','/idade-30-39.jpg','/idade-40-49.jpg','/idade-50-mais.jpg'];
+const IDADE_IMGS_HOMEM  = ['/idade-homem-18-29.jpg','/idade-homem-30-39.jpg','/idade-homem-40-49.jpg','/idade-homem-50-mais.jpg'];
 function idadeImgsDe(){ return state.answers.sexo==='Homem' ? IDADE_IMGS_HOMEM : IDADE_IMGS_MULHER; }
 
 const SEXO_OPTS = ['Mulher','Homem'];
-const SEXO_IMGS = ['sexo-mulher.jpg','sexo-homem.jpg'];
+const SEXO_IMGS = ['/sexo-mulher.jpg','/sexo-homem.jpg'];
 
 /* abertura: só headline + imagem + subheadline + CTA, sem pergunta
    nenhuma ainda (a pergunta "Você é" virou a tela seguinte, renderSexo)
@@ -809,9 +808,9 @@ function renderIntro(){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz" style="text-align:center;padding-top:40px;padding-bottom:46px;">
-      <div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      <div class="brand"><img src="/Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <h1 class="hero-h1" style="margin-top:18px;">Sua dieta e seu treino calculados pro seu corpo</h1>
-      <img src="app-mockup.jpg" alt="${APP_NOME}" style="width:100%;border-radius:20px;display:block;margin:20px 0;" onerror="this.outerHTML='<div style=&quot;font-size:52px;margin:20px 0;&quot;>📱</div>'">
+      <img src="/app-mockup.jpg" alt="${APP_NOME}" style="width:100%;border-radius:20px;display:block;margin:20px 0;" onerror="this.outerHTML='<div style=&quot;font-size:52px;margin:20px 0;&quot;>📱</div>'">
       <p class="hero-sub">Responda o questionário e receba um plano de emagrecimento personalizado por meio do aplicativo "${APP_NOME}".</p>
       <p style="font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:#9aa8a2;margin-bottom:16px;">Toque no botão abaixo:</p>
       <button class="btn" onclick="go(1)">Continuar</button>
@@ -887,7 +886,7 @@ function renderQuestion(q){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}<div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      ${backBtn()}<div class="brand"><img src="/Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
       ${echo}
@@ -923,7 +922,7 @@ function renderMultiQuestion(q){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}<div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      ${backBtn()}<div class="brand"><img src="/Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
       <h2 class="q-title tight">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
@@ -952,7 +951,7 @@ function renderTextQuestion(q){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}<div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      ${backBtn()}<div class="brand"><img src="/Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
       <h2 class="q-title">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
@@ -973,7 +972,7 @@ function renderRulerQuestion(q){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz" style="text-align:center;">
-      ${backBtn()}<div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      ${backBtn()}<div class="brand"><img src="/Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
       <h2 class="q-title" style="text-align:center;">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
@@ -1129,10 +1128,10 @@ function renderProjecao(){
   /* imagens totalmente personalizadas por tópico (ver prompts enviados
      ao usuário) — enquanto não forem enviadas, cai no emoji de fallback */
   const COMO_FUNCIONA = [
-    ['Cardápio', 'icone-cardapio.jpg', '🍽️', 'Calculado na sua meta, com troca de alimentos'],
-    ['Treino', 'icone-treino.jpg', '🏋️', 'Montado pro seu sexo e seu local de treino'],
-    ['Hábitos', 'icone-habitos.jpg', '💧', 'Metas diárias de água e sono'],
-    ['Evolução', 'icone-evolucao.jpg', '📈', 'Pontos, níveis e registro de progresso']
+    ['Cardápio', '/icone-cardapio-claro.jpg', '🍽️', 'Calculado na sua meta, com troca de alimentos'],
+    ['Treino', '/icone-treino-claro.jpg', '🏋️', 'Montado pro seu sexo e seu local de treino'],
+    ['Hábitos', '/icone-habitos-claro.jpg', '💧', 'Metas diárias de água e sono'],
+    ['Evolução', '/icone-evolucao-claro.jpg', '📈', 'Pontos, níveis e registro de progresso']
   ];
 
   const temCheckout = !!CHECKOUT_URL;
@@ -1142,7 +1141,7 @@ function renderProjecao(){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}<div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      ${backBtn()}<div class="brand"><img src="/Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:100%"></div></div>
 
@@ -1189,7 +1188,7 @@ function renderProjecao(){
         </div>`).join('')}
       </div>
 
-      <img src="fit-day-promo.jpg" alt="${APP_NOME}" style="width:100%;border-radius:16px;display:block;margin:22px 0 0;" onerror="this.remove()">
+      <img src="/fit-day-promo-claro.jpg" alt="${APP_NOME}" style="width:100%;border-radius:16px;display:block;margin:22px 0 0;" onerror="this.remove()">
 
       <a class="btn" style="margin-top:22px;" href="${destino}" onclick="irParaApp(event)">${rotuloCTA}</a>
 
@@ -1226,7 +1225,7 @@ function renderMeta(){
     <div class="card-quiz" style="text-align:center;">
       <div class="progress-bar"><div class="progress-fill" style="width:${pctAte('meta_kg')}%"></div></div>
       <p style="font-family:'Lato',sans-serif;font-size:25px;font-weight:900;color:var(--verde-escuro);line-height:1.3;margin:20px 0;">${nome?nome+', sua':'Sua'} meta é totalmente possível, e sem depender da aplicação pra sempre.</p>
-      <img src="resultado-1.jpg" alt="Resultado real do método" style="width:100%;border-radius:14px;display:block;margin:0 0 18px;" onerror="this.onerror=null;this.outerHTML='&lt;div class=&quot;meta-img&quot;&gt;Salve a imagem como resultado-1.jpg&lt;/div&gt;'">
+      <img src="/resultado-1.jpg" alt="Resultado real do método" style="width:100%;border-radius:14px;display:block;margin:0 0 18px;" onerror="this.onerror=null;this.outerHTML='&lt;div class=&quot;meta-img&quot;&gt;Salve a imagem como resultado-1.jpg&lt;/div&gt;'">
       <p style="font-family:'Lato',sans-serif;font-size:16.5px;font-weight:800;color:var(--cinza);line-height:1.5;margin:0 0 14px;">Mulheres que reativaram a produção natural de GLP-1 antes de reduzir a dose conseguiram sustentar o peso sem a canetinha.</p>
       <p style="font-family:'Lato',sans-serif;font-size:15px;font-weight:800;color:var(--verde);line-height:1.5;margin:0 0 22px;">Faltam só mais alguns passos para liberar o seu protocolo completo.</p>
       <button class="btn" style="text-transform:uppercase;letter-spacing:.5px;" onclick="go(1)">Continuar teste gratuito</button>
@@ -1409,7 +1408,7 @@ function renderAppTeaser(){
     <div class="card-quiz" style="text-align:center;">
       ${backBtn()}
       <div class="brand-sub" style="margin-bottom:14px;">Antes de continuar</div>
-      <img src="app-teaser.jpg" alt="${APP_NOME}" style="width:100%;border-radius:20px;display:block;margin:0 0 20px;box-shadow:0 16px 40px rgba(21,154,85,.22);" onerror="this.outerHTML='<div style=&quot;font-size:52px;margin-bottom:6px;&quot;>📱</div>'">
+      <img src="/app-teaser.jpg" alt="${APP_NOME}" style="width:100%;border-radius:20px;display:block;margin:0 0 20px;box-shadow:0 16px 40px rgba(21,154,85,.22);" onerror="this.outerHTML='<div style=&quot;font-size:52px;margin-bottom:6px;&quot;>📱</div>'">
       <h2 class="q-title" style="font-size:22px;">${nome?nome+', se':'Se'} o ${APP_NOME} te entregasse pronto, todo dia, exatamente o que comer e treinar pro seu objetivo, isso mudaria o jogo pra você?</h2>
       <div class="opts" style="margin-top:6px;">
         <button class="opt" onclick="selectAppTeaser(1)"><span class="opt-radio"></span><span>✅ Sim, com certeza</span></button>
@@ -1544,7 +1543,7 @@ function renderOfferPrice(){
     </div>
 
     <div class="quem" style="margin-top:22px;">
-      <img src="FotoKelly.jpg" alt="Nutri Kelly" style="width:160px;height:160px;border-radius:16px;object-fit:cover;border:4px solid var(--verde-claro);box-shadow:0 0 34px rgba(76,175,130,.4);margin:0 auto 20px;display:block;">
+      <img src="/FotoKelly.jpg" alt="Nutri Kelly" style="width:160px;height:160px;border-radius:16px;object-fit:cover;border:4px solid var(--verde-claro);box-shadow:0 0 34px rgba(76,175,130,.4);margin:0 auto 20px;display:block;">
       <h3>Quem está por trás <span>do Método?</span></h3>
       <p>Oi! Sou a <span>Nutri Kelly</span>, tenho 41 anos e moro no Paraná. Sou nutricionista há 18 anos, especialista em nutrição e emagrecimento. Desde então, ajudo pessoas a alcançarem seus objetivos com estratégias nutricionais práticas, eficientes e sustentáveis. Estou aqui para te ajudar a reativar a sua produção natural de saciedade e sair da canetinha sem recuperar o peso.</p>
     </div>
@@ -1698,7 +1697,7 @@ function renderResult(){
       <!-- QUEM É -->
       <div class="res-section">
         <div class="quem">
-          <img src="FotoSiteKelly.jpeg" alt="Nutri Kelly" style="width:160px;height:160px;border-radius:16px;object-fit:cover;border:4px solid var(--verde-claro);box-shadow:0 0 34px rgba(76,175,130,.4);margin:0 auto 20px;display:block;" onerror="this.style.display='none'">
+          <img src="/FotoSiteKelly.jpeg" alt="Nutri Kelly" style="width:160px;height:160px;border-radius:16px;object-fit:cover;border:4px solid var(--verde-claro);box-shadow:0 0 34px rgba(76,175,130,.4);margin:0 auto 20px;display:block;" onerror="this.style.display='none'">
           <h3>Quem está por trás <span>do método</span></h3>
           <p>Oi! Sou a <span>Nutri Kelly</span>, tenho 41 anos e moro no Paraná. Sou nutricionista há 18 anos, especialista em nutrição e emagrecimento. Atendo mulheres em tratamento com canetinha todos os dias e criei este protocolo com o que eu explico em consulta: como reativar a produção natural de saciedade, proteger a massa magra e reduzir a dose sem que o peso volte.</p>
         </div>
@@ -1730,7 +1729,7 @@ function renderResult(){
 
       <!-- GARANTIA -->
       <div class="res-section" style="text-align:center;">
-        <img src="Garantia7dias.png" alt="Garantia de 7 dias" class="gar-img">
+        <img src="/Garantia7dias.png" alt="Garantia de 7 dias" class="gar-img">
       </div>
 
       <!-- FAQ -->
