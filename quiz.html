@@ -63,12 +63,12 @@ html{scroll-behavior:smooth;}
 
 body{
   font-family:'Lato',sans-serif;
-  background-color:#f3f8f5;
-  background-image:url('bg-vegetal.jpg');
+  background-color:#0a0f0c;
+  background-image:radial-gradient(ellipse at top, #142a1f 0%, #0a0f0c 65%);
   background-attachment:fixed;
   background-size:cover;
   background-position:center;
-  color:var(--cinza);
+  color:#cfe0d6;
   line-height:1.6;
   min-height:100vh;
 }
@@ -97,40 +97,41 @@ body{
 }
 
 .card-quiz{
-  background:rgba(250,249,240,.96);
+  background:rgba(19,29,24,.92);
   border-radius:22px;
-  box-shadow:0 12px 50px rgba(26,77,56,.14);
+  box-shadow:0 12px 50px rgba(0,0,0,.55), 0 0 40px rgba(76,175,130,.06);
   padding:34px 30px;
   backdrop-filter:blur(2px);
   position:relative;
+  border:1px solid rgba(76,175,130,.14);
 }
 
 /* seta de voltar */
-.back-btn{position:absolute;left:16px;top:14px;background:none;border:none;color:#9aaaa2;font-size:24px;line-height:1;cursor:pointer;padding:4px 8px;z-index:5;transition:color .18s;}
-.back-btn:hover{color:var(--verde);}
+.back-btn{position:absolute;left:16px;top:14px;background:none;border:none;color:#7c9186;font-size:24px;line-height:1;cursor:pointer;padding:4px 8px;z-index:5;transition:color .18s;}
+.back-btn:hover{color:var(--verde-claro);}
 
 .brand{text-align:center;margin-bottom:6px;}
-.brand-nome{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--verde-escuro);}
+.brand-nome{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--verde-claro);}
 .brand-logo{height:54px;display:block;margin:0 auto;}
-.brand-sub{font-size:13px;color:#8aa79a;margin-bottom:20px;text-align:center;}
+.brand-sub{font-size:13px;color:#7c9186;margin-bottom:20px;text-align:center;}
 
 /* ===== PROGRESSO ===== */
 .progress-head{display:flex;justify-content:flex-end;font-size:13px;color:var(--dourado);font-weight:700;margin-bottom:8px;}
-.progress-bar{height:7px;background:#e3ede8;border-radius:20px;overflow:hidden;margin-bottom:26px;}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--verde-escuro),var(--verde-claro));border-radius:20px;transition:width .5s ease;}
+.progress-bar{height:7px;background:rgba(255,255,255,.08);border-radius:20px;overflow:hidden;margin-bottom:26px;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--verde),var(--verde-claro));border-radius:20px;transition:width .5s ease;}
 
 /* ===== PILLS ===== */
 .pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
-.pill{background:#f0f7f3;border:1px solid #d9ebe2;color:var(--verde);font-size:12px;font-weight:700;padding:6px 12px;border-radius:20px;}
+.pill{background:rgba(76,175,130,.12);border:1px solid rgba(76,175,130,.3);color:var(--verde-claro);font-size:12px;font-weight:700;padding:6px 12px;border-radius:20px;}
 
 /* ===== INSIGHT BOX ===== */
-.insight{background:#eef7f1;border-left:4px solid var(--verde-claro);border-radius:8px;padding:14px 16px;font-size:14px;color:#3a5a4c;line-height:1.6;margin-bottom:20px;}
-.insight strong{color:var(--verde);}
+.insight{background:rgba(76,175,130,.1);border-left:4px solid var(--verde-claro);border-radius:8px;padding:14px 16px;font-size:14px;color:#cfe0d6;line-height:1.6;margin-bottom:20px;}
+.insight strong{color:var(--verde-claro);}
 
-.echo{font-size:14px;color:#7d9488;margin-bottom:6px;}
+.echo{font-size:14px;color:#8fa79c;margin-bottom:6px;}
 
 /* ===== PERGUNTA ===== */
-.q-title{font-family:'Open Sans',sans-serif;font-size:26px;font-weight:900;color:var(--verde-escuro);line-height:1.25;margin-bottom:22px;text-align:center;}
+.q-title{font-family:'Open Sans',sans-serif;font-size:26px;font-weight:900;color:var(--verde-claro);line-height:1.25;margin-bottom:22px;text-align:center;}
 
 /* ===== OPÇÕES ===== */
 .opts{display:flex;flex-direction:column;gap:12px;}
@@ -158,14 +159,14 @@ body{
 .opts.grid2 .idade-card:last-child:nth-child(odd){grid-column:1 / -1;justify-self:center;width:calc(50% - 5px);}
 .opt{
   display:flex;align-items:center;gap:14px;
-  background:#fff;border:1.5px solid #e2ece7;border-radius:14px;
-  padding:17px 18px;font-size:15px;font-weight:600;color:var(--cinza);
+  background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);border-radius:14px;
+  padding:17px 18px;font-size:15px;font-weight:600;color:#dfeae4;
   cursor:pointer;transition:all .18s ease;text-align:left;
 }
-.opt:hover{border-color:var(--verde-claro);box-shadow:0 6px 20px rgba(76,175,130,.12);transform:translateY(-1px);}
-.opt-radio{width:24px;height:24px;border-radius:50%;border:2px solid #cdddd4;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .18s ease;}
-.opt.sel{border-color:var(--verde);background:var(--verde-suave);}
-.opt.sel .opt-radio{border-color:var(--verde);background:var(--verde);}
+.opt:hover{border-color:var(--verde-claro);box-shadow:0 6px 20px rgba(76,175,130,.18);transform:translateY(-1px);}
+.opt-radio{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.25);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .18s ease;}
+.opt.sel{border-color:var(--verde-claro);background:rgba(76,175,130,.16);}
+.opt.sel .opt-radio{border-color:var(--verde-claro);background:var(--verde);}
 .opt.sel .opt-radio::after{content:'✓';color:#fff;font-size:13px;font-weight:700;}
 
 /* variação com foto colada à esquerda de cada opção (lista vertical) */
@@ -184,41 +185,41 @@ body{
   box-shadow:0 8px 30px rgba(46,125,90,.32);transition:transform .2s,box-shadow .2s;letter-spacing:.3px;
 }
 .btn:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(46,125,90,.45);}
-.btn-ghost{background:#fff;color:var(--verde);border:1.5px solid #d9ebe2;box-shadow:none;margin-top:12px;}
-.btn-ghost:hover{background:#f4faf7;box-shadow:none;}
+.btn-ghost{background:rgba(255,255,255,.04);color:var(--verde-claro);border:1.5px solid rgba(255,255,255,.12);box-shadow:none;margin-top:12px;}
+.btn-ghost:hover{background:rgba(255,255,255,.07);box-shadow:none;}
 
 /* ===== INPUT DE TEXTO (nome) ===== */
-.text-input{width:100%;border:1.5px solid #e2ece7;border-radius:14px;padding:16px 18px;font-size:16px;font-family:'Lato',sans-serif;color:var(--cinza);background:#fff;margin-bottom:14px;outline:none;transition:border-color .18s,box-shadow .18s;}
-.text-input:focus{border-color:var(--verde);box-shadow:0 6px 20px rgba(76,175,130,.12);}
-.text-input::placeholder{color:#b7c6bf;}
+.text-input{width:100%;border:1.5px solid rgba(255,255,255,.12);border-radius:14px;padding:16px 18px;font-size:16px;font-family:'Lato',sans-serif;color:#eef5f0;background:rgba(255,255,255,.05);margin-bottom:14px;outline:none;transition:border-color .18s,box-shadow .18s;}
+.text-input:focus{border-color:var(--verde-claro);box-shadow:0 6px 20px rgba(76,175,130,.18);}
+.text-input::placeholder{color:#6f8579;}
 
 /* ===== RÉGUA (peso / altura) ===== */
-.ruler-sub{font-size:14px;color:#7d9488;margin:-8px 0 18px;}
-.unit-toggle{display:inline-flex;background:#e3ede8;border-radius:30px;padding:4px;margin-bottom:6px;}
-.unit-toggle .ut{border:none;background:transparent;color:#7d9488;font-weight:800;font-size:14px;padding:8px 26px;border-radius:24px;cursor:pointer;transition:all .18s;}
+.ruler-sub{font-size:14px;color:#8fa79c;margin:-8px 0 18px;}
+.unit-toggle{display:inline-flex;background:rgba(255,255,255,.06);border-radius:30px;padding:4px;margin-bottom:6px;}
+.unit-toggle .ut{border:none;background:transparent;color:#8fa79c;font-weight:800;font-size:14px;padding:8px 26px;border-radius:24px;cursor:pointer;transition:all .18s;}
 .unit-toggle .ut.active{background:var(--verde);color:#fff;box-shadow:0 4px 14px rgba(46,125,90,.3);}
-.ruler-val{font-family:'Playfair Display',serif;font-size:46px;font-weight:900;color:var(--verde-escuro);margin:16px 0 6px;line-height:1;}
-.ruler-val small{font-size:20px;color:var(--verde);margin-left:3px;font-weight:700;}
+.ruler-val{font-family:'Playfair Display',serif;font-size:46px;font-weight:900;color:var(--verde-claro);margin:16px 0 6px;line-height:1;}
+.ruler-val small{font-size:20px;color:var(--verde-claro);margin-left:3px;font-weight:700;}
 .ruler-track{position:relative;height:52px;margin:6px 6px 0;}
-.ruler-line{position:absolute;left:0;right:0;bottom:16px;height:2px;background:#e2ece7;}
+.ruler-line{position:absolute;left:0;right:0;bottom:16px;height:2px;background:rgba(255,255,255,.15);}
 .ruler-ticks{position:absolute;left:0;right:0;bottom:16px;height:26px;display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none;}
-.ruler-ticks .tk{width:1px;height:12px;background:#cdddd4;}
-.ruler-ticks .tk.maj{height:24px;width:2px;background:#9bb3a8;}
-.ruler-pointer{position:absolute;top:0;bottom:16px;width:3px;background:var(--verde);transform:translateX(-50%);pointer-events:none;border-radius:2px;transition:left .05s linear;}
-.ruler-pointer::after{content:'';position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);border-left:8px solid transparent;border-right:8px solid transparent;border-top:12px solid var(--verde);}
+.ruler-ticks .tk{width:1px;height:12px;background:rgba(255,255,255,.2);}
+.ruler-ticks .tk.maj{height:24px;width:2px;background:rgba(255,255,255,.35);}
+.ruler-pointer{position:absolute;top:0;bottom:16px;width:3px;background:var(--verde-claro);transform:translateX(-50%);pointer-events:none;border-radius:2px;transition:left .05s linear;}
+.ruler-pointer::after{content:'';position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);border-left:8px solid transparent;border-right:8px solid transparent;border-top:12px solid var(--verde-claro);}
 .ruler-input{position:absolute;left:0;right:0;top:0;width:100%;height:100%;margin:0;opacity:0;cursor:grab;z-index:5;-webkit-appearance:none;appearance:none;background:transparent;}
 .ruler-input:active{cursor:grabbing;}
 .ruler-input::-webkit-slider-thumb{-webkit-appearance:none;width:40px;height:52px;background:transparent;cursor:grab;}
 .ruler-input::-moz-range-thumb{width:40px;height:52px;border:none;background:transparent;cursor:grab;}
-.ruler-labels{display:flex;justify-content:space-between;font-size:13px;color:#9aaaa2;font-weight:700;margin-top:6px;}
+.ruler-labels{display:flex;justify-content:space-between;font-size:13px;color:#8fa79c;font-weight:700;margin-top:6px;}
 
 /* ===== INTRO ===== */
-.intro-badge{display:inline-block;background:var(--verde-suave);color:var(--verde);font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:7px 18px;border-radius:20px;margin-bottom:22px;}
-.intro-h1{font-family:'Open Sans',sans-serif;font-size:32px;font-weight:900;color:var(--verde-escuro);line-height:1.25;margin-bottom:16px;text-align:center;}
+.intro-badge{display:inline-block;background:rgba(76,175,130,.14);color:var(--verde-claro);font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:7px 18px;border-radius:20px;margin-bottom:22px;}
+.intro-h1{font-family:'Open Sans',sans-serif;font-size:32px;font-weight:900;color:var(--verde-claro);line-height:1.25;margin-bottom:16px;text-align:center;}
 .intro-h1 span{color:var(--verde-claro);}
-.intro-sub{font-size:16px;color:#5f6f68;text-align:center;line-height:1.65;margin-bottom:26px;}
-.hero-h1{font-family:'Baloo 2',sans-serif;font-size:30px;font-weight:800;color:var(--verde-escuro);line-height:1.25;text-align:center;margin-bottom:18px;}
-.hero-sub{font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:600;color:#3a5a4c;line-height:1.55;text-align:center;margin:20px 0 22px;}
+.intro-sub{font-size:16px;color:#a9bcb2;text-align:center;line-height:1.65;margin-bottom:26px;}
+.hero-h1{font-family:'Baloo 2',sans-serif;font-size:30px;font-weight:800;color:var(--verde-claro);line-height:1.25;text-align:center;margin-bottom:18px;}
+.hero-sub{font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:600;color:#c3d4cb;line-height:1.55;text-align:center;margin:20px 0 22px;}
 .intro-secure{text-align:center;font-size:12px;color:#98a89f;margin-top:12px;}
 
 /* ===== INTERSTICIAL ===== */
@@ -231,7 +232,7 @@ body{
 .inter-mini{font-size:13px;color:#9aaaa2;margin-bottom:22px;}
 
 /* ===== ANALISANDO ===== */
-.analise-title{text-align:center;font-size:13px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--verde-escuro);margin-bottom:26px;}
+.analise-title{text-align:center;font-size:13px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--verde-claro);margin-bottom:26px;}
 .analise-list{display:flex;flex-direction:column;gap:16px;}
 .analise-item{display:flex;align-items:center;gap:14px;font-size:15px;color:#9aaaa2;font-weight:600;opacity:.5;transition:all .4s ease;}
 .analise-item .ic{width:28px;height:28px;border-radius:50%;border:2px solid #d5e2db;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;}
@@ -354,8 +355,8 @@ body{
 .mod-result::before{content:'✓ Resultado: ';}
 
 /* ===== PROVA CIENTÍFICA (mesma da landing) ===== */
-.prova-numero{font-family:'Playfair Display',serif;font-size:72px;font-weight:900;color:#c0392b;line-height:1;margin-bottom:6px;text-align:center;}
-.prova-numero-legenda{font-size:15.5px;color:#666;max-width:420px;margin:0 auto 26px;line-height:1.6;text-align:center;}
+.prova-numero{font-family:'Playfair Display',serif;font-size:72px;font-weight:900;color:#ff6f61;line-height:1;margin-bottom:6px;text-align:center;}
+.prova-numero-legenda{font-size:15.5px;color:#a9bcb2;max-width:420px;margin:0 auto 26px;line-height:1.6;text-align:center;}
 .prova-noticia{max-width:620px;margin:0 auto;background:#fff;border:1px solid #e4e4e4;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.10);}
 .prova-noticia img{width:100%;height:auto;display:block;}
 .prova-fonte{font-size:11.5px;color:#999;padding:12px 16px;text-align:left;border-top:1px solid #f0f0f0;line-height:1.6;}
@@ -371,12 +372,12 @@ body{
 .proj-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0;}
 .proj-compare-col{border-radius:14px;padding:14px 12px;}
 .proj-compare-img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top center;border-radius:10px;display:block;margin-bottom:10px;}
-.proj-compare-col.ruim{background:#fdecec;}
-.proj-compare-col.bom{background:#eef7f1;}
+.proj-compare-col.ruim{background:rgba(192,87,79,.14);}
+.proj-compare-col.bom{background:rgba(76,175,130,.12);}
 .proj-compare-col h5{font-size:12.5px;font-weight:900;margin:0 0 8px;text-align:center;}
 .proj-compare-col.ruim h5{color:var(--vermelho);}
 .proj-compare-col.bom h5{color:var(--verde-escuro);}
-.proj-compare-col ul{list-style:none;padding:0;margin:0;font-size:12px;color:#4a4a4a;line-height:1.6;}
+.proj-compare-col ul{list-style:none;padding:0;margin:0;font-size:12px;color:#cfe0d6;line-height:1.6;}
 .proj-compare-col li{margin-bottom:6px;}
 .glp-metric{margin-bottom:10px;}
 .glp-metric:last-child{margin-bottom:0;}
@@ -393,10 +394,10 @@ body{
 @media(max-width:768px){.prova-numero{font-size:58px;}.prova-texto{font-size:15px;}}
 
 /* tabela "quanto vale destravar" */
-.valor-box{background:#fff;border:1px solid #e4ede9;border-radius:16px;padding:8px 22px;margin-top:8px;box-shadow:0 2px 14px rgba(46,125,90,.06);}
-.valor-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #f0f5f2;font-size:14px;}
+.valor-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:8px 22px;margin-top:8px;box-shadow:0 2px 14px rgba(0,0,0,.2);}
+.valor-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:14px;}
 .valor-row:last-child{border-bottom:none;}
-.valor-row .lbl{color:var(--cinza);font-weight:700;}
+.valor-row .lbl{color:#dfeae4;font-weight:700;}
 .valor-row .num{color:var(--vermelho);font-weight:800;white-space:nowrap;}
 .valor-row.total{background:#fbf1f0;margin:0 -22px;padding:16px 22px;border-radius:12px;}
 .valor-nota{text-align:center;font-size:13px;color:#7d9488;margin-top:16px;line-height:1.7;}
@@ -503,9 +504,9 @@ body{
 .alerta-box .it{font-size:13.5px;color:#8a5f5c;padding:5px 0;display:flex;gap:9px;align-items:flex-start;line-height:1.55;}
 .alerta-box .it::before{content:'✕';color:var(--vermelho);font-weight:900;flex-shrink:0;}
 .solucao-box{background:none;border:none;border-radius:0;padding:0;margin:22px 0;}
-.solucao-box h4{color:#1a1a1a;font-size:20px;font-weight:900;margin-bottom:10px;line-height:1.35;display:flex;gap:9px;align-items:flex-start;justify-content:center;text-align:center;}
-.solucao-box p{font-size:13.5px;color:#3a5a4c;line-height:1.65;}
-.solucao-box p strong{color:var(--verde-escuro);}
+.solucao-box h4{color:#eef5f0;font-size:20px;font-weight:900;margin-bottom:10px;line-height:1.35;display:flex;gap:9px;align-items:flex-start;justify-content:center;text-align:center;}
+.solucao-box p{font-size:13.5px;color:#c3d4cb;line-height:1.65;}
+.solucao-box p strong{color:var(--verde-claro);}
 
 @media(max-width:600px){
   .intro-h1{font-size:26px;}
@@ -647,9 +648,25 @@ const QUESTIONS = [
       : ['corpo-hoje-mulher-magra.jpg','corpo-hoje-mulher-gordinha.jpg','corpo-hoje-mulher-sobrepeso.jpg','corpo-hoje-mulher-definida.jpg']
   },
 
+  {
+    id:'peso', num:3, type:'ruler',
+    question:'Qual é o seu peso atual?',
+    units:[{u:'kg',min:40,max:160,def:70,step:1},{u:'lb',min:88,max:352,def:154,step:1}]
+  },
+  {
+    id:'altura', num:4, type:'ruler',
+    question:'Qual é a sua altura?',
+    units:[{u:'cm',min:140,max:210,def:165,step:1},{u:'pol',min:55,max:83,def:65,step:1}]
+  },
+  {
+    id:'meta_peso', num:5, type:'ruler',
+    question:'Qual peso você quer alcançar?',
+    units:[{u:'kg',min:40,max:160,def:65,step:1},{u:'lb',min:88,max:352,def:143,step:1}]
+  },
+
   /* ===== P — PROBLEMA ===== */
   {
-    id:'frustracao', num:3,
+    id:'frustracao', num:6,
     question:'O que mais te impede de chegar no corpo que você quer?',
     options:[
       '⏰ Falta de tempo na rotina',
@@ -660,7 +677,7 @@ const QUESTIONS = [
     ]
   },
   {
-    id:'tentativas', num:4,
+    id:'tentativas', num:7,
     question:'Você já tentou mudar o corpo antes e não conseguiu manter o resultado?',
     options:[
       'Sim, perdi peso mas voltou tudo depois',
@@ -670,22 +687,6 @@ const QUESTIONS = [
     ]
   },
   /* >>> DIAGNÓSTICO CURTO entra aqui, depois de 'tentativas' <<< */
-
-  {
-    id:'peso', num:5, type:'ruler',
-    question:'Qual é o seu peso atual?',
-    units:[{u:'kg',min:40,max:160,def:70,step:1},{u:'lb',min:88,max:352,def:154,step:1}]
-  },
-  {
-    id:'altura', num:6, type:'ruler',
-    question:'Qual é a sua altura?',
-    units:[{u:'cm',min:140,max:210,def:165,step:1},{u:'pol',min:55,max:83,def:65,step:1}]
-  },
-  {
-    id:'meta_peso', num:7, type:'ruler',
-    question:'Qual peso você quer alcançar?',
-    units:[{u:'kg',min:40,max:160,def:65,step:1},{u:'lb',min:88,max:352,def:143,step:1}]
-  },
 
   /* ===== hábitos — alimentam o Índice de Constância ===== */
   {
@@ -745,9 +746,6 @@ FLOW.push({type:'sexo'});
 FLOW.push({type:'idade'});
 QUESTIONS.forEach(q=>{
   FLOW.push({type:'question', q});
-  if(q.id==='tentativas'){                                   // diagnóstico curto, ainda sem números
-    FLOW.push({type:'diagnostico'});
-  }
   if(q.id==='outros_objetivos'){                             // analisando + tela do app, estilo "isso ajudaria você?"
     FLOW.push({type:'analyzing'});
     FLOW.push({type:'appTeaser'});
@@ -786,7 +784,7 @@ function render(){
   const map = {
     intro:renderIntro, sexo:renderSexo, idade:renderIdade, question:()=>renderQuestion(step.q), break1:renderBreak1,
     interstitial:()=>renderInterstitial(step.id),
-    analyzing:renderAnalyzing, diagnostico:renderDiagnostico, prepitch:renderPrePitch, meta:renderMeta,
+    analyzing:renderAnalyzing, prepitch:renderPrePitch, meta:renderMeta,
     appTeaser:renderAppTeaser,
     projecao:renderProjecao,
     offerLocked:renderOfferLocked, offerPrice:renderOfferPrice, result:renderResult
@@ -1100,23 +1098,23 @@ function renderProjecao(){
   /* cada bloco tem um leve degradê (claro em cima, cor base embaixo) em vez
      de cor sólida chapada, pra suavizar visualmente a trilha em blocos */
   const CORES_TRILHA = [['#eb8074','#e05a4e'],['#f4bb85','#f0a05a'],['#f4d485','#f0c05a'],['#aecb85','#8fb85a'],['#7ac3a3','#4caf82']];
-  const trilha = pct => CORES_TRILHA.map(([clara,base],i)=>`<div style="flex:1;height:7px;border-radius:6px;background:${pct>i*20?`linear-gradient(180deg,${clara},${base})`:'#e6ece8'};"></div>`).join('');
+  const trilha = pct => CORES_TRILHA.map(([clara,base],i)=>`<div style="flex:1;height:7px;border-radius:6px;background:${pct>i*20?`linear-gradient(180deg,${clara},${base})`:'rgba(255,255,255,.1)'};"></div>`).join('');
   const sliderRow = (label, antes, depois) => `
       <div style="margin-bottom:18px;">
-        <div style="font-size:12.5px;font-weight:800;color:#4a4a4a;margin-bottom:6px;">${label}</div>
+        <div style="font-size:12.5px;font-weight:800;color:#dfeae4;margin-bottom:6px;">${label}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
           <div>
             <div style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:var(--vermelho);margin-bottom:6px;"><span>Baixa</span><span>${antes}%</span></div>
             <div style="position:relative;">
               <div style="display:flex;gap:3px;">${trilha(antes)}</div>
-              <div style="position:absolute;top:50%;left:${antes}%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--vermelho);box-shadow:0 0 0 4px rgba(224,90,78,.18);"></div>
+              <div style="position:absolute;top:50%;left:${antes}%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--vermelho);box-shadow:0 0 0 4px rgba(224,90,78,.28);"></div>
             </div>
           </div>
           <div>
-            <div style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:var(--verde-escuro);margin-bottom:6px;"><span>Alta</span><span>${depois}%</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:var(--verde-claro);margin-bottom:6px;"><span>Alta</span><span>${depois}%</span></div>
             <div style="position:relative;">
               <div style="display:flex;gap:3px;">${trilha(depois)}</div>
-              <div style="position:absolute;top:50%;left:${depois}%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--verde-escuro);box-shadow:0 0 0 4px rgba(46,125,90,.22);"></div>
+              <div style="position:absolute;top:50%;left:${depois}%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--verde-claro);box-shadow:0 0 0 4px rgba(76,175,130,.3);"></div>
             </div>
           </div>
         </div>
@@ -1148,17 +1146,17 @@ function renderProjecao(){
         <div class="proj-compare-col ruim">
           <h5 style="background:#22c55e;color:#fff;border-radius:20px;padding:16px 0;font-size:17px;">Antes</h5>
           ${imgHoje ? `<img class="proj-compare-img" src="${imgHoje}" alt="Antes" onerror="this.remove()">` : ''}
-          <div style="background:#fff;border-radius:10px;padding:10px 8px;text-align:center;">
-            <div style="font-size:11px;color:#8a9a92;font-weight:700;">Peso atual</div>
-            <div style="font-size:18px;font-weight:900;color:#1a1a1a;">${numDe('peso') || '--'}kg</div>
+          <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:10px 8px;text-align:center;">
+            <div style="font-size:11px;color:#9fb0a7;font-weight:700;">Peso atual</div>
+            <div style="font-size:18px;font-weight:900;color:#eef5f0;">${numDe('peso') || '--'}kg</div>
           </div>
         </div>
         <div class="proj-compare-col bom">
           <h5 style="background:#22c55e;color:#fff;border-radius:20px;padding:16px 0;font-size:17px;">Depois</h5>
           ${imgSonho ? `<img class="proj-compare-img" src="${imgSonho}" alt="Depois" onerror="this.remove()">` : ''}
-          <div style="background:#fff;border-radius:10px;padding:10px 8px;text-align:center;">
-            <div style="font-size:11px;color:#8a9a92;font-weight:700;">Meta de peso</div>
-            <div style="font-size:18px;font-weight:900;color:#1a1a1a;">${numDe('meta_peso') || '--'}kg</div>
+          <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:10px 8px;text-align:center;">
+            <div style="font-size:11px;color:#9fb0a7;font-weight:700;">Meta de peso</div>
+            <div style="font-size:18px;font-weight:900;color:#eef5f0;">${numDe('meta_peso') || '--'}kg</div>
           </div>
         </div>
       </div>
@@ -1169,19 +1167,19 @@ function renderProjecao(){
         ${sliderRow('Rotina organizada', rotinaAntes, rotinaDepois)}
       </div>
 
-      <div style="background:#e9f6ee;border-radius:14px;padding:20px 18px;margin:22px 0 14px;text-align:center;">
-        <h4 style="margin:0 0 10px;font-size:17px;color:#1a1a1a;">Seu plano personalizado no <span style="color:var(--verde);">${APP_NOME}</span></h4>
-        <p style="font-size:14.5px;color:var(--verde-escuro);font-weight:800;line-height:1.6;margin:0;">Com base nas suas respostas, o app já monta o seu cardápio, o seu treino e as suas metas de água e sono, ajustados pro seu objetivo de ${objFrase}.</p>
+      <div style="background:rgba(76,175,130,.12);border-radius:14px;padding:20px 18px;margin:22px 0 14px;text-align:center;">
+        <h4 style="margin:0 0 10px;font-size:17px;color:#eef5f0;">Seu plano personalizado no <span style="color:var(--verde-claro);">${APP_NOME}</span></h4>
+        <p style="font-size:14.5px;color:var(--verde-claro);font-weight:800;line-height:1.6;margin:0;">Com base nas suas respostas, o app já monta o seu cardápio, o seu treino e as suas metas de água e sono, ajustados pro seu objetivo de ${objFrase}.</p>
       </div>
 
       <!-- COMO FUNCIONA O APP -->
       <h4 style="text-align:center;margin:18px 0 16px;font-size:24px;font-weight:900;color:#22c55e;">Como o ${APP_NOME} funciona?</h4>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
         ${COMO_FUNCIONA.map(([titulo,img,emoji,desc])=>`
-        <div style="background:#fff;border-radius:16px;padding:16px 12px;text-align:center;box-shadow:0 2px 14px rgba(46,125,90,.06);">
-          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:22px;color:var(--verde-escuro);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;line-height:1.1;">${titulo}</div>
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px 12px;text-align:center;box-shadow:0 2px 14px rgba(0,0,0,.2);">
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:22px;color:var(--verde-claro);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;line-height:1.1;">${titulo}</div>
           <img src="${img}" alt="${titulo}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;display:block;margin-bottom:12px;" onerror="this.outerHTML='<div style=&quot;font-size:48px;margin-bottom:12px;&quot;>${emoji}</div>'">
-          <p style="font-size:12.5px;color:#4a4a4a;line-height:1.55;margin:0;text-align:left;">${desc}</p>
+          <p style="font-size:12.5px;color:#c3d4cb;line-height:1.55;margin:0;text-align:left;">${desc}</p>
         </div>`).join('')}
       </div>
 
@@ -1245,34 +1243,46 @@ const ANALISANDO_ITENS = [
 ];
 
 function renderAnalyzing(){
+  const RAIO = 42, CIRC = 2*Math.PI*RAIO;
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz" style="padding-top:44px;padding-bottom:52px;">
       <div class="progress-bar"><div class="progress-fill" id="topoFill" style="width:0%;transition:none;"></div></div>
       <div class="analise-title" style="margin-top:22px;">Analisando suas respostas...</div>
-      <p style="text-align:center;font-size:16px;font-weight:800;color:#3a5a4c;line-height:1.4;margin:0 0 26px;">Em poucos segundos o seu plano personalizado fica pronto.</p>
-      ${ANALISANDO_ITENS.map((label,i)=>`
-      <div class="lib-item" style="margin-bottom:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;font-weight:700;color:var(--verde-escuro);margin-bottom:6px;">
-          <span>✅ ${label}...</span>
-          <span id="itemPct${i}" style="font-variant-numeric:tabular-nums;">0%</span>
-        </div>
-        <div class="lib-bar"><div class="lib-fill" id="itemFill${i}"></div></div>
-      </div>`).join('')}
+      <p style="text-align:center;font-size:16px;font-weight:800;color:#c3d4cb;line-height:1.4;margin:0 0 26px;">Em poucos segundos o seu plano personalizado fica pronto.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px 10px;">
+        ${ANALISANDO_ITENS.map((label,i)=>`
+        <div style="text-align:center;">
+          <div style="position:relative;width:104px;height:104px;margin:0 auto 10px;">
+            <svg width="104" height="104" viewBox="0 0 104 104" style="transform:rotate(-90deg);">
+              <circle cx="52" cy="52" r="${RAIO}" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="9"/>
+              <circle cx="52" cy="52" r="${RAIO}" fill="none" stroke="url(#circGrad)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${CIRC}" stroke-dashoffset="${CIRC}" id="itemCirc${i}"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:var(--verde-claro);font-variant-numeric:tabular-nums;" id="itemPct${i}">0%</div>
+          </div>
+          <div style="font-size:12.5px;font-weight:700;color:#dfeae4;line-height:1.35;">✅ ${label}</div>
+        </div>`).join('')}
+        <svg width="0" height="0" style="position:absolute;">
+          <defs><linearGradient id="circGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" style="stop-color:var(--verde-escuro)"/>
+            <stop offset="100%" style="stop-color:var(--verde-claro)"/>
+          </linearGradient></defs>
+        </svg>
+      </div>
     </div>
   </div>`;
   const DUR = 5000;                                    // total da animação
   const topoFill = document.getElementById('topoFill');
   /* cada item usa um expoente diferente pra "dobrar" o tempo antes de
-     aplicar o smootherstep — isso faz cada barra ter sua própria
-     velocidade (uma dispara na frente, outra demora pra engatar), mas
-     como pow(0,k)=0 e pow(1,k)=1 pra qualquer k>0, todas ainda chegam
-     exatas a 100% no mesmo instante final, sem desalinhar do timer. */
+     aplicar o smootherstep — isso faz cada círculo ter sua própria
+     velocidade (um dispara na frente, outro demora pra engatar), mas
+     como pow(0,k)=0 e pow(1,k)=1 pra qualquer k>0, todos ainda fecham
+     exatos em 100% no mesmo instante final, sem desalinhar do timer. */
   const EXPOENTES = [0.5, 1.5, 0.75, 1.9, 1.1];
   const itens = ANALISANDO_ITENS.map((item,i)=>({
     k: EXPOENTES[i % EXPOENTES.length],
     pctEl: document.getElementById('itemPct'+i),
-    fillEl: document.getElementById('itemFill'+i),
+    circEl: document.getElementById('itemCirc'+i),
     ultimo: -1
   }));
   const smootherstep = x => x*x*x*(x*(x*6-15)+10);
@@ -1282,7 +1292,7 @@ function renderAnalyzing(){
     if(topoFill) topoFill.style.width = (smootherstep(t)*100)+'%';
     itens.forEach(it=>{
       const exato = smootherstep(Math.pow(t, it.k))*100;
-      if(it.fillEl) it.fillEl.style.width = exato+'%';        // largura sempre com precisão de fração, pra não travar
+      if(it.circEl) it.circEl.style.strokeDashoffset = CIRC*(1-exato/100);   // precisão de fração, pra não travar
       const pct = Math.round(exato);
       if(pct!==it.ultimo){
         if(it.pctEl) it.pctEl.textContent = pct+'%';           // número só repinta quando o inteiro muda
@@ -1379,67 +1389,8 @@ function faixaIndice(v){
   return       { txt:'BOA',   cor:'#2e7d5a', bg:'#e9f6ee' };
 }
 
-/* diagnóstico único: "você não está sozinho(a)" + estatística de recaída
-   (8 em cada 10) + como o Fit Day resolve isso. A frase de gênero muda por
-   sexo; o resto é fixo, igual pros 3 objetivos. O diagnóstico completo
-   (índice, "2 pontos identificados", kcal/proteína/água) foi removido do
-   quiz a pedido do usuário — a meta de kcal calculada continua aparecendo
-   na projeção final (renderProjecao). */
-function renderDiagnostico(){
-  const a = state.answers;
-  const nome = a.nome && a.nome!=='você' ? a.nome : '';
-  const progressoId = 'tentativas';   // última pergunta respondida antes desta tela
-
-  {
-    const sozinho = a.sexo==='Homem' ? 'sozinho' : 'sozinha';
-    const TITULO = `${nome?nome+', v':'V'}ocê não está ${sozinho} nisso`;
-
-    /* texto padrão, em tom neutro, que serve pra qualquer resposta dada
-       em 'frustracao' — não personaliza mais por opção marcada. */
-    const PERSONALIZA = 'Pelo que você respondeu, o que mais pesa hoje não é falta de esforço: é não ter um plano pensado especificamente pra sua rotina. Faz sentido: ninguém mantém uma mudança sem saber exatamente o que fazer a cada dia.';
-
-    const ITENS_PLANO = [
-      ['📅','Sua rotina','pra caber na sua semana, não pra brigar com ela'],
-      ['🔁','Seus hábitos','pra construir em cima do que já funciona, sem começar do zero'],
-      ['⏱️','Seu tempo livre','pra pedir só o que você de fato tem pra dar'],
-      ['🎯','Suas metas','pra apontar todo dia na direção certa'],
-      ['🚫','Suas restrições','pra nunca te indicar o que você não pode ou não quer fazer']
-    ];
-
-    return app.innerHTML = `
-    <div class="wrap fade">
-      <div class="card-quiz">
-        ${backBtn()}<div class="brand"><img src="Logo.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
-        <div class="brand-sub">Primeira leitura</div>
-        <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${pctAte(progressoId)}%"></div></div>
-
-        <h2 class="q-title" style="font-size:22px;text-align:center;">${TITULO}</h2>
-
-        <div class="prova-numero">8 em 10</div>
-        <p class="prova-numero-legenda">pessoas que emagrecem não conseguem manter o resultado, e a maioria volta ao peso original em menos de um ano.</p>
-
-        <div class="solucao-box" style="text-align:center;margin-bottom:16px;">
-          <p style="font-size:19px;font-weight:600;color:#4a4a4a;line-height:1.55;margin:0;">Não é falta de força de vontade. É falta de um acompanhamento de verdade te dizendo exatamente o que fazer a cada dia, e ajustando o plano conforme a sua rotina muda.</p>
-        </div>
-
-        <div class="solucao-box" style="text-align:center;margin-bottom:16px;">
-          <p style="font-size:15.5px;font-weight:600;color:#3a5a4c;line-height:1.6;margin:0;">${PERSONALIZA}</p>
-        </div>
-
-        <div class="solucao-box" style="text-align:center;margin-bottom:16px;">
-          <p style="font-size:19px;font-weight:800;color:#4a4a4a;line-height:1.5;margin:0 0 14px;">É exatamente isso que o ${APP_NOME} faz por você.</p>
-          <div class="valor-box" style="text-align:left;padding:6px 18px;margin-bottom:14px;">
-            ${ITENS_PLANO.map(([ic,txt,sub])=>`<div class="valor-row" style="display:block;padding:12px 0;"><div class="lbl">${ic} ${txt}</div><div style="font-weight:400;color:#8a9a92;font-size:12.5px;margin-top:3px;">${sub}</div></div>`).join('')}
-          </div>
-          <p style="font-size:19px;font-weight:600;color:#4a4a4a;line-height:1.55;margin:0 0 12px;">Um plano montado em cima de tudo isso, que te acompanha e direciona os seus próximos passos rumo ao seu objetivo.</p>
-          <p style="font-size:12.5px;font-weight:600;color:#8a9a92;line-height:1.55;margin:0;">Faltam só mais algumas perguntas pra calcular a sua meta certa e te mostrar o seu plano personalizado.</p>
-        </div>
-
-        <button class="btn" onclick="go(1)">Continuar o teste →</button>
-      </div>
-    </div>`;
-  }
-}
+/* renderDiagnostico ("Você não está sozinho(a) nisso") removida do quiz
+   a pedido do usuário — não entra mais em nenhuma tela do FLOW. */
 
 /* ---------- TELA DO APP (compromisso) ----------
    Entra depois de 'outros_objetivos'. Pergunta simples de sim/não, no molde de quiz
