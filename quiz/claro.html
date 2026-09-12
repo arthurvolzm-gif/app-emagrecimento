@@ -745,9 +745,8 @@ FLOW.push({type:'sexo'});
 FLOW.push({type:'idade'});
 QUESTIONS.forEach(q=>{
   FLOW.push({type:'question', q});
-  if(q.id==='outros_objetivos'){                             // analisando + tela do app, estilo "isso ajudaria você?"
+  if(q.id==='outros_objetivos'){                             // analisando antes da projeção final
     FLOW.push({type:'analyzing'});
-    FLOW.push({type:'appTeaser'});
   }
 });
 FLOW.push({type:'projecao'});                               // projeção final — já é a página de entrada no app, última tela do quiz
@@ -784,7 +783,6 @@ function render(){
     intro:renderIntro, sexo:renderSexo, idade:renderIdade, question:()=>renderQuestion(step.q), break1:renderBreak1,
     interstitial:()=>renderInterstitial(step.id),
     analyzing:renderAnalyzing, prepitch:renderPrePitch, meta:renderMeta,
-    appTeaser:renderAppTeaser,
     projecao:renderProjecao,
     offerLocked:renderOfferLocked, offerPrice:renderOfferPrice, result:renderResult
   };
@@ -1178,13 +1176,13 @@ function renderProjecao(){
       </div>
 
       <!-- COMO FUNCIONA O APP -->
-      <h4 style="text-align:center;margin:18px 0 16px;font-size:24px;font-weight:900;color:#22c55e;">Como o ${APP_NOME} funciona?</h4>
+      <h4 style="text-align:center;margin:18px 0 16px;font-size:24px;font-weight:900;color:var(--verde);">Como o ${APP_NOME} funciona?</h4>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
         ${COMO_FUNCIONA.map(([titulo,img,emoji,resumo])=>`
         <div style="background:#fff;border:1px solid #e4ede9;border-radius:16px;padding:16px 12px;text-align:center;box-shadow:0 2px 14px rgba(46,125,90,.06);">
-          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:22px;color:#22c55e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;line-height:1.1;">${titulo}</div>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:22px;color:var(--verde);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;line-height:1.1;">${titulo}</div>
           <img src="${img}" alt="${titulo}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;display:block;margin-bottom:12px;" onerror="this.outerHTML='<div style=&quot;font-size:48px;margin-bottom:12px;&quot;>${emoji}</div>'">
-          <div style="font-size:13px;font-weight:800;color:#22c55e;text-align:center;line-height:1.4;">${resumo}</div>
+          <div style="font-size:13px;font-weight:800;color:var(--verde);text-align:center;line-height:1.4;">${resumo}</div>
         </div>`).join('')}
       </div>
 
@@ -1397,31 +1395,8 @@ function faixaIndice(v){
 /* renderDiagnostico ("Você não está sozinho(a) nisso") removida do quiz
    a pedido do usuário — não entra mais em nenhuma tela do FLOW. */
 
-/* ---------- TELA DO APP (compromisso) ----------
-   Entra depois de 'outros_objetivos'. Pergunta simples de sim/não, no molde de quiz
-   que funciona: sem vídeo, sem prova fabricada — só a pergunta certa na
-   hora certa, apontando pro que o app realmente faz. */
-function renderAppTeaser(){
-  const nome = state.answers.nome && state.answers.nome!=='você' ? state.answers.nome : '';
-  app.innerHTML = `
-  <div class="wrap fade">
-    <div class="card-quiz" style="text-align:center;">
-      ${backBtn()}
-      <div class="brand-sub" style="margin-bottom:14px;">Antes de continuar</div>
-      <img src="/app-teaser.jpg" alt="${APP_NOME}" style="width:100%;border-radius:20px;display:block;margin:0 0 20px;box-shadow:0 16px 40px rgba(21,154,85,.22);" onerror="this.outerHTML='<div style=&quot;font-size:52px;margin-bottom:6px;&quot;>📱</div>'">
-      <h2 class="q-title" style="font-size:22px;">${nome?nome+', se':'Se'} o ${APP_NOME} te entregasse pronto, todo dia, exatamente o que comer e treinar pro seu objetivo, isso mudaria o jogo pra você?</h2>
-      <div class="opts" style="margin-top:6px;">
-        <button class="opt" onclick="selectAppTeaser(1)"><span class="opt-radio"></span><span>✅ Sim, com certeza</span></button>
-        <button class="opt" onclick="selectAppTeaser(0)"><span class="opt-radio"></span><span>🤔 Quero descobrir</span></button>
-      </div>
-    </div>
-  </div>`;
-}
-function selectAppTeaser(v){
-  state.answers.app_teaser = v ? 'sim' : 'nao';
-  trackResposta('app_teaser', state.answers.app_teaser);
-  go(1);
-}
+/* renderAppTeaser ("Antes de continuar" com mockup do app) removida do quiz a
+   pedido do usuário — não entra mais em nenhuma tela do FLOW. */
 
 /* PROFILES + renderHistoria removidos: continham depoimentos fabricados.
    Se quiser reativar a tela de história real, use relatos verificados de alunas. */
