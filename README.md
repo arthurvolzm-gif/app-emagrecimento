@@ -144,3 +144,52 @@ pode escolher "Continuar sem conta" na tela de entrada.
 
 Material educativo de apoio. Não substitui acompanhamento médico ou
 nutricional. Resultados variam de pessoa para pessoa.
+
+---
+
+## Os funis do quiz
+
+Existem quatro páginas de quiz, todas em arquivo único (HTML + CSS + JS, sem build).
+Todas terminam na mesma tela de planos e usam as mesmas imagens da raiz.
+
+| Arquivo | Público | Oferta apresentada |
+|---|---|---|
+| `quiz/escuro.html` | geral (tema escuro) | app Fit Day |
+| `quiz/claro.html` | geral (tema claro) | app Fit Day |
+| `quiz/caneta.html` | **quem usa canetinha** | Método Destrave Metabólico, dentro do app |
+| `quiz/natural.html` | **quem não usa canetinha** | Protocolo GLP-1 Natural, dentro do app |
+
+### `quiz/caneta.html`
+
+Abertura com "o quanto você está aproveitando da sua canetinha", depois canetinha, tempo
+de uso, dose e objetivo. Vem a quebra que tira a culpa, as perguntas de dor (quilos
+eliminados, incômodo principal, flacidez, sintomas), a quebra do custo escondido com o
+dado dos 82%, e as perguntas de rotina que fecham o diagnóstico. O diagnóstico mostra o
+índice de aproveitamento e quais das 5 travas metabólicas estão fechadas. Depois vêm as
+metas, a mini-VSL e os planos.
+
+### `quiz/natural.html`
+
+Abertura igual à do quiz GLP-1 que já estava no ar. As perguntas seguem objetivo →
+situação e problema → tentativas anteriores e frustrações → rotina detalhada → metas, com
+quebra de tira a culpa depois da pergunta de fome e quebra de "você não está sozinha"
+depois da frustração. O diagnóstico mostra o Índice de GLP-1 Natural e as 5 travas.
+
+### Mini-VSL
+
+Nos dois, a tela `vsl` roda antes da projeção e hoje mostra um placeholder de player
+(`.video-box`) com o resumo do argumento em texto. Ao gravar o vídeo com a Kelly, troque o
+bloco `<div class="video-box">` pelo embed do player. Os roteiros completos das duas VSLs
+estão em `Site_Kelly\VSL\` (fora deste repositório).
+
+### Ao editar as perguntas
+
+- Cada pergunta tem `num`, e a barra de progresso é `num/TOTAL_Q`: renumere ao inserir ou
+  remover.
+- As telas de conteúdo usam `pctAte('<id>')` para a barra, e os gatilhos ficam no
+  `FLOW.push` dentro do `QUESTIONS.forEach`.
+- `PESOS_INDICE` lê o **índice** da opção escolhida (`<id>_i`). Se você reordenar as
+  alternativas de uma pergunta, ajuste o array de pesos ou a pontuação sai errada em
+  silêncio.
+- As 5 travas do diagnóstico ficam em `TRAVAS_CAN` (caneta) e `TRAVAS_NAT` (natural): cada
+  linha é `[nome, id da pergunta, função que diz se está liberada]`.

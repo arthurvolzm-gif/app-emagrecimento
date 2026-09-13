@@ -1,0 +1,2123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Teste da Canetinha - Fit Day</title>
+<meta name="facebook-domain-verification" content="1ghqwe79k59bfxj5rarqsz5i6aoug4" />
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1021851947333727');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1021851947333727&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+
+<!-- ===== Google Analytics 4 (funil do quiz) =====
+     Cole aqui o ID de medição da sua propriedade GA4 (formato G-XXXXXXXXXX).
+     Enquanto estiver vazio, nada é carregado e o quiz funciona normalmente. -->
+<script>
+  var GA_ID = '';
+  if (GA_ID) {
+    var gaTag = document.createElement('script');
+    gaTag.async = true;
+    gaTag.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+    document.head.appendChild(gaTag);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){ dataLayer.push(arguments); };
+    gtag('js', new Date());
+    gtag('config', GA_ID);
+  }
+</script>
+<!-- End GA4 -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800;900&family=Playfair+Display:wght@400;700;900&family=Lato:wght@300;400;700;900&family=Baloo+2:wght@600;700;800&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+:root{
+  --verde:#2e7d5a;
+  --verde-claro:#4caf82;
+  --verde-suave:#e8f5ef;
+  --verde-escuro:#1a4d38;
+  --dourado:#c8973a;
+  --dourado-claro:#f5d99a;
+  --creme:#fdf9f3;
+  --cinza:#4a4a4a;
+  --cinza-claro:#f5f5f5;
+  --branco:#ffffff;
+  --vermelho:#c0574f;
+}
+
+html{scroll-behavior:smooth;}
+
+body{
+  font-family:'Lato',sans-serif;
+  background-color:#0a0f0c;
+  background-image:radial-gradient(ellipse at top, #142a1f 0%, #0a0f0c 65%);
+  background-attachment:fixed;
+  background-size:cover;
+  background-position:center;
+  color:#cfe0d6;
+  line-height:1.6;
+  min-height:100vh;
+}
+
+/* ===== BARRA TOPO ===== */
+.topbar{
+  background:var(--verde-escuro);
+  color:#fff;
+  text-align:center;
+  padding:12px 16px;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.3px;
+  position:sticky;
+  top:0;
+  z-index:50;
+  box-shadow:0 2px 12px rgba(0,0,0,.15);
+}
+.topbar span{opacity:.9;}
+
+/* ===== WRAP ===== */
+.wrap{
+  max-width:620px;
+  margin:0 auto;
+  padding:28px 20px 80px;
+}
+
+.card-quiz{
+  background:rgba(19,29,24,.92);
+  border-radius:22px;
+  box-shadow:0 12px 50px rgba(0,0,0,.55), 0 0 40px rgba(76,175,130,.06);
+  padding:34px 30px;
+  backdrop-filter:blur(2px);
+  position:relative;
+  border:1px solid rgba(76,175,130,.14);
+}
+
+/* seta de voltar */
+.back-btn{position:absolute;left:16px;top:14px;background:none;border:none;color:#7c9186;font-size:24px;line-height:1;cursor:pointer;padding:4px 8px;z-index:5;transition:color .18s;}
+.back-btn:hover{color:var(--verde-claro);}
+
+.brand{text-align:center;margin-bottom:6px;}
+.brand-nome{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--verde-claro);}
+.brand-logo{height:54px;display:block;margin:0 auto;}
+.brand-sub{font-size:13px;color:#7c9186;margin-bottom:20px;text-align:center;}
+
+/* ===== PROGRESSO ===== */
+.progress-head{display:flex;justify-content:flex-end;font-size:13px;color:var(--dourado);font-weight:700;margin-bottom:8px;}
+.progress-bar{height:7px;background:rgba(255,255,255,.08);border-radius:20px;overflow:hidden;margin-bottom:26px;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--verde),var(--verde-claro));border-radius:20px;transition:width .5s ease;}
+
+/* ===== PILLS ===== */
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
+.pill{background:rgba(76,175,130,.12);border:1px solid rgba(76,175,130,.3);color:var(--verde-claro);font-size:12px;font-weight:700;padding:6px 12px;border-radius:20px;}
+
+/* ===== INSIGHT BOX ===== */
+.insight{background:rgba(76,175,130,.1);border-left:4px solid var(--verde-claro);border-radius:8px;padding:14px 16px;font-size:14px;color:#cfe0d6;line-height:1.6;margin-bottom:20px;}
+.insight strong{color:var(--verde-claro);}
+
+.echo{font-size:14px;color:#8fa79c;margin-bottom:6px;}
+
+/* ===== PERGUNTA ===== */
+.q-title{font-family:'Open Sans',sans-serif;font-size:26px;font-weight:900;color:var(--verde-claro);line-height:1.25;margin-bottom:22px;text-align:center;}
+
+/* ===== OPÇÕES ===== */
+.opts{display:flex;flex-direction:column;gap:12px;}
+/* variação compacta (perguntas com muitas opções, ex.: múltipla escolha) */
+.opts.compact{gap:9px;}
+.opts.compact .opt{padding:13px 16px;font-size:14.5px;}
+.opts.compact .opt-radio{width:22px;height:22px;}
+.q-title.tight{margin-bottom:12px;}
+/* variação em grade: 2 opções por linha (abertura do quiz) */
+.opts.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+/* card = foto colada ao botão, os dois arredondados juntos como uma peça só */
+.opts.grid2 .idade-card{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;box-shadow:0 6px 18px rgba(46,125,90,.28);transition:all .18s ease;cursor:pointer;}
+.opts.grid2 .idade-card:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(46,125,90,.38);}
+.opts.grid2 .idade-img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;}
+.opts.grid2 .opt{
+  padding:15px 14px;font-size:14px;font-weight:500;justify-content:center;text-align:center;gap:10px;
+  background:linear-gradient(135deg,#27ae60,var(--verde-claro));color:#fff;border-color:transparent;
+  border-radius:0;margin:0;
+}
+.opts.grid2 .opt:hover{transform:none;box-shadow:none;border-color:transparent;}
+.opts.grid2 .opt.sel{background:linear-gradient(135deg,#1a4d38,#2e7d5a);border-color:transparent;color:#fff;}
+.opts.grid2 .opt-radio{width:20px;height:20px;border-color:rgba(255,255,255,.85);background:rgba(255,255,255,.16);}
+.opts.grid2 .opt.sel .opt-radio{border-color:#fff;background:#fff;}
+.opts.grid2 .opt.sel .opt-radio::after{color:var(--verde-escuro);font-size:12px;}
+.opts.grid2 .idade-card:last-child:nth-child(odd){grid-column:1 / -1;justify-self:center;width:calc(50% - 5px);}
+.opt{
+  display:flex;align-items:center;gap:14px;
+  background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);border-radius:14px;
+  padding:17px 18px;font-size:15px;font-weight:600;color:#dfeae4;
+  cursor:pointer;transition:all .18s ease;text-align:left;
+}
+.opt:hover{border-color:var(--verde-claro);box-shadow:0 6px 20px rgba(76,175,130,.18);transform:translateY(-1px);}
+.opt-radio{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.25);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .18s ease;}
+.opt.sel{border-color:var(--verde-claro);background:rgba(76,175,130,.16);}
+.opt.sel .opt-radio{border-color:var(--verde-claro);background:var(--verde);}
+.opt.sel .opt-radio::after{content:'✓';color:#fff;font-size:13px;font-weight:700;}
+
+/* variação com foto colada à esquerda de cada opção (lista vertical) */
+.opts.photo .opt-row{display:flex;align-items:stretch;border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.06);cursor:pointer;transition:all .18s ease;}
+.opts.photo .opt-row:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(76,175,130,.18);}
+.opts.photo .opt-row-img{width:84px;flex-shrink:0;object-fit:cover;display:block;}
+.opts.photo .opt-row .opt{flex:1;border:none;border-radius:0;box-shadow:none;}
+.opts.photo .opt-row .opt:hover{transform:none;box-shadow:none;border-color:transparent;}
+
+/* ===== BOTÕES ===== */
+.btn{
+  display:block;width:100%;text-align:center;
+  background:linear-gradient(135deg,#27ae60,var(--verde-claro));
+  color:#fff;font-family:'Lato',sans-serif;font-size:17px;font-weight:900;
+  border:none;border-radius:50px;padding:18px 28px;cursor:pointer;text-decoration:none;
+  box-shadow:0 8px 30px rgba(46,125,90,.32);transition:transform .2s,box-shadow .2s;letter-spacing:.3px;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(46,125,90,.45);}
+.btn-ghost{background:rgba(255,255,255,.04);color:var(--verde-claro);border:1.5px solid rgba(255,255,255,.12);box-shadow:none;margin-top:12px;}
+.btn-ghost:hover{background:rgba(255,255,255,.07);box-shadow:none;}
+
+/* ===== INPUT DE TEXTO (nome) ===== */
+.text-input{width:100%;border:1.5px solid rgba(255,255,255,.12);border-radius:14px;padding:16px 18px;font-size:16px;font-family:'Lato',sans-serif;color:#eef5f0;background:rgba(255,255,255,.05);margin-bottom:14px;outline:none;transition:border-color .18s,box-shadow .18s;}
+.text-input:focus{border-color:var(--verde-claro);box-shadow:0 6px 20px rgba(76,175,130,.18);}
+.text-input::placeholder{color:#6f8579;}
+
+/* ===== RÉGUA (peso / altura) ===== */
+.ruler-sub{font-size:14px;color:#8fa79c;margin:-8px 0 18px;}
+.unit-toggle{display:inline-flex;background:rgba(255,255,255,.06);border-radius:30px;padding:4px;margin-bottom:6px;}
+.unit-toggle .ut{border:none;background:transparent;color:#8fa79c;font-weight:800;font-size:14px;padding:8px 26px;border-radius:24px;cursor:pointer;transition:all .18s;}
+.unit-toggle .ut.active{background:var(--verde);color:#fff;box-shadow:0 4px 14px rgba(46,125,90,.3);}
+.ruler-val{font-family:'Playfair Display',serif;font-size:46px;font-weight:900;color:var(--verde-claro);margin:16px 0 6px;line-height:1;}
+.ruler-val small{font-size:20px;color:var(--verde-claro);margin-left:3px;font-weight:700;}
+.ruler-track{position:relative;height:52px;margin:6px 6px 0;}
+.ruler-line{position:absolute;left:0;right:0;bottom:16px;height:2px;background:rgba(255,255,255,.15);}
+.ruler-ticks{position:absolute;left:0;right:0;bottom:16px;height:26px;display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none;}
+.ruler-ticks .tk{width:1px;height:12px;background:rgba(255,255,255,.2);}
+.ruler-ticks .tk.maj{height:24px;width:2px;background:rgba(255,255,255,.35);}
+.ruler-pointer{position:absolute;top:0;bottom:16px;width:3px;background:var(--verde-claro);transform:translateX(-50%);pointer-events:none;border-radius:2px;transition:left .05s linear;}
+.ruler-pointer::after{content:'';position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);border-left:8px solid transparent;border-right:8px solid transparent;border-top:12px solid var(--verde-claro);}
+.ruler-input{position:absolute;left:0;right:0;top:0;width:100%;height:100%;margin:0;opacity:0;cursor:grab;z-index:5;-webkit-appearance:none;appearance:none;background:transparent;}
+.ruler-input:active{cursor:grabbing;}
+.ruler-input::-webkit-slider-thumb{-webkit-appearance:none;width:40px;height:52px;background:transparent;cursor:grab;}
+.ruler-input::-moz-range-thumb{width:40px;height:52px;border:none;background:transparent;cursor:grab;}
+.ruler-labels{display:flex;justify-content:space-between;font-size:13px;color:#8fa79c;font-weight:700;margin-top:6px;}
+
+/* ===== INTRO ===== */
+.intro-badge{display:inline-block;background:rgba(76,175,130,.14);color:var(--verde-claro);font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:7px 18px;border-radius:20px;margin-bottom:22px;}
+.intro-h1{font-family:'Open Sans',sans-serif;font-size:32px;font-weight:900;color:var(--verde-claro);line-height:1.25;margin-bottom:16px;text-align:center;}
+.intro-h1 span{color:var(--verde-claro);}
+.intro-sub{font-size:16px;color:#a9bcb2;text-align:center;line-height:1.65;margin-bottom:26px;}
+.hero-h1{font-family:'Baloo 2',sans-serif;font-size:30px;font-weight:800;color:var(--verde-claro);line-height:1.25;text-align:center;margin-bottom:18px;}
+.hero-sub{font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:600;color:#c3d4cb;line-height:1.55;text-align:center;margin:20px 0 22px;}
+.intro-secure{text-align:center;font-size:12px;color:#98a89f;margin-top:12px;}
+
+/* ===== INTERSTICIAL ===== */
+.inter-badge{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.inter-badge .ic{width:38px;height:38px;border-radius:50%;background:var(--verde-escuro);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.inter-badge .tt{font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--verde-escuro);line-height:1.3;}
+.inter-text{font-size:16px;color:#4a5c53;line-height:1.7;margin-bottom:14px;}
+.inter-text strong{color:var(--verde);}
+.inter-text .red{color:var(--vermelho);font-weight:700;}
+.inter-mini{font-size:13px;color:#9aaaa2;margin-bottom:22px;}
+
+/* ===== ANALISANDO ===== */
+.analise-title{text-align:center;font-size:13px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--verde-claro);margin-bottom:26px;}
+.analise-list{display:flex;flex-direction:column;gap:16px;}
+.analise-item{display:flex;align-items:center;gap:14px;font-size:15px;color:#9aaaa2;font-weight:600;opacity:.5;transition:all .4s ease;}
+.analise-item .ic{width:28px;height:28px;border-radius:50%;border:2px solid #d5e2db;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.analise-item.done{opacity:1;color:var(--verde-escuro);}
+.analise-item.done .ic{background:var(--verde-escuro);border-color:var(--verde-escuro);color:#fff;}
+
+/* ===== HISTÓRIA ===== */
+.hist-avatar{width:82px;height:82px;border-radius:50%;margin:0 auto 12px;overflow:hidden;border:4px solid #fff;box-shadow:0 6px 20px rgba(0,0,0,.12);}
+.hist-avatar img{width:100%;height:100%;object-fit:cover;}
+.hist-tagline{font-family:'Playfair Display',serif;font-style:italic;font-size:17px;color:var(--verde-escuro);text-align:center;margin-bottom:14px;line-height:1.4;}
+.hist-tag{display:block;width:max-content;margin:0 auto 10px;background:var(--verde-escuro);color:#fff;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;border-radius:20px;}
+.hist-nome{text-align:center;font-weight:900;font-size:16px;color:var(--cinza);}
+.hist-info{text-align:center;font-size:13px;color:#9aaaa2;margin-bottom:6px;}
+.hist-stars{text-align:center;color:#f5a623;font-size:16px;letter-spacing:2px;margin-bottom:16px;}
+.hist-quote{font-size:14.5px;color:#556a60;line-height:1.7;font-style:italic;text-align:center;margin-bottom:18px;}
+.hist-result{display:flex;align-items:center;gap:12px;justify-content:center;background:var(--verde);color:#fff;border-radius:12px;padding:14px 18px;font-size:14px;font-weight:700;line-height:1.4;margin-bottom:22px;}
+.hist-result .ic{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;}
+.hist-pergunta{text-align:center;font-weight:700;color:var(--cinza);margin-bottom:14px;}
+
+/* ===== MINI-VSL / VÍDEO PLACEHOLDER ===== */
+.vsl-tag{display:block;width:max-content;margin:0 auto 14px;background:#fdecec;color:var(--vermelho);font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:6px 16px;border-radius:20px;}
+.vsl-ask{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--verde-escuro);text-align:center;line-height:1.3;margin-bottom:20px;}
+.vsl-ask span{color:var(--verde-claro);}
+.video-box{position:relative;border-radius:16px;overflow:hidden;margin-bottom:18px;background:linear-gradient(135deg,var(--verde-suave),#d6ede1);border:1px solid #d9ebe2;aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;}
+.video-box .play{width:66px;height:66px;border-radius:50%;background:var(--verde);color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:14px;box-shadow:0 8px 30px rgba(46,125,90,.4);animation:pulse 2.2s ease-in-out infinite;}
+.video-box .vlabel{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--verde);}
+.video-box .vname{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--verde-escuro);margin-top:6px;}
+.video-box .vhint{font-size:11px;color:#9aaaa2;margin-top:8px;font-style:italic;}
+
+/* roteiro visível (substitui o vídeo por enquanto) */
+.roteiro{background:#f4faf7;border:1px solid #d9ebe2;border-radius:14px;padding:20px;margin-bottom:20px;}
+.roteiro h4{font-family:'Lato',sans-serif;font-size:14px;color:var(--verde);margin-bottom:12px;letter-spacing:.3px;font-weight:900;}
+.roteiro p{font-size:14.5px;color:#556a60;line-height:1.7;margin-bottom:12px;}
+.roteiro p:last-child{margin-bottom:0;}
+.roteiro strong{color:var(--verde-escuro);}
+.roteiro .red{color:var(--vermelho);font-weight:700;}
+
+/* ===== PRÉ-PITCH (antes x depois) ===== */
+.pp-h{font-family:'Playfair Display',serif;font-size:24px;font-weight:900;color:var(--verde-escuro);text-align:center;line-height:1.3;margin-bottom:8px;}
+.pp-h span{color:var(--verde-claro);}
+.pp-sub{text-align:center;font-size:14px;color:#7d9488;margin-bottom:24px;}
+
+/* antes/depois */
+.ad-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.res-ad-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.ad-col{background:#fff;border-radius:14px;padding:20px;border:1px solid #e4ede9;}
+.ad-col.antes{border-top:3px solid #e07a7a;}
+.ad-col.depois{border-top:3px solid var(--verde-claro);}
+.ad-col h4{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;color:var(--cinza);}
+.ad-col.antes h4{color:var(--vermelho);}
+.ad-col.depois h4{color:var(--verde);}
+.ad-col li{list-style:none;font-size:13px;color:#66756f;padding:6px 0;display:flex;gap:8px;align-items:flex-start;line-height:1.5;}
+.ad-col.antes li::before{content:'✕';color:#e07a7a;font-weight:800;flex-shrink:0;}
+.ad-col.depois li::before{content:'✓';color:var(--verde-claro);font-weight:800;flex-shrink:0;}
+.ad-note{text-align:center;font-size:12px;color:#a8b8b1;margin-top:14px;font-style:italic;}
+
+/* ===== OFERTA REVELAR ===== */
+.rev-badge{display:block;width:max-content;margin:0 auto 16px;background:var(--verde-escuro);color:#fff;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:6px 16px;border-radius:20px;}
+.rev-lead{text-align:center;font-size:15px;color:#4a5c53;line-height:1.65;margin-bottom:22px;}
+.rev-lead strong{color:var(--verde-escuro);}
+.rev-tap{background:linear-gradient(135deg,var(--verde),var(--verde-claro));border-radius:16px;padding:26px 20px;text-align:center;color:#fff;cursor:pointer;box-shadow:0 10px 34px rgba(46,125,90,.32);transition:transform .2s;margin-bottom:18px;animation:pulse 2.4s ease-in-out infinite;}
+.rev-tap:hover{transform:translateY(-2px);}
+.rev-tap .big{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;line-height:1.3;}
+.rev-tap .small{font-size:13px;opacity:.9;margin-top:6px;}
+@keyframes pulse{0%,100%{box-shadow:0 10px 34px rgba(46,125,90,.32);}50%{box-shadow:0 14px 44px rgba(46,125,90,.55);}}
+
+.reserva{display:flex;align-items:center;justify-content:center;gap:10px;background:#f0f7f3;border-radius:12px;padding:12px;font-size:14px;color:var(--verde-escuro);font-weight:700;margin-bottom:20px;}
+.reserva .t{font-variant-numeric:tabular-nums;}
+.rev-secure{text-align:center;font-size:12px;color:#a8b8b1;margin-top:16px;}
+
+/* ===== PREÇO ===== */
+.price-box{background:linear-gradient(150deg,var(--verde-escuro),var(--verde));border-radius:18px;padding:28px 24px;text-align:center;color:#fff;margin-bottom:18px;}
+.price-box .label{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;opacity:.85;}
+.price-box .val{font-family:'Playfair Display',serif;font-size:56px;font-weight:900;line-height:1;margin:6px 0;}
+.price-box .val sup{font-size:24px;}
+.price-box .de{font-size:14px;opacity:.75;text-decoration:line-through;}
+.price-box .off{display:inline-block;background:var(--verde-claro);color:#fff;font-size:12px;font-weight:800;padding:4px 14px;border-radius:20px;margin-top:10px;letter-spacing:.5px;}
+.price-just{font-size:13px;color:#7d9488;line-height:1.6;text-align:center;margin-bottom:18px;}
+.price-just strong{color:var(--verde);}
+
+/* ===== TOAST ===== */
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#fff;border:1px solid #e2ece7;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);padding:12px 16px;display:flex;align-items:center;gap:10px;max-width:340px;width:calc(100% - 40px);font-size:13px;color:var(--cinza);z-index:40;animation:slideUp .5s ease;}
+.toast .ic{font-size:18px;}
+.toast .x{margin-left:auto;color:#bbb;cursor:pointer;font-size:16px;background:none;border:none;}
+.toast b{color:var(--verde);}
+@keyframes slideUp{from{opacity:0;transform:translate(-50%,20px);}to{opacity:1;transform:translate(-50%,0);}}
+
+/* ===== NOTIFICAÇÃO DE VENDA ===== */
+
+/* ===== FADE ===== */
+.fade{animation:fade .4s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+/* =========================================================
+   PÁGINA FINAL (RESULTADO) — estilo da landing
+   ========================================================= */
+.result{max-width:900px;margin:0 auto;padding:0 0 40px;}
+.result .container{max-width:760px;margin:0 auto;padding:0 22px;}
+.res-hero{background:rgba(255,255,255,.94);border-radius:22px;box-shadow:0 12px 50px rgba(26,77,56,.14);padding:34px 30px;text-align:center;margin:28px 20px 24px;}
+.res-hero .kicker{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--verde-claro);margin-bottom:12px;}
+.res-hero h1{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--verde-escuro);line-height:1.3;margin-bottom:14px;}
+.res-hero h1 span{color:var(--verde-claro);}
+.res-hero p{font-size:15px;color:#5f6f68;line-height:1.65;max-width:560px;margin:0 auto;}
+.res-socialbar{display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(255,255,255,.9);border-radius:14px;padding:12px 16px;margin:0 20px 30px;font-size:13px;color:var(--cinza);font-weight:600;box-shadow:0 4px 20px rgba(26,77,56,.08);}
+.res-socialbar b{color:var(--verde);}
+.live-count{display:inline-block;font-weight:800;color:var(--verde);min-width:20px;text-align:center;transition:transform .25s ease,color .25s ease;}
+.live-count.bump{transform:scale(1.35);color:var(--verde-claro);}
+
+.res-section{padding:26px 0;}
+.res-h2{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;color:var(--verde-escuro);text-align:center;line-height:1.3;margin-bottom:8px;}
+.res-h2 span{color:var(--verde-claro);}
+.res-sub{text-align:center;font-size:14px;color:#6f807a;margin-bottom:26px;}
+
+.mod-card{background:#fff;border-radius:14px;border:1px solid #e4ede9;padding:20px 22px;margin-bottom:12px;box-shadow:0 2px 14px rgba(46,125,90,.06);}
+.mod-head{display:flex;align-items:center;gap:14px;}
+.mod-num{width:38px;height:38px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,var(--verde),var(--verde-claro));color:#fff;font-family:'Playfair Display',serif;font-weight:900;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.mod-head h3{font-family:'Playfair Display',serif;font-size:16px;color:var(--verde-escuro);}
+.mod-card p{font-size:13.5px;color:#66756f;line-height:1.65;margin-top:12px;}
+.mod-result{background:var(--verde-suave);border-radius:8px;padding:10px 14px;margin-top:12px;font-size:12.5px;color:var(--verde);font-weight:700;}
+.mod-result::before{content:'✓ Resultado: ';}
+
+/* ===== PROVA CIENTÍFICA (mesma da landing) ===== */
+.prova-numero{font-family:'Playfair Display',serif;font-size:72px;font-weight:900;color:#ff6f61;line-height:1;margin-bottom:6px;text-align:center;}
+.prova-numero-legenda{font-size:15.5px;color:#a9bcb2;max-width:420px;margin:0 auto 26px;line-height:1.6;text-align:center;}
+.prova-noticia{max-width:620px;margin:0 auto;background:#fff;border:1px solid #e4e4e4;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.10);}
+.prova-noticia img{width:100%;height:auto;display:block;}
+.prova-fonte{font-size:11.5px;color:#999;padding:12px 16px;text-align:left;border-top:1px solid #f0f0f0;line-height:1.6;}
+.prova-texto{max-width:620px;margin:26px auto 0;font-size:16px;line-height:1.75;color:var(--cinza);text-align:left;}
+
+/* ===== PROJEÇÃO (tela final, depois de outros_objetivos) ===== */
+.proj-chart-tt{font-size:12.5px;font-weight:800;color:var(--verde-escuro);text-align:center;margin:26px 0 8px;}
+.proj-chart-wrap{position:relative;width:100%;aspect-ratio:320/170;}
+.proj-chart-wrap svg{position:absolute;inset:0;width:100%;height:100%;display:block;}
+.proj-chart-label{position:absolute;transform:translate(-50%,-100%);background:#fff;border:1.5px solid #e2ece7;border-radius:8px;padding:3px 7px;font-size:9px;font-weight:800;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.10);}
+.proj-chart-days{position:relative;height:14px;margin:4px 0 10px;}
+.proj-chart-day{position:absolute;transform:translateX(-50%);font-size:9.5px;color:#8a9a92;font-weight:700;white-space:nowrap;}
+.proj-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0;}
+.proj-compare-col{border-radius:14px;padding:14px 12px;}
+.proj-compare-img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top center;border-radius:10px;display:block;margin-bottom:10px;}
+.proj-compare-col.ruim{background:rgba(192,87,79,.14);}
+.proj-compare-col.bom{background:rgba(76,175,130,.12);}
+.proj-compare-col h5{font-size:12.5px;font-weight:900;margin:0 0 8px;text-align:center;}
+.proj-compare-col.ruim h5{color:var(--vermelho);}
+.proj-compare-col.bom h5{color:var(--verde-escuro);}
+.proj-compare-col ul{list-style:none;padding:0;margin:0;font-size:12px;color:#cfe0d6;line-height:1.6;}
+.proj-compare-col li{margin-bottom:6px;}
+.glp-metric{margin-bottom:10px;}
+.glp-metric:last-child{margin-bottom:0;}
+.glp-metric-top{display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:#4a4a4a;margin-bottom:4px;}
+.glp-metric-top .val{font-weight:900;}
+.proj-compare-col.ruim .glp-metric-top .val{color:var(--vermelho);}
+.proj-compare-col.bom .glp-metric-top .val{color:var(--verde-escuro);}
+.glp-bar{height:7px;border-radius:10px;background:#fff;overflow:hidden;}
+.glp-bar-fill{height:100%;border-radius:10px;}
+.proj-compare-col.ruim .glp-bar-fill{background:linear-gradient(90deg,#e05a4e,#f0a05a);}
+.proj-compare-col.bom .glp-bar-fill{background:linear-gradient(90deg,var(--verde-escuro),var(--verde-claro));}
+.prova-texto p{margin-bottom:14px;}
+.prova-texto p:last-child{margin-bottom:0;}
+@media(max-width:768px){.prova-numero{font-size:58px;}.prova-texto{font-size:15px;}}
+
+/* tabela "quanto vale destravar" */
+.valor-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:8px 22px;margin-top:8px;box-shadow:0 2px 14px rgba(0,0,0,.2);}
+.valor-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:14px;}
+.valor-row:last-child{border-bottom:none;}
+.valor-row .lbl{color:#dfeae4;font-weight:700;}
+.valor-row .num{color:var(--vermelho);font-weight:800;white-space:nowrap;}
+.valor-row.total{background:#fbf1f0;margin:0 -22px;padding:16px 22px;border-radius:12px;}
+.valor-nota{text-align:center;font-size:13px;color:#7d9488;margin-top:16px;line-height:1.7;}
+.valor-nota .red{color:var(--vermelho);font-weight:700;}
+
+/* decisão (2 opções) */
+.dec-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;}
+.dec-col{border-radius:16px;padding:24px 20px;text-align:center;font-size:13.5px;line-height:1.6;}
+.dec-col .dt{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;}
+.dec-col.op1{background:#fff;border:1px solid #e4ede9;color:#66756f;}
+.dec-col.op1 .dt{color:var(--vermelho);}
+.dec-col.op2{background:var(--verde-suave);border:1px solid var(--verde-claro);color:#3a5a4c;box-shadow:0 6px 24px rgba(76,175,130,.18);}
+.dec-col.op2 .dt{color:var(--verde);}
+
+/* depoimentos */
+.dep-carousel{overflow:hidden;padding:6px 0 16px;}
+.dep-track{display:flex;gap:16px;width:max-content;padding:0 8px;animation:dep-scroll 34s linear infinite;}
+.dep-track:hover{animation-play-state:paused;}
+@keyframes dep-scroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+.dep-c{background:#fff;border-radius:18px;border:1px solid #e4ede9;padding:22px 20px;min-width:270px;max-width:270px;box-shadow:0 4px 20px rgba(46,125,90,.08);display:flex;flex-direction:column;text-align:center;}
+.dep-c img{width:64px;height:64px;border-radius:50%;object-fit:cover;margin:0 auto 10px;border:3px solid var(--verde-suave);}
+.dep-c .n{font-weight:900;font-size:14px;color:var(--cinza);}
+.dep-c .id{font-size:12px;color:#a8b8b1;margin-bottom:6px;}
+.dep-c .st{color:#f5a623;font-size:14px;letter-spacing:2px;margin-bottom:10px;}
+.dep-c .qt{font-style:italic;font-weight:700;font-size:13.5px;color:var(--verde);margin-bottom:8px;line-height:1.45;}
+.dep-c .tx{font-size:12.5px;color:#66756f;line-height:1.6;text-align:left;}
+
+/* quem é (expert) */
+.quem{background:rgba(255,255,255,.9);border-radius:18px;padding:30px 24px;text-align:center;box-shadow:0 4px 20px rgba(26,77,56,.08);}
+.quem .foto{width:150px;height:150px;border-radius:50%;border:4px solid var(--verde-claro);box-shadow:0 0 34px rgba(76,175,130,.4);margin:0 auto 20px;display:flex;align-items:center;justify-content:center;background:var(--verde-suave);font-family:'Playfair Display',serif;font-size:34px;font-weight:900;color:var(--verde);line-height:1.05;}
+.quem h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--verde-escuro);margin-bottom:12px;}
+.quem h3 span{color:var(--verde-claro);}
+.quem p{font-size:14px;color:#5f6f68;line-height:1.75;max-width:520px;margin:0 auto;}
+.quem p span{color:var(--verde);font-weight:700;}
+
+/* garantia img */
+.gar-img{max-width:500px;width:92%;border-radius:16px;display:block;margin:0 auto;}
+
+/* oferta final */
+.oferta-final{background:#fff;border-radius:22px;box-shadow:0 12px 50px rgba(0,0,0,.12);padding:34px 28px;max-width:460px;margin:0 auto;text-align:center;position:relative;overflow:hidden;border:1px solid #eadfce;}
+.oferta-final::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:var(--verde);}
+.oferta-final .ot{font-family:'Playfair Display',serif;font-size:22px;color:var(--verde-escuro);margin-bottom:18px;}
+.of-item{display:flex;align-items:flex-start;gap:9px;padding:7px 0;font-size:13.5px;color:#556a60;border-bottom:1px solid #f0f5f2;text-align:left;}
+.of-item:last-of-type{border-bottom:none;}
+.of-item .ic{width:19px;height:19px;border-radius:50%;background:var(--verde);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.of-item .nm{flex:1;}
+.of-item .pr{flex-shrink:0;color:var(--verde-claro);text-decoration:line-through;font-weight:700;font-size:12.5px;}
+.of-block{text-align:left;font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--verde);margin:16px 0 4px;}
+.of-block.bonus{color:var(--dourado);}
+.of-de{font-size:15px;color:#a8b8b1;text-decoration:line-through;margin-top:20px;}
+.of-por{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--verde-claro);margin-top:6px;}
+.of-val{font-family:'Playfair Display',serif;font-size:48px;font-weight:900;color:var(--verde-escuro);line-height:1;margin:4px 0;}
+.of-avista{font-size:14px;color:#8aa79a;margin-bottom:22px;}
+.of-secure{font-size:12px;color:#a8b8b1;margin-top:12px;}
+
+/* faq */
+.faq details{background:#fff;border-radius:12px;margin-bottom:10px;border:1px solid #e4ede9;overflow:hidden;}
+.faq summary{padding:16px 20px;font-size:14.5px;font-weight:700;color:var(--cinza);cursor:pointer;display:flex;justify-content:space-between;align-items:center;list-style:none;gap:12px;}
+.faq summary::-webkit-details-marker{display:none;}
+.faq summary::after{content:'+';font-size:22px;color:var(--verde);font-weight:300;flex-shrink:0;transition:transform .3s;}
+.faq details[open] summary::after{transform:rotate(45deg);}
+.faq .a{padding:0 20px 18px;font-size:13.5px;color:#66756f;line-height:1.7;}
+
+.res-footer{text-align:center;padding:30px 20px;font-size:12px;color:#8aa79a;line-height:1.7;}
+
+/* ===== DIAGNÓSTICO (IMC + sinais) ===== */
+.diag-imc{text-align:center;margin:22px 0 6px;}
+.diag-imc-tt{font-family:'Playfair Display',serif;font-size:19px;color:var(--verde-escuro);font-weight:900;}
+.diag-imc-val{font-size:14px;color:var(--cinza);margin:8px 0 4px;}
+.diag-imc-val strong{color:var(--verde-escuro);}
+.diag-imc-zona{font-weight:800;}
+.diag-bar-wrap{margin:34px 6px 0;}
+.diag-bar{position:relative;height:24px;display:flex;border-radius:20px;overflow:visible;}
+.diag-bar .z{flex:1;height:100%;}
+.diag-bar .z:first-child{border-radius:20px 0 0 20px;}
+.diag-bar .z:last-child{border-radius:0 20px 20px 0;}
+.diag-bar .z1{background:#bcd3f0;}
+.diag-bar .z2{background:#bfe6c8;}
+.diag-bar .z3{background:#f5db8e;}
+.diag-bar .z4{background:#e7a6a0;}
+.diag-pointer{position:absolute;top:-32px;transform:translateX(-50%);background:var(--verde-escuro);color:#fff;font-size:11px;font-weight:800;padding:5px 9px;border-radius:8px;white-space:nowrap;z-index:2;}
+.diag-pointer::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid var(--verde-escuro);}
+.diag-labels{display:flex;font-size:10.5px;color:#9aaaa2;font-weight:700;margin:8px 0 4px;}
+.diag-labels span{flex:1;text-align:center;}
+.lib-box{text-align:center;margin:18px 0 14px;}
+.lib-label{font-size:11.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--verde);}
+.lib-pct{font-family:'Open Sans',sans-serif;font-size:42px;font-weight:900;color:var(--verde-escuro);line-height:1;margin:6px 0 10px;font-variant-numeric:tabular-nums;}
+.lib-bar{height:11px;background:#e3ede8;border-radius:20px;overflow:hidden;}
+.lib-fill{height:100%;width:0;background:linear-gradient(90deg,var(--verde-escuro),var(--verde-claro));border-radius:20px;}
+.meta-img{border:2px dashed #cdddd4;border-radius:14px;background:#f4faf7;color:#9aaaa2;font-size:13px;padding:46px 16px;margin:0 0 18px;}
+.causa-box{background:#fdecec;border-radius:14px;padding:16px 18px;margin:16px 0;}
+.causa-box h4{color:var(--vermelho);font-size:14.5px;line-height:1.35;margin-bottom:8px;}
+.causa-box p{font-size:13.5px;color:#8a5f5c;margin:0;}
+.diag-hl{background:var(--vermelho);color:#fff;font-weight:800;padding:1px 5px;border-radius:4px;}
+.diag-chart{background:#fff;border:1px solid #e4ede9;border-radius:14px;padding:18px 16px 14px;margin:18px 0;text-align:center;box-shadow:0 2px 14px rgba(46,125,90,.06);}
+.diag-chart-leg{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:#66756f;font-weight:700;}
+.diag-chart-leg i{display:inline-block;width:14px;height:4px;border-radius:3px;vertical-align:middle;margin-right:5px;}
+.diag-chart-leg .dg{background:var(--verde);}
+.diag-chart-leg .dr{background:#d3bdbb;}
+.diag-aviso{background:#fbf3e3;border-left:4px solid var(--dourado);border-radius:8px;padding:14px 16px;font-size:13px;color:#6a5a3a;line-height:1.6;margin:18px 0;}
+.diag-aviso strong{color:var(--verde-escuro);}
+.alerta-box{background:#fdecec;border-radius:14px;padding:18px 20px;margin:16px 0;}
+.alerta-box h4{color:var(--vermelho);font-size:15px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.alerta-box .it{font-size:13.5px;color:#8a5f5c;padding:5px 0;display:flex;gap:9px;align-items:flex-start;line-height:1.55;}
+.alerta-box .it::before{content:'✕';color:var(--vermelho);font-weight:900;flex-shrink:0;}
+.solucao-box{background:none;border:none;border-radius:0;padding:0;margin:22px 0;}
+.solucao-box h4{color:#eef5f0;font-size:20px;font-weight:900;margin-bottom:10px;line-height:1.35;display:flex;gap:9px;align-items:flex-start;justify-content:center;text-align:center;}
+.solucao-box p{font-size:13.5px;color:#c3d4cb;line-height:1.65;}
+.solucao-box p strong{color:var(--verde-claro);}
+
+@media(max-width:600px){
+  .intro-h1{font-size:26px;}
+  .q-title{font-size:22px;}
+  .card-quiz{padding:26px 20px;}
+  .res-hero h1{font-size:23px;}
+  .res-h2{font-size:22px;}
+  .ad-grid,.res-ad-grid,.dec-grid{grid-template-columns:1fr;}
+  .of-val{font-size:42px;}
+  .vsl-ask{font-size:20px;}
+}
+
+/* ===== POP-UP DE SAÍDA (BOTÃO VOLTAR) ===== */
+.saida-overlay{position:fixed;inset:0;background:rgba(20,40,30,.78);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999;}
+.saida-overlay.aberto{display:flex;}
+.saida-modal{background:#fff;border-radius:24px;padding:44px 32px 28px;box-shadow:0 12px 60px rgba(0,0,0,.12);width:min(460px,100%);max-height:92vh;overflow:hidden auto;text-align:center;position:relative;animation:saidaEntra .28s ease-out;}
+.saida-modal::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:var(--verde);}
+@keyframes saidaEntra{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:none;}}
+.saida-fechar{position:absolute;top:12px;right:14px;background:none;border:none;font-size:26px;line-height:1;color:#ccc;cursor:pointer;padding:4px 8px;z-index:2;}
+.saida-fechar:hover{color:#888;}
+.saida-selo{text-transform:uppercase;color:var(--verde-claro);font-weight:700;letter-spacing:1px;font-size:13px;margin-bottom:10px;}
+.saida-titulo{font-family:'Open Sans',sans-serif;font-size:27px;font-weight:800;line-height:1.25;color:var(--verde-escuro);margin-bottom:14px;}
+.saida-titulo span{color:var(--verde-claro);}
+.saida-sub{color:#222;font-weight:700;font-size:15px;line-height:1.7;letter-spacing:.3px;margin-bottom:24px;}
+.saida-de{font-size:16px;color:#aaa;text-decoration:line-through;margin-bottom:4px;}
+.saida-por{font-size:13px;text-transform:uppercase;color:var(--verde-claro);font-weight:700;letter-spacing:1px;margin-bottom:4px;}
+.saida-val{font-family:'Open Sans',sans-serif;font-size:46px;font-weight:900;color:var(--verde-escuro);line-height:1;margin-bottom:6px;}
+.saida-economia{font-size:15px;font-weight:700;color:var(--verde);margin-bottom:26px;}
+.saida-modal .btn{font-size:16px;padding:17px 24px;}
+.saida-recusa{display:inline-block;margin-top:14px;font-size:13px;color:#aaa;text-decoration:underline;background:none;border:none;cursor:pointer;font-family:inherit;}
+.saida-recusa:hover{color:#888;}
+.saida-rodape{font-size:12px;color:#999;margin-top:12px;letter-spacing:.3px;}
+@media (max-width:768px){
+  .saida-modal{padding:36px 20px 22px;border-radius:18px;}
+  .saida-titulo{font-size:22px;}
+  .saida-sub{font-size:14px;}
+  .saida-val{font-size:38px;}
+}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+/* =========================================================
+   CONFIG  —  é só aqui que você mexe pra configurar o funil
+   ========================================================= */
+const APP_NOME = 'Fit Day';
+
+/* Se ainda não tem os checkouts da Ticto configurados, deixe em branco:
+   clicar em qualquer plano leva a pessoa direto pro cadastro do app
+   (index.html), sem cobrar nada. Quando criar os 3 produtos na Ticto,
+   cole os links aqui — e também em config.js (o app usa esses mesmos
+   3 links na tela de "faltou o pagamento"; são arquivos sem import
+   entre si, então precisa colar dos dois lados). */
+const CHECKOUT_URL_MENSAL = '';         // ex.: 'https://payment.ticto.app/XXXX'
+const CHECKOUT_URL_TRIMESTRAL = '';
+const CHECKOUT_URL_ANUAL = '';
+const APP_URL = '/index.html';          // pra onde vai quem clicar num plano sem checkout configurado
+const CHAVE_QUIZ = 'app_emag_quiz';     // onde as respostas ficam salvas pro cadastro do app já abrir preenchido (mesmo navegador)
+
+/* Ponte quiz -> app pra quando NÃO é o mesmo navegador (ex.: quiz no
+   navegador do Instagram, pagamento e cadastro no Safari/Chrome do
+   celular). As respostas também vão pro Supabase com um token, que
+   viaja na URL do link clicado (?quiz=TOKEN); o app busca por ele.
+   Mesmas credenciais de config.js — são arquivos separados, sem
+   import, então o valor não se propaga sozinho. */
+const SUPABASE_URL = 'https://ddtxvijlmjqtaxdystph.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_XsRkTp9ahN8T3ydSfOEE_Q_AYH4Oq11';
+
+/* ===== Rastreamento Meta Pixel (seguro, não quebra se o pixel não carregar) ===== */
+function px(evento, padrao){
+  try{ if(typeof fbq==='function'){ padrao ? fbq('track', evento) : fbq('trackCustom', evento); } }catch(e){}
+}
+
+/* =========================================================
+   MEDIÇÃO DO FUNIL DO QUIZ
+   Manda o mesmo evento para o GA4 e para o Pixel. Serve para
+   responder duas perguntas: em que etapa a pessoa parou e qual
+   resposta cada pergunta mais recebeu.
+   ========================================================= */
+function track(evento, params){
+  try{ if(typeof gtag==='function') gtag('event', evento, params||{}); }catch(e){}
+  try{ if(typeof fbq==='function') fbq('trackCustom', evento, params||{}); }catch(e){}
+}
+
+/* estado da medição: guarda a etapa mais avançada que a pessoa viu */
+const track_estado = { etapa:0, rotulo:'intro', concluiu:false, respondidas:0 };
+
+function trackEtapa(step){
+  let num = 0, rotulo = step.type;
+  if(step.type==='question'){ num = step.q.num; rotulo = step.q.id; }
+  else if(step.type==='intro'){ num = 0; rotulo = 'intro_idade'; }
+  else { num = track_estado.etapa; }                 /* telas de conteúdo herdam o número da última pergunta */
+
+  track_estado.etapa  = Math.max(track_estado.etapa, num);
+  track_estado.rotulo = rotulo;
+  if(step.type==='result') track_estado.concluiu = true;
+
+  track('quiz_etapa', {
+    etapa: num,
+    etapa_id: rotulo,
+    tipo: step.type,
+    posicao: state.idx,
+    total_perguntas: TOTAL_Q
+  });
+}
+
+function trackResposta(qid, valor){
+  track_estado.respondidas++;
+  const q = QUESTIONS.find(x=>x.id===qid);
+  track('quiz_resposta', {
+    pergunta: qid,
+    etapa: q ? q.num : 0,
+    resposta: Array.isArray(valor) ? valor.join(' | ') : String(valor)
+  });
+}
+
+/* abandono: quem fecha a página antes da tela final marca a última etapa vista */
+window.addEventListener('pagehide', function(){
+  if(track_estado.concluiu) return;
+  track('quiz_abandono', {
+    etapa: track_estado.etapa,
+    etapa_id: track_estado.rotulo,
+    respondidas: track_estado.respondidas
+  });
+});
+
+/* =========================================================
+   PERGUNTAS
+   Ordem = ordem de execução: sem indireção de "perguntas adiadas",
+   pra ficar fácil de ler e de editar depois. Segue SPIN (Situação →
+   Problema → Implicação → Necessidade), igual ao quiz original, mas
+   nada aqui menciona canetinha: é sobre montar o plano do app.
+   ========================================================= */
+const QUESTIONS = [
+  /* ===== SITUAÇÃO: o tratamento dela ===== */
+  {
+    id:'caneta', num:1,
+    question:'Qual canetinha você usa hoje?',
+    options:['Mounjaro (tirzepatida)','Ozempic (semaglutida)','Wegovy (semaglutida)','Saxenda (liraglutida)','Manipulada / não lembro o nome']
+  },
+  {
+    id:'tempo_uso', num:2,
+    question:'Há quanto tempo você aplica?',
+    options:['Menos de 1 mês','Entre 1 e 3 meses','Entre 3 e 6 meses','Entre 6 meses e 1 ano','Mais de 1 ano']
+  },
+  {
+    id:'dose', num:3,
+    question:'Qual é a sua dose atual?',
+    options:['2,5 mg','5 mg','7,5 mg','10 mg','12,5 mg','15 mg']
+  },
+  {
+    id:'objetivo', num:4,
+    question:'Qual é o seu objetivo com a canetinha hoje?',
+    options:[
+      '🔥 Emagrecer mais do que estou emagrecendo',
+      '📉 Me preparar para reduzir a dose sem engordar',
+      '🛡️ Parar de usar sem recuperar o peso',
+      '↩️ Recuperar o resultado que já tinha perdido'
+    ]
+  },
+  /* >>> QUEBRA: tira a culpa <<< */
+
+  /* ===== PROBLEMA: o que já dói ===== */
+  {
+    id:'ja_eliminou', num:5,
+    question:'Quantos quilos você já eliminou com a canetinha?',
+    options:['Ainda nenhum','De 1 a 5 kg','De 6 a 10 kg','De 11 a 15 kg','Mais de 16 kg']
+  },
+  {
+    id:'dor', num:6,
+    question:'O que mais te incomoda hoje no seu tratamento?',
+    options:[
+      'A balança travou mesmo aplicando certinho',
+      'Tenho medo de parar e engordar tudo de volta',
+      'Emagreci, mas fiquei flácida e com o rosto abatido',
+      'Gasto muito por mês e vejo pouco resultado',
+      'Fico sem energia e sem disposição'
+    ]
+  },
+  {
+    id:'massa', num:7,
+    question:'Você percebeu flacidez ou perda de massa muscular enquanto emagrecia?',
+    options:['Sim, infelizmente','Não, mas já ouvi falar que acontece']
+  },
+  {
+    id:'colaterais', num:8, type:'multi',
+    question:'Quais desses sintomas você já sentiu durante o tratamento?',
+    options:['Enjoo ou dor no estômago','Intestino preso ou diarreia','Cansaço que não passa','Queda de cabelo','Rosto abatido ou pele sem firmeza','Nenhum desses']
+  },
+  /* >>> QUEBRA: o custo que ninguém contou (82%) <<< */
+
+  /* ===== ROTINA: é daqui que sai o diagnóstico ===== */
+  {
+    id:'proteina', num:9,
+    question:'Comendo pouco, dá para manter proteína nas refeições?',
+    options:['❌ Quase nunca consigo','🤏 Só no almoço','✅ Na maioria delas','💪 Em todas, sempre']
+  },
+  {
+    id:'carbo', num:10,
+    question:'E o carboidrato, o que você faz com ele?',
+    options:['✂️ Corto quase tudo','📉 Reduzo bastante','⚖️ Mantenho e controlo a quantidade','🤷 Nunca prestei atenção nisso']
+  },
+  {
+    id:'agua', num:11,
+    question:'Quanta água você bebe por dia?',
+    options:['💧 Menos de 1 litro','🥤 Entre 1 e 2 litros','🚰 Mais de 2 litros']
+  },
+  {
+    id:'sono', num:12,
+    question:'Quantas horas você dorme por noite, em média?',
+    options:['⚠️ Menos de 5 horas','😪 Entre 5 e 6 horas','😌 Entre 7 e 8 horas','😴 Mais de 8 horas']
+  },
+  {
+    id:'estresse', num:13,
+    question:'Como está o seu nível de estresse no dia a dia?',
+    options:['🔥 Muito alto, vivo no limite','😬 Alto na maior parte do tempo','🙂 Moderado, dá pra levar','😌 Baixo, estou tranquila']
+  },
+  {
+    id:'treino_frequencia', num:14,
+    question:'Quantas vezes por semana você se exercita de verdade?',
+    options:['😴 Nenhuma','🚶 1 ou 2 vezes','🏃 3 ou 4 vezes','💪 5 vezes ou mais']
+  },
+  /* >>> ANALISANDO + DIAGNÓSTICO entram aqui <<< */
+
+  /* ===== METAS ===== */
+  {
+    id:'corpo_sonho', num:15,
+    question:'Qual é o seu corpo dos sonhos?',
+    options: a => a.sexo==='Homem' ? ['Definido','Musculoso','Atlético e volumoso','Mantendo o shape atual'] : ['Magra','Definida','Com curvas','Média'],
+    optionImages: a => a.sexo==='Homem' ? ['/corpo-homem-definido.jpg','/corpo-homem-musculoso.jpg','/corpo-homem-atletico.jpg','/corpo-homem-atual.jpg'] : ['/corpo-magra.jpg','/corpo-definida.jpg','/corpo-curvas.jpg','/corpo-media.jpg']
+  },
+  {
+    id:'peso', num:16, type:'ruler',
+    question:'Qual é o seu peso atual?',
+    units:[{u:'kg',min:40,max:160,def:70,step:1},{u:'lb',min:88,max:352,def:154,step:1}]
+  },
+  {
+    id:'altura', num:17, type:'ruler',
+    question:'Qual é a sua altura?',
+    units:[{u:'cm',min:140,max:210,def:165,step:1},{u:'pol',min:55,max:83,def:65,step:1}]
+  },
+  {
+    id:'meta_peso', num:18, type:'ruler',
+    question:'Qual peso você quer alcançar?',
+    units:[{u:'kg',min:40,max:160,def:65,step:1},{u:'lb',min:88,max:352,def:143,step:1}]
+  },
+  {
+    id:'outros_objetivos', num:19, type:'multi',
+    question:'Além de emagrecer, o que mais você quer conquistar?',
+    options:['⚡ Mais energia e disposição','💪 Firmeza no lugar da flacidez','🛡️ Segurança para reduzir a dose','😊 Me sentir bem em qualquer roupa','🧘 Reduzir o estresse e dormir melhor']
+  }
+];
+
+const INTERSTITIALS = {};
+
+/* =========================================================
+   ESTADO E FLUXO
+   ========================================================= */
+const state = { idx:0, answers:{} };
+const FLOW = [];
+/* o array QUESTIONS já está na ordem de execução (veja o comentário lá em
+   cima) — o forEach só decide ONDE, entre uma pergunta e outra, entra uma
+   tela de conteúdo (diagnóstico, análise, a tela do app). */
+FLOW.push({type:'intro'});                                   /* headline + "voce e" com foto */
+FLOW.push({type:'idade'});
+QUESTIONS.forEach(q=>{
+  FLOW.push({type:'question', q});
+  if(q.id==='objetivo')           FLOW.push({type:'culpa'});         // quebra: faltou metodo, nao esforco
+  if(q.id==='colaterais')         FLOW.push({type:'custo'});         // quebra: o custo escondido (82%)
+  if(q.id==='treino_frequencia'){                                    // fecha o diagnostico
+    FLOW.push({type:'analyzing'});
+    FLOW.push({type:'diagnostico'});
+  }
+  if(q.id==='outros_objetivos')   FLOW.push({type:'analyzing'});
+});
+FLOW.push({type:'vsl'});                                     /* mini-VSL final */
+FLOW.push({type:'projecao'});                                /* projecao + planos */
+
+const app = document.getElementById('app');
+const TOTAL_Q = QUESTIONS.length;
+
+function go(n){ state.idx += n; render(); window.scrollTo({top:0,behavior:'instant'}); }
+/* percentual da barra nas telas de conteúdo: usa a última pergunta respondida antes dela */
+function pctAte(qid){ const q = QUESTIONS.find(x=>x.id===qid); return q ? Math.round((q.num/TOTAL_Q)*100) : 100; }
+function esc(s){return (s||'').replace(/"/g,'&quot;');}
+function backBtn(){ return state.idx>0 ? `<button class="back-btn" onclick="go(-1)" aria-label="Voltar">←</button>` : ''; }
+
+function pillsHTML(uptoNum){
+  const done = QUESTIONS.filter(q=>q.num<uptoNum && state.answers[q.id] && !q.noPill);
+  if(!done.length) return '';
+  return `<div class="pills">${done.slice(-4).map(q=>`<span class="pill">${state.answers[q.id]}</span>`).join('')}</div>`;
+}
+
+const TOASTS = {};
+function toastHTML(count){
+  const txt = count===1
+    ? `<b>+1 pessoa</b> está fazendo o diagnóstico junto com você`
+    : `<b>+${count} pessoas</b> estão fazendo o diagnóstico junto com você`;
+  return `<div class="toast" id="toast"><span class="ic">🔥</span><span>${txt}</span><button class="x" onclick="document.getElementById('toast').remove()">×</button></div>`;
+}
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+function render(){
+  const step = FLOW[state.idx];
+  const map = {
+    intro:renderIntro, sexo:renderSexo, idade:renderIdade, question:()=>renderQuestion(step.q), break1:renderBreak1,
+    culpa:renderCulpa, custo:renderCusto, diagnostico:renderDiagnostico, vsl:renderVsl,
+    interstitial:()=>renderInterstitial(step.id),
+    analyzing:renderAnalyzing, prepitch:renderPrePitch, meta:renderMeta,
+    projecao:renderProjecao,
+    offerLocked:renderOfferLocked, offerPrice:renderOfferPrice, result:renderResult
+  };
+  (map[step.type]||renderIntro)();
+  trackEtapa(step);
+}
+
+const IDADE_OPTS = ['Entre 18 e 29 anos','Entre 30 e 39 anos','Entre 40 e 49 anos','+50 anos'];
+const IDADE_IMGS_MULHER = ['/idade-18-29.jpg','/idade-30-39.jpg','/idade-40-49.jpg','/idade-50-mais.jpg'];
+const IDADE_IMGS_HOMEM  = ['/idade-homem-18-29.jpg','/idade-homem-30-39.jpg','/idade-homem-40-49.jpg','/idade-homem-50-mais.jpg'];
+function idadeImgsDe(){ return state.answers.sexo==='Homem' ? IDADE_IMGS_HOMEM : IDADE_IMGS_MULHER; }
+
+const SEXO_OPTS = ['Mulher','Homem'];
+const SEXO_IMGS = ['/sexo-mulher.jpg','/sexo-homem.jpg'];
+
+/* abertura: só headline + imagem + subheadline + CTA, sem pergunta
+   nenhuma ainda (a pergunta "Você é" virou a tela seguinte, renderSexo)
+   — estilo inspirado numa referência de quiz de inglês: fonte
+   arredondada e mais robusta (Baloo 2) só nessa tela de entrada. */
+/* =========================================================
+   TELAS PROPRIAS DESTE FUNIL
+   ========================================================= */
+
+/* quebra 1: tira a culpa (depois do objetivo) */
+function renderCulpa(){
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz" style="text-align:center;">
+      ${backBtn()}
+      <div class="brand-sub" style="margin-bottom:14px;">Antes de continuar</div>
+      <span class="hist-tag">A culpa não é sua</span>
+      <p class="inter-text" style="font-weight:800;color:var(--verde-claro);margin:18px 0;">Usar a canetinha não é sinal de fraqueza. É o contrário disso.</p>
+      <p class="inter-text">Durante quase toda a história da humanidade o problema foi a falta de comida, nunca o excesso. Quem guardava gordura sobrevivia. A sua biologia foi construída para te proteger da falta, e a arma que ela usa para isso é a fome.</p>
+      <p class="inter-text">Hoje comida chegou a dois toques no celular. A sua biologia é antiga e o mundo é novo. O que a canetinha faz é desligar temporariamente esse mecanismo, e isso é corrigir um desequilíbrio, não trapacear.</p>
+      <p class="inter-text" style="color:#eef5f0;font-weight:800;">Se você travou na balança ou perdeu firmeza, não foi porque você relaxou. Te entregaram a receita e desejaram boa sorte. Não faltou esforço, faltou método.</p>
+      <button class="btn" onclick="go(1)">Continuar</button>
+    </div>
+  </div>`;
+}
+
+/* quebra 2: o custo escondido, com o dado dos 82% */
+function renderCusto(){
+  const a = state.answers;
+  const flacidez = (a.massa||'').includes('Sim');
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz" style="text-align:center;">
+      ${backBtn()}
+      <div class="brand-sub" style="margin-bottom:14px;">O que ninguém te explicou</div>
+      <h2 class="q-title">Tudo tem um preço, e esse quase ninguém conta</h2>
+      <p class="inter-text">Comendo bem menos, você não come menos só de besteira. Come menos de tudo, inclusive proteína. E proteína é o material com que o seu corpo mantém o músculo de pé.</p>
+      <p class="inter-text">${flacidez
+        ? 'Você acabou de marcar que já percebeu flacidez. É exatamente isso: parte do peso que saiu não era gordura, era músculo.'
+        : 'Sem proteína suficiente, parte do peso que sai da balança não é gordura, é músculo. Muita gente só percebe quando o corpo já mudou de textura.'}</p>
+      <p class="inter-text">E o músculo é o tecido que mais gasta energia parado. Menos músculo significa metabolismo mais lento, balança travada na mesma dose, e mais chance de engordar de novo.</p>
+      <div class="prova-numero" style="font-size:56px;margin-top:18px;">82%</div>
+      <p class="prova-numero-legenda" style="font-size:14px;margin-bottom:16px;">das pessoas que pararam o Mounjaro recuperaram parte do peso perdido em até um ano.</p>
+      <div class="prova-noticia">
+        <img src="/pesquisa-mounjaro.jpeg" alt="Reportagem sobre reganho de peso após o fim do tratamento" onerror="this.style.display='none'">
+      </div>
+      <p class="inter-text" style="color:#eef5f0;font-weight:800;margin-top:16px;">A canetinha é parte do processo, ela não é o processo inteiro. As próximas perguntas mostram o que está faltando no seu caso.</p>
+      <button class="btn" onclick="go(1)">Continuar</button>
+    </div>
+  </div>`;
+}
+
+/* diagnostico: aproveitamento da canetinha + as 5 travas */
+const TRAVAS_CAN = [
+  ['Proteína',       'proteina',          i => i>=2],
+  ['Gasto calórico', 'treino_frequencia', i => i>=1],
+  ['Carboidrato',    'carbo',             i => i===2],
+  ['Hidratação',     'agua',              i => i>=1],
+  ['Sono',           'sono',              i => i===2 || i===3]
+];
+
+function travasFechadas(){
+  return TRAVAS_CAN.filter(([,id,ok])=>{
+    const i = state.answers[id+'_i'];
+    return typeof i !== 'number' || !ok(i);
+  });
+}
+
+function renderDiagnostico(){
+  const a = state.answers;
+  const idx = calcIndiceConstancia();
+  const nivel = idx < 35 ? {txt:'BAIXO', cor:'#e0705a'} : idx < 60 ? {txt:'PARCIAL', cor:'#e0b25a'} : {txt:'BOM', cor:'#4caf82'};
+  const fechadas = travasFechadas();
+  const linhas = TRAVAS_CAN.map(([nome,id,ok])=>{
+    const i = a[id+'_i'];
+    const liberada = typeof i === 'number' && ok(i);
+    return `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:rgba(255,255,255,.05);border-radius:12px;margin-bottom:8px;">
+      <span style="font-weight:800;font-size:15px;color:#eef5f0;">${nome}</span>
+      <span style="font-weight:800;font-size:12.5px;color:${liberada?'var(--verde-claro)':'#e0705a'};">${liberada?'✓ liberada':'🔒 travada'}</span>
+    </div>`;
+  }).join('');
+
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz">
+      <div class="brand-sub" style="margin-bottom:12px;">Diagnóstico personalizado</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pctAte('treino_frequencia')}%"></div></div>
+
+      <h2 class="q-title" style="margin-top:20px;">O quanto você está aproveitando da sua canetinha</h2>
+      <div style="text-align:center;font-family:'Baloo 2',sans-serif;font-size:56px;font-weight:800;color:${nivel.cor};line-height:1;">${idx}<span style="font-size:24px;color:#9aa8a2;">/100</span></div>
+      <div style="height:12px;border-radius:20px;margin:16px 0 8px;background:linear-gradient(90deg,#e0705a 0%,#e0b25a 50%,#4caf82 100%);position:relative;">
+        <div style="position:absolute;top:-5px;left:calc(${idx}% - 11px);width:22px;height:22px;border-radius:50%;background:#0a2818;border:4px solid ${nivel.cor};"></div>
+      </div>
+      <p style="text-align:center;font-size:15px;font-weight:800;color:${nivel.cor};margin:14px 0 4px;">O seu aproveitamento hoje está <strong>${nivel.txt}</strong>.</p>
+      <p style="text-align:center;font-size:12.5px;color:#9aa8a2;line-height:1.55;margin:0 0 22px;">Estimativa educativa calculada a partir das suas respostas.</p>
+
+      <h3 style="font-size:18px;font-weight:900;color:#eef5f0;text-align:center;margin:0 0 14px;">As suas 5 travas metabólicas</h3>
+      ${linhas}
+
+      <div style="background:rgba(76,175,130,.12);border:1px solid rgba(76,175,130,.3);border-radius:14px;padding:20px 18px;margin:20px 0 0;text-align:center;">
+        <p style="font-size:15.5px;font-weight:800;color:var(--verde-claro);line-height:1.6;margin:0;">${fechadas.length
+          ? `Você tem <strong>${fechadas.length} ${fechadas.length===1?'trava fechada':'travas fechadas'}</strong>. Enquanto ${fechadas.length===1?'ela continuar assim':'elas continuarem assim'}, a caneta empurra de um lado e o seu corpo empurra do outro.`
+          : 'As suas 5 travas estão liberadas. O que decide o seu resultado agora é constância, e é isso que o plano organiza.'}</p>
+      </div>
+
+      <button class="btn" style="margin-top:22px;" onclick="go(1)">Continuar</button>
+    </div>
+  </div>`;
+  px('DiagnosticoGerado');
+}
+
+/* mini-VSL final, antes dos planos */
+function renderVsl(){
+  const a = state.answers;
+  const nome = a.nome && a.nome!=='você' ? a.nome : '';
+  const fechadas = travasFechadas().map(t=>t[0]);
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz" style="text-align:center;">
+      <div class="brand-sub" style="margin-bottom:14px;">Último passo</div>
+      <h2 class="q-title">${nome?nome+', a':'A'}ssista antes de ver o seu plano</h2>
+      <div class="video-box">
+        <div class="play">▶</div>
+        <div class="vlabel">Nutri Kelly Firbida</div>
+        <div class="vname">Como tirar o máximo da sua canetinha</div>
+        <div class="vhint">9 minutos · assista com som</div>
+      </div>
+      <p class="inter-text" style="text-align:left;">A canetinha faz uma parte do trabalho muito bem: ela reduz a fome. O que ela não faz é ensinar o seu corpo a produzir saciedade sozinho, e é por isso que o peso costuma voltar quando a aplicação acaba.</p>
+      <p class="inter-text" style="text-align:left;">${fechadas.length
+        ? `No seu caso ${fechadas.length===1?'a trava de':'as travas de'} <strong>${fechadas.slice(0,3).join(', ').toLowerCase()}</strong> ${fechadas.length===1?'está segurando':'estão segurando'} parte do resultado que a aplicação poderia te dar.`
+        : 'A sua rotina já está no caminho certo. O que decide o resultado agora é constância.'}</p>
+      <p class="inter-text" style="text-align:left;">O Método Destrave Metabólico tem duas fases. A <strong>fase de aceleração</strong> é para agora, enquanto você aplica: proteger a massa magra e fazer cada aplicação render mais, com alimentação desenhada para quem tem pouco apetite. A <strong>fase de manutenção</strong> é para o dia em que a dose cair, quando o objetivo passa a ser estimular naturalmente a saciedade que a caneta estimulava.</p>
+      <p class="inter-text" style="text-align:left;color:#eef5f0;font-weight:800;">As duas fases ficam dentro do ${APP_NOME}, no seu celular, com o cardápio, os treinos e as metas do dia já montados para o seu perfil.</p>
+      <button class="btn" onclick="go(1)">Ver o meu plano →</button>
+    </div>
+  </div>`;
+  px('VslAssistida');
+}
+
+function renderIntro(){
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz" style="text-align:center;padding-top:48px;padding-bottom:46px;">
+      <div class="brand-sub" style="font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:800;color:var(--verde-claro);margin-bottom:10px;">Teste grátis para quem usa canetinha</div>
+      <h1 class="intro-h1">Descubra o quanto você está aproveitando da sua canetinha.</h1>
+      <p class="intro-sub" style="font-size:16px;line-height:1.6;margin-top:10px;color:var(--verde-claro);text-align:center;">Faça o teste grátis e receba um plano para emagrecer sem perder músculo, e para não engordar de novo quando a aplicação acabar.</p>
+      <h2 class="intro-h1" style="margin:34px 0 0;">Você é</h2>
+      <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#9aa8a2;margin:14px 0 22px;">Toque para escolher</p>
+      <div class="opts grid2">
+        ${SEXO_OPTS.map((o,i)=>`<div class="idade-card" onclick="selectSexo(${i})"><img src="${SEXO_IMGS[i]}" alt="${o}" class="idade-img" onerror="this.style.display='none'"><button class="opt${state.answers.sexo===o?' sel':''}" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button></div>`).join('')}
+      </div>
+      <p style="font-size:13px;color:#8aa79a;margin-top:18px;">✅ Tempo estimado: 2 minutos</p>
+    </div>
+  </div>`;
+}
+
+function renderSexo(){
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz" style="text-align:center;">
+      ${backBtn()}
+      <h2 class="intro-h1" style="margin-top:20px;">Você é</h2>
+      <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#9aa8a2;margin:14px 0 22px;">Toque para escolher</p>
+      <div class="opts grid2">
+        ${SEXO_OPTS.map((o,i)=>`<div class="idade-card" onclick="selectSexo(${i})"><img src="${SEXO_IMGS[i]}" alt="${o}" class="idade-img" onerror="this.style.display='none'"><button class="opt${state.answers.sexo===o?' sel':''}" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button></div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function selectSexo(i){
+  state.answers.sexo = SEXO_OPTS[i];
+  trackResposta('sexo', SEXO_OPTS[i]);
+  const btns = app.querySelectorAll('.opt');
+  btns.forEach(b=>b.classList.remove('sel'));
+  const chosen = app.querySelector(`.opt[data-i="${i}"]`);
+  if(chosen) chosen.classList.add('sel');
+  btns.forEach(b=>b.style.pointerEvents='none');
+  px('QuizIniciado');
+  setTimeout(()=>go(1),360);
+}
+
+function renderIdade(){
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz" style="text-align:center;">
+      ${backBtn()}
+      <h2 class="intro-h1" style="margin-top:20px;">Qual a sua idade?</h2>
+      <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#9aa8a2;margin:14px 0 22px;">Toque para escolher</p>
+      <div class="opts grid2">
+        ${(()=>{ const imgs=idadeImgsDe(); return IDADE_OPTS.map((o,i)=>`<div class="idade-card" onclick="selectIdade(${i})"><img src="${imgs[i]}" alt="${o}" class="idade-img" onerror="this.style.display='none'"><button class="opt${state.answers.idade===o?' sel':''}" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button></div>`).join(''); })()}
+      </div>
+    </div>
+  </div>`;
+}
+
+function selectIdade(i){
+  state.answers.idade = IDADE_OPTS[i];
+  trackResposta('idade', IDADE_OPTS[i]);
+  const btns = app.querySelectorAll('.opt');
+  btns.forEach(b=>b.classList.remove('sel'));
+  const chosen = app.querySelector(`.opt[data-i="${i}"]`);
+  if(chosen) chosen.classList.add('sel');
+  btns.forEach(b=>b.style.pointerEvents='none');
+  setTimeout(()=>go(1),360);
+}
+
+
+
+function opcoesDe(q){ return typeof q.options === 'function' ? q.options(state.answers) : q.options; }
+function imagensDe(q){ return typeof q.optionImages === 'function' ? q.optionImages(state.answers) : q.optionImages; }
+
+function renderQuestion(q){
+  if(q.type==='text') return renderTextQuestion(q);
+  if(q.type==='ruler') return renderRulerQuestion(q);
+  if(q.type==='multi') return renderMultiQuestion(q);
+  const a = state.answers;
+  const insight = q.insight ? `<div class="insight">${q.insight(a)}</div>` : '';
+  const echo = q.echo ? `<div class="echo">${q.echo(a)}</div>` : '';
+  const opts = opcoesDe(q), imgs = imagensDe(q);           /* algumas perguntas (ex.: corpo_sonho) variam por sexo */
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz">
+      ${backBtn()}<div class="brand"><img src="/Logo-escuro.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      <div class="brand-sub">Diagnóstico personalizado</div>
+      <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
+      ${echo}
+      <h2 class="q-title">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
+      <div class="opts${imgs?' photo':''}">
+        ${imgs
+          ? opts.map((o,i)=>`<div class="opt-row" onclick="selectOpt('${q.id}',${i})"><img src="${imgs[i]}" alt="${o}" class="opt-row-img" onerror="this.style.display='none'"><button class="opt" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button></div>`).join('')
+          : opts.map((o,i)=>`<button class="opt" data-i="${i}" onclick="selectOpt('${q.id}',${i})"><span class="opt-radio"></span><span>${o}</span></button>`).join('')}
+      </div>
+      ${q.img?`<img src="${q.img}" alt="" style="width:100%;border-radius:12px;display:block;margin:16px 0 0;" onerror="this.style.display='none'">`:''}
+    </div>
+  </div>
+  ${TOASTS[q.id]?toastHTML(TOASTS[q.id]):''}`;
+}
+
+function selectOpt(qid,i){
+  const q = QUESTIONS.find(x=>x.id===qid);
+  const opts = opcoesDe(q);
+  state.answers[qid] = opts[i];
+  state.answers[qid+'_i'] = i;              /* o índice é o que os cálculos usam */
+  trackResposta(qid, opts[i]);
+  const btns = app.querySelectorAll('.opt');
+  btns.forEach(b=>b.classList.remove('sel'));
+  const chosen = app.querySelector(`.opt[data-i="${i}"]`);
+  if(chosen) chosen.classList.add('sel');
+  btns.forEach(b=>b.style.pointerEvents='none');
+  setTimeout(()=>go(1),360);
+}
+
+/* ---------- PERGUNTA DE MÚLTIPLA ESCOLHA ---------- */
+function renderMultiQuestion(q){
+  const sel = state.answers[q.id] || [];
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz">
+      ${backBtn()}<div class="brand"><img src="/Logo-escuro.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      <div class="brand-sub">Diagnóstico personalizado</div>
+      <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
+      <h2 class="q-title tight">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
+      <p class="ruler-sub" style="margin:-6px 0 12px;">Pode marcar mais de uma opção</p>
+      <div class="opts compact">
+        ${q.options.map((o,i)=>`<button class="opt${sel.includes(o)?' sel':''}" data-i="${i}" onclick="toggleOpt('${q.id}',${i})"><span class="opt-radio"></span><span>${o}</span></button>`).join('')}
+      </div>
+      <button class="btn" id="multiNext" style="margin-top:12px;">Continuar →</button>
+    </div>
+  </div>`;
+  document.getElementById('multiNext').onclick=()=>{ trackResposta(q.id, state.answers[q.id]||[]); go(1); };
+}
+function toggleOpt(qid,i){
+  const q = QUESTIONS.find(x=>x.id===qid);
+  const o = q.options[i];
+  let sel = state.answers[qid] || [];
+  sel = sel.includes(o) ? sel.filter(x=>x!==o) : [...sel,o];
+  state.answers[qid] = sel;
+  const btn = app.querySelector(`.opt[data-i="${i}"]`);
+  if(btn) btn.classList.toggle('sel');
+}
+
+/* ---------- PERGUNTA DE TEXTO (nome) ---------- */
+function renderTextQuestion(q){
+  const val = state.answers[q.id] && state.answers[q.id]!=='você' ? state.answers[q.id] : '';
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz">
+      ${backBtn()}<div class="brand"><img src="/Logo-escuro.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      <div class="brand-sub">Diagnóstico personalizado</div>
+      <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
+      <h2 class="q-title">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
+      <input type="text" class="text-input" id="txtField" placeholder="${q.placeholder||''}" value="${esc(val)}" autocomplete="given-name">
+      <button class="btn" id="txtNext">Continuar →</button>
+    </div>
+  </div>`;
+  const field=document.getElementById('txtField');
+  setTimeout(()=>field.focus(),60);
+  function submit(){ state.answers[q.id]=(field.value.trim()||'você'); trackResposta(q.id, 'preenchido'); go(1); }
+  document.getElementById('txtNext').onclick=submit;
+  field.addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();submit();} });
+}
+
+/* ---------- PERGUNTA COM RÉGUA (peso / altura) ---------- */
+function renderRulerQuestion(q){
+  const u0=q.units[0];
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz" style="text-align:center;">
+      ${backBtn()}<div class="brand"><img src="/Logo-escuro.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      <div class="brand-sub">Diagnóstico personalizado</div>
+      <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
+      <h2 class="q-title" style="text-align:center;">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
+      <p class="ruler-sub">Arraste para ajustar</p>
+      <div class="unit-toggle" id="uToggle">
+        ${q.units.map((u,i)=>`<button type="button" class="ut${i===0?' active':''}" data-i="${i}">${u.u}</button>`).join('')}
+      </div>
+      <div class="ruler-val"><span id="rVal">${u0.def}</span><small id="rUnit">${u0.u}</small></div>
+      <div class="ruler-track">
+        <div class="ruler-line"></div>
+        <div class="ruler-ticks" id="rTicks"></div>
+        <div class="ruler-pointer" id="rPointer"></div>
+        <input type="range" class="ruler-input" id="rRange" min="${u0.min}" max="${u0.max}" step="${u0.step}" value="${u0.def}">
+      </div>
+      <div class="ruler-labels" id="rLabels"></div>
+      <button class="btn" id="rNext" style="margin-top:24px;">Continuar</button>
+    </div>
+  </div>`;
+  let uIdx=0;
+  const rangeEl=document.getElementById('rRange');
+  const valEl=document.getElementById('rVal');
+  const unitEl=document.getElementById('rUnit');
+  const pointer=document.getElementById('rPointer');
+  const labels=document.getElementById('rLabels');
+  let t=''; for(let i=0;i<=40;i++) t+=`<span class="tk${i%5===0?' maj':''}"></span>`;
+  document.getElementById('rTicks').innerHTML=t;
+  function setLabels(c){ labels.innerHTML=`<span>${c.min}</span><span>${Math.round((c.min+c.max)/2)}</span><span>${c.max}</span>`; }
+  function update(){
+    const c=q.units[uIdx], v=parseFloat(rangeEl.value);
+    valEl.textContent=Math.round(v);
+    pointer.style.left=(((v-c.min)/(c.max-c.min))*100)+'%';
+  }
+  rangeEl.addEventListener('input',update);
+  document.querySelectorAll('#uToggle .ut').forEach(b=>{
+    b.onclick=()=>{
+      const ni=parseInt(b.dataset.i,10); if(ni===uIdx) return;
+      const cur=parseFloat(rangeEl.value), to=q.units[ni];
+      let conv;
+      if(q.id==='peso') conv = (to.u==='lb') ? cur*2.2046 : cur/2.2046;
+      else conv = (to.u==='pol') ? cur/2.54 : cur*2.54;
+      uIdx=ni;
+      document.querySelectorAll('#uToggle .ut').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      rangeEl.min=to.min; rangeEl.max=to.max; rangeEl.step=to.step;
+      rangeEl.value=Math.min(to.max,Math.max(to.min,Math.round(conv)));
+      unitEl.textContent=to.u; setLabels(to); update();
+    };
+  });
+  setLabels(u0); update();
+  document.getElementById('rNext').onclick=()=>{ state.answers[q.id]=Math.round(parseFloat(rangeEl.value))+' '+q.units[uIdx].u; trackResposta(q.id, state.answers[q.id]); go(1); };
+}
+
+/* ---------- BREAK 1 (conexão + para quem é + por que ficar) ---------- */
+function renderBreak1(){
+  const nome = state.answers.nome && state.answers.nome!=='você' ? state.answers.nome : '';
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz">
+      <div class="brand-sub" style="margin-bottom:14px;">Antes de continuar</div>
+      <span class="hist-tag">Isso aqui é pra você?</span>
+      <p class="inter-text" style="text-align:center;font-weight:700;color:var(--verde-escuro);margin-bottom:18px;">${nome?nome+', se':'Se'} você usa a canetinha ou já usou, você está no lugar certo.</p>
+      <p class="inter-text" style="text-align:center;">Nas próximas perguntas a gente vai medir <strong>o seu Índice de GLP-1 Natural</strong>: o quanto o seu corpo ainda produz sozinho o mesmo hormônio que a aplicação injeta toda semana.</p>
+      <p class="inter-text" style="text-align:center;">É esse número que decide se você vai continuar emagrecendo, se vai travar na balança e o que acontece com o seu peso no dia em que a caneta sair. <strong>Vá até o final</strong>: é lá que o diagnóstico é liberado.</p>
+      <button class="btn" onclick="go(1)">Isso é para mim →</button>
+    </div>
+  </div>`;
+}
+
+function renderInterstitial(id){
+  const it = INTERSTITIALS[id]; const a = state.answers;
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz">
+      <div class="brand-sub" style="margin-bottom:14px;">Diagnóstico personalizado</div>
+      <div class="inter-badge"><span class="ic">${it.icon}</span><span class="tt">${it.title}</span></div>
+      <p class="inter-text">${it.text(a)}</p>
+      ${it.mini?`<p class="inter-mini">${it.mini}</p>`:''}
+      <button class="btn" onclick="go(1)">Continuar</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- MINI-VSL 1 (mecanismo, credibilidade, autoridade) ---------- */
+/* ---------- BREAK 2 (substitui a mini-VSL — mecanismo + virada) ---------- */
+/* ---------- PROJEÇÃO FINAL (depois de outros_objetivos, antes do result) ---------- */
+function renderProjecao(){
+  const a = state.answers;
+  const nome = a.nome && a.nome!=='você' ? a.nome : '';
+  const idx = calcIndiceConstancia();
+  const niv = faixaIndice(idx);
+  const dif = difPeso();
+  const objFrase = objetivoId()==='hipertrofia' ? 'ganhar massa' : objetivoId()==='manutencao' ? 'manter e definir' : 'emagrecer';
+
+  /* estimativa educativa antes/depois, a partir de respostas reais —
+     nunca um número solto: sempre calculado e rotulado como estimativa */
+  const sonoAns = a.sono || '', freqAns = a.treino_frequencia || '';
+  let disposicaoAntes = sonoAns.includes('Menos de 5') ? 28 : sonoAns.includes('5 e 6') ? 40 : sonoAns.includes('7 e 8') ? 55 : 50;
+  if(freqAns.includes('Nenhuma')) disposicaoAntes -= 10;
+  disposicaoAntes = Math.max(15, Math.min(60, disposicaoAntes));
+  const constanciaAntes = Math.max(15, Math.min(60, idx));
+  const rotinaAntes = (a.alimentacao||'').includes('Cada dia') ? 25 : (a.alimentacao||'').includes('desando') ? 35 : 48;
+  const disposicaoDepois = Math.max(85, Math.min(92, disposicaoAntes+45));
+  const constanciaDepois = Math.max(85, Math.min(95, constanciaAntes+40));
+  const rotinaDepois = Math.max(85, Math.min(90, rotinaAntes+42));
+
+  /* foto real de 'corpo_hoje'/'corpo_sonho' (já escolhidas pela pessoa,
+     variam por sexo) — usadas no antes/depois da projeção, no lugar de
+     um avatar genérico. */
+  const imgDe = qid => {
+    const q = QUESTIONS.find(x=>x.id===qid);
+    const i = a[qid+'_i'];
+    const imgs = q && imagensDe(q);
+    return (imgs && typeof i==='number') ? imgs[i] : '';
+  };
+  const imgHoje = imgDe('corpo_hoje');
+  const imgSonho = imgDe('corpo_sonho');
+
+  /* trilha em 5 blocos discretos (não gradiente contínuo), só os blocos até
+     o valor ficam coloridos — visual replicado de uma referência enviada
+     pelo usuário, adaptado pro fundo claro do quiz (blocos "apagados"
+     ficam cinza-claro em vez de cinza-escuro) */
+  /* preenchimento contínuo e proporcional ao valor (não mais em 5 blocos
+     soltos): a trilha cheia mostra o degradê vermelho->verde inteiro, e um
+     recorte por largura revela só até a porcentagem exata — assim o
+     preenchimento sempre bate com o número mostrado, sem discrepância
+     visual entre "45%" e a barra parecer mais ou menos cheia que isso. */
+  const GRAD_TRILHA = 'linear-gradient(90deg,#e05a4e 0%,#f0a05a 25%,#f0c05a 50%,#8fb85a 75%,#4caf82 100%)';
+  const trilha = pct => `
+        <div style="height:7px;border-radius:6px;background:rgba(255,255,255,.1);overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background-image:${GRAD_TRILHA};background-size:${pct?(10000/pct):0}% 100%;border-radius:6px;"></div>
+        </div>`;
+  const sliderRow = (label, antes, depois) => `
+      <div style="margin-bottom:18px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <div style="font-size:12.5px;font-weight:800;color:#dfeae4;margin-bottom:6px;">${label}</div>
+            <div style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:var(--vermelho);margin-bottom:6px;"><span>Baixa</span><span>${antes}%</span></div>
+            <div style="position:relative;">
+              ${trilha(antes)}
+              <div style="position:absolute;top:50%;left:${antes}%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--vermelho);box-shadow:0 0 0 4px rgba(224,90,78,.28);"></div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:12.5px;font-weight:800;color:#dfeae4;margin-bottom:6px;">${label}</div>
+            <div style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:var(--verde-claro);margin-bottom:6px;"><span>Alta</span><span>${depois}%</span></div>
+            <div style="position:relative;">
+              ${trilha(depois)}
+              <div style="position:absolute;top:50%;left:${depois}%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--verde-claro);box-shadow:0 0 0 4px rgba(76,175,130,.3);"></div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+
+  /* imagens totalmente personalizadas por tópico (ver prompts enviados
+     ao usuário) — enquanto não forem enviadas, cai no emoji de fallback */
+  const COMO_FUNCIONA = [
+    ['Cardápio', '/icone-cardapio-escuro.jpg', '🍽️', 'Calculado na sua meta, com troca de alimentos'],
+    ['Treino', '/icone-treino-escuro.jpg', '🏋️', 'Montado pro seu sexo e seu local de treino'],
+    ['Hábitos', '/icone-habitos-escuro.jpg', '💧', 'Metas diárias de água e sono'],
+    ['Evolução', '/icone-evolucao-escuro.jpg', '📈', 'Pontos, níveis e registro de progresso']
+  ];
+
+  /* comparativo ilustrativo (sem números/percentuais soltos) de progresso
+     sozinho x com o app — mesma lógica qualitativa já usada noutras telas:
+     nada de estatística inventada, só a forma da curva. */
+  const EVOLUCAO_GRUPOS = [['Hoje',12,20],['60 dias',32,75],['6 meses',52,95],['1 ano',12,135]];
+  const evolucaoChartHTML = `
+        <div style="margin-top:18px;background:rgba(0,0,0,.18);border-radius:12px;padding:16px 10px 10px;">
+          <div style="display:flex;justify-content:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+            <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);color:#cfe0d6;font-size:11px;font-weight:700;padding:5px 10px;border-radius:20px;"><span style="width:8px;height:8px;border-radius:50%;background:#7d8f86;display:inline-block;"></span>Sozinho</span>
+            <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(76,175,130,.18);color:var(--verde-claro);font-size:11px;font-weight:800;padding:5px 10px;border-radius:20px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--verde-claro);display:inline-block;"></span>Você com a gente!</span>
+          </div>
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px;height:140px;background-image:repeating-linear-gradient(0deg, rgba(255,255,255,.12) 0 1px, transparent 1px 35px);padding:0 4px;">
+            ${EVOLUCAO_GRUPOS.map(([label,sozinho,voce])=>`
+            <div style="display:flex;align-items:flex-end;gap:4px;flex:1;justify-content:center;">
+              <div style="width:13px;border-radius:4px 4px 0 0;height:${sozinho}px;background:#7d8f86;"></div>
+              <div style="width:13px;border-radius:4px 4px 0 0;height:${voce}px;background:var(--verde-claro);"></div>
+            </div>`).join('')}
+          </div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:0 4px;margin-top:8px;">
+            ${EVOLUCAO_GRUPOS.map(([label])=>`<div style="flex:1;text-align:center;font-size:10.5px;font-weight:700;color:#9aa8a2;">${label}</div>`).join('')}
+          </div>
+        </div>`;
+
+  const PLANOS = [
+    { chave:'anual', destaque:'Ganhe 50% de desconto', nome:'Plano Anual', sub:'Acompanhamento 365 dias', preco:'R$238,80', obs:'sai R$19,90/mês' },
+    { chave:'trimestral', destaque:'⭐ Plano Mais Escolhido', nome:'Plano Trimestral', sub:'Acompanhamento 90 dias', preco:'R$74,70', obs:'sai R$24,90/mês' },
+    { chave:'mensal', nome:'Plano Mensal', preco:'R$29,90', obs:'por mês' }
+  ];
+  const planosHTML = `
+      <div style="margin-top:22px;">
+        ${PLANOS.map(p=>`
+        <div onclick="irParaPlano('${p.chave}')" style="cursor:pointer;border:2px solid ${p.destaque?'#27ae60':'rgba(255,255,255,.14)'};border-radius:14px;overflow:hidden;margin-bottom:14px;">
+          ${p.destaque?`<div style="background:linear-gradient(135deg,#27ae60,var(--verde-claro));color:#fff;text-align:center;font-weight:800;font-size:12.5px;padding:6px 0;">${p.destaque}</div>`:''}
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;background:rgba(255,255,255,.04);">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="width:20px;height:20px;border-radius:50%;border:2px solid #8a9a92;flex-shrink:0;display:block;"></span>
+              <div>
+                <div style="font-weight:800;font-size:16px;color:#eef5f0;">${p.nome}</div>
+                ${p.sub?`<div style="font-size:12px;color:#9aa8a2;margin-top:2px;">${p.sub}</div>`:''}
+              </div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-weight:900;font-size:19px;color:#eef5f0;">${p.preco}</div>
+              <div style="font-size:11px;color:#9aa8a2;margin-top:2px;">${p.obs}</div>
+            </div>
+          </div>
+        </div>`).join('')}
+        <p style="font-size:11.5px;color:#8aa79a;text-align:center;line-height:1.5;margin:8px 0 0;">Clique para escolher o seu plano. Cancele a qualquer momento para não ser cobrado.</p>
+      </div>`;
+
+
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz">
+      ${backBtn()}<div class="brand"><img src="/Logo-escuro.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      <div class="brand-sub">Diagnóstico personalizado</div>
+      <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:100%"></div></div>
+
+      <h2 class="q-title" style="margin-top:18px;">${nome?nome+', a':'A'}qui está a sua projeção com o ${APP_NOME}</h2>
+
+      <div class="proj-compare" style="margin-top:22px;">
+        <div class="proj-compare-col ruim">
+          <h5 style="background:var(--verde-claro);color:#0a2818;border-radius:20px;padding:16px 0;font-size:17px;">Antes</h5>
+          ${imgHoje ? `<img class="proj-compare-img" src="${imgHoje}" alt="Antes" onerror="this.remove()">` : ''}
+          <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:10px 8px;text-align:center;">
+            <div style="font-size:11px;color:#9fb0a7;font-weight:700;">Peso atual</div>
+            <div style="font-size:18px;font-weight:900;color:#eef5f0;">${numDe('peso') || '--'}kg</div>
+          </div>
+        </div>
+        <div class="proj-compare-col bom">
+          <h5 style="background:var(--verde-claro);color:#0a2818;border-radius:20px;padding:16px 0;font-size:17px;">Depois</h5>
+          ${imgSonho ? `<img class="proj-compare-img" src="${imgSonho}" alt="Depois" onerror="this.remove()">` : ''}
+          <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:10px 8px;text-align:center;">
+            <div style="font-size:11px;color:#9fb0a7;font-weight:700;">Meta de peso</div>
+            <div style="font-size:18px;font-weight:900;color:#eef5f0;">${numDe('meta_peso') || '--'}kg</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px;">
+        ${sliderRow('Disposição', disposicaoAntes, disposicaoDepois)}
+        ${sliderRow('Potencial', constanciaAntes, constanciaDepois)}
+        ${sliderRow('Rotina organizada', rotinaAntes, rotinaDepois)}
+      </div>
+
+      <div style="background:rgba(76,175,130,.12);border-radius:14px;padding:20px 18px;margin:22px 0 14px;text-align:center;">
+        <h4 style="margin:0 0 10px;font-size:17px;color:#eef5f0;">Seu plano personalizado no <span style="color:var(--verde-claro);">${APP_NOME}</span></h4>
+        <p style="font-size:14.5px;color:var(--verde-claro);font-weight:800;line-height:1.6;margin:0;">Com base nas suas respostas, o app já monta o seu cardápio, o seu treino e as suas metas de água e sono, ajustados pro seu objetivo de ${objFrase}.</p>
+        ${evolucaoChartHTML}
+      </div>
+
+      <!-- COMO FUNCIONA O APP -->
+      <h4 style="text-align:center;margin:18px 0 16px;font-size:24px;font-weight:900;color:var(--verde-claro);">Como o ${APP_NOME} funciona?</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        ${COMO_FUNCIONA.map(([titulo,img,emoji,resumo])=>`
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px 12px;text-align:center;box-shadow:0 2px 14px rgba(0,0,0,.2);">
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:22px;color:var(--verde-claro);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;line-height:1.1;">${titulo}</div>
+          <img src="${img}" alt="${titulo}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;display:block;margin-bottom:12px;" onerror="this.outerHTML='<div style=&quot;font-size:48px;margin-bottom:12px;&quot;>${emoji}</div>'">
+          <div style="font-size:13px;font-weight:800;color:var(--verde-claro);text-align:center;line-height:1.4;">${resumo}</div>
+        </div>`).join('')}
+      </div>
+
+      <img src="/fit-day-promo-escuro.jpg" alt="${APP_NOME}" style="width:100%;border-radius:16px;display:block;margin:22px 0 0;" onerror="this.remove()">
+
+      ${planosHTML}
+
+      <img src="/garantia-escuro.jpg" alt="Garantia de 30 dias" style="width:100%;border-radius:16px;display:block;margin:22px 0 0;" onerror="this.remove()">
+
+      <p style="font-size:11.5px;color:#8aa79a;line-height:1.6;text-align:center;margin:22px 0 0;">Material educativo de apoio. Não substitui acompanhamento médico ou nutricional. Resultados variam de pessoa para pessoa.</p>
+    </div>
+  </div>`;
+}
+
+/* ---------- SAÍDA DO QUIZ ----------
+   Guarda as respostas antes de sair, pra o cadastro do app já abrir
+   preenchido (js/onboarding.js lê a mesma chave em dadosDoQuiz()). */
+function dadosParaOApp(){
+  return {
+    nome: (state.answers.nome && state.answers.nome!=='você') ? state.answers.nome : '',
+    sexo: state.answers.sexo==='Homem' ? 'masculino' : 'feminino',
+    idade: idadeAprox(),
+    altura: numDe('altura') || '',
+    peso: numDe('peso') || '',
+    meta_peso: numDe('meta_peso') || '',
+    objetivo: objetivoId()
+  };
+}
+
+/* funciona no mesmo navegador (quiz e app na mesma aba/aparelho) */
+function salvarParaOApp(){
+  try { localStorage.setItem(CHAVE_QUIZ, JSON.stringify(dadosParaOApp())); } catch(e){}
+}
+
+/* funciona em qualquer navegador/aparelho: manda as respostas pro
+   Supabase com um token de uso único e leva esse token na URL de
+   destino. Se a chamada falhar (sem internet, Supabase fora do ar),
+   segue o link mesmo assim — o localStorage acima já cobre o caso
+   mais comum (mesmo navegador), então uma falha aqui não trava
+   ninguém, só perde o caso raro de troca de navegador. */
+async function enviarRespostasEIr(destino){
+  let token = '';
+  try{
+    token = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(36).slice(2));
+    await fetch(SUPABASE_URL + '/rest/v1/respostas_quiz', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ token, respostas: dadosParaOApp() })
+    });
+  } catch(e){ token = ''; }
+
+  const sep = destino.includes('?') ? '&' : '?';
+  location.href = token ? (destino + sep + 'quiz=' + token) : destino;
+}
+
+function irParaPlano(chave){
+  salvarParaOApp();
+  track('quiz_checkout', { indice: calcIndiceConstancia(), objetivo: objetivoId(), plano: chave });
+  px('InitiateCheckout', true);
+
+  const urls = { mensal: CHECKOUT_URL_MENSAL, trimestral: CHECKOUT_URL_TRIMESTRAL, anual: CHECKOUT_URL_ANUAL };
+  enviarRespostasEIr(urls[chave] || APP_URL);
+}
+
+function renderMeta(){
+  const nome = state.answers.nome && state.answers.nome!=='você' ? state.answers.nome : '';
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz" style="text-align:center;">
+      <div class="progress-bar"><div class="progress-fill" style="width:${pctAte('meta_kg')}%"></div></div>
+      <p style="font-family:'Lato',sans-serif;font-size:25px;font-weight:900;color:var(--verde-escuro);line-height:1.3;margin:20px 0;">${nome?nome+', sua':'Sua'} meta é totalmente possível, e sem depender da aplicação pra sempre.</p>
+      <img src="/resultado-1.jpg" alt="Resultado real do método" style="width:100%;border-radius:14px;display:block;margin:0 0 18px;" onerror="this.onerror=null;this.outerHTML='&lt;div class=&quot;meta-img&quot;&gt;Salve a imagem como resultado-1.jpg&lt;/div&gt;'">
+      <p style="font-family:'Lato',sans-serif;font-size:16.5px;font-weight:800;color:var(--cinza);line-height:1.5;margin:0 0 14px;">Mulheres que reativaram a produção natural de GLP-1 antes de reduzir a dose conseguiram sustentar o peso sem a canetinha.</p>
+      <p style="font-family:'Lato',sans-serif;font-size:15px;font-weight:800;color:var(--verde);line-height:1.5;margin:0 0 22px;">Faltam só mais alguns passos para liberar o seu protocolo completo.</p>
+      <button class="btn" style="text-transform:uppercase;letter-spacing:.5px;" onclick="go(1)">Continuar teste gratuito</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- ANALISANDO ---------- */
+/* itens reais do que o app calcula/monta a partir das respostas — nada
+   fabricado, só nomes honestos pros passos que 'metaKcal()', o plano de
+   treino/cardápio e o sistema de pontos do próprio Fit Day já fazem.
+   Todas chegam a 100% (ver EXPOENTES em renderAnalyzing, que dá uma
+   velocidade própria pra cada uma sem desalinhar do fim da animação). */
+const ANALISANDO_ITENS = [
+  'Perfil analisado',
+  'Meta calórica calculada',
+  'Plano de treino montado',
+  'Cardápio personalizado gerado',
+  'Sistema de pontos e níveis ativado'
+];
+
+function renderAnalyzing(){
+  const RAIO = 42, CIRC = 2*Math.PI*RAIO;
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz" style="padding-top:44px;padding-bottom:52px;">
+      <div class="progress-bar"><div class="progress-fill" id="topoFill" style="width:0%;transition:none;"></div></div>
+      <div class="analise-title" style="margin-top:22px;">Analisando suas respostas...</div>
+      <p style="text-align:center;font-size:16px;font-weight:800;color:#c3d4cb;line-height:1.4;margin:0 0 26px;">Em poucos segundos o seu plano personalizado fica pronto.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px 10px;">
+        ${ANALISANDO_ITENS.map((label,i)=>`
+        <div style="text-align:center;${i===ANALISANDO_ITENS.length-1 && ANALISANDO_ITENS.length%2===1 ? 'grid-column:1/-1;' : ''}">
+          <div style="position:relative;width:104px;height:104px;margin:0 auto 10px;">
+            <svg width="104" height="104" viewBox="0 0 104 104" style="transform:rotate(-90deg);">
+              <circle cx="52" cy="52" r="${RAIO}" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="9"/>
+              <circle cx="52" cy="52" r="${RAIO}" fill="none" stroke="url(#circGrad)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${CIRC}" stroke-dashoffset="${CIRC}" id="itemCirc${i}"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:var(--verde-claro);font-variant-numeric:tabular-nums;" id="itemPct${i}">0%</div>
+          </div>
+          <div style="font-size:15px;font-weight:800;color:var(--verde-claro);line-height:1.35;">${label}...</div>
+        </div>`).join('')}
+        <svg width="0" height="0" style="position:absolute;">
+          <defs><linearGradient id="circGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" style="stop-color:var(--verde)"/>
+            <stop offset="100%" style="stop-color:var(--verde-claro)"/>
+          </linearGradient></defs>
+        </svg>
+      </div>
+    </div>
+  </div>`;
+  const DUR = 5000;                                    // total da animação
+  const topoFill = document.getElementById('topoFill');
+  /* cada item usa um expoente diferente pra "dobrar" o tempo antes de
+     aplicar o smootherstep — isso faz cada círculo ter sua própria
+     velocidade (um dispara na frente, outro demora pra engatar), mas
+     como pow(0,k)=0 e pow(1,k)=1 pra qualquer k>0, todos ainda fecham
+     exatos em 100% no mesmo instante final, sem desalinhar do timer. */
+  const EXPOENTES = [0.5, 1.5, 0.75, 1.9, 1.1];
+  const itens = ANALISANDO_ITENS.map((item,i)=>({
+    k: EXPOENTES[i % EXPOENTES.length],
+    pctEl: document.getElementById('itemPct'+i),
+    circEl: document.getElementById('itemCirc'+i),
+    ultimo: -1
+  }));
+  const smootherstep = x => x*x*x*(x*(x*6-15)+10);
+  const startT = performance.now();
+  function tick(now){
+    const t = Math.min(1,(now-startT)/DUR);
+    if(topoFill) topoFill.style.width = (smootherstep(t)*100)+'%';
+    itens.forEach(it=>{
+      const exato = smootherstep(Math.pow(t, it.k))*100;
+      if(it.circEl) it.circEl.style.strokeDashoffset = CIRC*(1-exato/100);   // precisão de fração, pra não travar
+      const pct = Math.round(exato);
+      if(pct!==it.ultimo){
+        if(it.pctEl) it.pctEl.textContent = pct+'%';           // número só repinta quando o inteiro muda
+        it.ultimo = pct;
+      }
+    });
+    if(t<1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+  setTimeout(()=>go(1),DUR);
+}
+
+
+/* ---------- CÁLCULOS ----------
+   As metas de caloria, proteína e água usam as MESMAS fórmulas do app
+   (veja js/store.js: calcMetaKcal/calcMetaAgua/calcMetaProt). Se mudar a
+   fórmula lá, mude aqui também, senão o número do quiz não bate com o
+   que a pessoa vai ver depois dentro do app. */
+
+function numDe(id){
+  return parseFloat(String(state.answers[id]||'').replace(',','.')) || 0;
+}
+
+function objetivoId(){
+  const o = state.answers.objetivo || '';
+  if(o.includes('Ganhar massa')) return 'hipertrofia';
+  if(o.includes('Manter'))       return 'manutencao';
+  return 'emagrecimento';
+}
+
+/* a idade vem por faixa (cartão com foto), não por número exato — a régua
+   de idade fica mais bonita e converte melhor, mas Mifflin-St Jeor precisa
+   de um número. Uso o meio de cada faixa: é uma estimativa, por isso o
+   texto do diagnóstico sempre fala em "estimativa a partir da sua faixa
+   etária", nunca finge ser exato. */
+const IDADE_MEIO = { 'Entre 18 e 29 anos':24, 'Entre 30 e 39 anos':35, 'Entre 40 e 49 anos':45, '+50 anos':55 };
+function idadeAprox(){ return IDADE_MEIO[state.answers.idade] || 30; }
+
+function calcIMC(){
+  const pesoStr = state.answers.peso || '';
+  const altStr  = state.answers.altura || '';
+  const p = parseFloat(pesoStr), a = parseFloat(altStr);
+  if(!p || !a) return null;
+  let kg = /lb/i.test(pesoStr) ? p/2.2046 : p;               // lb -> kg
+  let m  = /pol/i.test(altStr) ? (a*2.54)/100 : a/100;        // pol/cm -> metros
+  if(!m) return null;
+  return kg/(m*m);
+}
+
+function metaKcal(){
+  const peso = numDe('peso'), altura = numDe('altura'), idade = idadeAprox();
+  if(!peso || !altura) return 0;
+  const base = 10*peso + 6.25*altura - 5*idade;
+  const tmb  = state.answers.sexo === 'Homem' ? base + 5 : base - 161;
+  const fator = objetivoId()==='emagrecimento' ? 0.80 : objetivoId()==='hipertrofia' ? 1.12 : 1.00;
+  return Math.round(tmb * 1.45 * fator / 10) * 10;
+}
+function metaAgua(){
+  const bruto = numDe('peso') * 35;
+  return Math.max(1500, Math.min(4500, Math.round(bruto/500)*500));
+}
+function metaProt(){
+  const gkg = objetivoId()==='emagrecimento' ? 2.0 : objetivoId()==='hipertrofia' ? 1.8 : 1.6;
+  return Math.round(numDe('peso') * gkg);
+}
+function difPeso(){ return +(numDe('peso') - numDe('meta_peso')).toFixed(1); }
+
+/* ===== ÍNDICE DE CONSTÂNCIA (0 a 100) =====
+   Não é exame nem promessa de resultado: é a soma do que a própria pessoa
+   respondeu sobre a rotina dela hoje (treino, alimentação, sono, água e
+   histórico de tentativas). Nenhum número aqui é inventado — é só a rotina
+   dela devolvida como nota. Por isso dá pra mostrar o cálculo sem medo. */
+const PESOS_INDICE = {
+  proteina:          [0,  8, 17, 22],   // quase nunca / so almoco / maioria / todas   (22)
+  treino_frequencia: [0,  8, 15, 20],   // nenhuma / 1-2x / 3-4x / 5x+                 (20)
+  sono:              [0,  6, 16, 13],   // <5h / 5-6h / 7-8h (otimo) / >8h             (16)
+  agua:              [0,  6, 12],       // <1L / 1-2L / >2L                            (12)
+  carbo:             [0,  4, 10,  2],   // corto tudo / reduzo / controlo / nao olho   (10)
+  massa:             [0, 10],           // ja perdeu firmeza / ainda nao               (10)
+  estresse:          [0,  4,  8, 10]    // muito alto / alto / moderado / baixo        (10)
+};
+const INDICE_MAX = 100;
+
+function calcIndiceConstancia(){
+  let soma = 0;
+  for(const id in PESOS_INDICE){
+    const i = state.answers[id+'_i'];
+    if(typeof i === 'number') soma += (PESOS_INDICE[id][i] || 0);
+  }
+  return Math.max(0, Math.min(100, Math.round(soma)));
+}
+
+function faixaIndice(v){
+  if(v < 35) return { txt:'BAIXA',  cor:'#c0574f', bg:'#fdecec' };
+  if(v < 65) return { txt:'MÉDIA',  cor:'#c8973a', bg:'#fff8e8' };
+  return       { txt:'BOA',   cor:'#2e7d5a', bg:'#e9f6ee' };
+}
+
+/* renderDiagnostico ("Você não está sozinho(a) nisso") removida do quiz
+   a pedido do usuário — não entra mais em nenhuma tela do FLOW. */
+
+/* renderAppTeaser ("Antes de continuar" com mockup do app) removida do quiz a
+   pedido do usuário — não entra mais em nenhuma tela do FLOW. */
+
+/* PROFILES + renderHistoria removidos: continham depoimentos fabricados.
+   Se quiser reativar a tela de história real, use relatos verificados de alunas. */
+
+
+/* ---------- PRÉ-PITCH (compromisso + antes x depois) ---------- */
+function renderPrePitch(){
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz">
+      <p class="pp-h">Você se compromete a seguir o protocolo por 14 dias?</p>
+      <p class="pp-sub">A ativação depende do que entra no prato. É simples, mas só funciona pra quem aplica.</p>
+      <div class="ad-grid">
+        <div class="ad-col antes">
+          <h4>Sem o protocolo</h4>
+          <li>Produção natural de GLP-1 desligada</li>
+          <li>Balança travada na mesma dose</li>
+          <li>Massa magra saindo junto com a gordura</li>
+          <li>O peso volta quando a dose acabar</li>
+        </div>
+        <div class="ad-col depois">
+          <h4>Com o protocolo</h4>
+          <li>Gatilho GLP-1 natural reativado</li>
+          <li>Mais resultado com a mesma aplicação</li>
+          <li>Músculo preservado, corpo mais firme</li>
+          <li>Redução da dose sem efeito rebote</li>
+        </div>
+      </div>
+      <button class="btn" onclick="go(1)">Sim, me comprometo →</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- MINI-VSL 2 / VSL FINAL (oferta) ---------- */
+function renderVSLFinal(){
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz">
+      <span class="vsl-tag">● Seu diagnóstico está pronto</span>
+      <p class="vsl-ask">Conheça o <span>Protocolo GLP-1 Natural</span></p>
+      <div class="video-box">
+        <div class="play">▶</div>
+        <div class="vlabel">Mini-VSL 2 · A oferta</div>
+        <div class="vname">Como ativar o gatilho em 14 dias</div>
+        <div class="vhint">[ placeholder de vídeo — trocar pela VSL final depois ]</div>
+      </div>
+      <div class="roteiro">
+        <h4>🎬 Roteiro da VSL final (por enquanto em texto)</h4>
+        <p><strong>O que é:</strong> um ebook prático da Nutri Kelly que mostra, passo a passo, como reativar a produção natural de GLP-1 em 14 dias.</p>
+        <p><strong>Pra quem é:</strong> pra você que usa ou usou caneta, travou a balança e não quer gastar mais.</p>
+        <p><strong>Benefícios:</strong> voltar a perder gordura, sem aumentar a dose, sem dieta sofrida, sem virar escrava do remédio.</p>
+        <p><strong>Escassez:</strong> a condição especial abaixo fica disponível só para o seu perfil, por tempo limitado.</p>
+      </div>
+      <button class="btn" onclick="go(1)">Ver minha oferta personalizada →</button>
+    </div>
+  </div>`;
+}
+
+/* countdown genérico */
+function startCountdown(elId,secs){
+  const el=document.getElementById(elId); if(!el) return;
+  let r=secs;
+  const t=setInterval(()=>{r--;if(r<0){clearInterval(t);return;}
+    el.textContent=String(Math.floor(r/60)).padStart(2,'0')+':'+String(r%60).padStart(2,'0');},1000);
+}
+
+function renderOfferLocked(){
+  const a = state.answers;
+  const nome = a.nome && a.nome!=='você' ? a.nome : '';
+  const idade = (a.idade || '').toLowerCase();
+  const dor = a.dor || 'A balança travada mesmo com a caneta';
+  const desejo = (a.garantia || '').toLowerCase();
+  const abre = nome ? `${nome}, ` : '';
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz">
+      <div class="brand-sub" style="margin-bottom:14px;">Resultado personalizado</div>
+      <span class="rev-badge">Protocolo liberado</span>
+      <p class="rev-lead" style="font-weight:800;color:var(--verde-escuro);">Você desbloqueou o Protocolo GLP-1 Natural.</p>
+      <div class="rev-tap" onclick="go(1)">
+        <div class="big">Toque para ver o seu protocolo</div>
+      </div>
+      <div class="reserva">⏱ Reservado por: <span class="t" id="rev-timer">09:51</span></div>
+    </div>
+  </div>`;
+  startCountdown('rev-timer',9*60+51);
+  px('Lead', true);          // completou o quiz e chegou na oferta
+  px('OfertaRevelada');      // evento personalizado: oferta revelada
+}
+
+function renderOfferPrice(){
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div style="text-align:center;margin-bottom:16px;">
+      <span class="rev-badge">Oferta exclusiva liberada</span>
+      <a class="btn" href="${CHECKOUT_URL}" onclick="px('InitiateCheckout', true)" style="border-radius:10px;margin:16px 0;">Quero o meu protocolo →</a>
+      <p class="rev-lead" style="margin-top:12px;">Seu diagnóstico liberou o acesso completo ao <strong>Protocolo GLP-1 Natural</strong>. Veja tudo o que você recebe:</p>
+    </div>
+
+    <div class="oferta-final">
+      <div class="ot">Protocolo GLP-1 Natural</div>
+      <div class="of-block">Você recebe</div>
+      <div class="of-item"><span class="ic">✓</span><span class="nm"><strong>Ativação do Gatilho GLP-1 Natural</strong> — as 3 partes do gatilho e como colocar todas no seu prato para o corpo voltar a produzir saciedade sozinho.</span></div>
+      <div class="of-item"><span class="ic">✓</span><span class="nm"><strong>Blindagem da Massa Magra</strong> — quanta proteína você precisa e como distribuir nos horários que mais protegem o músculo, que é onde o gatilho trabalha.</span></div>
+      <div class="of-item"><span class="ic">✓</span><span class="nm"><strong>Redução Sem Efeito Rebote</strong> — os sinais de que o seu corpo já está pronto para uma dose menor e o que comer nas semanas de redução.</span></div>
+      <div class="of-item"><span class="ic">✓</span><span class="nm"><strong>O Plano de 14 Dias</strong> — o que fazer em cada dia, do dia 1 ao dia 14, com checklist diário e plano de resgate.</span></div>
+      <div class="of-block bonus">+ 3 bônus exclusivos</div>
+      <div class="of-item"><span class="ic">✓</span><span class="nm"><strong>Grupo VIP no WhatsApp</strong> — tira-dúvidas direto com a nutricionista e uma comunidade de mulheres que usam caneta.</span></div>
+      <div class="of-item"><span class="ic">✓</span><span class="nm"><strong>Cardápio Semanal + Lista de Compras</strong> — todas as refeições da semana já montadas, com porções para o estômago menor.</span></div>
+      <div class="of-item"><span class="ic">✓</span><span class="nm"><strong>Guia Anti Efeitos Colaterais</strong> — o que comer contra náusea, intestino preso e queda de cabelo enquanto você ainda estiver na caneta.</span></div>
+
+      <div class="reserva" style="margin:22px 0 0;">⏱ Oferta reservada por: <span class="t" id="pr-timer">09:38</span></div>
+      <div class="of-de">De R$ 97,90</div>
+      <div class="of-por">Por apenas</div>
+      <div class="of-val">R$29,90</div>
+      <div class="of-avista">à vista ou 5x de R$6,62</div>
+      <a class="btn" href="${CHECKOUT_URL}" onclick="px('InitiateCheckout', true)">Quero o meu protocolo →</a>
+      <p class="of-secure">Pix, cartão ou boleto · Acesso imediato · Compra segura · Garantia de 7 dias</p>
+    </div>
+
+    <div class="quem" style="margin-top:22px;">
+      <img src="/FotoKelly.jpg" alt="Nutri Kelly" style="width:160px;height:160px;border-radius:16px;object-fit:cover;border:4px solid var(--verde-claro);box-shadow:0 0 34px rgba(76,175,130,.4);margin:0 auto 20px;display:block;">
+      <h3>Quem está por trás <span>do Método?</span></h3>
+      <p>Oi! Sou a <span>Nutri Kelly</span>, tenho 41 anos e moro no Paraná. Sou nutricionista há 18 anos, especialista em nutrição e emagrecimento. Desde então, ajudo pessoas a alcançarem seus objetivos com estratégias nutricionais práticas, eficientes e sustentáveis. Estou aqui para te ajudar a reativar a sua produção natural de saciedade e sair da canetinha sem recuperar o peso.</p>
+    </div>
+  </div>`;
+  startCountdown('pr-timer',9*60+38);
+  px('ViewContent', true);   // visualizou a oferta com preço
+}
+
+/* contador ao vivo */
+function startLiveCount(elId){
+  const el=document.getElementById(elId); if(!el) return;
+  let val=parseInt(el.textContent,10)||38;
+  function tick(){val+=1;el.textContent=val;el.classList.add('bump');setTimeout(()=>el.classList.remove('bump'),260);setTimeout(tick,5000+Math.random()*6000);}
+  setTimeout(tick,5000+Math.random()*6000);
+}
+
+/* =========================================================
+   PÁGINA FINAL (RESULTADO) — modela a landing da oferta
+   ========================================================= */
+function renderResult(){
+  const a = state.answers;
+  const nome = a.nome && a.nome!=='você' ? a.nome : '';
+  const abre = nome ? `${nome}, ` : '';
+  const idade = (a.idade || '').toLowerCase();
+  const dor = a.dor || 'a balança travada mesmo aplicando certinho';
+  app.innerHTML = `
+  <div class="result fade">
+
+    <div class="res-hero">
+      <div class="kicker">Seu protocolo está pronto</div>
+      <h1>O método para <span>religar o seu GLP-1 natural</span> e sair da canetinha sem recuperar o peso.</h1>
+      <p>Um protocolo de 14 dias da nutricionista Kelly Firbida para ativar a produção natural de saciedade, blindar a massa magra e reduzir a dose sem efeito rebote.</p>
+    </div>
+
+    <div class="res-socialbar">
+      🔓 <span><b>Protocolo desbloqueado</b> pelo seu diagnóstico · <span class="live-count" id="live-count">38</span> acessaram nas últimas 24h</span>
+    </div>
+
+    <div class="container">
+
+
+      <!-- O QUE É O MÉTODO -->
+      <div class="res-section">
+        <h2 class="res-h2">O que é o <span>Protocolo GLP-1 Natural</span></h2>
+        <p class="res-sub">${abre}pelo seu perfil${idade?` (${idade})`:''}, o que mais te incomoda hoje é: <strong>“${dor}”</strong>. É exatamente isso que o método foi feito para resolver.</p>
+
+        <div class="valor-box" style="text-align:left;">
+          <p style="font-size:15.5px;line-height:1.75;color:#4a4a4a;margin-bottom:14px;">O Protocolo GLP-1 Natural é um <strong>ebook em PDF</strong>, escrito pela nutricionista Kelly Firbida, com o passo a passo que ela usa em consultório com mulheres em tratamento com canetinha.</p>
+          <p style="font-size:15.5px;line-height:1.75;color:#4a4a4a;margin-bottom:14px;">Ele parte de um ponto simples: o seu intestino fabrica o mesmo hormônio que a aplicação injeta, e existem três estímulos que religam essa produção. O método mostra como colocar os três no prato, como proteger a massa magra enquanto a gordura sai e como chegar na redução da dose sem que a fome e o peso voltem junto.</p>
+          <p style="font-size:15.5px;line-height:1.75;color:#4a4a4a;margin:0;">São <strong>4 módulos e 3 bônus</strong>, em linguagem direta, para ler no celular e aplicar a partir de hoje.</p>
+        </div>
+
+        <div class="valor-box" style="margin-top:16px;">
+          <div class="valor-row"><span class="lbl">Formato</span><span class="num">Ebook em PDF</span></div>
+          <div class="valor-row"><span class="lbl">Conteúdo</span><span class="num">4 módulos + 3 bônus</span></div>
+          <div class="valor-row"><span class="lbl">Aplicação</span><span class="num">14 dias</span></div>
+          <div class="valor-row"><span class="lbl">Acesso</span><span class="num">Imediato e vitalício</span></div>
+          <div class="valor-row total"><span class="lbl">Garantia</span><span class="num">7 dias</span></div>
+        </div>
+      </div>
+
+      <!-- MÓDULOS (ebook) -->
+      <div class="res-section">
+        <div style="text-align:center;margin-bottom:30px;">
+          <a class="btn" href="#comprar" style="display:inline-block;width:auto;">Quero o meu protocolo →</a>
+        </div>
+        <h2 class="res-h2">O que vem no <span>seu ebook</span></h2>
+        <p class="res-sub">4 módulos práticos, em linguagem direta, para ler no celular.</p>
+
+        <div class="mod-card">
+          <div class="mod-head"><span class="mod-num">1</span><h3>Ativação do Gatilho GLP-1 Natural</h3></div>
+          <p>As 3 partes do gatilho e como colocar todas no seu prato: proteína suficiente, fibra fermentável e a ordem de comer que muda a sua fome nas horas seguintes. E o erro que quase toda mulher na canetinha comete e que desliga essa produção.</p>
+          <div class="mod-result">o seu corpo volta a produzir saciedade sozinho</div>
+        </div>
+        <div class="mod-card">
+          <div class="mod-head"><span class="mod-num">2</span><h3>Blindagem da Massa Magra</h3></div>
+          <p>Por que boa parte do peso que sai na canetinha é músculo e não gordura, quanta proteína você realmente precisa comendo pouco, e como distribuir nos horários que mais protegem a sua massa magra.</p>
+          <div class="mod-result">emagrecer sem flacidez e sem travar a balança</div>
+        </div>
+        <div class="mod-card">
+          <div class="mod-head"><span class="mod-num">3</span><h3>Redução Sem Efeito Rebote</h3></div>
+          <p>Os sinais de que o seu corpo já está pronto para uma dose menor, por que reduzir aos poucos funciona e parar de uma vez costuma dar errado, e o que comer nas semanas de redução para a fome não te pegar de surpresa.</p>
+          <div class="mod-result">sair da canetinha sem o peso voltar junto</div>
+        </div>
+        <div class="mod-card">
+          <div class="mod-head"><span class="mod-num">4</span><h3>Plano de 14 Dias</h3></div>
+          <p>O que fazer em cada dia, do dia 1 ao dia 14, uma mudança por vez, sem virar a sua rotina de cabeça para baixo. Com checklist diário e o plano de resgate para os dias em que a fome bater mais forte.</p>
+          <div class="mod-result">um passo a passo simples, é só seguir</div>
+        </div>
+      </div>
+
+      <!-- QUANTO VALE DESTRAVAR -->
+      <div class="res-section">
+        <h2 class="res-h2">Quanto custa <span>não fazer nada?</span></h2>
+        <p class="res-sub">A conta do que você já investe todo mês:</p>
+        <div class="valor-box">
+          <div class="valor-row"><span class="lbl">Aplicação por mês</span><span class="num">R$ 800–3.000</span></div>
+          <div class="valor-row"><span class="lbl">Consulta e retornos</span><span class="num">R$ 300–800</span></div>
+          <div class="valor-row"><span class="lbl">Exames de acompanhamento</span><span class="num">R$ 0–1.140</span></div>
+          <div class="valor-row"><span class="lbl">Suplementação</span><span class="num">R$ 200–950</span></div>
+          <div class="valor-row total"><span class="lbl">Em um ano</span><span class="num">mais de R$ 12.000</span></div>
+        </div>
+        <p class="valor-nota">Tudo isso para o corpo não aprender a fazer nada sozinho e o peso voltar quando a aplicação acabar.<br><span class="red">Reativar a sua própria produção custa menos que 1 dia de canetinha: R$ 29,90, uma vez.</span></p>
+      </div>
+
+      <!-- DECISÃO -->
+      <div class="res-section">
+        <h2 class="res-h2">Sua decisão <span>agora</span></h2>
+        <div class="dec-grid">
+          <div class="dec-col op1">
+            <div class="dt">Opção 1</div>
+            Continuar pagando mais de mil reais por mês por uma aplicação que segura o seu peso mas não ensina nada ao seu corpo, presa ao medo de parar e ver tudo voltar.
+          </div>
+          <div class="dec-col op2">
+            <div class="dt">Opção 2</div>
+            Investir uma única vez, menos do que você gasta em um delivery, para ter o passo a passo que faz o seu próprio corpo assumir o trabalho e te dá a liberdade de sair da canetinha quando quiser.
+          </div>
+        </div>
+      </div>
+
+      <!-- ANTES / DEPOIS -->
+      <div class="res-section">
+        <div style="text-align:center;margin-bottom:30px;">
+          <a class="btn" href="#comprar" style="display:inline-block;width:auto;">Quero a Opção 2 →</a>
+        </div>
+        <h2 class="res-h2">O que muda quando o gatilho <span>é reativado</span></h2>
+        <div class="res-ad-grid">
+          <div class="ad-col antes">
+            <h4>Hoje</h4>
+            <li>Saciedade vindo só da aplicação</li>
+            <li>Balança travada na mesma dose</li>
+            <li>Músculo saindo junto com a gordura</li>
+            <li>Medo de reduzir e engordar tudo</li>
+          </div>
+          <div class="ad-col depois">
+            <h4>Em 14 dias</h4>
+            <li>Produção natural de GLP-1 estimulada</li>
+            <li>Mais resultado com a mesma aplicação</li>
+            <li>Massa magra protegida, corpo firme</li>
+            <li>Um plano claro para reduzir a dose</li>
+          </div>
+        </div>
+        <p class="ad-note">Mudanças possíveis ao seguir o protocolo. Resultados variam.</p>
+      </div>
+    </div>
+
+    <!-- DEPOIMENTOS -->
+    <!-- seção de depoimentos removida (sem relatos reais disponíveis) -->
+
+    <div class="container">
+      <!-- QUEM É -->
+      <div class="res-section">
+        <div class="quem">
+          <img src="/FotoSiteKelly.jpeg" alt="Nutri Kelly" style="width:160px;height:160px;border-radius:16px;object-fit:cover;border:4px solid var(--verde-claro);box-shadow:0 0 34px rgba(76,175,130,.4);margin:0 auto 20px;display:block;" onerror="this.style.display='none'">
+          <h3>Quem está por trás <span>do método</span></h3>
+          <p>Oi! Sou a <span>Nutri Kelly</span>, tenho 41 anos e moro no Paraná. Sou nutricionista há 18 anos, especialista em nutrição e emagrecimento. Atendo mulheres em tratamento com canetinha todos os dias e criei este protocolo com o que eu explico em consulta: como reativar a produção natural de saciedade, proteger a massa magra e reduzir a dose sem que o peso volte.</p>
+        </div>
+      </div>
+
+      <!-- OFERTA FINAL -->
+      <div class="res-section" id="comprar">
+        <div class="oferta-final">
+          <div class="ot">Protocolo GLP-1 Natural</div>
+          <div class="of-block">Você recebe</div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Módulo 1 · Ativação do Gatilho GLP-1 Natural</span><span class="pr">R$29,90</span></div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Módulo 2 · Blindagem da Massa Magra</span><span class="pr">R$23,90</span></div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Módulo 3 · Redução Sem Efeito Rebote</span><span class="pr">R$26,90</span></div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Módulo 4 · Plano de 14 Dias</span><span class="pr">R$17,20</span></div>
+          <div class="of-block bonus">+ 3 bônus exclusivos</div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Grupo VIP no WhatsApp</span><span class="pr">GRÁTIS</span></div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Cardápio semanal e lista de compras</span><span class="pr">GRÁTIS</span></div>
+          <div class="of-item"><span class="ic">✓</span><span class="nm">Guia anti efeitos colaterais</span><span class="pr">GRÁTIS</span></div>
+
+          <div class="reserva" style="margin:22px 0 0;">⏱ Oferta reservada por: <span class="t" id="res-timer">08:55</span></div>
+          <div class="of-de">De R$ 97,90</div>
+          <div class="of-por">Por apenas</div>
+          <div class="of-val">R$29,90</div>
+          <div class="of-avista">à vista ou 5x de R$6,62</div>
+          <a class="btn" href="${CHECKOUT_URL}" onclick="px('InitiateCheckout', true)">Quero ativar meu GLP-1 natural →</a>
+          <p class="of-secure">Pix, cartão ou boleto · Acesso imediato · Compra segura · Garantia de 7 dias</p>
+        </div>
+      </div>
+
+      <!-- GARANTIA -->
+      <div class="res-section" style="text-align:center;">
+        <img src="/Garantia7dias.png" alt="Garantia de 7 dias" class="gar-img">
+      </div>
+
+      <!-- FAQ -->
+      <div class="res-section faq">
+        <h2 class="res-h2">Ainda tem <span>alguma dúvida?</span></h2>
+        <div style="margin-top:20px;">
+          <details><summary>Como vou receber o ebook?</summary><div class="a">Imediatamente após a confirmação do pagamento, você recebe um email com o link para acessar e baixar o material em PDF. Acesso vitalício, no celular ou no computador.</div></details>
+          <details><summary>Preciso parar a canetinha para aplicar?</summary><div class="a">Não, e o ideal é justamente o contrário. O melhor momento para reativar a produção natural é enquanto o medicamento ainda está te dando margem. A redução da dose é tratada no Módulo 3, no seu tempo e com o seu médico.</div></details>
+          <details><summary>Funciona se eu já parei?</summary><div class="a">Sim. Os mesmos estímulos que reativam a produção natural funcionam para quem já saiu da aplicação e quer sustentar o peso.</div></details>
+          <details><summary>Serve para qualquer canetinha?</summary><div class="a">Sim. O protocolo é nutricional e vale para qualquer medicação dessa categoria e para qualquer dose, inclusive manipulados.</div></details>
+          <details><summary>É uma dieta complicada?</summary><div class="a">Não. É um passo a passo simples de 14 dias, uma mudança por vez, em linguagem direta. Qualquer pessoa aplica na rotina, mesmo sem conhecimento de nutrição.</div></details>
+          <details><summary>Substitui médico?</summary><div class="a">Não. É um material educativo de apoio nutricional. Não interrompa nem altere a dose de qualquer medicamento por conta própria: converse sempre com o profissional que acompanha o seu tratamento.</div></details>
+          <details><summary>Como funciona a garantia?</summary><div class="a">Em 7 dias, se você sentir que o material não atendeu, basta enviar um email e devolvemos 100% do valor, sem burocracia.</div></details>
+        </div>
+      </div>
+    </div>
+
+    <div class="res-footer">
+      Protocolo GLP-1 Natural · Nutri Kelly Firbida<br>
+      Este material é educativo e não substitui acompanhamento médico ou nutricional. Resultados variam de pessoa para pessoa.
+    </div>
+  </div>`;
+  startCountdown('res-timer',8*60+55);
+  startLiveCount('live-count');
+}
+
+/* cronômetro no cabeçalho — regressivo até a meia-noite de hoje */
+function startMidnightCountdown(){
+  const el=document.getElementById('midnight-timer'); if(!el) return;
+  const t=setInterval(()=>{
+    if(!document.body.contains(el)){clearInterval(t);return;}  // some outra tela: para o contador
+    const now=new Date();
+    const end=new Date(now.getFullYear(),now.getMonth(),now.getDate(),23,59,59,999);
+    let diff=Math.max(0,Math.floor((end-now)/1000));
+    const h=String(Math.floor(diff/3600)).padStart(2,'0');
+    const m=String(Math.floor((diff%3600)/60)).padStart(2,'0');
+    const s=String(diff%60).padStart(2,'0');
+    el.textContent=`${h}:${m}:${s}`;
+  },1000);
+  // primeiro update imediato
+  const now=new Date();
+  const end=new Date(now.getFullYear(),now.getMonth(),now.getDate(),23,59,59,999);
+  let diff=Math.max(0,Math.floor((end-now)/1000));
+  el.textContent=`${String(Math.floor(diff/3600)).padStart(2,'0')}:${String(Math.floor((diff%3600)/60)).padStart(2,'0')}:${String(diff%60).padStart(2,'0')}`;
+}
+
+/* start */
+render();
+</script>
+
+<!-- ===== POP-UP DE SAÍDA (BOTÃO VOLTAR) ===== -->
+<div class="saida-overlay" id="saida-overlay" role="dialog" aria-modal="true" aria-labelledby="saida-titulo">
+  <div class="saida-modal">
+    <button class="saida-fechar" id="saida-fechar" aria-label="Fechar">&times;</button>
+    <div class="saida-selo">Espere um segundo</div>
+    <h3 class="saida-titulo" id="saida-titulo">Você ganhou <span>33% de desconto</span></h3>
+    <p class="saida-sub">É a única vez que esse valor aparece. Fechando esta janela, o preço volta ao normal.</p>
+
+    <div class="saida-de">De R$ 107,90</div>
+    <div class="saida-por">Por apenas</div>
+    <div class="saida-val">R$ 19,90</div>
+    <div class="saida-economia">Você economiza R$97,90 + R$10,00</div>
+
+    <a href="#" class="btn" id="saida-btn">Quero o método com desconto &rarr;</a>
+    <button class="saida-recusa" id="saida-recusa">Não quero o desconto, prefiro pagar o valor cheio</button>
+    <p class="saida-rodape">Acesso imediato &bull; Compra segura pela Ticto &bull; Garantia de 7 dias</p>
+  </div>
+</div>
+
+<script>
+(function () {
+  /* Link do checkout da oferta com desconto (R$19,90). */
+  var CHECKOUT_DESCONTO = 'https://payment.ticto.app/O1376B6BC';
+
+  var overlay = document.getElementById('saida-overlay');
+  var btn     = document.getElementById('saida-btn');
+  var armado  = false;   /* so empilha o estado depois de um gesto real do usuario */
+  var usado   = false;   /* uma camada so: depois de exibido, o voltar funciona normal */
+
+  function jaExibido() {
+    try { return sessionStorage.getItem('cz_saida') === '1'; } catch (e) { return false; }
+  }
+
+  function marcarExibido() {
+    try { sessionStorage.setItem('cz_saida', '1'); } catch (e) {}
+  }
+
+  /* O pop-up so vale na tela final do quiz (a mini landing com a oferta).
+     Durante as perguntas o botao voltar funciona normalmente. */
+  function naMiniLanding() {
+    try { return FLOW[state.idx] && FLOW[state.idx].type === 'projecao'; }
+    catch (e) { return false; }
+  }
+
+  function armar() {
+    if (armado || usado || jaExibido() || !naMiniLanding()) return;
+    try { history.pushState({ cz: 1 }, ''); armado = true; } catch (err) {}
+  }
+
+  function abrir() {
+    overlay.classList.add('aberto');
+    document.body.style.overflow = 'hidden';
+    usado = true;
+    marcarExibido();
+    if (typeof px === 'function') { px('ExitOffer'); }
+  }
+
+  function fechar() {
+    overlay.classList.remove('aberto');
+    document.body.style.overflow = '';
+  }
+
+  window.addEventListener('popstate', function () {
+    if (usado || jaExibido() || !armado) return;   /* so abre se foi armado na mini landing */
+    abrir();
+  });
+
+  /* apenas gestos que contam como user activation no Chrome: scroll NAO conta */
+  ['pointerdown', 'mousedown', 'click', 'touchstart', 'keydown'].forEach(function (evt) {
+    window.addEventListener(evt, armar, { passive: true });   /* sem 'once': arma quando a pessoa chegar na mini landing */
+  });
+
+  btn.addEventListener('click', function (e) {
+    e.preventDefault();
+    if (typeof px === 'function') { px('ExitOfferClick'); }
+    window.location.href = CHECKOUT_DESCONTO;
+  });
+
+  /* ===== RETORNO DO CHECKOUT =====
+     Quem aperta voltar no checkout da Ticto cai de novo nesta pagina. */
+  function marcarIdaAoCheckout(e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[href*="payment.ticto.app"]') : null;
+    if (!a || a.id === 'saida-btn') return;
+    try { sessionStorage.setItem('cz_check', '1'); } catch (err) {}
+  }
+
+  document.addEventListener('click', marcarIdaAoCheckout, true);
+
+  window.addEventListener('pageshow', function () {
+    var voltou = false;
+    try { voltou = sessionStorage.getItem('cz_check') === '1'; } catch (err) {}
+    if (!voltou) return;
+    try { sessionStorage.removeItem('cz_check'); } catch (err) {}
+    setTimeout(abrir, 400);
+  });
+
+  document.getElementById('saida-fechar').addEventListener('click', fechar);
+  document.getElementById('saida-recusa').addEventListener('click', fechar);
+  overlay.addEventListener('click', function (e) { if (e.target === overlay) fechar(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && overlay.classList.contains('aberto')) fechar();
+  });
+})();
+</script>
+</body>
+</html>
