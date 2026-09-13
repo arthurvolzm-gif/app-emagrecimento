@@ -1261,14 +1261,14 @@ function renderAnalyzing(){
               <circle cx="52" cy="52" r="${RAIO}" fill="none" stroke="#e6ece8" stroke-width="9"/>
               <circle cx="52" cy="52" r="${RAIO}" fill="none" stroke="url(#circGrad)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${CIRC}" stroke-dashoffset="${CIRC}" id="itemCirc${i}"/>
             </svg>
-            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:#22c55e;font-variant-numeric:tabular-nums;" id="itemPct${i}">0%</div>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:var(--verde);font-variant-numeric:tabular-nums;" id="itemPct${i}">0%</div>
           </div>
-          <div style="font-size:15px;font-weight:800;color:#22c55e;line-height:1.35;">${label}...</div>
+          <div style="font-size:15px;font-weight:800;color:var(--verde);line-height:1.35;">${label}...</div>
         </div>`).join('')}
         <svg width="0" height="0" style="position:absolute;">
           <defs><linearGradient id="circGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" style="stop-color:#1ea34e"/>
-            <stop offset="100%" style="stop-color:#22c55e"/>
+            <stop offset="0%" style="stop-color:var(--verde)"/>
+            <stop offset="100%" style="stop-color:var(--verde-claro)"/>
           </linearGradient></defs>
         </svg>
       </div>
