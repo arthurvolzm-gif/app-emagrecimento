@@ -12,7 +12,7 @@
    ========================================================= */
 
 const CONFIG = {
-  APP_NOME: 'Fit Day',
+  APP_NOME: 'Focus Fit',
 
   SUPABASE_URL: 'https://ddtxvijlmjqtaxdystph.supabase.co',
   SUPABASE_KEY: 'sb_publishable_XsRkTp9ahN8T3ydSfOEE_Q_AYH4Oq11',

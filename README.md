@@ -1,4 +1,4 @@
-# Meu Plano · App de Emagrecimento
+# Focus Fit · App de Emagrecimento
 
 App web (PWA) de emagrecimento com plano alimentar, treinos, metas diárias,
 progresso e sistema de níveis. Sem build, sem npm: é HTML, CSS e JavaScript puro.
