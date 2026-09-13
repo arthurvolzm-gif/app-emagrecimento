@@ -1134,6 +1134,28 @@ function renderProjecao(){
     ['Evolução', 'icone-evolucao.jpg', '📈', 'Pontos, níveis e registro de progresso']
   ];
 
+  /* comparativo ilustrativo (sem números/percentuais soltos) de progresso
+     sozinho x com o app — mesma lógica qualitativa já usada noutras telas:
+     nada de estatística inventada, só a forma da curva. */
+  const EVOLUCAO_GRUPOS = [['Hoje',12,20],['60 dias',32,75],['6 meses',52,95],['1 ano',12,135]];
+  const evolucaoChartHTML = `
+        <div style="margin-top:18px;background:rgba(0,0,0,.18);border-radius:12px;padding:16px 10px 10px;">
+          <div style="display:flex;justify-content:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+            <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);color:#cfe0d6;font-size:11px;font-weight:700;padding:5px 10px;border-radius:20px;"><span style="width:8px;height:8px;border-radius:50%;background:#7d8f86;display:inline-block;"></span>Sozinho</span>
+            <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(76,175,130,.18);color:var(--verde-claro);font-size:11px;font-weight:800;padding:5px 10px;border-radius:20px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--verde-claro);display:inline-block;"></span>Você com a gente!</span>
+          </div>
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px;height:140px;background-image:repeating-linear-gradient(0deg, rgba(255,255,255,.12) 0 1px, transparent 1px 35px);padding:0 4px;">
+            ${EVOLUCAO_GRUPOS.map(([label,sozinho,voce])=>`
+            <div style="display:flex;align-items:flex-end;gap:4px;flex:1;justify-content:center;">
+              <div style="width:13px;border-radius:4px 4px 0 0;height:${sozinho}px;background:#7d8f86;"></div>
+              <div style="width:13px;border-radius:4px 4px 0 0;height:${voce}px;background:var(--verde-claro);"></div>
+            </div>`).join('')}
+          </div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:0 4px;margin-top:8px;">
+            ${EVOLUCAO_GRUPOS.map(([label])=>`<div style="flex:1;text-align:center;font-size:10.5px;font-weight:700;color:#9aa8a2;">${label}</div>`).join('')}
+          </div>
+        </div>`;
+
   const temCheckout = !!CHECKOUT_URL;
   const destino = temCheckout ? CHECKOUT_URL : APP_URL;
   const rotuloCTA = temCheckout ? 'Quero começar agora →' : `Começar agora no ${APP_NOME} →`;
@@ -1175,6 +1197,7 @@ function renderProjecao(){
       <div style="background:rgba(76,175,130,.12);border-radius:14px;padding:20px 18px;margin:22px 0 14px;text-align:center;">
         <h4 style="margin:0 0 10px;font-size:17px;color:#eef5f0;">Seu plano personalizado no <span style="color:var(--verde-claro);">${APP_NOME}</span></h4>
         <p style="font-size:14.5px;color:var(--verde-claro);font-weight:800;line-height:1.6;margin:0;">Com base nas suas respostas, o app já monta o seu cardápio, o seu treino e as suas metas de água e sono, ajustados pro seu objetivo de ${objFrase}.</p>
+        ${evolucaoChartHTML}
       </div>
 
       <!-- COMO FUNCIONA O APP -->
