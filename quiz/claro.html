@@ -1104,9 +1104,9 @@ function renderProjecao(){
         </div>`;
   const sliderRow = (label, antes, depois) => `
       <div style="margin-bottom:18px;">
-        <div style="font-size:12.5px;font-weight:800;color:#4a4a4a;margin-bottom:6px;">${label}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
           <div>
+            <div style="font-size:12.5px;font-weight:800;color:#4a4a4a;margin-bottom:6px;">${label}</div>
             <div style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:var(--vermelho);margin-bottom:6px;"><span>Baixa</span><span>${antes}%</span></div>
             <div style="position:relative;">
               ${trilha(antes)}
@@ -1114,6 +1114,7 @@ function renderProjecao(){
             </div>
           </div>
           <div>
+            <div style="font-size:12.5px;font-weight:800;color:#4a4a4a;margin-bottom:6px;">${label}</div>
             <div style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:var(--verde-claro);margin-bottom:6px;"><span>Alta</span><span>${depois}%</span></div>
             <div style="position:relative;">
               ${trilha(depois)}
