@@ -1176,8 +1176,8 @@ function renderProjecao(){
   const planosHTML = `
       <div style="margin-top:22px;">
         ${PLANOS.map(p=>`
-        <div onclick="irParaPlano('${p.chave}')" style="cursor:pointer;border:2px solid ${p.destaque?'var(--verde)':'#e4ede9'};border-radius:14px;overflow:hidden;margin-bottom:14px;">
-          ${p.destaque?`<div style="background:var(--verde);color:#fff;text-align:center;font-weight:800;font-size:12.5px;padding:6px 0;">${p.destaque}</div>`:''}
+        <div onclick="irParaPlano('${p.chave}')" style="cursor:pointer;border:2px solid ${p.destaque?'#27ae60':'#e4ede9'};border-radius:14px;overflow:hidden;margin-bottom:14px;">
+          ${p.destaque?`<div style="background:linear-gradient(135deg,#27ae60,var(--verde-claro));color:#fff;text-align:center;font-weight:800;font-size:12.5px;padding:6px 0;">${p.destaque}</div>`:''}
           <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;background:#fff;">
             <div style="display:flex;align-items:center;gap:12px;">
               <span style="width:20px;height:20px;border-radius:50%;border:2px solid #9aa39d;flex-shrink:0;display:block;"></span>
