@@ -648,25 +648,9 @@ const QUESTIONS = [
       : ['corpo-hoje-mulher-magra.jpg','corpo-hoje-mulher-gordinha.jpg','corpo-hoje-mulher-sobrepeso.jpg','corpo-hoje-mulher-definida.jpg']
   },
 
-  {
-    id:'peso', num:3, type:'ruler',
-    question:'Qual é o seu peso atual?',
-    units:[{u:'kg',min:40,max:160,def:70,step:1},{u:'lb',min:88,max:352,def:154,step:1}]
-  },
-  {
-    id:'altura', num:4, type:'ruler',
-    question:'Qual é a sua altura?',
-    units:[{u:'cm',min:140,max:210,def:165,step:1},{u:'pol',min:55,max:83,def:65,step:1}]
-  },
-  {
-    id:'meta_peso', num:5, type:'ruler',
-    question:'Qual peso você quer alcançar?',
-    units:[{u:'kg',min:40,max:160,def:65,step:1},{u:'lb',min:88,max:352,def:143,step:1}]
-  },
-
   /* ===== P — PROBLEMA ===== */
   {
-    id:'frustracao', num:6,
+    id:'frustracao', num:3,
     question:'O que mais te impede de chegar no corpo que você quer?',
     options:[
       '⏰ Falta de tempo na rotina',
@@ -677,7 +661,7 @@ const QUESTIONS = [
     ]
   },
   {
-    id:'tentativas', num:7,
+    id:'tentativas', num:4,
     question:'Você já tentou mudar o corpo antes e não conseguiu manter o resultado?',
     options:[
       'Sim, perdi peso mas voltou tudo depois',
@@ -687,6 +671,22 @@ const QUESTIONS = [
     ]
   },
   /* >>> DIAGNÓSTICO CURTO entra aqui, depois de 'tentativas' <<< */
+
+  {
+    id:'peso', num:5, type:'ruler',
+    question:'Qual é o seu peso atual?',
+    units:[{u:'kg',min:40,max:160,def:70,step:1},{u:'lb',min:88,max:352,def:154,step:1}]
+  },
+  {
+    id:'altura', num:6, type:'ruler',
+    question:'Qual é a sua altura?',
+    units:[{u:'cm',min:140,max:210,def:165,step:1},{u:'pol',min:55,max:83,def:65,step:1}]
+  },
+  {
+    id:'meta_peso', num:7, type:'ruler',
+    question:'Qual peso você quer alcançar?',
+    units:[{u:'kg',min:40,max:160,def:65,step:1},{u:'lb',min:88,max:352,def:143,step:1}]
+  },
 
   /* ===== hábitos — alimentam o Índice de Constância ===== */
   {
