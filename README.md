@@ -154,8 +154,8 @@ Todas terminam na mesma tela de planos e usam as mesmas imagens da raiz.
 
 | Arquivo | Público | Oferta apresentada |
 |---|---|---|
-| `quiz/escuro.html` | geral (tema escuro) | app Fit Day |
-| `quiz/claro.html` | geral (tema claro) | app Fit Day |
+| `quiz/escuro.html` | geral (tema escuro) | app Focus Fit |
+| `quiz/claro.html` | geral (tema claro) | app Focus Fit |
 | `quiz/caneta.html` | **quem usa canetinha** | Método Destrave Metabólico, dentro do app |
 | `quiz/natural.html` | **quem não usa canetinha** | Protocolo GLP-1 Natural, dentro do app |
 
