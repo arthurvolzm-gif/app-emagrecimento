@@ -1156,6 +1156,33 @@ function renderProjecao(){
           </div>
         </div>`;
 
+  const PLANOS = [
+    { destaque:'Ganhe 50% de desconto', nome:'Plano Anual', sub:'Acompanhamento 365 dias', preco:'R$238,80', obs:'sai R$19,90/mês' },
+    { destaque:'⭐ Plano Mais Escolhido', nome:'Plano Trimestral', sub:'Acompanhamento 90 dias', preco:'R$74,70', obs:'sai R$24,90/mês' },
+    { nome:'Plano Mensal', preco:'R$29,90', obs:'por mês' }
+  ];
+  const planosHTML = `
+      <div style="margin-top:22px;">
+        ${PLANOS.map(p=>`
+        <div style="border:2px solid ${p.destaque?'var(--verde-claro)':'rgba(255,255,255,.14)'};border-radius:14px;overflow:hidden;margin-bottom:14px;">
+          ${p.destaque?`<div style="background:var(--verde-claro);color:#0a2818;text-align:center;font-weight:800;font-size:12.5px;padding:6px 0;">${p.destaque}</div>`:''}
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;background:rgba(255,255,255,.04);">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="width:20px;height:20px;border-radius:50%;border:2px solid #8a9a92;flex-shrink:0;display:block;"></span>
+              <div>
+                <div style="font-weight:800;font-size:16px;color:#eef5f0;">${p.nome}</div>
+                ${p.sub?`<div style="font-size:12px;color:#9aa8a2;margin-top:2px;">${p.sub}</div>`:''}
+              </div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-weight:900;font-size:19px;color:#eef5f0;">${p.preco}</div>
+              <div style="font-size:11px;color:#9aa8a2;margin-top:2px;">${p.obs}</div>
+            </div>
+          </div>
+        </div>`).join('')}
+        <p style="font-size:11.5px;color:#8aa79a;text-align:center;line-height:1.5;margin:8px 0 0;">Clique para escolher o seu plano. Cancele a qualquer momento para não ser cobrado.</p>
+      </div>`;
+
   const temCheckout = !!CHECKOUT_URL;
   const destino = temCheckout ? CHECKOUT_URL : APP_URL;
   const rotuloCTA = temCheckout ? 'Quero começar agora →' : `Começar agora no ${APP_NOME} →`;
@@ -1212,6 +1239,8 @@ function renderProjecao(){
       </div>
 
       <img src="/fit-day-promo-escuro.jpg" alt="${APP_NOME}" style="width:100%;border-radius:16px;display:block;margin:22px 0 0;" onerror="this.remove()">
+
+      ${planosHTML}
 
       <a class="btn" style="margin-top:22px;" href="${destino}" onclick="irParaApp(event)">${rotuloCTA}</a>
 
