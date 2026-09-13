@@ -49,3 +49,134 @@ create policy "apagar os proprios dados"
 -- 4) Índice para consultas por data de atualização
 create index if not exists dados_usuario_atualizado_idx
   on public.dados_usuario (atualizado_em desc);
+
+-- =========================================================
+-- ASSINATURAS (controle de pagamento via Ticto)
+--
+-- Como funciona: a Ticto avisa o app a cada evento de pagamento
+-- (compra aprovada, renovação, atraso, cancelamento) através de um
+-- webhook — uma function separada (veja supabase/functions/ticto-webhook)
+-- recebe esse aviso e grava/atualiza a linha correspondente aqui.
+-- O app só libera as telas internas se encontrar, pelo e-mail da
+-- pessoa logada, uma linha com status = 'ativa' e ainda não vencida.
+--
+-- Ninguém além da própria function (que usa a service_role key, e
+-- portanto ignora RLS) pode gravar aqui — nem o próprio usuário
+-- logado. Isso é proposital: se deixássemos o app gravar isso
+-- sozinho, qualquer pessoa poderia se autodeclarar "assinante" sem
+-- pagar, só editando o que o navegador manda.
+-- =========================================================
+create table if not exists public.assinaturas (
+  email            text primary key,
+  user_id          uuid references auth.users(id) on delete set null,
+  plano            text,                    -- 'mensal' | 'trimestral' | 'anual'
+  status           text not null default 'inativa',  -- 'ativa' | 'atrasada' | 'cancelada' | 'inativa'
+  ticto_transacao  text,
+  data_inicio      timestamptz,
+  data_expiracao   timestamptz,
+  atualizado_em    timestamptz not null default now(),
+  criado_em        timestamptz not null default now()
+);
+
+alter table public.assinaturas enable row level security;
+
+drop policy if exists "ler a propria assinatura" on public.assinaturas;
+
+-- cada pessoa só enxerga a própria linha (por e-mail OU, depois de
+-- logar pela primeira vez, pelo user_id já vinculado) — só leitura,
+-- de propósito: ver não precisa de service_role, gravar precisa.
+create policy "ler a propria assinatura"
+  on public.assinaturas for select
+  using (
+    auth.uid() = user_id
+    or lower(email) = lower(coalesce(auth.jwt() ->> 'email', ''))
+  );
+
+-- permite o app preencher o user_id na própria linha assim que a
+-- pessoa loga pela primeira vez (o pagamento pode ter acontecido
+-- antes da conta existir, então a linha nasce só com o e-mail).
+drop policy if exists "vincular a propria conta" on public.assinaturas;
+create policy "vincular a propria conta"
+  on public.assinaturas for update
+  using (lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')) and user_id is null)
+  with check (auth.uid() = user_id and lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')));
+
+create index if not exists assinaturas_user_id_idx on public.assinaturas (user_id);
+
+-- =========================================================
+-- LOG BRUTO DO WEBHOOK DA TICTO
+--
+-- Guarda cada aviso exatamente como a Ticto mandou, sem tentar
+-- interpretar nada. Serve pra: (1) conferir o formato real do
+-- payload antes de confiar na leitura automática, e (2) depurar se
+-- algum evento não bater com a `assinaturas` no futuro.
+--
+-- RLS ligado e SEM nenhuma política: ninguém enxerga isso pelo app
+-- (nem logado) — só a function, que usa a service_role e ignora RLS.
+-- =========================================================
+create table if not exists public.ticto_webhook_logs (
+  id           bigint generated always as identity primary key,
+  recebido_em  timestamptz not null default now(),
+  payload      jsonb not null
+);
+
+alter table public.ticto_webhook_logs enable row level security;
+
+-- =========================================================
+-- RESPOSTAS DO QUIZ (ponte quiz -> cadastro do app)
+--
+-- Ao terminar o quiz, as respostas são gravadas aqui com um token
+-- aleatório; esse token vai na URL de quem clica pra continuar
+-- (?quiz=TOKEN). Na hora do cadastro, o app busca por esse token,
+-- preenche os campos sozinho e apaga a linha em seguida — os dados
+-- não ficam guardados além do necessário pra fazer a ponte.
+--
+-- Não tem informação sensível de pagamento aqui, só as respostas do
+-- questionário (nome, idade, peso, altura, objetivo). Como o token é
+-- aleatório e imprevisível, só quem tem o link consegue ler a linha.
+-- =========================================================
+create table if not exists public.respostas_quiz (
+  token      uuid primary key default gen_random_uuid(),
+  respostas  jsonb not null,
+  criado_em  timestamptz not null default now()
+);
+
+alter table public.respostas_quiz enable row level security;
+
+drop policy if exists "inserir resposta do quiz" on public.respostas_quiz;
+drop policy if exists "ler pelo token"            on public.respostas_quiz;
+drop policy if exists "apagar apos consumir"      on public.respostas_quiz;
+
+-- qualquer um pode criar uma linha (é assim que o quiz, sem login,
+-- consegue salvar a resposta de quem está fazendo o teste)
+create policy "inserir resposta do quiz"
+  on public.respostas_quiz for insert
+  with check (true);
+
+-- leitura liberada porque só dá pra achar uma linha sabendo o token
+-- exato (uuid aleatório, 122 bits) — não existe como "listar todo
+-- mundo", só buscar uma pessoa específica que já tem o link dela
+create policy "ler pelo token"
+  on public.respostas_quiz for select
+  using (true);
+
+create policy "apagar apos consumir"
+  on public.respostas_quiz for delete
+  using (true);
+
+create index if not exists respostas_quiz_criado_idx on public.respostas_quiz (criado_em);
+
+-- limpeza automática: uma vez por dia, apaga o que ninguém veio
+-- buscar em 48h (ex.: pessoa fez o quiz e nunca voltou pra criar a
+-- conta). O pg_cron já vem habilitado nos projetos Supabase; se der
+-- erro de "extension does not exist", ligue em Database → Extensions
+-- → pg_cron, e rode só este bloco de novo.
+create extension if not exists pg_cron with schema extensions;
+
+-- cron.schedule() é idempotente pelo nome do job: rodar de novo só
+-- atualiza o agendamento em vez de duplicar.
+select cron.schedule(
+  'limpar_respostas_quiz_antigas',
+  '0 3 * * *',  -- todo dia às 3h
+  $$ delete from public.respostas_quiz where criado_em < now() - interval '48 hours'; $$
+);

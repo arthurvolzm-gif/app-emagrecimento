@@ -31,6 +31,33 @@ desmarcar *Confirm email*. Em produção, o recomendado é deixar ligado.
 
 ---
 
+## Assinatura paga (Ticto) e ponte quiz → app
+
+O app cobra por assinatura (mensal/trimestral/anual) e usa a **Ticto** como
+meio de pagamento. Duas peças cuidam disso:
+
+1. **Controle de pagamento**: o `schema.sql` (rode de novo se já tinha rodado
+   antes — ele não duplica nada) criou as tabelas `assinaturas`,
+   `ticto_webhook_logs` e `respostas_quiz`. Uma function separada recebe o
+   aviso da Ticto a cada compra/renovação/cancelamento e atualiza
+   `assinaturas` — o app só libera as telas internas se achar uma linha ativa
+   pro e-mail de quem logou. Veja o passo a passo completo em
+   `supabase/functions/ticto-webhook/README.md`.
+
+2. **Ponte quiz → cadastro**: quando a pessoa termina o quiz e escolhe um
+   plano, as respostas vão tanto pro `localStorage` (funciona se ela continuar
+   no mesmo navegador) quanto pro Supabase com um token de uso único, que
+   viaja na URL (`?quiz=TOKEN`) — assim o cadastro chega pré-preenchido mesmo
+   se ela pagar num navegador diferente do que abriu o quiz (comum em quem
+   entra pelo navegador interno do Instagram, por exemplo).
+
+**Links de checkout**: cole os 3 links de produto da Ticto em `config.js`
+(`CHECKOUT_URL_MENSAL/TRIMESTRAL/ANUAL`) **e** no topo de `quiz.html`,
+`quiz/escuro.html` e `quiz/claro.html` — são arquivos sem import entre si,
+então o valor não se propaga sozinho.
+
+---
+
 ## Publicar
 
 Igual ao quiz: conecte este repositório na Vercel e publique. Cada `git push`
@@ -53,7 +80,8 @@ início" e o app abre em tela cheia, como um aplicativo.
 | `js/onboarding.js` | Login, criação de conta e o cadastro de 3 passos. |
 | `js/app.js` | Navegação entre telas e as ações (marcar refeição, água, treino...). |
 | `css/app.css` | Todo o visual. As cores ficam nas variáveis no topo do arquivo. |
-| `schema.sql` | O SQL que cria a tabela e as regras de segurança no Supabase. |
+| `schema.sql` | O SQL que cria as tabelas e as regras de segurança no Supabase. |
+| `supabase/functions/ticto-webhook/` | Function que recebe o aviso de pagamento da Ticto e libera a assinatura. |
 
 ---
 

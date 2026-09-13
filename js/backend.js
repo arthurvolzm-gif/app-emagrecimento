@@ -139,5 +139,60 @@ const Backend = {
       }, { onConflict: 'user_id' });
 
     if (error) console.warn('Erro ao salvar:', error.message);
+  },
+
+  /* ---------- assinatura (controle de pagamento via Ticto) ----------
+     A linha em `assinaturas` é criada pelo webhook da Ticto (veja
+     supabase/functions/ticto-webhook), não pelo app — aqui só lemos.
+     Retorna null se não achar nenhuma cobrança pra esse e-mail ainda
+     (ex.: pessoa criou conta mas nunca pagou nada). */
+  async assinatura() {
+    if (!this.ativo()) return null;
+    const { data, error } = await this.sb
+      .from('assinaturas')
+      .select('plano, status, data_expiracao')
+      .eq('email', this.usuario.email.toLowerCase())
+      .maybeSingle();
+
+    if (error) { console.warn('Erro ao consultar assinatura:', error.message); return null; }
+    return data;
+  },
+
+  assinaturaAtiva(a) {
+    if (!a || a.status !== 'ativa') return false;
+    if (!a.data_expiracao) return true;
+    return new Date(a.data_expiracao).getTime() > Date.now();
+  },
+
+  /* liga a linha da assinatura (que pode ter nascido só com o e-mail,
+     antes da conta existir) ao user_id, na primeira vez que a pessoa
+     loga — silencioso: se falhar, o app continua funcionando, só
+     não deixa a consulta por user_id disponível além da por e-mail. */
+  async vincularAssinatura() {
+    if (!this.ativo()) return;
+    try {
+      await this.sb
+        .from('assinaturas')
+        .update({ user_id: this.usuario.id })
+        .eq('email', this.usuario.email.toLowerCase())
+        .is('user_id', null);
+    } catch (e) { /* não bloqueia o login por causa disso */ }
+  },
+
+  /* ---------- ponte quiz -> cadastro (respostas salvas no Supabase) ----------
+     Complementa o localStorage (que só funciona no mesmo navegador):
+     o quiz grava as respostas com um token e manda esse token na URL;
+     aqui a gente busca por ele e apaga a linha em seguida (uso único). */
+  async buscarRespostasQuiz(token) {
+    if (!this.sb || !token) return null;
+    const { data, error } = await this.sb
+      .from('respostas_quiz')
+      .select('respostas')
+      .eq('token', token)
+      .maybeSingle();
+
+    if (error || !data) return null;
+    this.sb.from('respostas_quiz').delete().eq('token', token).then(() => {});
+    return data.respostas;
   }
 };

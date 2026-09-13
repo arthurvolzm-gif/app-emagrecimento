@@ -556,13 +556,26 @@ body{
    ========================================================= */
 const APP_NOME = 'Fit Day';
 
-/* Se ainda não tem preço/checkout definido, deixe em branco: o CTA final
-   leva a pessoa direto pro cadastro do app (index.html), sem cobrar nada.
-   Quando decidir o modelo de cobrança, cole o link do checkout aqui. */
-const PRECO = { de:'', por:'' };        // ex.: { de:'97,00', por:'27,90' }
-const CHECKOUT_URL = '';                // ex.: 'https://payment.ticto.app/XXXX'
-const APP_URL = 'index.html';           // pra onde vai quem não tem checkout configurado
-const CHAVE_QUIZ = 'app_emag_quiz';     // onde as respostas ficam salvas pro cadastro do app já abrir preenchido
+/* Se ainda não tem os checkouts da Ticto configurados, deixe em branco:
+   clicar em qualquer plano leva a pessoa direto pro cadastro do app
+   (index.html), sem cobrar nada. Quando criar os 3 produtos na Ticto,
+   cole os links aqui — e também em config.js (o app usa esses mesmos
+   3 links na tela de "faltou o pagamento"; são arquivos sem import
+   entre si, então precisa colar dos dois lados). */
+const CHECKOUT_URL_MENSAL = '';         // ex.: 'https://payment.ticto.app/XXXX'
+const CHECKOUT_URL_TRIMESTRAL = '';
+const CHECKOUT_URL_ANUAL = '';
+const APP_URL = '/index.html';          // pra onde vai quem clicar num plano sem checkout configurado
+const CHAVE_QUIZ = 'app_emag_quiz';     // onde as respostas ficam salvas pro cadastro do app já abrir preenchido (mesmo navegador)
+
+/* Ponte quiz -> app pra quando NÃO é o mesmo navegador (ex.: quiz no
+   navegador do Instagram, pagamento e cadastro no Safari/Chrome do
+   celular). As respostas também vão pro Supabase com um token, que
+   viaja na URL do link clicado (?quiz=TOKEN); o app busca por ele.
+   Mesmas credenciais de config.js — são arquivos separados, sem
+   import, então o valor não se propaga sozinho. */
+const SUPABASE_URL = 'https://ddtxvijlmjqtaxdystph.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_XsRkTp9ahN8T3ydSfOEE_Q_AYH4Oq11';
 
 /* ===== Rastreamento Meta Pixel (seguro, não quebra se o pixel não carregar) ===== */
 function px(evento, padrao){
@@ -1072,9 +1085,9 @@ function renderProjecao(){
   disposicaoAntes = Math.max(15, Math.min(60, disposicaoAntes));
   const constanciaAntes = Math.max(15, Math.min(60, idx));
   const rotinaAntes = (a.alimentacao||'').includes('Cada dia') ? 25 : (a.alimentacao||'').includes('desando') ? 35 : 48;
-  const disposicaoDepois = Math.min(92, disposicaoAntes+45);
-  const constanciaDepois = Math.min(95, constanciaAntes+40);
-  const rotinaDepois = Math.min(90, rotinaAntes+42);
+  const disposicaoDepois = Math.max(85, Math.min(92, disposicaoAntes+45));
+  const constanciaDepois = Math.max(85, Math.min(95, constanciaAntes+40));
+  const rotinaDepois = Math.max(85, Math.min(90, rotinaAntes+42));
 
   /* foto real de 'corpo_hoje'/'corpo_sonho' (já escolhidas pela pessoa,
      variam por sexo) — usadas no antes/depois da projeção, no lugar de
@@ -1156,14 +1169,14 @@ function renderProjecao(){
         </div>`;
 
   const PLANOS = [
-    { destaque:'Ganhe 50% de desconto', nome:'Plano Anual', sub:'Acompanhamento 365 dias', preco:'R$238,80', obs:'sai R$19,90/mês' },
-    { destaque:'⭐ Plano Mais Escolhido', nome:'Plano Trimestral', sub:'Acompanhamento 90 dias', preco:'R$74,70', obs:'sai R$24,90/mês' },
-    { nome:'Plano Mensal', preco:'R$29,90', obs:'por mês' }
+    { chave:'anual', destaque:'Ganhe 50% de desconto', nome:'Plano Anual', sub:'Acompanhamento 365 dias', preco:'R$238,80', obs:'sai R$19,90/mês' },
+    { chave:'trimestral', destaque:'⭐ Plano Mais Escolhido', nome:'Plano Trimestral', sub:'Acompanhamento 90 dias', preco:'R$74,70', obs:'sai R$24,90/mês' },
+    { chave:'mensal', nome:'Plano Mensal', preco:'R$29,90', obs:'por mês' }
   ];
   const planosHTML = `
       <div style="margin-top:22px;">
         ${PLANOS.map(p=>`
-        <div style="border:2px solid ${p.destaque?'var(--verde)':'#e4ede9'};border-radius:14px;overflow:hidden;margin-bottom:14px;">
+        <div onclick="irParaPlano('${p.chave}')" style="cursor:pointer;border:2px solid ${p.destaque?'var(--verde)':'#e4ede9'};border-radius:14px;overflow:hidden;margin-bottom:14px;">
           ${p.destaque?`<div style="background:var(--verde);color:#fff;text-align:center;font-weight:800;font-size:12.5px;padding:6px 0;">${p.destaque}</div>`:''}
           <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;background:#fff;">
             <div style="display:flex;align-items:center;gap:12px;">
@@ -1182,9 +1195,6 @@ function renderProjecao(){
         <p style="font-size:11.5px;color:#5a6b62;text-align:center;line-height:1.5;margin:8px 0 0;">Clique para escolher o seu plano. Cancele a qualquer momento para não ser cobrado.</p>
       </div>`;
 
-  const temCheckout = !!CHECKOUT_URL;
-  const destino = temCheckout ? CHECKOUT_URL : APP_URL;
-  const rotuloCTA = temCheckout ? 'Quero começar agora →' : `Começar agora no ${APP_NOME} →`;
 
   app.innerHTML = `
   <div class="wrap fade">
@@ -1197,7 +1207,7 @@ function renderProjecao(){
 
       <div class="proj-compare" style="margin-top:22px;">
         <div class="proj-compare-col ruim">
-          <h5 style="background:#22c55e;color:#fff;border-radius:20px;padding:16px 0;font-size:17px;">Antes</h5>
+          <h5 style="background:var(--verde-escuro);color:#fff;border-radius:20px;padding:16px 0;font-size:17px;">Antes</h5>
           ${imgHoje ? `<img class="proj-compare-img" src="${imgHoje}" alt="Antes" onerror="this.remove()">` : ''}
           <div style="background:#fff;border-radius:10px;padding:10px 8px;text-align:center;">
             <div style="font-size:11px;color:#8a9a92;font-weight:700;">Peso atual</div>
@@ -1205,7 +1215,7 @@ function renderProjecao(){
           </div>
         </div>
         <div class="proj-compare-col bom">
-          <h5 style="background:#22c55e;color:#fff;border-radius:20px;padding:16px 0;font-size:17px;">Depois</h5>
+          <h5 style="background:var(--verde-escuro);color:#fff;border-radius:20px;padding:16px 0;font-size:17px;">Depois</h5>
           ${imgSonho ? `<img class="proj-compare-img" src="${imgSonho}" alt="Depois" onerror="this.remove()">` : ''}
           <div style="background:#fff;border-radius:10px;padding:10px 8px;text-align:center;">
             <div style="font-size:11px;color:#8a9a92;font-weight:700;">Meta de peso</div>
@@ -1241,7 +1251,7 @@ function renderProjecao(){
 
       ${planosHTML}
 
-      <a class="btn" style="margin-top:22px;" href="${destino}" onclick="irParaApp(event)">${rotuloCTA}</a>
+      <img src="/garantia-claro.jpg" alt="Garantia de 30 dias" style="width:100%;border-radius:16px;display:block;margin:22px 0 0;" onerror="this.remove()">
 
       <p style="font-size:11.5px;color:#8aa79a;line-height:1.6;text-align:center;margin:22px 0 0;">Material educativo de apoio. Não substitui acompanhamento médico ou nutricional. Resultados variam de pessoa para pessoa.</p>
     </div>
@@ -1251,8 +1261,8 @@ function renderProjecao(){
 /* ---------- SAÍDA DO QUIZ ----------
    Guarda as respostas antes de sair, pra o cadastro do app já abrir
    preenchido (js/onboarding.js lê a mesma chave em dadosDoQuiz()). */
-function salvarParaOApp(){
-  const dados = {
+function dadosParaOApp(){
+  return {
     nome: (state.answers.nome && state.answers.nome!=='você') ? state.answers.nome : '',
     sexo: state.answers.sexo==='Homem' ? 'masculino' : 'feminino',
     idade: idadeAprox(),
@@ -1261,12 +1271,46 @@ function salvarParaOApp(){
     meta_peso: numDe('meta_peso') || '',
     objetivo: objetivoId()
   };
-  try { localStorage.setItem(CHAVE_QUIZ, JSON.stringify(dados)); } catch(e){}
 }
-function irParaApp(ev){
+
+/* funciona no mesmo navegador (quiz e app na mesma aba/aparelho) */
+function salvarParaOApp(){
+  try { localStorage.setItem(CHAVE_QUIZ, JSON.stringify(dadosParaOApp())); } catch(e){}
+}
+
+/* funciona em qualquer navegador/aparelho: manda as respostas pro
+   Supabase com um token de uso único e leva esse token na URL de
+   destino. Se a chamada falhar (sem internet, Supabase fora do ar),
+   segue o link mesmo assim — o localStorage acima já cobre o caso
+   mais comum (mesmo navegador), então uma falha aqui não trava
+   ninguém, só perde o caso raro de troca de navegador. */
+async function enviarRespostasEIr(destino){
+  let token = '';
+  try{
+    token = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(36).slice(2));
+    await fetch(SUPABASE_URL + '/rest/v1/respostas_quiz', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ token, respostas: dadosParaOApp() })
+    });
+  } catch(e){ token = ''; }
+
+  const sep = destino.includes('?') ? '&' : '?';
+  location.href = token ? (destino + sep + 'quiz=' + token) : destino;
+}
+
+function irParaPlano(chave){
   salvarParaOApp();
-  track('quiz_checkout', { indice: calcIndiceConstancia(), objetivo: objetivoId() });
+  track('quiz_checkout', { indice: calcIndiceConstancia(), objetivo: objetivoId(), plano: chave });
   px('InitiateCheckout', true);
+
+  const urls = { mensal: CHECKOUT_URL_MENSAL, trimestral: CHECKOUT_URL_TRIMESTRAL, anual: CHECKOUT_URL_ANUAL };
+  enviarRespostasEIr(urls[chave] || APP_URL);
 }
 
 function renderMeta(){

@@ -104,6 +104,7 @@ const Onb = {
           Store.db = remoto;
           Store.save();
           App.tela = 'inicio';
+          await App.verificarAssinatura();   // pode trocar pra 'assinatura' se não houver pagamento ativo
         } else {
           Store.resetar();
           App.tela = 'cadastro';
@@ -276,7 +277,7 @@ const Onb = {
 
   falha(msg) { this.erro = msg; App.render(); window.scrollTo(0, 0); },
 
-  finalizar() {
+  async finalizar() {
     this.guardarInputs();
     const d = this.dados;
     if (!d.objetivo) return this.falha('Escolha o seu objetivo.');
@@ -285,9 +286,64 @@ const Onb = {
     Store.criarPerfil(d);
     Backend.salvar();
     App.tela = 'inicio';
+    await App.verificarAssinatura();   // pode trocar pra 'assinatura' se ainda não tiver pagamento ativo
     App.render();
     window.scrollTo(0, 0);
-    /* recebe a pessoa com a comemoração do nível 1 em vez de um toast */
-    setTimeout(() => { if (!App.checarNivel()) App.toast(`Plano criado, ${d.nome.split(' ')[0]}! 🌿`, true); }, 500);
+    /* recebe a pessoa com a comemoração do nível 1 em vez de um toast (só quando entrou mesmo no app) */
+    if (App.tela === 'inicio') {
+      setTimeout(() => { if (!App.checarNivel()) App.toast(`Plano criado, ${d.nome.split(' ')[0]}! 🌿`, true); }, 500);
+    }
+  },
+
+  /* ---------- tela de assinatura (bloqueio de acesso sem pagamento ativo) ---------- */
+  assinatura() {
+    const a = App.assinaturaInfo;
+    const planos = [
+      { chave:'CHECKOUT_URL_MENSAL',     nome:'Mensal',     preco:'R$29,90/mês' },
+      { chave:'CHECKOUT_URL_TRIMESTRAL', nome:'Trimestral', preco:'R$74,70 (sai R$24,90/mês)' },
+      { chave:'CHECKOUT_URL_ANUAL',      nome:'Anual',      preco:'R$238,80 (sai R$19,90/mês)' }
+    ];
+
+    const statusTexto = !a
+      ? 'Ainda não encontramos nenhum pagamento pra esta conta.'
+      : a.status === 'atrasada'
+        ? `Sua assinatura (${a.plano || 'plano'}) está com um pagamento atrasado.`
+        : a.status === 'cancelada'
+          ? `Sua assinatura (${a.plano || 'plano'}) foi cancelada.`
+          : `Sua assinatura (${a.plano || 'plano'}) expirou.`;
+
+    return `
+      <div class="onb">
+        <div class="onb-logo">🔒</div>
+        <h1 class="display">Falta só o pagamento</h1>
+        <p class="sub">${statusTexto} Escolha um plano pra liberar o app.</p>
+
+        ${planos.map(p => `
+          <button class="btn" style="margin-bottom:10px;${CONFIG[p.chave] ? '' : 'opacity:.5;cursor:not-allowed;'}"
+            onclick="${CONFIG[p.chave] ? `location.href='${CONFIG[p.chave]}'` : ''}">
+            ${p.nome} — ${p.preco}
+          </button>`).join('')}
+
+        ${planos.every(p => !CONFIG[p.chave]) ? `
+          <div class="aviso" style="margin-top:6px">Os links de pagamento ainda não foram configurados em config.js.</div>
+        ` : ''}
+
+        <div style="height:6px"></div>
+        <button class="btn sec" id="btn-verificar-pgto" onclick="Onb.verificarPagamento()">Já paguei, verificar de novo</button>
+
+        <div style="text-align:center;margin-top:22px">
+          <button style="font-size:13px;color:var(--cinza);font-weight:700" onclick="Backend.sair().then(()=>location.reload())">
+            Sair desta conta
+          </button>
+        </div>
+      </div>`;
+  },
+
+  async verificarPagamento() {
+    const btn = document.getElementById('btn-verificar-pgto');
+    if (btn) { btn.disabled = true; btn.textContent = 'Verificando...'; }
+    const ok = await App.verificarAssinatura();
+    if (ok) App.tela = 'inicio';
+    App.render();
   }
 };

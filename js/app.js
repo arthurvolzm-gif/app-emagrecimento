@@ -22,6 +22,12 @@ const App = {
     await Backend.carregarLib();
     const temBackend = Backend.init();
 
+    /* se a pessoa chegou com ?quiz=TOKEN (link do fim do quiz), busca as
+       respostas no Supabase e já deixa o cadastro pré-preenchido —
+       funciona mesmo sem conta ainda, e mesmo vindo de outro aparelho/
+       navegador (diferente do localStorage, que só funciona no mesmo). */
+    await this.aplicarRespostasDoQuizViaLink();
+
     if (temBackend) {
       const usuario = await Backend.sessao();
       if (usuario) {
@@ -33,6 +39,7 @@ const App = {
         } else {
           this.tela = Store.temPerfil() ? 'inicio' : 'cadastro';
         }
+        if (this.tela === 'inicio') await this.verificarAssinatura();
       } else {
         /* sem sessão: se já usava o app localmente, respeita o modo local */
         this.tela = Store.temPerfil() ? 'inicio' : 'auth';
@@ -46,6 +53,42 @@ const App = {
     this.aplicarTema();          /* de novo: o tema pode ter vindo da nuvem */
     this.diaTreino = this.indiceHoje();
     this.render();
+  },
+
+  /* ---------- handoff do quiz via link (?quiz=TOKEN) ---------- */
+  async aplicarRespostasDoQuizViaLink() {
+    let token;
+    try {
+      const params = new URLSearchParams(location.search);
+      token = params.get('quiz');
+      if (!token) return;
+      params.delete('quiz');
+      const novaUrl = location.pathname + (params.toString() ? '?' + params.toString() : '');
+      history.replaceState(null, '', novaUrl);   // tira o token da URL, não tenta de novo num F5
+    } catch (e) { return; }
+
+    try {
+      const respostas = await Backend.buscarRespostasQuiz(token);
+      if (!respostas) return;
+      const campos = {};
+      for (const k in Onb.dados) {
+        if (respostas[k] !== undefined && respostas[k] !== null && respostas[k] !== '') campos[k] = String(respostas[k]);
+      }
+      Object.assign(Onb.dados, campos);
+    } catch (e) { /* sem isso, o cadastro só fica sem pré-preenchimento */ }
+  },
+
+  /* ---------- assinatura (bloqueia telas internas sem pagamento ativo) ----------
+     Só entra em ação com conta de verdade (Backend.ativo()) — quem usa
+     "sem conta" continua liberado, é o modo gratuito/local já existente. */
+  async verificarAssinatura() {
+    if (!Backend.ativo()) return true;
+    await Backend.vincularAssinatura();
+    const a = await Backend.assinatura();
+    if (Backend.assinaturaAtiva(a)) return true;
+    this.assinaturaInfo = a;
+    this.tela = 'assinatura';
+    return false;
   },
 
   /* ---------- tema claro / escuro ---------- */
@@ -70,8 +113,9 @@ const App = {
     const nav = document.getElementById('nav');
 
     /* telas sem navegação inferior */
-    if (this.tela === 'auth')     { app.innerHTML = Onb.auth();     nav.style.display = 'none'; return; }
-    if (this.tela === 'cadastro') { app.innerHTML = Onb.cadastro(); nav.style.display = 'none'; return; }
+    if (this.tela === 'auth')       { app.innerHTML = Onb.auth();       nav.style.display = 'none'; return; }
+    if (this.tela === 'cadastro')   { app.innerHTML = Onb.cadastro();   nav.style.display = 'none'; return; }
+    if (this.tela === 'assinatura') { app.innerHTML = Onb.assinatura(); nav.style.display = 'none'; return; }
 
     if (!Store.temPerfil()) { this.tela = 'cadastro'; return this.render(); }
 
