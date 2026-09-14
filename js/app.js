@@ -28,6 +28,18 @@ const App = {
        navegador (diferente do localStorage, que só funciona no mesmo). */
     await this.aplicarRespostasDoQuizViaLink();
 
+    /* ===== TEMPORÁRIO: login e assinatura pulados pra testar o PWA (ícone/tela cheia) =====
+       Reverter isso quando o usuário mandar: tirar este bloco e descomentar o de baixo. */
+    if (!Store.temPerfil()) {
+      this.tela = 'cadastro';
+      this.modoLocal = true;
+      this.aplicarTema();
+      this.diaTreino = this.indiceHoje();
+      this.render();
+      return;
+    }
+    /* ===== FIM DO TEMPORÁRIO ===== */
+
     if (temBackend) {
       const usuario = await Backend.sessao();
       if (usuario) {
