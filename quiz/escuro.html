@@ -105,6 +105,8 @@ body{
   position:relative;
   border:1px solid rgba(76,175,130,.14);
 }
+/* fundo preto só nas telas de pergunta/opções */
+.card-quiz.preto{background:#000;}
 
 /* seta de voltar */
 .back-btn{position:absolute;left:16px;top:14px;background:none;border:none;color:#7c9186;font-size:24px;line-height:1;cursor:pointer;padding:4px 8px;z-index:5;transition:color .18s;}
@@ -897,7 +899,7 @@ function renderQuestion(q){
   const opts = opcoesDe(q), imgs = imagensDe(q);           /* algumas perguntas (ex.: corpo_sonho) variam por sexo */
   app.innerHTML = `
   <div class="wrap fade">
-    <div class="card-quiz">
+    <div class="card-quiz preto">
       ${backBtn()}<div class="brand"><img src="/Logo-escuro.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
@@ -933,7 +935,7 @@ function renderMultiQuestion(q){
   const sel = state.answers[q.id] || [];
   app.innerHTML = `
   <div class="wrap fade">
-    <div class="card-quiz">
+    <div class="card-quiz preto">
       ${backBtn()}<div class="brand"><img src="/Logo-escuro.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
@@ -962,7 +964,7 @@ function renderTextQuestion(q){
   const val = state.answers[q.id] && state.answers[q.id]!=='você' ? state.answers[q.id] : '';
   app.innerHTML = `
   <div class="wrap fade">
-    <div class="card-quiz">
+    <div class="card-quiz preto">
       ${backBtn()}<div class="brand"><img src="/Logo-escuro.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
@@ -983,7 +985,7 @@ function renderRulerQuestion(q){
   const u0=q.units[0];
   app.innerHTML = `
   <div class="wrap fade">
-    <div class="card-quiz" style="text-align:center;">
+    <div class="card-quiz preto" style="text-align:center;">
       ${backBtn()}<div class="brand"><img src="/Logo-escuro.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
@@ -1170,7 +1172,7 @@ function renderProjecao(){
         </div>`;
 
   const PLANOS = [
-    { chave:'anual', destaque:'Ganhe 50% de desconto', nome:'Plano Anual', sub:'Acompanhamento 365 dias', preco:'R$238,80', obs:'sai R$19,90/mês' },
+    { chave:'anual', destaque:'Ganhe 25% de desconto', nome:'Plano Anual', sub:'Acompanhamento 365 dias', preco:'R$238,80', obs:'sai R$19,90/mês' },
     { chave:'trimestral', destaque:'⭐ Plano Mais Escolhido', nome:'Plano Trimestral', sub:'Acompanhamento 90 dias', preco:'R$74,70', obs:'sai R$24,90/mês' },
     { chave:'mensal', nome:'Plano Mensal', preco:'R$29,90', obs:'por mês' }
   ];
