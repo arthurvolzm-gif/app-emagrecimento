@@ -6,7 +6,7 @@
    pedir e-mail nem checar assinatura — é o modo de teste, pra olhar
    as telas sem precisar de conta. Troque para false quando quiser o
    fluxo real: e-mail → código → assinatura verificada. */
-const PULAR_LOGIN = false;
+const PULAR_LOGIN = true;
 
 const App = {
   tela: 'inicio',
