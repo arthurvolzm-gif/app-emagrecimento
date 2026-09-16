@@ -196,7 +196,14 @@ const Backend = {
   /* ---------- ponte quiz -> cadastro (respostas salvas no Supabase) ----------
      Complementa o localStorage (que só funciona no mesmo navegador):
      o quiz grava as respostas com um token e manda esse token na URL;
-     aqui a gente busca por ele e apaga a linha em seguida (uso único). */
+     aqui a gente busca por ele.
+
+     A linha NÃO é apagada na leitura: se a pessoa abrir a tela "Seu
+     perfil" e fechar o app antes de confirmar, as respostas dela ainda
+     estarão lá na próxima vez. Quem apaga é limparRespostasQuiz(),
+     chamada só depois que o perfil existe de verdade. */
+  quizLido: null,      // { campo: 'token'|'email', valor } da linha que já foi usada
+
   async buscarRespostasQuiz(token) {
     if (!this.sb || !token) return null;
     const { data, error } = await this.sb
@@ -206,8 +213,19 @@ const Backend = {
       .maybeSingle();
 
     if (error || !data) return null;
-    this.sb.from('respostas_quiz').delete().eq('token', token).then(() => {});
+    this.quizLido = { campo: 'token', valor: token };
     return data.respostas;
+  },
+
+  /* apaga as respostas do quiz que já viraram perfil. Silencioso: se
+     falhar, a limpeza automática do banco pega depois (ver schema.sql). */
+  async limparRespostasQuiz() {
+    if (!this.sb || !this.quizLido) return;
+    const { campo, valor } = this.quizLido;
+    this.quizLido = null;
+    try {
+      await this.sb.from('respostas_quiz').delete().eq(campo, valor);
+    } catch (e) { /* não trava a criação do plano por causa disso */ }
   },
 
   /* ---------- ponte quiz -> cadastro pelo e-mail ----------
@@ -218,7 +236,7 @@ const Backend = {
 
      Só roda com a pessoa já logada: a RLS compara o e-mail da linha
      com o e-mail do token de sessão, então ninguém lê a resposta de
-     outro. Pega a mais recente e apaga o que sobrou desse e-mail. */
+     outro. Pega a mais recente; apagar fica pra limparRespostasQuiz(). */
   async buscarRespostasQuizPorEmail() {
     if (!this.ativo()) return null;
     const email = (this.usuario.email || '').toLowerCase();
@@ -233,7 +251,7 @@ const Backend = {
       .maybeSingle();
 
     if (error || !data) return null;
-    this.sb.from('respostas_quiz').delete().eq('email', email).then(() => {});
+    this.quizLido = { campo: 'email', valor: email };
     return data.respostas;
   }
 };

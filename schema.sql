@@ -217,11 +217,13 @@ create policy "apagar apos consumir"
 create index if not exists respostas_quiz_criado_idx on public.respostas_quiz (criado_em);
 create index if not exists respostas_quiz_email_idx  on public.respostas_quiz (lower(email));
 
--- limpeza automática: uma vez por dia, apaga o que ninguém veio
--- buscar em 48h (ex.: pessoa fez o quiz e nunca voltou pra criar a
--- conta). O pg_cron já vem habilitado nos projetos Supabase; se der
--- erro de "extension does not exist", ligue em Database → Extensions
--- → pg_cron, e rode só este bloco de novo.
+-- limpeza automática: uma vez por dia, apaga o que ninguém veio buscar
+-- em 30 dias (ex.: pessoa fez o quiz e nunca criou a conta). O prazo é
+-- longo de propósito: é comum fazer o quiz, comprar, e só baixar o app
+-- dias depois — se apagar antes disso, ela cai no cadastro do zero.
+-- O pg_cron já vem habilitado nos projetos Supabase; se der erro de
+-- "extension does not exist", ligue em Database → Extensions → pg_cron
+-- e rode só este bloco de novo.
 create extension if not exists pg_cron with schema extensions;
 
 -- cron.schedule() é idempotente pelo nome do job: rodar de novo só
@@ -229,5 +231,5 @@ create extension if not exists pg_cron with schema extensions;
 select cron.schedule(
   'limpar_respostas_quiz_antigas',
   '0 3 * * *',  -- todo dia às 3h
-  $$ delete from public.respostas_quiz where criado_em < now() - interval '48 hours'; $$
+  $$ delete from public.respostas_quiz where criado_em < now() - interval '30 days'; $$
 );

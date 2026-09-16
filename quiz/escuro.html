@@ -703,8 +703,8 @@ const QUESTIONS = [
   /* ===== hábitos — alimentam o Índice de Constância ===== */
   {
     id:'treino_frequencia', num:8,
-    question:'Hoje, quantas vezes por semana você treina de verdade?',
-    options:['😴 Nenhuma','🚶 1 ou 2 vezes','🏃 3 ou 4 vezes','💪 5 vezes ou mais']
+    question:'Quantos dias gostaria de treinar por semana?',
+    options:['3 dias','4 dias','5 dias','6 dias']
   },
   {
     id:'alimentacao', num:9,
@@ -1090,6 +1090,10 @@ function confirmarEmailEtapa(){
   }
   state.answers.email = email;
   trackResposta('email', 'preenchido');
+  /* grava agora, não no clique do plano: quem desistir na tela da oferta
+     ainda vai achar as respostas dela ao entrar no app com esse e-mail.
+     Sem await de propósito — a tela não fica esperando a rede. */
+  enviarRespostas();
   go(1);
 }
 
@@ -1104,9 +1108,8 @@ function renderProjecao(){
 
   /* estimativa educativa antes/depois, a partir de respostas reais —
      nunca um número solto: sempre calculado e rotulado como estimativa */
-  const sonoAns = a.sono || '', freqAns = a.treino_frequencia || '';
+  const sonoAns = a.sono || '';
   let disposicaoAntes = sonoAns.includes('Menos de 5') ? 28 : sonoAns.includes('5 e 6') ? 40 : sonoAns.includes('7 e 8') ? 55 : 50;
-  if(freqAns.includes('Nenhuma')) disposicaoAntes -= 10;
   disposicaoAntes = Math.max(15, Math.min(60, disposicaoAntes));
   const constanciaAntes = Math.max(15, Math.min(60, idx));
   const rotinaAntes = (a.alimentacao||'').includes('Cada dia') ? 25 : (a.alimentacao||'').includes('desando') ? 35 : 48;
@@ -1292,7 +1295,16 @@ function dadosParaOApp(){
     altura: numDe('altura') || '',
     peso: numDe('peso') || '',
     meta_peso: numDe('meta_peso') || '',
-    objetivo: objetivoId()
+    objetivo: objetivoId(),
+    /* quantos dias por semana ela quer treinar: vira perfil.dias_treino no
+       app e define quantos dias da agenda semanal têm treino (ver
+       Store.montarSemana em js/store.js) */
+    dias_treino: parseInt(state.answers.treino_frequencia, 10) || '',
+    /* hábitos de hoje, guardados pelo ÍNDICE da alternativa (não pelo texto
+       com emoji) — a tela "Seu perfil" do app remonta o rótulo limpo a
+       partir desse número, então mudar o emoji aqui não quebra lá. */
+    sono: typeof state.answers.sono_i === 'number' ? state.answers.sono_i : '',
+    agua: typeof state.answers.agua_i === 'number' ? state.answers.agua_i : ''
   };
 }
 
@@ -1307,15 +1319,24 @@ function salvarParaOApp(){
    segue o link mesmo assim — o localStorage acima já cobre o caso
    mais comum (mesmo navegador), então uma falha aqui não trava
    ninguém, só perde o caso raro de troca de navegador. */
-async function enviarRespostasEIr(destino){
-  let token = '';
-  /* o e-mail é a segunda ponte: com ele, o app acha as respostas
-     quando a pessoa entrar, mesmo sem clicar em link nenhum (é o
-     caso de quem baixa o APK). Vazio não trava nada — o token na
-     URL continua cobrindo quem segue direto pelo link. */
+/* token da linha já gravada no Supabase — guardado pra não gravar duas
+   vezes (uma na etapa do e-mail, outra no clique do plano) */
+let tokenQuiz = '';
+
+/* Grava as respostas no Supabase. São duas pontes pro app:
+   - o `token`, que viaja na URL de quem segue pelo link;
+   - o `email`, que o app procura quando a pessoa entra (é o caso de
+     quem baixa o APK, ou entra dias depois, em outro aparelho).
+   Se falhar, não trava nada: o localStorage já cobre o mesmo navegador. */
+async function enviarRespostas(){
+  if(tokenQuiz) return tokenQuiz;                       // já gravou
+
   const email = (state.answers.email || '').trim().toLowerCase();
+  const token = (window.crypto && crypto.randomUUID)
+    ? crypto.randomUUID()
+    : (Date.now()+'-'+Math.random().toString(36).slice(2));
+
   try{
-    token = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(36).slice(2));
     await fetch(SUPABASE_URL + '/rest/v1/respostas_quiz', {
       method: 'POST',
       headers: {
@@ -1326,8 +1347,14 @@ async function enviarRespostasEIr(destino){
       },
       body: JSON.stringify({ token, email: email || null, respostas: dadosParaOApp() })
     });
-  } catch(e){ token = ''; }
+    tokenQuiz = token;
+  } catch(e){ tokenQuiz = ''; }
 
+  return tokenQuiz;
+}
+
+async function enviarRespostasEIr(destino){
+  const token = await enviarRespostas();
   const sep = destino.includes('?') ? '&' : '?';
   location.href = token ? (destino + sep + 'quiz=' + token) : destino;
 }
@@ -1490,11 +1517,11 @@ function difPeso(){ return +(numDe('peso') - numDe('meta_peso')).toFixed(1); }
 
 /* ===== ÍNDICE DE CONSTÂNCIA (0 a 100) =====
    Não é exame nem promessa de resultado: é a soma do que a própria pessoa
-   respondeu sobre a rotina dela hoje (treino, alimentação, sono, água e
-   histórico de tentativas). Nenhum número aqui é inventado — é só a rotina
-   dela devolvida como nota. Por isso dá pra mostrar o cálculo sem medo. */
+   respondeu sobre a rotina dela (alimentação, sono, água, histórico de
+   tentativas) mais o compromisso de treino que ela escolheu. Nenhum número
+   aqui é inventado — é só a resposta dela devolvida como nota. */
 const PESOS_INDICE = {
-  treino_frequencia: [0, 12, 22, 30],   // nenhuma / 1-2x / 3-4x / 5x+           (30)
+  treino_frequencia: [18, 22, 26, 30],  // 3 / 4 / 5 / 6 dias por semana         (30)
   alimentacao:       [0,  8, 17, 25],   // sem rotina / desanda / mais ou menos / organizada (25)
   sono:              [0,  8, 20, 17],   // <5h / 5-6h / 7-8h (ótimo) / >8h       (20)
   agua:              [0,  8, 15],       // <1L / 1-2L / >2L                     (15)

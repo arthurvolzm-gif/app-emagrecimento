@@ -6,7 +6,7 @@
    pedir e-mail nem checar assinatura — é o modo de teste, pra olhar
    as telas sem precisar de conta. Troque para false quando quiser o
    fluxo real: e-mail → código → assinatura verificada. */
-const PULAR_LOGIN = true;
+const PULAR_LOGIN = false;
 
 const App = {
   tela: 'inicio',
@@ -130,6 +130,8 @@ const App = {
     /* telas sem navegação inferior */
     if (this.tela === 'auth')       { app.innerHTML = Onb.auth();       nav.style.display = 'none'; return; }
     if (this.tela === 'codigo')     { app.innerHTML = Onb.codigo();     nav.style.display = 'none'; return; }
+    if (this.tela === 'recebendo')  { app.innerHTML = Onb.recebendo();  nav.style.display = 'none'; return; }
+    if (this.tela === 'revisao')    { app.innerHTML = Onb.revisao();    nav.style.display = 'none'; return; }
     if (this.tela === 'cadastro')   { app.innerHTML = Onb.cadastro();   nav.style.display = 'none'; return; }
     if (this.tela === 'assinatura') { app.innerHTML = Onb.assinatura(); nav.style.display = 'none'; return; }
 
@@ -569,14 +571,33 @@ const App = {
       return;
     }
 
-    /* conta sem plano ainda: o cadastro abre preenchido se ela tiver
-       feito o quiz com esse mesmo e-mail (funciona no APK e em outro
-       aparelho, porque não depende do link com token) */
+    /* conta sem plano ainda: mostra a tela de carregamento enquanto busca
+       as respostas do quiz por e-mail (funciona no APK e em outro aparelho,
+       porque não depende do link com token) e depois abre a revisão. */
     Store.resetar();
-    await this.aplicarRespostasDoQuizPorEmail();
-    this.tela = 'cadastro';
-    this.passo = 1;
+    this.tela = 'recebendo';
     this.render();
+
+    const buscando = this.aplicarRespostasDoQuizPorEmail();
+    /* o giro fica um tempo mínimo na tela mesmo se a busca voltar na hora:
+       piscar e sumir passa a impressão de que nada foi carregado */
+    await Promise.all([buscando, new Promise(ok => setTimeout(ok, 1800))]);
+
+    if (!this.dadosDoQuizChegaram()) {
+      /* sem respostas do quiz não há o que revisar: segue pelo cadastro */
+      this.tela = 'cadastro';
+      this.passo = 1;
+      this.render();
+      return;
+    }
+
+    this.tela = 'revisao';
+    this.render();
+  },
+
+  /* veio alguma resposta do quiz? (só o e-mail não conta) */
+  dadosDoQuizChegaram() {
+    return ['sexo', 'idade', 'altura', 'peso', 'objetivo'].some(k => Onb.dados[k]);
   },
 
   async aplicarRespostasDoQuizPorEmail() {

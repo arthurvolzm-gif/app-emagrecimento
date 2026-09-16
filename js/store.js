@@ -72,6 +72,16 @@ const Store = {
       meta_peso: Number(dados.meta_peso),
       objetivo: dados.objetivo,         // 'emagrecimento' | 'hipertrofia' | 'manutencao'
       local: dados.local,               // 'academia' | 'casa'
+      dias_treino: Number(dados.dias_treino) || 5,  // quantos dias por semana a pessoa quer treinar (do quiz)
+      /* respondidos na tela "Seu perfil", logo depois do login.
+         Ainda não entram em nenhum cálculo: ficam guardados para
+         personalizar treino e cardápio. */
+      sono_hoje: dados.sono,
+      agua_hoje: dados.agua,
+      nivel_treino: dados.nivel_treino,     // iniciante | intermediario | avancado
+      tempo_treino: Number(dados.tempo_treino) || '',  // minutos por sessão
+      refeicoes: Number(dados.refeicoes) || '',        // refeições por dia
+      restricoes: dados.restricoes || '',              // lista separada por vírgula
       ordem_treino: [0, 1, 2, 3, 4, 5, 6],
       nivel_visto: 0,       // 0 para a comemoração do nível 1 disparar no primeiro acesso
       criado_em: this.hoje()
@@ -236,7 +246,33 @@ const Store = {
 
   planoTreino() {
     const p = this.db.perfil;
-    return PLANOS_TREINO[`${p.sexo}_${p.local}`] || PLANOS_TREINO.feminino_academia;
+    const base = PLANOS_TREINO[`${p.sexo}_${p.local}`] || PLANOS_TREINO.feminino_academia;
+    return this.montarSemana(base, p.dias_treino);
+  },
+
+  /* monta a semana de 7 dias a partir dos focos musculares fixos do plano
+     (sempre os mesmos, por sexo/local), escolhendo quantos deles viram
+     treino de verdade conforme `dias_treino` (resposta do quiz) e
+     espalhando os dias de descanso pela semana em vez de empilhar tudo
+     no fim — é isso que faz "quantos dias por semana" mudar a agenda. */
+  montarSemana(base, diasTreino) {
+    const n = Math.max(3, Math.min(6, Number(diasTreino) || 5));
+    const focos = base.dias.filter(d => !d.descanso);
+    const descansoModelo = base.dias.find(d => d.descanso) || { descanso: true, sugestao: 'Descanso. Recuperação é parte do treino.' };
+
+    // posições (0=Seg ... 6=Dom) que viram treino, por quantidade de dias
+    const PADROES = { 3: [0, 2, 4], 4: [0, 1, 3, 4], 5: [0, 1, 2, 3, 4], 6: [0, 1, 2, 3, 4, 5] };
+    const posTreino = PADROES[n];
+
+    let k = 0;
+    return {
+      ...base,
+      frequencia: `${n}x por semana`,
+      dias: Array.from({ length: 7 }, (_, pos) => {
+        if (!posTreino.includes(pos)) return descansoModelo;
+        return focos[k++ % focos.length];
+      })
+    };
   },
 
   /* ---------- organização da semana ----------

@@ -596,6 +596,64 @@ a{color:inherit;text-decoration:none;}
 .login-footer a{color:#8CA79B;font-size:13px;font-weight:700;text-decoration:none;}
 .login-footer a:active{opacity:.7;}
 
+/* círculo girando da tela "Recebendo suas respostas..." */
+.girando{
+  width:62px;height:62px;border-radius:50%;
+  border:4px solid rgba(63,190,124,.18);border-top-color:#3FBE7C;
+  animation:girar 900ms linear infinite;
+  box-shadow:0 0 26px rgba(63,190,124,.25);
+}
+@keyframes girar{to{transform:rotate(360deg);}}
+
+/* ---------- tela "Seu perfil" (revisão das respostas do quiz) ----------
+   Herda o fundo e os botões da tela de login; o que muda é que ela rola
+   e alinha o conteúdo à esquerda, em vez de centralizar verticalmente. */
+.tela-perfil{justify-content:flex-start;padding-top:44px;}
+.tela-perfil .login-content{margin:0;}
+.login-h1.esq,.login-sub.esq{text-align:left;}
+.login-sub.esq{margin-bottom:22px;}
+
+.rev-secao{
+  width:100%;margin:20px 0 10px;
+  font-size:11.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#3FBE7C;
+}
+.rev-linha{
+  width:100%;margin-bottom:9px;border-radius:15px;
+  border:1.5px solid rgba(63,190,124,.4);background:rgba(10,26,18,.55);
+  overflow:hidden;transition:border-color .16s;
+}
+.rev-linha.aberta{border-color:#3FBE7C;background:rgba(14,38,26,.8);}
+.rev-topo{
+  display:flex;align-items:center;gap:12px;width:100%;
+  background:none;border:none;cursor:pointer;padding:11px 14px;text-align:left;
+}
+.rev-ic{width:26px;height:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.rev-ic svg{width:21px;height:21px;}
+.rev-txt{flex:1;min-width:0;}
+.rev-rot{display:block;font-size:11.5px;font-weight:600;color:#8CA79B;line-height:1.3;}
+.rev-val{display:block;font-size:15px;font-weight:800;color:#fff;line-height:1.35;margin-top:2px;}
+.rev-val.rev-vazio{color:#6C8478;font-weight:600;}
+/* seta apontando pra direita; ao abrir a linha ela gira pra baixo,
+   que é o jeito conhecido de mostrar "isto abre" */
+.rev-seta{flex-shrink:0;display:flex;transition:transform .2s;}
+.rev-seta svg{width:18px;height:18px;}
+.rev-linha.aberta .rev-seta{transform:rotate(90deg);}
+
+.rev-ops{display:flex;flex-wrap:wrap;gap:8px;padding:2px 14px 14px;}
+.rev-op{
+  border-radius:30px;padding:9px 15px;cursor:pointer;
+  border:1.5px solid rgba(63,190,124,.35);background:rgba(0,0,0,.35);
+  font-size:13px;font-weight:700;color:#c3d6cb;transition:all .14s;
+}
+.rev-op.on{background:linear-gradient(135deg,var(--verde),var(--verde-claro));border-color:transparent;color:#fff;}
+.rev-op.ok{background:rgba(63,190,124,.16);border-color:#3FBE7C;color:#3FBE7C;}
+.rev-input{
+  flex:1;min-width:130px;height:42px;padding:0 14px;border-radius:21px;
+  border:1.5px solid rgba(63,190,124,.4);background:rgba(0,0,0,.4);
+  color:#fff;font-size:15px;font-weight:700;outline:none;
+}
+.rev-input:focus{border-color:#3FBE7C;}
+
 .login-logo{display:inline-flex;flex-direction:column;align-items:center;margin-bottom:54px;}
 .login-wordmark{
   display:flex;align-items:center;
