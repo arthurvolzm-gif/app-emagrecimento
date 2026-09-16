@@ -46,10 +46,10 @@ src="https://www.facebook.com/tr?id=1021851947333727&ev=PageView&noscript=1"
 *{margin:0;padding:0;box-sizing:border-box;}
 
 :root{
-  --verde:#2e7d5a;
-  --verde-claro:#4caf82;
+  --verde:#0E7A42;
+  --verde-claro:#3FBE7C;
   --verde-suave:#e8f5ef;
-  --verde-escuro:#1a4d38;
+  --verde-escuro:#0a4a2a;
   --dourado:#c8973a;
   --dourado-claro:#f5d99a;
   --creme:#fdf9f3;
@@ -562,9 +562,9 @@ const APP_NOME = 'Focus Fit';
    cole os links aqui — e também em config.js (o app usa esses mesmos
    3 links na tela de "faltou o pagamento"; são arquivos sem import
    entre si, então precisa colar dos dois lados). */
-const CHECKOUT_URL_MENSAL = '';         // ex.: 'https://payment.ticto.app/XXXX'
-const CHECKOUT_URL_TRIMESTRAL = '';
-const CHECKOUT_URL_ANUAL = '';
+const CHECKOUT_URL_MENSAL = 'https://app.zuptos.com.br/checkout/0c0f9d90ef9c6938';
+const CHECKOUT_URL_TRIMESTRAL = 'https://app.zuptos.com.br/checkout/b8b35e1625ad65b7';
+const CHECKOUT_URL_ANUAL = 'https://app.zuptos.com.br/checkout/4c18c052c5030bd6';
 const APP_URL = '/index.html';          // pra onde vai quem clicar num plano sem checkout configurado
 const CHAVE_QUIZ = 'app_emag_quiz';     // onde as respostas ficam salvas pro cadastro do app já abrir preenchido (mesmo navegador)
 
@@ -754,12 +754,12 @@ const FLOW = [];
    cima) — o forEach só decide ONDE, entre uma pergunta e outra, entra uma
    tela de conteúdo (diagnóstico, análise, a tela do app). */
 FLOW.push({type:'intro'});
-FLOW.push({type:'sexo'});
 FLOW.push({type:'idade'});
 QUESTIONS.forEach(q=>{
   FLOW.push({type:'question', q});
   if(q.id==='outros_objetivos'){                             // analisando antes da projeção final
     FLOW.push({type:'analyzing'});
+    FLOW.push({type:'email'});                               // pede o e-mail logo depois de analisar, antes da projeção
   }
 });
 FLOW.push({type:'projecao'});                               // projeção final — já é a página de entrada no app, última tela do quiz
@@ -793,9 +793,10 @@ function toastHTML(count){
 function render(){
   const step = FLOW[state.idx];
   const map = {
-    intro:renderIntro, sexo:renderSexo, idade:renderIdade, question:()=>renderQuestion(step.q), break1:renderBreak1,
+    intro:renderIntro, idade:renderIdade, question:()=>renderQuestion(step.q), break1:renderBreak1,
     interstitial:()=>renderInterstitial(step.id),
     analyzing:renderAnalyzing, prepitch:renderPrePitch, meta:renderMeta,
+    email:renderEmailEtapa,
     projecao:renderProjecao,
     offerLocked:renderOfferLocked, offerPrice:renderOfferPrice, result:renderResult
   };
@@ -811,35 +812,21 @@ function idadeImgsDe(){ return state.answers.sexo==='Homem' ? IDADE_IMGS_HOMEM :
 const SEXO_OPTS = ['Mulher','Homem'];
 const SEXO_IMGS = ['/sexo-mulher.jpg','/sexo-homem.jpg'];
 
-/* abertura: só headline + imagem + subheadline + CTA, sem pergunta
-   nenhuma ainda (a pergunta "Você é" virou a tela seguinte, renderSexo)
-   — estilo inspirado numa referência de quiz de inglês: fonte
-   arredondada e mais robusta (Baloo 2) só nessa tela de entrada. */
+/* abertura: headline + a pergunta "Você é" já embutida (sem tela
+   solta antes, sem imagem de app) — clicar numa opção já inicia
+   o quiz e dispara QuizIniciado, via selectSexo. */
 function renderIntro(){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz" style="text-align:center;padding-top:40px;padding-bottom:46px;">
-      <div class="brand"><img src="/Logo-escuro.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
-      <h1 class="hero-h1" style="margin-top:18px;">Sua dieta e seu treino calculados pro seu corpo</h1>
-      <img src="/app-mockup.jpg" alt="${APP_NOME}" style="width:100%;border-radius:20px;display:block;margin:20px 0;" onerror="this.outerHTML='<div style=&quot;font-size:52px;margin:20px 0;&quot;>📱</div>'">
-      <p class="hero-sub">Responda o questionário e receba um plano de emagrecimento personalizado por meio do aplicativo "${APP_NOME}".</p>
-      <p style="font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:#9aa8a2;margin-bottom:16px;">Toque no botão abaixo:</p>
-      <button class="btn" onclick="go(1)">Continuar</button>
-      <p style="font-size:13px;color:#8aa79a;margin-top:16px;">✅ Tempo estimado: 2 minutos</p>
-    </div>
-  </div>`;
-}
-
-function renderSexo(){
-  app.innerHTML = `
-  <div class="wrap fade">
-    <div class="card-quiz" style="text-align:center;">
-      ${backBtn()}
-      <h2 class="intro-h1" style="margin-top:20px;">Você é</h2>
+      <h1 class="hero-h1">Sua dieta e seu treino calculados pro seu corpo</h1>
+      <h2 class="intro-h1" style="margin-top:26px;">Qual seu gênero?</h2>
       <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#9aa8a2;margin:14px 0 22px;">Toque para escolher</p>
       <div class="opts grid2">
         ${SEXO_OPTS.map((o,i)=>`<div class="idade-card" onclick="selectSexo(${i})"><img src="${SEXO_IMGS[i]}" alt="${o}" class="idade-img" onerror="this.style.display='none'"><button class="opt${state.answers.sexo===o?' sel':''}" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button></div>`).join('')}
       </div>
+      <p class="hero-sub" style="margin-top:18px;">Responda o questionário e receba um plano de emagrecimento personalizado por meio do aplicativo "${APP_NOME}".</p>
+      <p style="font-size:13px;color:#8aa79a;margin-top:16px;">✅ Tempo estimado: 2 minutos</p>
     </div>
   </div>`;
 }
@@ -1068,6 +1055,44 @@ function renderInterstitial(id){
 
 /* ---------- MINI-VSL 1 (mecanismo, credibilidade, autoridade) ---------- */
 /* ---------- BREAK 2 (substitui a mini-VSL — mecanismo + virada) ---------- */
+/* ---------- E-MAIL (logo depois de "analisando", antes da projeção) ----------
+   Pede o e-mail aqui em vez de na última página: assim a pessoa já dá o
+   e-mail antes de ver a oferta, e é esse e-mail que faz a ponte com o
+   cadastro do app (ver enviarRespostasEIr). */
+function renderEmailEtapa(){
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz" style="text-align:center;">
+      <h2 class="q-title" style="margin-bottom:26px;">Digite o seu e-mail para receber o seu Plano Personalizado</h2>
+      <div style="text-align:left;margin-bottom:8px;">
+        <label style="display:block;font-size:12px;color:#9aa8a2;font-weight:700;margin-bottom:8px;">E-mail</label>
+      </div>
+      <input type="email" id="email-etapa" placeholder="Digite seu e-mail..." autocomplete="email"
+             value="${esc(state.answers.email||'')}" onkeydown="if(event.key==='Enter')confirmarEmailEtapa()"
+             style="width:100%;background:#fff;border:2px solid transparent;border-radius:12px;padding:16px 18px;font-size:16px;font-family:'Lato',sans-serif;color:#111;outline:none;margin-bottom:8px;">
+      <p id="email-etapa-erro" style="display:none;text-align:left;font-size:12.5px;color:var(--vermelho);font-weight:700;margin:0 0 14px;">Digite um e-mail válido.</p>
+      <p style="font-size:15px;font-weight:800;color:#fff;margin:14px 0;">+120 pessoas nos escolheram</p>
+      <p style="font-size:12.5px;color:#8aa79a;line-height:1.5;margin-bottom:22px;">Respeitamos sua privacidade e usamos seus dados apenas de acordo com a nossa Política de Privacidade.</p>
+      <button class="btn" style="background:#fff;color:#111;" onclick="confirmarEmailEtapa()">Continuar</button>
+    </div>
+  </div>`;
+  setTimeout(()=>{ const f=document.getElementById('email-etapa'); if(f) f.focus(); },60);
+}
+
+function confirmarEmailEtapa(){
+  const campo = document.getElementById('email-etapa');
+  const erroEl = document.getElementById('email-etapa-erro');
+  const email = (campo.value||'').trim().toLowerCase();
+  if(!email || !email.includes('@') || !email.includes('.')){
+    campo.style.borderColor = 'var(--vermelho)';
+    if(erroEl) erroEl.style.display = 'block';
+    return;
+  }
+  state.answers.email = email;
+  trackResposta('email', 'preenchido');
+  go(1);
+}
+
 /* ---------- PROJEÇÃO FINAL (depois de outros_objetivos, antes do result) ---------- */
 function renderProjecao(){
   const a = state.answers;
@@ -1284,6 +1309,11 @@ function salvarParaOApp(){
    ninguém, só perde o caso raro de troca de navegador. */
 async function enviarRespostasEIr(destino){
   let token = '';
+  /* o e-mail é a segunda ponte: com ele, o app acha as respostas
+     quando a pessoa entrar, mesmo sem clicar em link nenhum (é o
+     caso de quem baixa o APK). Vazio não trava nada — o token na
+     URL continua cobrindo quem segue direto pelo link. */
+  const email = (state.answers.email || '').trim().toLowerCase();
   try{
     token = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(36).slice(2));
     await fetch(SUPABASE_URL + '/rest/v1/respostas_quiz', {
@@ -1294,7 +1324,7 @@ async function enviarRespostasEIr(destino){
         'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
         'Prefer': 'return=minimal'
       },
-      body: JSON.stringify({ token, respostas: dadosParaOApp() })
+      body: JSON.stringify({ token, email: email || null, respostas: dadosParaOApp() })
     });
   } catch(e){ token = ''; }
 

@@ -2,10 +2,15 @@
    APP — roteador, ações e inicialização
    ========================================================= */
 
+/* Interruptor do login. Com true, o app abre direto no cadastro, sem
+   pedir e-mail nem checar assinatura — é o modo de teste, pra olhar
+   as telas sem precisar de conta. Troque para false quando quiser o
+   fluxo real: e-mail → código → assinatura verificada. */
+const PULAR_LOGIN = true;
+
 const App = {
   tela: 'inicio',
   passo: 1,
-  modoAuth: 'entrar',
   periodo: 'semana',
   diaTreino: 0,
   refAberta: null,
@@ -28,9 +33,8 @@ const App = {
        navegador (diferente do localStorage, que só funciona no mesmo). */
     await this.aplicarRespostasDoQuizViaLink();
 
-    /* ===== TEMPORÁRIO: login e assinatura pulados pra testar o PWA (ícone/tela cheia) =====
-       Reverter isso quando o usuário mandar: tirar este bloco e descomentar o de baixo. */
-    if (!Store.temPerfil()) {
+    /* modo de teste (ver PULAR_LOGIN no topo do arquivo) */
+    if (PULAR_LOGIN && !Store.temPerfil()) {
       this.tela = 'cadastro';
       this.modoLocal = true;
       this.aplicarTema();
@@ -38,7 +42,6 @@ const App = {
       this.render();
       return;
     }
-    /* ===== FIM DO TEMPORÁRIO ===== */
 
     if (temBackend) {
       const usuario = await Backend.sessao();
@@ -109,7 +112,7 @@ const App = {
     document.documentElement.dataset.tema = t;
     try { localStorage.setItem('app_emag_tema', t); } catch (e) {}
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', t === 'escuro' ? '#0B1310' : '#159A55');
+    if (meta) meta.setAttribute('content', t === 'escuro' ? '#0B1310' : '#0E7A42');
   },
 
   alternarTema() {
@@ -126,6 +129,7 @@ const App = {
 
     /* telas sem navegação inferior */
     if (this.tela === 'auth')       { app.innerHTML = Onb.auth();       nav.style.display = 'none'; return; }
+    if (this.tela === 'codigo')     { app.innerHTML = Onb.codigo();     nav.style.display = 'none'; return; }
     if (this.tela === 'cadastro')   { app.innerHTML = Onb.cadastro();   nav.style.display = 'none'; return; }
     if (this.tela === 'assinatura') { app.innerHTML = Onb.assinatura(); nav.style.display = 'none'; return; }
 
@@ -546,10 +550,45 @@ const App = {
   },
 
   /* ---------- conta ---------- */
-  trocarModoAuth() {
-    this.modoAuth = this.modoAuth === 'entrar' ? 'criar' : 'entrar';
-    Onb.erro = '';
+
+  /* Entrou de verdade (código do e-mail confirmado). Daqui decide pra
+     onde a pessoa vai: quem já tem plano salvo na nuvem cai no início,
+     quem nunca preencheu vai pro cadastro — e aí tentamos preencher
+     sozinho com o que ela respondeu no quiz. */
+  async entrarComSessao() {
+    const remoto = await Backend.carregar();
+
+    if (remoto && remoto.perfil) {
+      Store.db = remoto;
+      Store.save();
+      this.tela = 'inicio';
+      await this.verificarAssinatura();   // pode trocar pra 'assinatura' se não houver pagamento ativo
+      this.aplicarTema();
+      this.diaTreino = this.indiceHoje();
+      this.render();
+      return;
+    }
+
+    /* conta sem plano ainda: o cadastro abre preenchido se ela tiver
+       feito o quiz com esse mesmo e-mail (funciona no APK e em outro
+       aparelho, porque não depende do link com token) */
+    Store.resetar();
+    await this.aplicarRespostasDoQuizPorEmail();
+    this.tela = 'cadastro';
+    this.passo = 1;
     this.render();
+  },
+
+  async aplicarRespostasDoQuizPorEmail() {
+    try {
+      const respostas = await Backend.buscarRespostasQuizPorEmail();
+      if (!respostas) return;
+      const campos = {};
+      for (const k in Onb.dados) {
+        if (respostas[k] !== undefined && respostas[k] !== null && respostas[k] !== '') campos[k] = String(respostas[k]);
+      }
+      Object.assign(Onb.dados, campos);
+    } catch (e) { /* sem isso, o cadastro só fica sem pré-preenchimento */ }
   },
 
   usarLocal() {
@@ -565,7 +604,8 @@ const App = {
     await Backend.sair();
     Store.resetar();
     this.tela = 'auth';
-    this.modoAuth = 'entrar';
+    Onb.emailPendente = '';
+    Onb.erro = '';
     this.render();
   },
 

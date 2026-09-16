@@ -861,8 +861,8 @@ const Comp = {
 
     return `
       <svg class="spark" viewBox="0 0 ${W} ${H}">
-        <path d="${d}" fill="none" stroke="#159A55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="${x(vals.length - 1).toFixed(1)}" cy="${y(vals[vals.length - 1]).toFixed(1)}" r="2.8" fill="#159A55"/>
+        <path d="${d}" fill="none" stroke="#0E7A42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="${x(vals.length - 1).toFixed(1)}" cy="${y(vals[vals.length - 1]).toFixed(1)}" r="2.8" fill="#0E7A42"/>
       </svg>`;
   },
 
@@ -889,8 +889,8 @@ const Comp = {
         <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
           <defs>
             <linearGradient id="gradPeso" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#159A55" stop-opacity=".26"/>
-              <stop offset="100%" stop-color="#159A55" stop-opacity="0"/>
+              <stop offset="0%" stop-color="#0E7A42" stop-opacity=".26"/>
+              <stop offset="100%" stop-color="#0E7A42" stop-opacity="0"/>
             </linearGradient>
           </defs>
           <line x1="${pad}" y1="${H-26}" x2="${W-12}" y2="${H-26}" stroke="#E6EDE9"/>
@@ -898,8 +898,8 @@ const Comp = {
           <text class="g-eixo" x="4" y="${y(max-1.5)+4}">${max.toFixed(0)}</text>
           <text class="g-eixo" x="4" y="${y(min+1.5)+4}">${min.toFixed(0)}</text>
           <path d="${area}" fill="url(#gradPeso)"/>
-          <path d="${linha}" fill="none" stroke="#159A55" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          ${serie.map((p, i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(p.peso).toFixed(1)}" r="3.5" fill="#fff" stroke="#159A55" stroke-width="2.5"/>`).join('')}
+          <path d="${linha}" fill="none" stroke="#0E7A42" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          ${serie.map((p, i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(p.peso).toFixed(1)}" r="3.5" fill="#fff" stroke="#0E7A42" stroke-width="2.5"/>`).join('')}
         </svg>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--cinza-c);font-weight:700;padding:0 4px">

@@ -71,12 +71,28 @@ create table if not exists public.assinaturas (
   user_id          uuid references auth.users(id) on delete set null,
   plano            text,                    -- 'mensal' | 'trimestral' | 'anual'
   status           text not null default 'inativa',  -- 'ativa' | 'atrasada' | 'cancelada' | 'inativa'
-  ticto_transacao  text,
+  transacao_id     text,                    -- id da cobrança na plataforma de pagamento (Ticto, Zuptos, etc.)
   data_inicio      timestamptz,
   data_expiracao   timestamptz,
   atualizado_em    timestamptz not null default now(),
   criado_em        timestamptz not null default now()
 );
+
+-- roda numa base já existente onde essa coluna ainda se chama do jeito
+-- antigo (de quando só existia a Ticto); numa base nova, a coluna já
+-- nasce com o nome certo acima e este bloco não faz nada.
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'assinaturas' and column_name = 'ticto_transacao'
+  ) and not exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'assinaturas' and column_name = 'transacao_id'
+  ) then
+    alter table public.assinaturas rename column ticto_transacao to transacao_id;
+  end if;
+end $$;
 
 alter table public.assinaturas enable row level security;
 
@@ -123,6 +139,24 @@ create table if not exists public.ticto_webhook_logs (
 alter table public.ticto_webhook_logs enable row level security;
 
 -- =========================================================
+-- LOG BRUTO DO WEBHOOK DA ZUPTOS
+--
+-- Mesma ideia do log da Ticto acima: guarda cada aviso exatamente como
+-- a Zuptos mandou, pra conferir o formato real do payload e depurar
+-- sem depender de acertar de primeira a leitura automática.
+--
+-- RLS ligado e SEM nenhuma política: ninguém enxerga isso pelo app
+-- (nem logado) — só a function, que usa a service_role e ignora RLS.
+-- =========================================================
+create table if not exists public.zuptos_webhook_logs (
+  id           bigint generated always as identity primary key,
+  recebido_em  timestamptz not null default now(),
+  payload      jsonb not null
+);
+
+alter table public.zuptos_webhook_logs enable row level security;
+
+-- =========================================================
 -- RESPOSTAS DO QUIZ (ponte quiz -> cadastro do app)
 --
 -- Ao terminar o quiz, as respostas são gravadas aqui com um token
@@ -141,10 +175,18 @@ create table if not exists public.respostas_quiz (
   criado_em  timestamptz not null default now()
 );
 
+-- e-mail digitado no quiz (opcional). É a segunda ponte, independente
+-- do link: se a pessoa entrar no app com esse mesmo e-mail, o cadastro
+-- acha as respostas dela sozinho — funciona dias depois, em outro
+-- aparelho, e dentro do app instalado (APK), onde não existe URL com
+-- token pra clicar.
+alter table public.respostas_quiz add column if not exists email text;
+
 alter table public.respostas_quiz enable row level security;
 
 drop policy if exists "inserir resposta do quiz" on public.respostas_quiz;
 drop policy if exists "ler pelo token"            on public.respostas_quiz;
+drop policy if exists "ler pelo proprio email"    on public.respostas_quiz;
 drop policy if exists "apagar apos consumir"      on public.respostas_quiz;
 
 -- qualquer um pode criar uma linha (é assim que o quiz, sem login,
@@ -160,11 +202,20 @@ create policy "ler pelo token"
   on public.respostas_quiz for select
   using (true);
 
+-- quem já está logado enxerga a linha que tem o e-mail DELA. O e-mail
+-- do JWT é verificado pelo Supabase (a pessoa só entra depois de
+-- receber o código na caixa dela), então ninguém lê a resposta de
+-- outro e-mail — é a mesma regra usada na tabela `assinaturas`.
+create policy "ler pelo proprio email"
+  on public.respostas_quiz for select
+  using (lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')));
+
 create policy "apagar apos consumir"
   on public.respostas_quiz for delete
   using (true);
 
 create index if not exists respostas_quiz_criado_idx on public.respostas_quiz (criado_em);
+create index if not exists respostas_quiz_email_idx  on public.respostas_quiz (lower(email));
 
 -- limpeza automática: uma vez por dia, apaga o que ninguém veio
 -- buscar em 48h (ex.: pessoa fez o quiz e nunca voltou pra criar a

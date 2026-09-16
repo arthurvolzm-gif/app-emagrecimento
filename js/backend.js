@@ -77,17 +77,28 @@ const Backend = {
       : 'Sem conexão com o servidor agora. Verifique sua internet e recarregue a página.');
   },
 
-  async criarConta(email, senha) {
+  /* ---------- entrada por código no e-mail (sem senha) ----------
+     Um fluxo só serve para entrar e para criar conta: se o e-mail
+     ainda não tem conta, o Supabase cria na hora que o código é
+     confirmado (shouldCreateUser). Quem manda no acesso às telas
+     internas é a assinatura, não o cadastro — ver verificarAssinatura. */
+  async enviarCodigo(email) {
     this.exigirConexao();
-    const { data, error } = await this.sb.auth.signUp({ email, password: senha });
+    const { error } = await this.sb.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: true }
+    });
     if (error) throw new Error(this.traduzErro(error.message));
-    this.usuario = data.user;
-    return data;
+    return true;
   },
 
-  async entrar(email, senha) {
+  async verificarCodigo(email, codigo) {
     this.exigirConexao();
-    const { data, error } = await this.sb.auth.signInWithPassword({ email, password: senha });
+    const { data, error } = await this.sb.auth.verifyOtp({
+      email,
+      token: (codigo || '').trim(),
+      type: 'email'
+    });
     if (error) throw new Error(this.traduzErro(error.message));
     this.usuario = data.user;
     return data;
@@ -104,7 +115,10 @@ const Backend = {
     if (m.includes('already registered')) return 'Este e-mail já tem conta. Tente entrar.';
     if (m.includes('password') && m.includes('6')) return 'A senha precisa ter pelo menos 6 caracteres.';
     if (m.includes('valid email')) return 'Digite um e-mail válido.';
-    if (m.includes('rate limit')) return 'Muitas tentativas. Aguarde um instante.';
+    if (m.includes('rate limit') || m.includes('too many')) return 'Muitos códigos pedidos. Aguarde um minuto e tente de novo.';
+    if (m.includes('expired')) return 'Esse código expirou. Peça um novo.';
+    if (m.includes('invalid') && m.includes('token')) return 'Código incorreto. Confira os números do e-mail.';
+    if (m.includes('otp')) return 'Código inválido ou expirado. Peça um novo.';
     return msg || 'Algo deu errado. Tente de novo.';
   },
 
@@ -193,6 +207,33 @@ const Backend = {
 
     if (error || !data) return null;
     this.sb.from('respostas_quiz').delete().eq('token', token).then(() => {});
+    return data.respostas;
+  },
+
+  /* ---------- ponte quiz -> cadastro pelo e-mail ----------
+     A outra ponta da mesma ideia, sem depender de link nenhum: quem
+     digitou o e-mail no quiz e depois entra no app com esse mesmo
+     e-mail acha as próprias respostas. É o caminho que funciona
+     dentro do APK e em outro aparelho, dias depois.
+
+     Só roda com a pessoa já logada: a RLS compara o e-mail da linha
+     com o e-mail do token de sessão, então ninguém lê a resposta de
+     outro. Pega a mais recente e apaga o que sobrou desse e-mail. */
+  async buscarRespostasQuizPorEmail() {
+    if (!this.ativo()) return null;
+    const email = (this.usuario.email || '').toLowerCase();
+    if (!email) return null;
+
+    const { data, error } = await this.sb
+      .from('respostas_quiz')
+      .select('token, respostas')
+      .eq('email', email)
+      .order('criado_em', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error || !data) return null;
+    this.sb.from('respostas_quiz').delete().eq('email', email).then(() => {});
     return data.respostas;
   }
 };

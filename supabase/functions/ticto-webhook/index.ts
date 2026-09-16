@@ -123,7 +123,7 @@ Deno.serve(async (req) => {
       email: email.toLowerCase(),
       plano,
       status,
-      ticto_transacao: transacao,
+      transacao_id: transacao,
       data_inicio: new Date().toISOString(),
       data_expiracao: dataExpiracao,
       atualizado_em: new Date().toISOString(),

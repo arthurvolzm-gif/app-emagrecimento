@@ -29,93 +29,137 @@ const Onb = {
   dados: dadosDoQuiz(),
   erro: '',
 
-  /* ---------- tela de login / criar conta ---------- */
-  auth() {
-    const criando = App.modoAuth === 'criar';
+  /* e-mail digitado na primeira etapa, guardado pra confirmar o código */
+  emailPendente: '',
+
+  /* ---------- etapa 1: pedir o e-mail ----------
+     Um caminho só pra entrar e pra criar conta: quem nunca entrou
+     tem a conta criada na hora que confirma o código. O que decide
+     se ela vê as telas internas é a assinatura, não o cadastro. */
+  logoHTML() {
     return `
-      <div class="onb">
-        <div class="onb-logo">🌿</div>
-        <h1 class="display">${criando ? 'Criar sua conta' : 'Bem-vindo de volta'}</h1>
-        <p class="sub">${criando
-          ? 'Seu plano alimentar, treinos e progresso ficam salvos na sua conta, acessíveis de qualquer aparelho.'
-          : 'Entre para continuar de onde você parou.'}</p>
-
-        ${this.erro ? `<div class="erro">${this.erro}</div>` : ''}
-
-        <div class="campo">
-          <label>E-mail</label>
-          <input type="email" id="in-email" placeholder="voce@email.com" autocomplete="email">
+      <div class="login-logo">
+        <div class="login-wordmark">
+          <span>F</span>
+          <span class="login-o">
+            <svg width="30" height="30" viewBox="0 0 34 34" fill="none">
+              <circle cx="17" cy="17" r="9" stroke="#fff" stroke-width="2.4"/>
+              <path d="M17 1v5M17 28v5M1 17h5M28 17h5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+              <circle cx="17" cy="17" r="3" fill="#3FBE7C"/>
+            </svg>
+          </span>
+          <span>CUS</span>
         </div>
-
-        <div class="campo">
-          <label>Senha</label>
-          <input type="password" id="in-senha" placeholder="Mínimo 6 caracteres" autocomplete="${criando ? 'new-password' : 'current-password'}">
-        </div>
-
-        <button class="btn" id="btn-auth" onclick="Onb.enviarAuth()">
-          ${criando ? 'Criar conta e começar' : 'Entrar'}
-        </button>
-
-        <div style="text-align:center;margin-top:18px;font-size:13.5px;color:var(--cinza);font-weight:600">
-          ${criando ? 'Já tem conta?' : 'Ainda não tem conta?'}
-          <button style="color:var(--verde);font-weight:800" onclick="App.trocarModoAuth()">
-            ${criando ? 'Entrar' : 'Criar agora'}
-          </button>
-        </div>
-
-        ${Backend.configurado() ? '' : `
-          <div class="aviso" style="margin-top:22px">
-            ${Backend.libOk
-              ? 'As chaves do servidor não estão preenchidas em config.js. Você pode usar o app normalmente neste aparelho.'
-              : 'Não conseguimos falar com o servidor agora. Verifique sua internet e recarregue a página, ou use o app só neste aparelho.'}
-          </div>`}
-
-        <div style="text-align:center;margin-top:22px">
-          <button style="font-size:13px;color:var(--cinza);font-weight:700" onclick="App.usarLocal()">
-            Continuar sem conta neste aparelho
-          </button>
-        </div>
+        <div class="login-fit">FIT</div>
       </div>`;
   },
 
-  async enviarAuth() {
-    const email = document.getElementById('in-email').value.trim();
-    const senha = document.getElementById('in-senha').value;
-    const btn = document.getElementById('btn-auth');
+  /* link direto pro WhatsApp, sem mensagem pronta — só abre a conversa */
+  suporteHTML() {
+    return `
+      <div class="login-footer">
+        <a href="https://wa.me/5541987975115" target="_blank" rel="noopener">Suporte</a>
+      </div>`;
+  },
 
-    if (!email || !senha) { this.erro = 'Preencha e-mail e senha.'; App.render(); return; }
-    if (senha.length < 6) { this.erro = 'A senha precisa ter pelo menos 6 caracteres.'; App.render(); return; }
+  auth() {
+    return `
+      <div class="tela-login">
+        <div class="login-content">
+          ${this.logoHTML()}
+          <h1 class="login-h1">Entrar</h1>
+          <p class="login-sub">Digite o e-mail que você usou na compra. Mandamos um código de 6 números pra ele.</p>
 
-    btn.disabled = true;
-    btn.textContent = 'Aguarde...';
+          ${this.erro ? `<div class="erro">${this.erro}</div>` : ''}
+
+          <div class="login-campo">
+            <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 6h18v12H3z" stroke="#3FBE7C" stroke-width="1.8"/><path d="M3 7l9 6 9-6" stroke="#3FBE7C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <input type="email" id="in-email" placeholder="E-mail" autocomplete="email"
+                   value="${this.emailPendente}" onkeydown="if(event.key==='Enter')Onb.pedirCodigo()">
+          </div>
+
+          <button class="login-btn" id="btn-auth" onclick="Onb.pedirCodigo()">Receber código</button>
+        </div>
+        ${this.suporteHTML()}
+      </div>`;
+  },
+
+  /* ---------- etapa 2: confirmar o código ---------- */
+  codigo() {
+    return `
+      <div class="tela-login">
+        <div class="login-content">
+          ${this.logoHTML()}
+          <h1 class="login-h1">Digite o código</h1>
+          <p class="login-sub">Enviamos 6 números para <strong>${this.emailPendente}</strong>. Se não achar, olhe no spam.</p>
+
+          ${this.erro ? `<div class="erro">${this.erro}</div>` : ''}
+
+          <div class="login-campo sem-icone">
+            <input type="text" id="in-codigo" placeholder="000000" inputmode="numeric"
+                   maxlength="6" autocomplete="one-time-code"
+                   style="letter-spacing:8px;text-align:center;font-size:22px;font-weight:800"
+                   onkeydown="if(event.key==='Enter')Onb.confirmarCodigo()">
+          </div>
+
+          <button class="login-btn" id="btn-codigo" onclick="Onb.confirmarCodigo()">Entrar</button>
+
+          <div class="login-alt" style="margin-top:22px">
+            Não chegou? <button class="login-link" onclick="Onb.pedirCodigo(true)">Reenviar</button>
+          </div>
+
+          <div class="login-alt" style="margin-top:10px">
+            <button onclick="Onb.trocarEmail()">Usar outro e-mail</button>
+          </div>
+        </div>
+        ${this.suporteHTML()}
+      </div>`;
+  },
+
+  async pedirCodigo(reenvio) {
+    const campo = document.getElementById('in-email');
+    const email = (campo ? campo.value : this.emailPendente).trim().toLowerCase();
+    const btn = document.getElementById(reenvio ? 'btn-codigo' : 'btn-auth');
+
+    if (!email || !email.includes('@')) { this.erro = 'Digite um e-mail válido.'; App.render(); return; }
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
     this.erro = '';
 
     try {
-      if (App.modoAuth === 'criar') {
-        await Backend.criarConta(email, senha);
-        /* conta nova: nunca tem dados, vai direto para o cadastro */
-        Store.resetar();
-        App.tela = 'cadastro';
-        App.passo = 1;
-      } else {
-        await Backend.entrar(email, senha);
-        const remoto = await Backend.carregar();
-        if (remoto && remoto.perfil) {
-          Store.db = remoto;
-          Store.save();
-          App.tela = 'inicio';
-          await App.verificarAssinatura();   // pode trocar pra 'assinatura' se não houver pagamento ativo
-        } else {
-          Store.resetar();
-          App.tela = 'cadastro';
-          App.passo = 1;
-        }
-      }
+      await Backend.enviarCodigo(email);
+      this.emailPendente = email;
+      App.tela = 'codigo';
       App.render();
     } catch (e) {
       this.erro = e.message;
       App.render();
     }
+  },
+
+  async confirmarCodigo() {
+    const campo = document.getElementById('in-codigo');
+    const codigo = (campo ? campo.value : '').trim();
+    const btn = document.getElementById('btn-codigo');
+
+    if (codigo.length < 6) { this.erro = 'O código tem 6 números.'; App.render(); return; }
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Entrando...'; }
+    this.erro = '';
+
+    try {
+      await Backend.verificarCodigo(this.emailPendente, codigo);
+      await App.entrarComSessao();
+    } catch (e) {
+      this.erro = e.message;
+      App.render();
+    }
+  },
+
+  trocarEmail() {
+    this.erro = '';
+    App.tela = 'auth';
+    App.render();
   },
 
   /* ---------- cadastro em 3 passos ---------- */

@@ -4,7 +4,7 @@
    ========================================================= */
 
 :root{
-  --verde:#159A55;
+  --verde:#0E7A42;
   --verde-esc:#0E7A42;
   --verde-claro:#3FBE7C;
   --verde-tint:#E8F6EE;
@@ -571,6 +571,69 @@ a{color:inherit;text-decoration:none;}
 .passos{display:flex;gap:6px;margin-bottom:24px;}
 .passo{flex:1;height:4px;border-radius:10px;background:var(--linha);transition:background .3s;}
 .passo.on{background:var(--verde);}
+
+/* ---------- tela de login (e-mail + código) ----------
+   Sempre escura, com a marca — é a porta de entrada antes de a pessoa
+   escolher tema claro/escuro no app, então usa cores fixas em vez das
+   variáveis de tema (que mudam com data-tema="escuro"). */
+.tela-login{
+  min-height:100dvh;max-width:520px;margin:0 auto;padding:40px 26px 24px;
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+  background:#000 url('../imagem-teladelogin.jpg') center/cover no-repeat;
+}
+/* escuro embaixo, clareando pra cima: deixa a foto mais visível no topo e
+   garante contraste pro texto na parte de baixo (campos e botão) */
+.tela-login::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.12) 0%, rgba(0,0,0,.22) 35%, rgba(0,0,0,.5) 65%, rgba(0,0,0,.92) 100%);
+}
+/* margem automática em cima/embaixo centraliza o bloco principal no espaço
+   que sobra ACIMA do rodapé — assim "Suporte" fica sempre colado embaixo */
+.login-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;width:100%;margin:auto 0;}
+.login-footer{position:relative;z-index:1;width:100%;text-align:center;padding-top:18px;}
+.login-footer a{color:#8CA79B;font-size:13px;font-weight:700;text-decoration:none;}
+.login-footer a:active{opacity:.7;}
+
+.login-logo{display:inline-flex;flex-direction:column;align-items:center;margin-bottom:54px;}
+.login-wordmark{
+  display:flex;align-items:center;
+  font-family:'Arial Black','Bricolage Grotesque','Manrope',sans-serif;
+  font-weight:900;font-size:28px;color:#fff;letter-spacing:-.5px;line-height:1;
+}
+.login-o{display:inline-flex;align-items:center;justify-content:center;margin:0 1px;filter:drop-shadow(0 0 8px rgba(63,190,124,.45));}
+.login-fit{align-self:center;margin-top:3px;font-weight:800;font-size:12px;color:#3FBE7C;letter-spacing:.3em;}
+
+.login-h1{width:100%;text-align:center;font-family:'Bricolage Grotesque','Manrope',sans-serif;font-size:33px;font-weight:800;color:#fff;letter-spacing:-.02em;text-shadow:0 2px 20px rgba(0,0,0,.6);}
+.login-sub{width:100%;text-align:center;font-size:14.5px;color:#c3d6cb;margin:12px 0 32px;line-height:1.6;font-weight:500;text-shadow:0 1px 12px rgba(0,0,0,.6);}
+.login-sub strong{color:#fff;}
+
+.login-campo{position:relative;width:100%;margin-bottom:14px;}
+.login-campo .ic{position:absolute;left:20px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none;}
+.login-campo input{
+  width:100%;height:58px;padding:0 20px 0 50px;border-radius:29px;
+  border:1.5px solid rgba(63,190,124,.45);background:rgba(20,45,32,.28);
+  color:#fff;font-size:15px;font-weight:600;transition:border-color .16s,background .16s;
+}
+.login-campo.sem-icone input{padding-left:20px;}
+.login-campo input::placeholder{color:#5C7A6C;}
+.login-campo input:focus{outline:none;border-color:#3FBE7C;background:rgba(20,45,32,.45);}
+
+.login-btn{
+  display:block;width:100%;height:58px;border-radius:29px;border:none;cursor:pointer;
+  background:linear-gradient(90deg,#0E7A42 0%,#3FBE7C 50%,#0E7A42 100%);color:#fff;
+  font-family:'Manrope',sans-serif;font-size:16px;font-weight:800;letter-spacing:-.01em;margin-top:10px;
+  box-shadow:0 16px 34px rgba(63,190,124,.4),inset 0 1px 0 rgba(255,255,255,.3);
+  transition:transform .14s,box-shadow .14s;
+}
+.login-btn:active{transform:translateY(1px) scale(.99);}
+.login-btn:disabled{opacity:.55;box-shadow:none;}
+
+.login-alt{width:100%;text-align:center;margin-top:26px;font-size:13.5px;color:#7E9389;font-weight:600;}
+.login-alt button{background:none;border:none;font-size:inherit;font-weight:700;color:#8CA79B;cursor:pointer;}
+.login-alt .login-link{color:#3FBE7C;font-weight:800;}
+.tela-login .erro{position:relative;width:100%;background:rgba(224,90,78,.14);border:1px solid rgba(224,90,78,.3);color:#F2A79C;border-radius:12px;padding:12px 14px;font-size:13px;font-weight:700;margin-bottom:16px;text-align:center;}
 
 .aviso{background:var(--ambar-tint);border-radius:12px;padding:12px 14px;font-size:12.5px;color:var(--ambar-tx);line-height:1.5;font-weight:600;margin-bottom:16px;}
 .erro{background:var(--erro-bg);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--erro-tx);font-weight:700;margin-bottom:14px;}
