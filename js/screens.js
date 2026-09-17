@@ -28,6 +28,10 @@ const Telas = {
 
       <div class="tela stagger">
 
+        ${Store.boasVindasPendente() ? Telas._boasVindas(p) : ''}
+        ${Store.resumoPendente() ? Telas._chamadaResumo() : ''}
+        ${Telas._perdidas()}
+
         <div class="card nivel-card" style="background:linear-gradient(135deg, ${nv.cor1}, ${nv.cor2})">
           <div class="nivel-topo">
             <div class="nivel-emoji">${nv.icone}</div>
@@ -100,20 +104,7 @@ const Telas = {
           </div>
         </div>
 
-        <div class="streak-linha">
-          <div class="streak-box destaque">
-            <div class="n">${streak}</div>
-            <div class="l">${streak === 1 ? 'dia seguido' : 'dias seguidos'}</div>
-          </div>
-          <div class="streak-box">
-            <div class="n">${ms.treino}<small style="font-size:14px;color:var(--cinza-c)">/5</small></div>
-            <div class="l">Treinos<br>na semana</div>
-          </div>
-          <div class="streak-box">
-            <div class="n">${ms.dieta}<small style="font-size:14px;color:var(--cinza-c)">/7</small></div>
-            <div class="l">Dietas<br>completas</div>
-          </div>
-        </div>
+        ${Telas._semana(ms)}
 
         <h3 class="secao-tt">Continuar de onde parou</h3>
         <div class="card" style="padding:0;overflow:hidden">
@@ -125,6 +116,265 @@ const Telas = {
   },
 
   /* ============ ALIMENTAÇÃO ============ */
+  /* ---------- dia fora da rotina ----------
+     Aniversário, viagem, almoço de domingo. Sem isso a pessoa não marca
+     nada, vê o dia vazio e se sente fracassada — e é aí que desinstala.
+     Marcado, o dia conta como cumprido na semana e o app troca a cobrança
+     por três instruções do que fazer. */
+  _foraDaRotina() {
+    if (!Store.foraDaRotina()) return `
+      <button class="card fora-btn" onclick="App.marcarForaDaRotina()">
+        <span class="fb-ic">🎉</span>
+        <div>
+          <div class="fb-t">Hoje eu vou comer fora</div>
+          <div class="fb-s">Marque e o dia não conta como falha</div>
+        </div>
+        <span class="lista-seta">›</span>
+      </button>`;
+
+    return `
+      <div class="card fora-ativo">
+        <div class="card-tt">🎉 Dia fora da rotina<span class="n">contando como cumprido</span></div>
+        <p class="fora-txt">
+          Combinado. Hoje o cardápio abaixo é referência, não cobrança, e este dia
+          já entra como cumprido na sua semana.
+        </p>
+        <div class="fora-dicas">
+          <div><b>Proteína primeiro.</b> Comece pelo que tem carne, ovo ou queijo. Chega no doce com menos fome.</div>
+          <div><b>Beba água antes.</b> Um copo antes de sentar corta boa parte da fome de ansiedade.</div>
+          <div><b>Amanhã é dia normal.</b> Não compense pulando refeição: compensar é o que vira efeito sanfona.</div>
+        </div>
+        <button class="btn sec" onclick="App.marcarForaDaRotina()">Cancelar, hoje é dia normal</button>
+      </div>`;
+  },
+
+  /* ---------- sua semana ----------
+     Sete bolinhas que enchem e reiniciam no domingo, no lugar da
+     sequência que zerava. Dia fora da rotina conta como cumprido e
+     aparece em azul: é uma escolha, não uma falha. */
+  _semana(ms) {
+    const sp = Store.semanaPerfeita();
+    const plano = Store.planoTreino();
+    const alvo = Number(String(plano.frequencia).match(/\d+/)?.[0]) || 5;
+
+    return `
+      <div class="card">
+        <div class="card-tt">📅 Sua semana<span class="n">${sp.feitos} de 7 dias</span></div>
+        <div class="sem-fila">
+          ${sp.dias.map((d, i) => `
+            <div class="sem-dia ${d.fora ? 'fora' : d.ativo ? 'on' : ''} ${d.hoje ? 'hoje' : ''} ${d.futuro ? 'futuro' : ''}">
+              <span class="b">${d.fora ? '~' : d.ativo ? '✓' : ''}</span>
+              <span class="d">${['S','T','Q','Q','S','S','D'][i]}</span>
+            </div>`).join('')}
+        </div>
+        <p class="sem-txt">
+          ${sp.feitos >= sp.passados
+            ? 'Semana limpa até aqui. A contagem reinicia toda segunda.'
+            : `Faltou marcar ${sp.passados - sp.feitos} ${sp.passados - sp.feitos === 1 ? 'dia' : 'dias'}. Sem problema: a semana reinicia na segunda e o que passou não conta contra você.`}
+        </p>
+        <div class="sem-nums">
+          <div><b>${ms.treino}<small>/${alvo}</small></b><span>Treinos</span></div>
+          <div><b>${ms.dieta}<small>/7</small></b><span>Dietas completas</span></div>
+          <div><b>${ms.agua}<small>/7</small></b><span>Metas de água</span></div>
+        </div>
+      </div>`;
+  },
+
+  /* o que o lembrete não conseguiu avisar com o app fechado: ao voltar,
+     mostra as refeições que já passaram e não foram marcadas */
+  _perdidas() {
+    if (!Lembretes.ligado()) return '';
+    const l = Lembretes.perdidasHoje();
+    if (!l.length) return '';
+    return `
+      <button class="card perdidas" onclick="App.ir('alimentacao')">
+        <span class="fb-ic">🔔</span>
+        <div>
+          <div class="fb-t">${l.length === 1 ? '1 refeição ainda sem marcar' : `${l.length} refeições ainda sem marcar`}</div>
+          <div class="fb-s">${l.map(r => r.nome).join(', ')}</div>
+        </div>
+        <span class="lista-seta">›</span>
+      </button>`;
+  },
+
+  /* chamada do resumo de domingo, no topo da tela inicial */
+  _chamadaResumo() {
+    return `
+      <button class="card resumo-chamada" onclick="App.ir('resumo')">
+        <span class="rc-ic">📊</span>
+        <div>
+          <div class="rc-t">Sua semana fechou</div>
+          <div class="rc-s">Veja o que você bateu e o foco da próxima</div>
+        </div>
+        <span class="lista-seta">›</span>
+      </button>`;
+  },
+
+  /* ---------- resumo da semana (domingo) ----------
+     Fecha o ciclo e dá motivo pra abrir o app num dia em que ninguém
+     treina. Sem número inventado: tudo sai do que foi registrado. */
+  resumo() {
+    const r = Store.resumoDaSemana();
+    const p = Store.db.perfil;
+
+    return `
+      <div class="topo">
+        <div>
+          <h1 class="display">Sua semana</h1>
+          <div class="topo-sub">Fechamento de domingo, ${p.nome.split(' ')[0]}</div>
+        </div>
+      </div>
+
+      <div class="tela stagger">
+        <div class="card res-abre">
+          <div class="res-n display">${r.diasAtivos}<small>/7</small></div>
+          <div class="res-l">dias em que você apareceu</div>
+          ${r.variacao !== null ? `
+            <div class="res-peso ${r.variacao < 0 ? 'bom' : ''}">
+              ${r.variacao < 0 ? '−' : '+'}${Math.abs(r.variacao)} kg na balança esta semana
+            </div>` : `
+            <div class="res-peso">Sem pesagem esta semana. Registre uma no domingo e a próxima já compara.</div>`}
+        </div>
+
+        ${r.bateu.length ? `
+          <h3 class="secao-tt">O que você bateu</h3>
+          <div class="card">
+            ${r.bateu.map(i => `
+              <div class="lista-item">
+                <span class="lista-ic">${i.ic}</span>
+                <div><div class="lista-t">${i.nome}</div></div>
+                <span class="lista-v" style="color:var(--verde-esc)">${i.feito} de ${i.alvo}</span>
+              </div>`).join('')}
+          </div>` : ''}
+
+        ${r.escapou.length ? `
+          <h3 class="secao-tt">O que escapou</h3>
+          <div class="card">
+            ${r.escapou.map(i => `
+              <div class="res-linha">
+                <div class="lista-item" style="border:none;padding:0 0 8px">
+                  <span class="lista-ic">${i.ic}</span>
+                  <div><div class="lista-t">${i.nome}</div></div>
+                  <span class="lista-v">${i.feito} de ${i.alvo}</span>
+                </div>
+                <div class="barra"><i style="width:${i.pct}%"></i></div>
+              </div>`).join('')}
+          </div>` : ''}
+
+        <h3 class="secao-tt">Foco da próxima semana</h3>
+        <div class="card res-foco">
+          <div class="rf-t">${r.focoNome}</div>
+          <p class="rf-txt">${r.foco}</p>
+        </div>
+
+        <button class="btn" onclick="App.fecharResumo()">Começar a semana</button>
+      </div>`;
+  },
+
+  /* ---------- fotos de progresso ----------
+     A balança mente mais que o espelho: água, ciclo e intestino movem o
+     número sem mover o corpo. Uma foto por semana, no mesmo lugar, é o
+     que segura quem ia cancelar na terceira semana.
+     Tudo em IndexedDB, só neste aparelho — ver js/fotos.js.
+     A tela é montada de forma assíncrona (App.abrirFotos): aqui fica só
+     o esqueleto, que App.pintarFotos preenche quando o banco responde. */
+  fotos() {
+    return `
+      <div class="topo">
+        <div>
+          <h1 class="display">Suas fotos</h1>
+          <div class="topo-sub">Só neste aparelho, nunca enviadas</div>
+        </div>
+        <button class="btn-mini" style="width:40px;height:40px" onclick="App.ir('progresso')">✕</button>
+      </div>
+
+      <div class="tela">
+        <div class="card foto-add">
+          <div class="card-tt">📸 Foto da semana</div>
+          <p class="foto-txt">
+            Tire sempre no mesmo lugar, com a mesma luz e a mesma roupa. É a
+            repetição que faz a diferença aparecer.
+          </p>
+          <label class="btn foto-label">
+            Adicionar foto de hoje
+            <input type="file" accept="image/*" capture="environment"
+                   onchange="App.salvarFoto(this)" hidden>
+          </label>
+          <p class="foto-aviso">
+            🔒 As fotos ficam guardadas só neste celular. Não vão para a nuvem,
+            não entram no backup da conta e ninguém além de você vê.
+          </p>
+        </div>
+
+        <div id="foto-lista"><div class="rev-vazio">Carregando…</div></div>
+      </div>`;
+  },
+
+  /* montado por App.pintarFotos com o que veio do IndexedDB */
+  _fotosConteudo(lista, urls) {
+    if (!lista.length) return `
+      <div class="card">
+        <div class="rev-vazio">
+          <div class="em">📷</div>
+          <p>Nenhuma foto ainda.<br>A primeira é a mais importante: é com ela que<br>todas as outras vão ser comparadas.</p>
+        </div>
+      </div>`;
+
+    const primeira = lista[0], ultima = lista[lista.length - 1];
+    const comparar = lista.length >= 2;
+
+    return `
+      ${comparar ? `
+        <h3 class="secao-tt">Primeira e mais recente</h3>
+        <div class="card foto-par">
+          <figure>
+            <img src="${urls[primeira.data]}" alt="Primeira foto">
+            <figcaption>${App.dataBr(primeira.data)}${primeira.peso ? ` · ${primeira.peso} kg` : ''}</figcaption>
+          </figure>
+          <figure>
+            <img src="${urls[ultima.data]}" alt="Foto mais recente">
+            <figcaption>${App.dataBr(ultima.data)}${ultima.peso ? ` · ${ultima.peso} kg` : ''}</figcaption>
+          </figure>
+        </div>
+        ${primeira.peso && ultima.peso ? `
+          <p class="foto-dif">${(ultima.peso - primeira.peso) < 0 ? '−' : '+'}${Math.abs(Math.round((ultima.peso - primeira.peso) * 10) / 10)} kg entre as duas</p>` : ''}
+      ` : ''}
+
+      <h3 class="secao-tt">Todas as fotos</h3>
+      <div class="foto-grade">
+        ${lista.slice().reverse().map(f => `
+          <figure class="foto-item">
+            <img src="${urls[f.data]}" alt="Foto de ${App.dataBr(f.data)}">
+            <figcaption>${App.dataBr(f.data)}</figcaption>
+            <button class="foto-x" onclick="App.apagarFoto('${f.data}')" aria-label="Apagar">✕</button>
+          </figure>`).join('')}
+      </div>`;
+  },
+
+  /* Primeira coisa que a pessoa vê depois de entrar. Existe por dois
+     motivos: dar as boas-vindas e, principalmente, ensinar onde fica o
+     suporte — quem não acha ajuda no primeiro dia pede reembolso no
+     segundo. Some quando ela fecha, e não volta. */
+  _boasVindas(p) {
+    return `
+      <div class="card bv-card">
+        <button class="bv-x" onclick="App.fecharBoasVindas()" aria-label="Fechar">✕</button>
+        <div class="bv-tt display">Que bom te ver aqui, ${p.nome.split(' ')[0]}.</div>
+        <p class="bv-txt">
+          Seu plano já está montado a partir das suas respostas: o cardápio, o treino
+          e as metas do dia. Marque o que for cumprindo e o app acompanha o resto.
+        </p>
+        <p class="bv-txt">
+          <b>Precisa de ajuda?</b> Fale com a gente no WhatsApp pelo botão abaixo.
+          Ele fica sempre disponível na aba <b>Perfil</b>, em “Ajuda e suporte”.
+        </p>
+        <a class="btn bv-btn" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">
+          Falar com o suporte
+        </a>
+        <button class="bv-ok" onclick="App.fecharBoasVindas()">Entendi, vamos começar</button>
+      </div>`;
+  },
+
   alimentacao() {
     const p = Store.db.perfil;
     const t = Store.totaisDoDia();
@@ -159,6 +409,8 @@ const Telas = {
         <button class="btn sec" style="margin-bottom:14px" onclick="App.ir('cardapio')">
           📋  Ver cardápio completo e lista de compras
         </button>
+
+        ${Telas._foraDaRotina()}
 
         ${plano.map(r => Telas._refeicao(r)).join('')}
 
@@ -336,6 +588,8 @@ const Telas = {
           </p>
         </div>
 
+        ${Telas._lidaEsforco()}
+
         <div class="dias-fila">
           ${dias.map((d, i) => `
             <button class="dia-chip ${i === App.diaTreino ? 'ativo' : ''} ${i === hojeIdx ? 'hoje' : ''}" onclick="App.selDia(${i})">
@@ -367,6 +621,19 @@ const Telas = {
         `}
 
         ${Telas._organizarSemana(plano, dias)}
+      </div>`;
+  },
+
+  /* o que o app entendeu das respostas de "como foi o treino". Só aparece
+     quando já há histórico suficiente pra dizer algo — ver lidaDoEsforco. */
+  _lidaEsforco() {
+    const l = Store.lidaDoEsforco();
+    if (!l) return '';
+    const ic = { leve: '⬆️', ponto: '✅', pesado: '⚠️' };
+    return `
+      <div class="card esforco-lida ${l.tom}">
+        <span class="el-ic">${ic[l.tom]}</span>
+        <p class="el-txt">${l.texto}</p>
       </div>`;
   },
 
@@ -644,6 +911,15 @@ const Telas = {
           </div>
         </div>
 
+        <button class="card fora-btn" onclick="App.abrirFotos()">
+          <span class="fb-ic">📸</span>
+          <div>
+            <div class="fb-t">Fotos de progresso</div>
+            <div class="fb-s">O que a balança não mostra. Só neste aparelho.</div>
+          </div>
+          <span class="lista-seta">›</span>
+        </button>
+
         ${Telas._evolucaoCargas()}
 
         <div class="card nivel-card" style="background:linear-gradient(135deg, ${nv.cor1}, ${nv.cor2})">
@@ -777,6 +1053,46 @@ const Telas = {
         <button class="btn sec" onclick="App.abrirEditar()">Editar meus dados</button>
         <div style="height:10px"></div>
         <button class="btn sec" onclick="App.abrirPeso()">Registrar pesagem</button>
+
+        <h3 class="secao-tt">Lembretes</h3>
+        <div class="card">
+          <div class="tema-linha">
+            <div class="tema-ic">🔔</div>
+            <div class="tema-txt">
+              <div class="t">Lembrete de refeição</div>
+              <div class="s">${Lembretes.ligado() && Lembretes.permitido()
+                ? 'Ligado. Avisa nos horários do seu cardápio.'
+                : 'Desligado. Ligue para ser avisada nos horários do cardápio.'}</div>
+            </div>
+            <button class="switch ${Lembretes.ligado() && Lembretes.permitido() ? 'on' : ''}"
+                    onclick="App.alternarLembretes()" aria-label="Alternar lembretes"><i></i></button>
+          </div>
+          <p class="lembrete-nota">
+            Com o app fechado o celular não avisa: isso é limite do navegador, não do app.
+            Enquanto ele estiver aberto, mesmo em segundo plano, o lembrete chega. Ao voltar,
+            o app mostra o que passou.
+          </p>
+        </div>
+
+        <h3 class="secao-tt">Ajuda e suporte</h3>
+        <div class="card" style="padding:6px 18px">
+          <a class="lista-item lista-link" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">
+            <span class="lista-ic">💬</span>
+            <div>
+              <div class="lista-t">Falar com o suporte</div>
+              <div class="lista-s">WhatsApp ${CONFIG.SUPORTE_NUMERO}, de segunda a sexta</div>
+            </div>
+            <span class="lista-seta">›</span>
+          </a>
+          <button class="lista-item lista-link" onclick="App.verBoasVindas()">
+            <span class="lista-ic">🧭</span>
+            <div>
+              <div class="lista-t">Como usar o app</div>
+              <div class="lista-s">Rever a mensagem de boas-vindas</div>
+            </div>
+            <span class="lista-seta">›</span>
+          </button>
+        </div>
 
         <h3 class="secao-tt">Conta</h3>
         <div class="card" style="padding:6px 18px">

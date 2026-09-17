@@ -42,9 +42,9 @@
   --tracejado:#C9D8D0;
   --brilho:rgba(21,154,85,.10);
 
-  --r-sm:12px;
-  --r:18px;
-  --r-lg:24px;
+  --r-sm:13px;
+  --r:20px;
+  --r-lg:26px;
   --sombra:0 1px 2px rgba(15,28,23,.04), 0 8px 24px rgba(15,28,23,.06);
   --sombra-alta:0 12px 40px rgba(15,28,23,.12);
   --nav-h:76px;
@@ -56,46 +56,54 @@
    toda regra abaixo continua igual nos dois temas.
    ========================================================= */
 [data-tema="escuro"]{
-  /* --verde, --verde-claro, --ambar e --azul NÃO mudam de propósito:
-     são fundos com texto branco por cima (botões, chips, checks). Clarear
-     aqui derruba o contraste do texto branco em cima deles.
-     O que muda é o verde usado como TEXTO (--verde-esc) e as superfícies. */
-  --verde-esc:#7FDCA8;
-  --verde-tint:#173428;
-  --verde-tint2:#132B21;
-  --verde-borda:#26473A;
+  /* Afinado nas telas de referência: preto quase puro, cartões com
+     contorno verde visível (é o contorno que separa, não a sombra) e
+     verde mais aceso que no tema claro.
+     --verde, --verde-claro, --ambar e --azul NÃO mudam de propósito:
+     são fundos com texto branco por cima (botões, chips, checks).
+     Clarear aqui derrubaria o contraste do texto branco em cima deles. */
+  --verde-esc:#4ADE8A;      /* verde como TEXTO */
+  --verde-tint:#10291D;
+  --verde-tint2:#0C1F16;
+  --verde-borda:rgba(63,190,124,.34);
+  --verde-grad:linear-gradient(135deg,#0E8A4A,#35C87E);
 
-  --ambar-tint:#33290F;
-  --ambar-tint2:#2A220B;
-  --ambar-borda:#4E3F17;
-  --ambar-tx:#F0C55A;
+  --ambar-tint:#2C240D;
+  --ambar-tint2:#231C09;
+  --ambar-borda:#4A3B14;
+  --ambar-tx:#F2C95E;
 
-  --vermelho:#F07A6E;       /* esse é texto (botão "Sair"), então clareia */
-  --azul-tint:#152736;
-  --azul-tint2:#101F2B;
-  --azul-borda:#23415A;
+  --vermelho:#FF7A6B;       /* esse é texto (botão "Sair"), então clareia */
+  --azul-tint:#0E2233;
+  --azul-tint2:#0A1A27;
+  --azul-borda:#1E3C55;
   --azul-tx:#AECFE9;
   --azul-tx2:#8CB2CE;
 
-  --roxo-tint:#241F3A;
-  --tint-neutro:#1A2620;
-  --erro-bg:#3A1B18;
-  --erro-tx:#F0A79F;
+  --roxo-tint:#1D1836;
+  --tint-neutro:#121C17;
+  --erro-bg:#33150F;
+  --erro-tx:#FF9E91;
 
-  --tinta:#E9F2ED;
-  --tinta-2:#B7C8C0;
-  --cinza:#93A79E;
-  --cinza-c:#71857B;
-  --linha:#23332C;
-  --fundo:#0B1310;
-  --branco:#141F1A;
+  --tinta:#FFFFFF;
+  --tinta-2:#C3D6CB;
+  --cinza:#9DB2A7;
+  --cinza-c:#7E9389;
 
-  --nav-bg:rgba(15,25,21,.92);
-  --tracejado:#2E4139;
-  --brilho:rgba(47,191,116,.13);
+  /* o contorno verde é o que desenha os cartões, as divisórias de dentro
+     e o trilho das barras — os três saem daqui */
+  --linha:rgba(63,190,124,.20);
+  --fundo:#060D0A;
+  --branco:#0C1410;
 
-  --sombra:0 1px 2px rgba(0,0,0,.30), 0 8px 24px rgba(0,0,0,.34);
-  --sombra-alta:0 12px 40px rgba(0,0,0,.52);
+  --nav-bg:rgba(6,13,10,.88);
+  --tracejado:rgba(63,190,124,.30);
+  --brilho:rgba(47,191,116,.20);
+
+  /* no escuro a sombra preta some no fundo preto: o que dá relevo é um
+     brilho verde bem discreto por baixo do cartão */
+  --sombra:0 0 0 rgba(0,0,0,0);
+  --sombra-alta:0 18px 50px rgba(0,0,0,.6), 0 0 40px rgba(63,190,124,.10);
   color-scheme:dark;
 }
 
@@ -129,18 +137,13 @@ a{color:inherit;text-decoration:none;}
 /* ---------- estrutura ---------- */
 #app{position:relative;z-index:1;max-width:520px;margin:0 auto;min-height:100%;padding-bottom:calc(var(--nav-h) + 20px);}
 
-.tela{padding:0 18px 24px;animation:sobe .34s cubic-bezier(.2,.7,.3,1) both;}
+/* .tela e .stagger são só layout agora. A entrada em cascata que morava
+   aqui virou a animação de troca de tela (App.cascata), que roda uma vez
+   por troca em vez de toda vez que a tela é redesenhada no lugar.
+   O @keyframes sobe continua aqui porque os blocos que abrem (receita,
+   exercício) ainda usam ele. */
+.tela{padding:0 18px 24px;}
 @keyframes sobe{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
-
-.stagger > *{animation:sobe .4s cubic-bezier(.2,.7,.3,1) both;}
-.stagger > *:nth-child(1){animation-delay:.02s}
-.stagger > *:nth-child(2){animation-delay:.06s}
-.stagger > *:nth-child(3){animation-delay:.10s}
-.stagger > *:nth-child(4){animation-delay:.14s}
-.stagger > *:nth-child(5){animation-delay:.18s}
-.stagger > *:nth-child(6){animation-delay:.22s}
-.stagger > *:nth-child(7){animation-delay:.26s}
-.stagger > *:nth-child(8){animation-delay:.30s}
 
 /* ---------- topo ---------- */
 .topo{padding:26px 18px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;}
@@ -596,7 +599,141 @@ a{color:inherit;text-decoration:none;}
 .login-footer a{color:#8CA79B;font-size:13px;font-weight:700;text-decoration:none;}
 .login-footer a:active{opacity:.7;}
 
-/* círculo girando da tela "Recebendo suas respostas..." */
+/* ---------- transições entre telas ----------
+   Toda troca de tela anima a entrada da nova. O lado vem de ORDEM_TELAS
+   em js/app.js: avançou no fluxo, entra pela direita; voltou, pela
+   esquerda. Tela fora do fluxo (as abas de baixo) faz só um cruzamento.
+   Só o #app é animado — nav, modal, toast e o brilho do topo ficam de
+   fora dele, então nada position:fixed quebra durante a animação. */
+/* Cada pedaço da tela nova entra por conta própria, um atrás do outro:
+   é a cascata que faz parecer que a página virou. Deslizar o bloco
+   inteiro daria sensação de tela empurrada, não de conteúdo novo.
+   --lado (no #app) é a direção: positivo entra pela direita, negativo
+   pela esquerda, zero sobe de baixo (as abas). --i (em cada elemento) é
+   a vez dele na fila. Os dois são escritos por App.cascata(). */
+.entra-el{
+  animation:elementoEntra 420ms cubic-bezier(.2,.7,.3,1) both;
+  animation-delay:calc(var(--i,0) * 45ms);
+}
+@keyframes elementoEntra{
+  from{opacity:0;transform:translate(var(--lado,0px),var(--sobe,12px));}
+  to  {opacity:1;transform:none;}
+}
+
+/* o título grande vem letra por letra, no lugar de entrar como bloco.
+   --atraso põe a primeira letra na mesma batida da cascata. */
+.letreando .letra{
+  display:inline-block;white-space:pre;
+  animation:letraSurge 380ms cubic-bezier(.2,.7,.3,1) both;
+  animation-delay:calc(var(--atraso,40ms) + var(--l,0) * 26ms);
+}
+@keyframes letraSurge{
+  from{opacity:0;transform:translateY(.26em);}
+  to  {opacity:1;transform:none;}
+}
+
+/* a capa da abertura: cópia parada do último quadro, some por cima da
+   tela seguinte (que já está montada embaixo) */
+/* Duas camadas de propósito: só o FUNDO preto desbota. A logo que está
+   voando fica por cima dele, sempre opaca, senão ela sumiria no meio do
+   caminho e reapareceria de repente no destino.
+   Animação e não transition: a capa nasce e some no mesmo quadro, e
+   transition em elemento recém-inserido não tem estado anterior pra
+   interpolar — pularia direto pro opacity:0. */
+.capa-abertura{position:fixed;inset:0;z-index:60;}
+.capa-fundo{position:absolute;inset:0;background:#000;}
+.capa-abertura.saindo .capa-fundo{animation:capaSai 620ms ease both;}
+@keyframes capaSai{0%,14%{opacity:1;}100%{opacity:0;}}
+/* a logo da capa desliza e encolhe até cair em cima da logo da tela de
+   baixo; --dx/--dy/--esc são medidos em App.trocarDaAbertura() */
+.capa-abertura.juntando .abertura-logo{
+  animation:marcaEncaixa 620ms cubic-bezier(.4,0,.2,1) both;
+}
+@keyframes marcaEncaixa{
+  from{transform:translate(0,0) scale(1);}
+  to  {transform:translate(var(--dx,0),var(--dy,0)) scale(var(--esc,1));}
+}
+
+/* o resto da tela de baixo sobe enquanto a capa some. A logo fica de
+   fora: ela só acende no fim, quando a da capa já encaixou nela — senão
+   apareceriam duas logos ao mesmo tempo. */
+.tela-login.entrando .login-content > *:not(.login-logo):not(.letreando){
+  animation:conteudoEntra 560ms cubic-bezier(.2,.7,.3,1) both;
+  animation-delay:calc(240ms + var(--i,0) * 60ms);
+}
+.tela-login.entrando .login-footer{animation:conteudoEntra 560ms 400ms ease both;}
+/* 600ms e não 620: aos 600 a logo que voa já está a menos de 1px do
+   destino, então as duas coincidem e a troca não aparece. Acender junto
+   com o pouso arriscaria um quadro sem logo nenhuma. */
+.tela-login.entrando .login-logo{animation:marcaChega 1ms 600ms both;}
+@keyframes conteudoEntra{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+@keyframes marcaChega{from{opacity:0;}to{opacity:1;}}
+
+@media (prefers-reduced-motion: reduce){
+  .entra-el,.letreando .letra,
+  .capa-abertura.juntando .abertura-logo,
+  .tela-login.entrando .login-content > *,
+  .tela-login.entrando .login-footer{animation:none;}
+  .capa-abertura.saindo{animation-duration:1ms;}
+}
+
+/* ---------- abertura do app ----------
+   Usa o arquivo da logo (logo-focusfit.png). A mira é o "O" de FOCUS e
+   fica em 33,9% da largura / 30% da altura da imagem: esse ponto é o
+   pivô de tudo (--cx/--cy).
+
+   A logo inteira está na tela desde o primeiro quadro, escondida atrás
+   de um recorte circular em cima da mira. O recorte fica na PRÓPRIA
+   imagem, no mesmo sistema de coordenadas da escala — então o raio
+   acompanha a mira sozinho, sem desencontrar dela no meio do caminho.
+
+   O raio de 23px não é solto: medido no arquivo, as pontas da mira vão
+   até 111px do centro e a letra mais próxima (o C) começa em 123px —
+   numa largura de 280px isso vira 21,9px e 24,3px. 23px cabe no meio,
+   cobrindo a mira inteira sem encostar no C nem no F. Mexeu na largura
+   da logo ou trocou o arquivo? Refaça essa conta. */
+/* a abertura é preta e só: nada de foto nem de degradê por cima */
+.tela-abertura{background:#000;}
+.tela-abertura::before{display:none;}
+
+.abertura-logo{--cx:33.9%;--cy:30%;--dur:2s;width:280px;}
+.abertura-logo img{width:100%;display:block;}
+
+/* wrapper: só o passeio que leva a mira até o meio da tela e volta */
+.abertura-logo.tocar{animation:aberturaAnda var(--dur) cubic-bezier(.45,.05,.2,1) both;}
+@keyframes aberturaAnda{
+  0%      {opacity:0;transform:translate(16.1%,20%);}
+  10%,26% {opacity:1;transform:translate(16.1%,20%);}
+  100%    {opacity:1;transform:translate(0,0);}
+}
+
+/* O rastro de luz verde do arquivo passa dentro do recorte: medido na
+   imagem, ele fica entre 81px e 111px do centro da mira e só abaixo
+   dela, então um recorte menor cortaria a ponta de baixo da mira.
+   Em vez disso, enquanto a mira está ampliada a imagem passa por um
+   filtro: tira a cor, escurece, estoura o contraste e devolve o brilho.
+   O rastro tem luminância ~164 e a mira ~251, então essa conta joga o
+   rastro pro preto (some no fundo escuro) e mantém a mira branca.
+   A cor volta no mesmo quadro em que FOCUS e FIT aparecem. Trocou o
+   arquivo da logo? Confira essas duas luminâncias antes. */
+/* imagem: escala e recorte na mesma curva e nas mesmas coordenadas */
+.abertura-logo.tocar img{
+  transform-origin:var(--cx) var(--cy);
+  animation:aberturaMira var(--dur) cubic-bezier(.45,.05,.2,1) both;
+}
+@keyframes aberturaMira{
+  /* mira grande e parada, só ela à vista */
+  0%,26% {transform:scale(6);clip-path:circle(23px at var(--cx) var(--cy));
+          filter:grayscale(1) brightness(.55) contrast(4) brightness(1.5);}
+  /* encolhe até o tamanho final com o recorte colado nela */
+  74%    {clip-path:circle(23px at var(--cx) var(--cy));
+          filter:grayscale(1) brightness(.55) contrast(4) brightness(1.5);}
+  /* o círculo abre: a cor volta junto com FOCUS e FIT */
+  100%   {transform:scale(1);clip-path:circle(260px at var(--cx) var(--cy));
+          filter:grayscale(0) brightness(1) contrast(1) brightness(1);}
+}
+
+/* círculo girando das telas de carregamento */
 .girando{
   width:62px;height:62px;border-radius:50%;
   border:4px solid rgba(63,190,124,.18);border-top-color:#3FBE7C;
@@ -654,14 +791,23 @@ a{color:inherit;text-decoration:none;}
 }
 .rev-input:focus{border-color:#3FBE7C;}
 
-.login-logo{display:inline-flex;flex-direction:column;align-items:center;margin-bottom:54px;}
-.login-wordmark{
-  display:flex;align-items:center;
-  font-family:'Arial Black','Bricolage Grotesque','Manrope',sans-serif;
-  font-weight:900;font-size:28px;color:#fff;letter-spacing:-.5px;line-height:1;
+/* conteúdo que abre dentro dos blocos da tela "Seu plano está pronto" */
+.plano-corpo{padding:2px 16px 14px;}
+.plano-item{
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  padding:9px 0;border-bottom:1px solid rgba(63,190,124,.14);
 }
-.login-o{display:inline-flex;align-items:center;justify-content:center;margin:0 1px;filter:drop-shadow(0 0 8px rgba(63,190,124,.45));}
-.login-fit{align-self:center;margin-top:3px;font-weight:800;font-size:12px;color:#3FBE7C;letter-spacing:.3em;}
+.plano-item:last-of-type{border-bottom:none;}
+.plano-item-nome{font-size:13.5px;font-weight:600;color:#c3d6cb;}
+.plano-item-nome small{color:#7E9389;font-weight:600;}
+.plano-item-val{font-size:14px;font-weight:800;color:#fff;white-space:nowrap;text-align:right;}
+.plano-item-val small{font-size:11.5px;font-weight:600;color:#7E9389;}
+.plano-item-val.plano-folga{color:#7E9389;font-weight:700;}
+.plano-nota{font-size:12.5px;color:#8CA79B;line-height:1.6;margin-top:12px;font-weight:500;}
+
+/* a marca vem do arquivo (logo-focusfit.png), não desenhada em CSS:
+   é a mesma imagem da abertura e do giro das telas de carregamento */
+.login-logo{display:block;width:170px;margin:0 auto 46px;}
 
 .login-h1{width:100%;text-align:center;font-family:'Bricolage Grotesque','Manrope',sans-serif;font-size:33px;font-weight:800;color:#fff;letter-spacing:-.02em;text-shadow:0 2px 20px rgba(0,0,0,.6);}
 .login-sub{width:100%;text-align:center;font-size:14.5px;color:#c3d6cb;margin:12px 0 32px;line-height:1.6;font-weight:500;text-shadow:0 1px 12px rgba(0,0,0,.6);}
@@ -885,3 +1031,244 @@ a{color:inherit;text-decoration:none;}
   transition:transform .22s cubic-bezier(.2,.7,.3,1);
 }
 .switch.on i{transform:translateX(21px);}
+
+/* =========================================================
+   TEMA ESCURO — ajustes de componente
+   Os tokens acima já viram o app inteiro. O que sobra aqui é o que muda
+   de FORMA, não só de cor, nas telas de referência: pílulas no lugar de
+   retângulos, contorno verde no lugar de sombra, círculos nos ícones.
+   Tudo preso a [data-tema="escuro"] pra não mexer no tema claro.
+   ========================================================= */
+
+/* o cartão se define pelo contorno; um véu verde bem fraco no topo dá
+   o volume que a sombra dava no claro */
+[data-tema="escuro"] .card,
+[data-tema="escuro"] .stat,
+[data-tema="escuro"] .streak-box,
+[data-tema="escuro"] .ref,
+[data-tema="escuro"] .dia-chip{
+  background:linear-gradient(180deg,rgba(63,190,124,.05),rgba(63,190,124,0) 62%),var(--branco);
+}
+
+/* o destaque virou contorno aceso, não bloco âmbar: nas telas de
+   referência é sempre o contorno que marca "este aqui" */
+[data-tema="escuro"] .streak-box.destaque{
+  background:linear-gradient(180deg,rgba(63,190,124,.10),rgba(63,190,124,0) 70%),var(--branco);
+  border-color:#3FBE7C;color:var(--tinta);
+  box-shadow:0 0 24px rgba(63,190,124,.16);
+}
+[data-tema="escuro"] .streak-box.destaque .l{color:var(--cinza);}
+
+/* botões viram pílula, com brilho verde no principal e contorno nos outros */
+[data-tema="escuro"] .btn{
+  border-radius:999px;padding:18px;
+  background:linear-gradient(90deg,#0E8A4A,#3FBE7C 52%,#0E8A4A);
+  box-shadow:0 14px 30px rgba(63,190,124,.30),inset 0 1px 0 rgba(255,255,255,.22);
+}
+[data-tema="escuro"] .btn.sec{
+  background:transparent;border:1.5px solid var(--verde-borda);
+  color:var(--tinta);box-shadow:none;
+}
+[data-tema="escuro"] .btn.perigo{
+  background:transparent;border:1.5px solid rgba(255,122,107,.42);
+  color:var(--vermelho);box-shadow:none;
+}
+[data-tema="escuro"] .btn-mini{border-radius:50%;width:38px;height:38px;}
+
+/* seletor de período: pílula vazada com o lado ativo preenchido */
+[data-tema="escuro"] .toggle{
+  background:transparent;border:1.5px solid var(--verde-borda);
+  border-radius:999px;padding:5px;
+}
+[data-tema="escuro"] .toggle button{border-radius:999px;}
+[data-tema="escuro"] .toggle button.on{
+  background:linear-gradient(90deg,#0E8A4A,#3FBE7C);color:#fff;
+  box-shadow:0 6px 18px rgba(63,190,124,.26);
+}
+
+/* ícone das metas e das refeições: círculo, como nas telas */
+[data-tema="escuro"] .meta-ic{width:44px;height:44px;border-radius:50%;}
+[data-tema="escuro"] .ref-ic{border-radius:50%;}
+
+/* marcar alimento: círculo cheio de verde */
+[data-tema="escuro"] .check{width:26px;height:26px;border-radius:50%;border-width:2px;}
+[data-tema="escuro"] .alim.feito .check{box-shadow:0 0 14px rgba(63,190,124,.35);}
+
+/* barra de progresso: trilho fundo e preenchimento com brilho */
+[data-tema="escuro"] .barra{background:#16241E;}
+[data-tema="escuro"] .barra i{box-shadow:0 0 12px rgba(63,190,124,.40);}
+[data-tema="escuro"] .barra.azul i{box-shadow:0 0 12px rgba(59,130,196,.40);}
+[data-tema="escuro"] .barra.roxo i{box-shadow:0 0 12px rgba(124,107,196,.40);}
+
+/* dia selecionado e item aceso da navegação ganham o mesmo brilho */
+[data-tema="escuro"] .dia-chip.ativo{
+  background:linear-gradient(135deg,#0E8A4A,#3FBE7C);
+  box-shadow:0 6px 20px rgba(63,190,124,.30);
+}
+[data-tema="escuro"] .nav button.on{color:var(--verde-esc);}
+[data-tema="escuro"] .nav button.on .ic{filter:drop-shadow(0 0 10px rgba(63,190,124,.55));}
+
+/* etiqueta clara dentro do cartão de nível continua legível no escuro */
+[data-tema="escuro"] .tag.claro{background:rgba(255,255,255,.16);color:#fff;}
+
+/* ---------- boas-vindas (topo da tela inicial) ----------
+   Contorno verde aceso pra se separar dos outros cartões sem virar
+   outra cor: é a única coisa na tela que a pessoa precisa ler agora. */
+.bv-card{position:relative;border-color:var(--verde-borda);}
+[data-tema="escuro"] .bv-card{
+  background:linear-gradient(180deg,rgba(63,190,124,.12),rgba(63,190,124,.02) 70%),var(--branco);
+  border-color:#3FBE7C;box-shadow:0 0 30px rgba(63,190,124,.14);
+}
+.bv-x{
+  position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;color:var(--cinza);
+}
+.bv-x:active{background:var(--linha);}
+.bv-tt{font-size:21px;padding-right:34px;margin-bottom:10px;}
+.bv-txt{font-size:13.5px;line-height:1.65;color:var(--tinta-2);font-weight:500;margin-bottom:12px;}
+.bv-txt b{color:var(--tinta);font-weight:800;}
+.bv-btn{text-align:center;margin-top:4px;}
+.bv-ok{
+  display:block;width:100%;margin-top:12px;padding:6px;
+  font-size:13px;font-weight:800;color:var(--cinza);
+}
+
+/* ---------- linha de lista clicável (ajuda e suporte) ---------- */
+.lista-link{width:100%;text-align:left;gap:13px;}
+.lista-ic{
+  width:38px;height:38px;border-radius:50%;flex-shrink:0;
+  background:var(--verde-tint);display:flex;align-items:center;justify-content:center;font-size:17px;
+}
+.lista-t{font-size:14px;font-weight:800;color:var(--tinta);}
+.lista-s{font-size:11.5px;color:var(--cinza);font-weight:600;margin-top:2px;}
+.lista-seta{margin-left:auto;color:var(--cinza-c);font-size:20px;font-weight:700;}
+.lista-link:active{opacity:.6;}
+
+/* título de cartão: nas telas de referência ele é um título de verdade,
+   branco e grande, não a etiqueta maiúscula miúda do tema claro */
+[data-tema="escuro"] .card-tt{
+  font-family:'Bricolage Grotesque','Manrope',sans-serif;
+  font-size:17px;font-weight:800;letter-spacing:-.01em;
+  text-transform:none;color:var(--tinta);gap:10px;margin-bottom:16px;
+}
+[data-tema="escuro"] .card-tt .n{font-size:12.5px;font-weight:700;color:var(--cinza);}
+
+/* ---------- "como foi o treino?" ---------- */
+.esforco-fila{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+.esforco-op{
+  display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;
+  column-gap:14px;align-items:center;text-align:left;
+  padding:14px 16px;border-radius:var(--r);
+  border:1.5px solid var(--linha);background:var(--branco);
+  transition:border-color .14s,background .14s,transform .12s;
+}
+.esforco-op:active{transform:scale(.99);border-color:var(--verde-claro);background:var(--verde-tint);}
+.esforco-op .e{grid-row:1 / span 2;font-size:26px;}
+.esforco-op .t{font-size:15px;font-weight:800;color:var(--tinta);}
+.esforco-op .s{font-size:12.5px;color:var(--cinza);font-weight:600;}
+
+/* a leitura do histórico, na aba de Treinos */
+.esforco-lida{display:flex;align-items:flex-start;gap:12px;}
+.el-ic{font-size:20px;line-height:1.3;flex-shrink:0;}
+.el-txt{font-size:13.5px;line-height:1.6;font-weight:600;color:var(--tinta-2);margin:0;}
+.esforco-lida.pesado{border-color:var(--ambar-borda);background:var(--ambar-tint2);}
+.esforco-lida.leve{border-color:var(--verde-borda);}
+
+/* ---------- sua semana (7 bolinhas) ---------- */
+.sem-fila{display:flex;gap:7px;margin-bottom:14px;}
+.sem-dia{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.sem-dia .b{
+  width:100%;aspect-ratio:1;max-width:40px;border-radius:50%;
+  border:1.5px solid var(--linha);background:var(--tint-neutro);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:900;color:transparent;
+  transition:all .25s cubic-bezier(.2,.7,.3,1);
+}
+.sem-dia .d{font-size:10.5px;font-weight:800;color:var(--cinza-c);letter-spacing:.04em;}
+.sem-dia.on .b{
+  background:linear-gradient(135deg,var(--verde),var(--verde-claro));
+  border-color:transparent;color:#fff;
+}
+/* fora da rotina é escolha, não falha: azul, não vazio */
+.sem-dia.fora .b{background:var(--azul);border-color:transparent;color:#fff;}
+.sem-dia.hoje .d{color:var(--verde-esc);}
+.sem-dia.hoje .b{border-color:var(--verde-claro);}
+.sem-dia.futuro .b{opacity:.4;}
+.sem-txt{font-size:12.5px;line-height:1.6;color:var(--cinza);font-weight:600;margin-bottom:14px;}
+.sem-nums{display:flex;gap:10px;padding-top:14px;border-top:1px solid var(--linha);}
+.sem-nums div{flex:1;text-align:center;}
+.sem-nums b{
+  display:block;font-family:'Bricolage Grotesque',sans-serif;
+  font-size:21px;font-weight:800;letter-spacing:-.02em;line-height:1;
+}
+.sem-nums b small{font-size:12px;color:var(--cinza-c);}
+.sem-nums span{display:block;font-size:10.5px;color:var(--cinza);font-weight:700;margin-top:5px;}
+
+/* ---------- dia fora da rotina ---------- */
+.fora-btn{display:flex;align-items:center;gap:13px;width:100%;text-align:left;}
+.fb-ic{font-size:22px;flex-shrink:0;}
+.fb-t{font-size:14.5px;font-weight:800;color:var(--tinta);}
+.fb-s{font-size:12px;color:var(--cinza);font-weight:600;margin-top:2px;}
+.fora-btn:active{opacity:.7;}
+.fora-ativo{border-color:var(--azul-borda);background:var(--azul-tint2);}
+[data-tema="escuro"] .fora-ativo{background:var(--azul-tint);border-color:var(--azul-borda);}
+.fora-txt{font-size:13.5px;line-height:1.6;color:var(--tinta-2);font-weight:600;margin-bottom:14px;}
+.fora-dicas{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+.fora-dicas div{
+  font-size:12.5px;line-height:1.55;color:var(--tinta-2);font-weight:500;
+  padding-left:13px;border-left:2px solid var(--azul);
+}
+.fora-dicas b{color:var(--tinta);font-weight:800;}
+
+/* ---------- resumo de domingo ---------- */
+.resumo-chamada{display:flex;align-items:center;gap:13px;width:100%;text-align:left;border-color:var(--verde-borda);}
+.rc-ic{font-size:22px;flex-shrink:0;}
+.rc-t{font-size:14.5px;font-weight:800;color:var(--tinta);}
+.rc-s{font-size:12px;color:var(--cinza);font-weight:600;margin-top:2px;}
+.res-abre{text-align:center;padding:26px 18px;}
+.res-n{font-size:56px;line-height:1;}
+.res-n small{font-size:24px;color:var(--cinza-c);}
+.res-l{font-size:13.5px;color:var(--cinza);font-weight:700;margin-top:8px;}
+.res-peso{font-size:13px;color:var(--tinta-2);font-weight:700;margin-top:16px;padding-top:16px;border-top:1px solid var(--linha);}
+.res-peso.bom{color:var(--verde-esc);}
+.res-linha{padding:14px 0;border-bottom:1px solid var(--linha);}
+.res-linha:last-child{border-bottom:none;}
+.res-foco{border-color:var(--verde-borda);}
+.rf-t{font-size:15px;font-weight:800;color:var(--verde-esc);margin-bottom:8px;}
+.rf-txt{font-size:13.5px;line-height:1.65;color:var(--tinta-2);font-weight:500;margin:0;}
+
+/* ---------- fotos de progresso ---------- */
+.foto-txt{font-size:13px;line-height:1.6;color:var(--tinta-2);font-weight:500;margin-bottom:16px;}
+.foto-label{text-align:center;cursor:pointer;}
+.foto-aviso{
+  font-size:11.5px;line-height:1.6;color:var(--cinza);font-weight:600;
+  margin-top:14px;padding-top:14px;border-top:1px solid var(--linha);
+}
+.foto-par{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.foto-par figure{margin:0;}
+.foto-par img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--r-sm);display:block;}
+.foto-par figcaption{font-size:11px;color:var(--cinza);font-weight:700;text-align:center;margin-top:8px;}
+.foto-dif{
+  text-align:center;font-size:14px;font-weight:800;color:var(--verde-esc);
+  margin:-4px 0 4px;
+}
+.foto-grade{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;}
+.foto-item{position:relative;margin:0;}
+.foto-item img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--r-sm);display:block;}
+.foto-item figcaption{font-size:10px;color:var(--cinza);font-weight:700;text-align:center;margin-top:5px;}
+.foto-x{
+  position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;
+  background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);
+}
+
+/* ---------- lembretes ---------- */
+.lembrete-nota{
+  font-size:11.5px;line-height:1.6;color:var(--cinza);font-weight:600;
+  margin-top:14px;padding-top:14px;border-top:1px solid var(--linha);
+}
+.perdidas{display:flex;align-items:center;gap:13px;width:100%;text-align:left;border-color:var(--ambar-borda);}
+[data-tema="escuro"] .perdidas{background:var(--ambar-tint2);}

@@ -86,6 +86,9 @@ const Onb = {
   /* qual linha da tela "Seu perfil" está aberta pra edição ('' = nenhuma) */
   abertoPerfil: '',
 
+  /* qual bloco da tela "Seu plano está pronto" está aberto ('' = nenhum) */
+  abertoPlano: '',
+
   /* e-mail digitado na primeira etapa, guardado pra confirmar o código */
   emailPendente: '',
 
@@ -93,29 +96,17 @@ const Onb = {
      Um caminho só pra entrar e pra criar conta: quem nunca entrou
      tem a conta criada na hora que confirma o código. O que decide
      se ela vê as telas internas é a assinatura, não o cadastro. */
+  /* a logo de verdade, o mesmo arquivo usado na abertura e no giro das
+     telas de carregamento — uma fonte só pra marca no app inteiro */
   logoHTML() {
-    return `
-      <div class="login-logo">
-        <div class="login-wordmark">
-          <span>F</span>
-          <span class="login-o">
-            <svg width="30" height="30" viewBox="0 0 34 34" fill="none">
-              <circle cx="17" cy="17" r="9" stroke="#fff" stroke-width="2.4"/>
-              <path d="M17 1v5M17 28v5M1 17h5M28 17h5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
-              <circle cx="17" cy="17" r="3" fill="#3FBE7C"/>
-            </svg>
-          </span>
-          <span>CUS</span>
-        </div>
-        <div class="login-fit">FIT</div>
-      </div>`;
+    return `<img class="login-logo" src="logo-focusfit.png" alt="Focus Fit">`;
   },
 
   /* link direto pro WhatsApp, sem mensagem pronta — só abre a conversa */
   suporteHTML() {
     return `
       <div class="login-footer">
-        <a href="https://wa.me/5541987975115" target="_blank" rel="noopener">Suporte</a>
+        <a href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">Suporte</a>
       </div>`;
   },
 
@@ -219,18 +210,69 @@ const Onb = {
     App.render();
   },
 
-  /* ---------- tela de carregamento (antes de "Seu perfil") ---------- */
-  recebendo() {
+  /* ---------- abertura ----------
+     A mira (o "O" de FOCUS) entra grande no meio da tela, encolhe até o
+     tamanho normal e o resto da logo aparece em volta dela. O quanto a
+     logo precisa andar pra mira ficar centralizada depende da largura
+     das letras, que muda com a fonte — por isso a medida é feita na
+     hora, em animarAbertura(), e não chutada aqui. */
+  abertura() {
+    return `
+      <div class="tela-login tela-abertura">
+        <div class="login-content">
+          <div class="abertura-logo">
+            <img src="logo-focusfit.png" alt="Focus Fit">
+          </div>
+        </div>
+      </div>`;
+  },
+
+  animarAbertura() {
+    const comecar = () => {
+      const logo = document.querySelector('.abertura-logo');
+      if (logo && !logo.classList.contains('tocar')) logo.classList.add('tocar');
+    };
+    const img = document.querySelector('.abertura-logo img');
+    /* só começa com a imagem carregada: animar um <img> vazio faria a
+       logo aparecer no meio do movimento */
+    if (img && !img.complete) {
+      img.onload = () => requestAnimationFrame(comecar);
+      img.onerror = comecar;
+      setTimeout(comecar, 1200);         // rede lenta: não deixa a tela parada
+    } else {
+      requestAnimationFrame(comecar);
+    }
+  },
+
+  /* ---------- telas de carregamento ----------
+     Mesma tela, só muda o texto: uma antes de "Seu perfil" (enquanto
+     busca as respostas do quiz) e outra antes de "Seu plano está
+     pronto" (enquanto o perfil vira plano). */
+  carregando(titulo, sub) {
     return `
       <div class="tela-login">
         <div class="login-content">
           ${this.logoHTML()}
           <div class="girando"></div>
-          <h1 class="login-h1" style="margin-top:30px">Recebendo suas respostas...</h1>
-          <p class="login-sub" style="margin-bottom:0">Só um instante enquanto montamos o seu perfil.</p>
+          <h1 class="login-h1" style="margin-top:30px">${titulo}</h1>
+          <p class="login-sub" style="margin-bottom:0">${sub}</p>
         </div>
         ${this.suporteHTML()}
       </div>`;
+  },
+
+  recebendo() {
+    return this.carregando(
+      'Recebendo suas respostas...',
+      'Só um instante enquanto montamos o seu perfil.'
+    );
+  },
+
+  criando() {
+    return this.carregando(
+      'Criando seu Plano Personalizado',
+      'Calculando suas metas, montando o cardápio e a sua semana de treinos.'
+    );
   },
 
   /* ---------- "Seu perfil": confere as respostas antes de criar o plano ----------
@@ -384,6 +426,122 @@ const Onb = {
 
     this.erro = '';
     this.finalizar();
+  },
+
+  /* ---------- "Seu plano está pronto" ----------
+     Mostra, em três blocos que abrem ao toque, o que o app acabou de
+     montar com as respostas dela. Tudo aqui é lido do perfil e dos
+     planos que o app já usa nas telas internas: nada é escrito à mão,
+     então o que ela vê aqui é o mesmo que vai encontrar lá dentro. */
+  plano() {
+    const blocos = [
+      { id:'metas',    ic:'alvo',   rot:'Metas',    sub:'Os números do seu dia' },
+      { id:'cardapio', ic:'prato',  rot:'Cardápio', sub:'Como fica a sua semana' },
+      { id:'treino',   ic:'halter', rot:'Treino',   sub:'Sua agenda de treinos' }
+    ];
+    const nome = (Store.db.perfil.nome || '').split(' ')[0];
+
+    return `
+      <div class="tela-login tela-perfil">
+        <div class="login-content">
+          ${this.logoHTML()}
+          <h1 class="login-h1 esq">Seu plano está pronto</h1>
+          <p class="login-sub esq">${nome ? nome + ', montamos' : 'Montamos'} tudo com base no que você respondeu. Toque para ver cada parte.</p>
+
+          ${blocos.map(b => {
+            const aberto = this.abertoPlano === b.id;
+            return `
+            <div class="rev-linha${aberto ? ' aberta' : ''}">
+              <button class="rev-topo" onclick="Onb.abrirBloco('${b.id}')">
+                <span class="rev-ic">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#3FBE7C" stroke-width="1.7"
+                       stroke-linecap="round" stroke-linejoin="round">${PERFIL_ICONES[b.ic]}</svg>
+                </span>
+                <span class="rev-txt">
+                  <span class="rev-rot">${b.sub}</span>
+                  <span class="rev-val">${b.rot}</span>
+                </span>
+                <span class="rev-seta">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#3FBE7C" stroke-width="2.2"
+                       stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+                </span>
+              </button>
+              ${aberto ? `<div class="plano-corpo">${this['bloco_' + b.id]()}</div>` : ''}
+            </div>`;
+          }).join('')}
+
+          <button class="login-btn" style="margin-top:22px" onclick="Onb.comecar()">Começar</button>
+        </div>
+        ${this.suporteHTML()}
+      </div>`;
+  },
+
+  bloco_metas() {
+    const p = Store.db.perfil;
+    const metas = [
+      ['Calorias',     p.meta_kcal + ' kcal', 'por dia'],
+      ['Proteína',     p.meta_prot + ' g',    'por dia'],
+      ['Carboidratos', p.meta_carb + ' g',    'por dia'],
+      ['Água',         (p.meta_agua / 1000).toFixed(1).replace('.', ',') + ' L', 'por dia'],
+      ['Sono',         p.meta_sono + ' h',    'por noite']
+    ];
+    return metas.map(([nome, valor, quando]) => `
+      <div class="plano-item">
+        <span class="plano-item-nome">${nome}</span>
+        <span class="plano-item-val">${valor}<small> ${quando}</small></span>
+      </div>`).join('');
+  },
+
+  bloco_cardapio() {
+    const base = Store.planoBase();
+    const refeicoes = Store.planoAlimentar();
+    const variacoes = base.refeicoes[0] ? base.refeicoes[0].variacoes.length : 0;
+
+    return `
+      ${refeicoes.map(r => {
+        const kcal = r.alimentos.reduce((s, a) => s + (a.opcional ? 0 : a.kcal), 0);
+        return `
+        <div class="plano-item">
+          <span class="plano-item-nome">${r.icone} ${r.nome}<small> ${r.horario}</small></span>
+          <span class="plano-item-val">${kcal} kcal</span>
+        </div>`;
+      }).join('')}
+      <p class="plano-nota">
+        ${variacoes} variações de cada refeição girando pelos dias, para a semana não ficar repetida.
+        Dá para trocar qualquer alimento por outro equivalente dentro do app.
+        ${base.livre ? '<br><br>' + base.livre : ''}
+      </p>`;
+  },
+
+  bloco_treino() {
+    const plano = Store.planoTreino();
+    const dias = Store.diasTreino();
+
+    return `
+      <div class="plano-item">
+        <span class="plano-item-nome">${plano.nome}</span>
+        <span class="plano-item-val">${plano.frequencia}</span>
+      </div>
+      ${dias.map(d => `
+        <div class="plano-item">
+          <span class="plano-item-nome">${d.dia}</span>
+          <span class="plano-item-val ${d.descanso ? 'plano-folga' : ''}">${d.descanso ? 'Descanso' : d.foco}</span>
+        </div>`).join('')}
+      <p class="plano-nota">${plano.desc}</p>`;
+  },
+
+  abrirBloco(id) {
+    this.abertoPlano = (this.abertoPlano === id) ? '' : id;
+    App.render();
+  },
+
+  async comecar() {
+    App.tela = 'inicio';
+    App.render();
+    window.scrollTo(0, 0);
+    const nome = (Store.db.perfil.nome || '').split(' ')[0];
+    /* recebe a pessoa com a comemoração do nível 1 em vez de um toast */
+    setTimeout(() => { if (!App.checarNivel()) App.toast(`Bora começar, ${nome}! 🌿`, true); }, 500);
   },
 
   /* ---------- cadastro em 3 passos ---------- */
@@ -556,14 +714,20 @@ const Onb = {
     /* agora que o perfil existe e foi pra nuvem, as respostas do quiz
        já cumpriram o papel delas e podem sair do banco */
     Backend.limparRespostasQuiz();
-    App.tela = 'inicio';
-    await App.verificarAssinatura();   // pode trocar pra 'assinatura' se ainda não tiver pagamento ativo
+
+    /* carregamento -> plano montado -> app. A comemoração de nível fica
+       pro "Começar" (ver Onb.comecar). */
+    this.abertoPlano = '';
+    App.tela = 'criando';
     App.render();
     window.scrollTo(0, 0);
-    /* recebe a pessoa com a comemoração do nível 1 em vez de um toast (só quando entrou mesmo no app) */
-    if (App.tela === 'inicio') {
-      setTimeout(() => { if (!App.checarNivel()) App.toast(`Plano criado, ${d.nome.split(' ')[0]}! 🌿`, true); }, 500);
-    }
+
+    const liberado = await App.verificarAssinatura();
+    if (!liberado) { App.render(); return; }   // sem pagamento ativo: vai pra tela de assinatura
+
+    await new Promise(ok => setTimeout(ok, 2200));
+    App.tela = 'plano';
+    App.render();
   },
 
   /* ---------- tela de assinatura (bloqueio de acesso sem pagamento ativo) ---------- */

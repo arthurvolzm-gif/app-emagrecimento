@@ -30,8 +30,10 @@ const Store = {
 
   vazio() {
     /* o tema é preferência do aparelho: sobrevive a logout e a "apagar dados" */
-    let tema = 'claro';
-    try { if (localStorage.getItem(CHAVE_TEMA) === 'escuro') tema = 'escuro'; } catch (e) {}
+    /* escuro é o padrão do app: é nele que a marca foi desenhada. O claro
+       continua existindo, mas só pra quem ligar na aba de Perfil. */
+    let tema = 'escuro';
+    try { if (localStorage.getItem(CHAVE_TEMA) === 'claro') tema = 'claro'; } catch (e) {}
     return { perfil: null, dias: {}, pesagens: [], cargas: {}, trocas: {}, tema: tema };
   },
 
@@ -69,7 +71,11 @@ const Store = {
       altura: Number(dados.altura),     // cm
       peso_inicial: Number(dados.peso),
       peso_atual: Number(dados.peso),
-      meta_peso: Number(dados.meta_peso),
+      /* o formulário sempre manda meta_peso, mas o quiz manda meta_kg
+         (quilos a eliminar). Sem essa rede, quem viesse só do quiz
+         ficava com NaN na tela de peso e no perfil. */
+      meta_peso: Number(dados.meta_peso) ||
+                 Math.max(35, Math.round((Number(dados.peso) - (Number(dados.meta_kg) || 0)) * 10) / 10),
       objetivo: dados.objetivo,         // 'emagrecimento' | 'hipertrofia' | 'manutencao'
       local: dados.local,               // 'academia' | 'casa'
       dias_treino: Number(dados.dias_treino) || 5,  // quantos dias por semana a pessoa quer treinar (do quiz)
@@ -90,6 +96,7 @@ const Store = {
     perfil.meta_agua = this.calcMetaAgua(perfil);   // ml
     perfil.meta_sono = 8;                            // horas
     perfil.meta_prot = this.calcMetaProt(perfil);    // g
+    perfil.meta_carb = this.calcMetaCarb(perfil);    // g
 
     this.db.perfil = perfil;
     this.db.pesagens = [{ data: this.hoje(), peso: perfil.peso_inicial }];
@@ -103,6 +110,7 @@ const Store = {
     p.meta_kcal = this.calcMetaKcal(p);
     p.meta_agua = this.calcMetaAgua(p);
     p.meta_prot = this.calcMetaProt(p);
+    p.meta_carb = this.calcMetaCarb(p);
     this.save();
   },
 
@@ -143,6 +151,18 @@ const Store = {
               : p.objetivo === 'hipertrofia'   ? 1.8
               : 1.6;
     return Math.round(p.peso_atual * gkg);
+  },
+
+  /* O que sobra das calorias depois da proteína e da gordura vira
+     carboidrato. A gordura fica em 25% das calorias do dia, que é a
+     faixa usada em dieta comum e evita cair abaixo do mínimo saudável.
+     Proteína e carboidrato têm 4 kcal por grama; gordura, 9.          */
+  calcMetaCarb(p) {
+    const kcal = p.meta_kcal || this.calcMetaKcal(p);
+    const prot = p.meta_prot || this.calcMetaProt(p);
+    const kcalGordura = kcal * 0.25;
+    const kcalCarb = kcal - (prot * 4) - kcalGordura;
+    return Math.max(0, Math.round(kcalCarb / 4));
   },
 
   /* ---------- plano alimentar reescalado para a meta ---------- */
@@ -463,6 +483,40 @@ const Store = {
     return true;
   },
 
+  /* ---------- como foi o treino ----------
+     Guardado por dia, junto com o resto. Serve pra duas coisas: mostrar
+     na aba de Treinos como as últimas sessões foram, e — mais pra frente
+     — ajustar a carga sugerida sozinho, quando houver histórico. */
+  registrarEsforco(nivel) {
+    const d = this.dia();
+    d.esforco = nivel;                        // 'leve' | 'ponto' | 'pesado'
+    this.save();
+  },
+
+  /* as últimas N respostas, da mais recente pra mais antiga */
+  esforcosRecentes(n = 6) {
+    const lista = [];
+    for (let i = 0; i < 90 && lista.length < n; i++) {
+      const d = this.db.dias[this.diasAtras(i)];
+      if (d && d.treino && d.esforco) lista.push(d.esforco);
+    }
+    return lista;
+  },
+
+  /* leitura simples do histórico: só opina quando tem 3 respostas ou mais
+     e quando a maioria aponta pro mesmo lado. Sem isso, dois dias ruins
+     seguidos mandariam a pessoa baixar a carga sem motivo. */
+  lidaDoEsforco() {
+    const l = this.esforcosRecentes(5);
+    if (l.length < 3) return null;
+    const conta = t => l.filter(x => x === t).length;
+    if (conta('pesado') >= Math.ceil(l.length * 0.6))
+      return { tom: 'pesado', texto: 'Seus últimos treinos vieram pesados demais. Segure a carga onde está por uma semana antes de subir.' };
+    if (conta('leve') >= Math.ceil(l.length * 0.6))
+      return { tom: 'leve', texto: 'Os últimos treinos estão leves pra você. Suba a carga no próximo, com cuidado.' };
+    return { tom: 'ponto', texto: 'Seus treinos estão no ponto. Siga subindo aos poucos.' };
+  },
+
   registrarPeso(peso) {
     const hoje = this.hoje();
     /* uma pesagem por dia: remove qualquer registro anterior da mesma data */
@@ -605,9 +659,67 @@ const Store = {
     return atual.n > visto ? atual : null;
   },
 
+  /* ---------- boas-vindas ----------
+     Aparece no topo da tela inicial até a pessoa fechar. Fica no perfil
+     e não no localStorage solto pra viajar junto na sincronização: quem
+     já fechou num aparelho não vê de novo no outro. */
+  boasVindasPendente() {
+    return !!this.db.perfil && !this.db.perfil.boas_vindas_visto;
+  },
+
+  fecharBoasVindas() {
+    if (!this.db.perfil) return;
+    this.db.perfil.boas_vindas_visto = true;
+    this.save();
+  },
+
   marcarNivelVisto(n) {
     this.db.perfil.nivel_visto = n;
     this.save();
+  },
+
+  /* ---------- semana perfeita ----------
+     Substitui a leitura de "dias seguidos" na tela inicial. Sequência que
+     zera castiga quem viajou um fim de semana, e é o motivo mais comum de
+     abandono em app de hábito: a pessoa quebra uma vez, perde o número e
+     não volta. Aqui são sete bolinhas que enchem na semana e reiniciam no
+     domingo. Motiva igual e não pune.
+     A semana começa na segunda (getDay(): 0 = domingo). */
+  semanaPerfeita() {
+    const hoje = new Date();
+    const desdeSegunda = (hoje.getDay() + 6) % 7;
+    const dias = [];
+    for (let i = 0; i < 7; i++) {
+      const data = this.diasAtras(desdeSegunda - i);
+      const futuro = i > desdeSegunda;
+      const d = this.db.dias[data];
+      const pesou = this.db.pesagens.some(x => x.data === data);
+      dias.push({
+        data,
+        futuro,
+        hoje: i === desdeSegunda,
+        fora: !!(d && d.fora_rotina),
+        ativo: !futuro && !!(pesou || (d && (d.alimentos.length > 0 || d.treino || d.agua > 0 || d.sono > 0)))
+      });
+    }
+    const feitos = dias.filter(d => d.ativo || d.fora).length;
+    return { dias, feitos, passados: desdeSegunda + 1 };
+  },
+
+  /* ---------- dia fora da rotina ----------
+     Aniversário, viagem, almoço de domingo. Sem isso a pessoa
+     simplesmente não marca nada, vê o dia vazio e se sente fracassada —
+     e é aí que ela desinstala. Marcado, o dia conta como cumprido na
+     semana perfeita e o app muda de tom em vez de cobrar. */
+  foraDaRotina(data) {
+    return !!this.dia(data).fora_rotina;
+  },
+
+  alternarForaDaRotina() {
+    const d = this.dia();
+    d.fora_rotina = !d.fora_rotina;
+    this.save();
+    return d.fora_rotina;
   },
 
   /* ---------- streak (dias seguidos com atividade) ---------- */
@@ -624,6 +736,62 @@ const Store = {
       break;
     }
     return dias;
+  },
+
+  /* ---------- resumo da semana ----------
+     Alimenta a tela de domingo. Olha os 7 dias que terminam hoje e
+     devolve o que foi batido, o que escapou e um foco pra semana que
+     vem. O foco sai do ponto mais fraco, nunca inventado. */
+  resumoDaSemana() {
+    const p = this.db.perfil;
+    const ms = this.metasSemana();
+    const sp = this.semanaPerfeita();
+    const plano = this.planoTreino();
+    const alvoTreino = Number(String(plano.frequencia).match(/\d+/)?.[0]) || 5;
+
+    const itens = [
+      { chave: 'treino', ic: '🏋️', nome: 'Treinos',   feito: ms.treino, alvo: alvoTreino },
+      { chave: 'dieta',  ic: '🍽️', nome: 'Dias de dieta completa', feito: ms.dieta, alvo: 7 },
+      { chave: 'agua',   ic: '💧', nome: 'Dias na meta de água',   feito: ms.agua,  alvo: 7 },
+      { chave: 'sono',   ic: '😴', nome: 'Dias na meta de sono',   feito: ms.sono,  alvo: 7 }
+    ].map(i => ({ ...i, pct: i.alvo ? Math.min(100, Math.round((i.feito / i.alvo) * 100)) : 0 }));
+
+    const bateu  = itens.filter(i => i.feito >= i.alvo);
+    const escapou = itens.filter(i => i.feito < i.alvo).sort((a, b) => a.pct - b.pct);
+
+    const FOCOS = {
+      treino: 'Marque no calendário os dias de treino da semana que vem, com hora. Dia sem hora marcada é dia que não acontece.',
+      dieta:  'Escolha uma refeição só pra acertar todo dia. Quando ela virar automática, a próxima vem sozinha.',
+      agua:   'Deixe uma garrafa cheia à vista desde cedo. Beber água é menos sobre lembrar e mais sobre estar ao alcance.',
+      sono:   'Adiante o despertar do sono em 20 minutos. Sono é o que segura a fome do dia seguinte.'
+    };
+
+    /* pesagem: só compara se houver duas na janela */
+    const pes = this.db.pesagens.slice().sort((a, b) => a.data < b.data ? -1 : 1);
+    const naSemana = pes.filter(x => x.data >= this.diasAtras(7));
+    const variacao = naSemana.length >= 2
+      ? Math.round((naSemana[naSemana.length - 1].peso - naSemana[0].peso) * 10) / 10
+      : null;
+
+    return {
+      itens, bateu, escapou,
+      diasAtivos: sp.feitos,
+      variacao,
+      foco: escapou.length ? FOCOS[escapou[0].chave] : 'Semana cheia. Segure esse ritmo e suba a carga do treino.',
+      focoNome: escapou.length ? escapou[0].nome : 'Manter o ritmo'
+    };
+  },
+
+  /* domingo é o dia do fechamento — e a tela só aparece uma vez por semana */
+  resumoPendente() {
+    if (new Date().getDay() !== 0) return false;
+    return this.db.perfil && this.db.perfil.resumo_visto !== this.hoje();
+  },
+
+  marcarResumoVisto() {
+    if (!this.db.perfil) return;
+    this.db.perfil.resumo_visto = this.hoje();
+    this.save();
   },
 
   /* ---------- agregados para a página de progresso ---------- */

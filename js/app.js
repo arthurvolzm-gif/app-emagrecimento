@@ -8,6 +8,15 @@
    fluxo real: e-mail → código → assinatura verificada. */
 const PULAR_LOGIN = true;
 
+/* Ordem das telas pra animação de troca saber o lado: quem está mais à
+   frente na lista entra pela direita, quem está atrás entra pela esquerda.
+   Tela que não está aqui (as abas de baixo) faz só um cruzamento.
+   Mexeu no fluxo do onboarding? Mexa aqui junto. */
+const ORDEM_TELAS = [
+  'abertura', 'auth', 'codigo', 'recebendo', 'revisao',
+  'criando', 'plano', 'cadastro', 'assinatura', 'inicio'
+];
+
 const App = {
   tela: 'inicio',
   passo: 1,
@@ -20,10 +29,23 @@ const App = {
   abaCardapio: 'cardapio',
   modoLocal: false,
 
+  /* última tela realmente pintada — a animação de troca compara com ela
+     pra não reanimar quando a mesma tela é redesenhada no lugar */
+  telaPintada: undefined,
+
   /* ---------- inicialização ---------- */
   async iniciar() {
     Store.load();
     this.aplicarTema();
+
+    /* abertura: a mira cresce, encolhe e o resto da logo aparece em volta.
+       O carregamento continua por baixo, então a animação não atrasa a
+       entrada — quando ela acaba, a tela certa já está decidida. */
+    this.tela = 'abertura';
+    this.pintar();
+    this.telaPintada = 'abertura';
+    const abertura = new Promise(ok => setTimeout(ok, 2800));
+
     await Backend.carregarLib();
     const temBackend = Backend.init();
 
@@ -39,7 +61,8 @@ const App = {
       this.modoLocal = true;
       this.aplicarTema();
       this.diaTreino = this.indiceHoje();
-      this.render();
+      await abertura;
+      await this.trocarDaAbertura();
       return;
     }
 
@@ -66,8 +89,10 @@ const App = {
     }
 
     this.aplicarTema();          /* de novo: o tema pode ter vindo da nuvem */
+    Lembretes.agendar();
     this.diaTreino = this.indiceHoje();
-    this.render();
+    await abertura;
+    await this.trocarDaAbertura();
   },
 
   /* ---------- handoff do quiz via link (?quiz=TOKEN) ---------- */
@@ -122,26 +147,186 @@ const App = {
     this.render();
   },
 
-  /* ---------- render ---------- */
+  /* ---------- render ----------
+     render() é a porta: ela decide a animação de entrada e chama pintar(),
+     que é quem realmente monta o HTML. Quem já chamava App.render() antes
+     continua funcionando igual. */
   render() {
+    const de   = this.telaPintada;
+    const para = this.tela;
+    this.pintar();
+    this.telaPintada = this.tela;          /* pintar() pode ter trocado */
+    if (de !== undefined && de !== this.telaPintada) this.animarTroca(de, this.telaPintada);
+  },
+
+  /* ---------- animação de troca de tela ----------
+     A direção sai da ORDEM_TELAS: avançou no fluxo, a tela entra pela
+     direita; voltou, entra pela esquerda. Tela que não está no fluxo
+     (as abas de baixo) faz só um cruzamento, sem lado. */
+  animarTroca(de, para) {
+    const app = document.getElementById('app');
+    if (!app) return;
+    const i = ORDEM_TELAS.indexOf(de), j = ORDEM_TELAS.indexOf(para);
+    this.cascata(app, (i === -1 || j === -1) ? 0 : (j > i ? 28 : -28));
+  },
+
+  /* Põe cada pedaço da tela nova na fila de entrada, um atrás do outro.
+     É a cascata que faz parecer que a página virou de verdade: se só o
+     bloco inteiro deslizasse, a leitura seria de tela empurrada, não de
+     conteúdo novo chegando.
+     --lado diz de que direção cada elemento vem (0 = só sobe, pras abas
+     de baixo), --i diz a vez dele. O índice trava em 9 pra tela comprida
+     não levar uma eternidade pra assentar. */
+  cascata(app, lado) {
+    app.style.setProperty('--lado', lado + 'px');
+    app.style.setProperty('--sobe', lado ? '0px' : '14px');
+    this.elementosDaTela(app).forEach((el, i) => {
+      el.style.setProperty('--i', Math.min(i, 9));
+      el.classList.add('entra-el');
+    });
+    this.letrear(app);
+  },
+
+  /* O título grande da tela aparece letra por letra, no lugar de entrar
+     como bloco. É o detalhe que faz a troca parecer uma virada de página
+     e não um corte seco.
+     Duas condições, pra não estragar nada: o título tem que ser texto
+     puro (um nó de texto só, senão a marcação de dentro se perde) e tem
+     que ser ele mesmo um item da cascata — se estivesse dentro de outro
+     item, as letras subiriam junto com o bloco e ficaria embolado. */
+  letrear(raiz, atraso) {
+    const tt = raiz.querySelector('.login-h1');
+    if (!tt) return;
+    if (tt.childNodes.length !== 1 || tt.firstChild.nodeType !== 3) return;
+
+    const texto = tt.textContent;
+    if (texto.length > 40) return;
+
+    if (atraso === undefined) {
+      if (!tt.classList.contains('entra-el')) return;
+      atraso = Number(tt.style.getPropertyValue('--i') || 0) * 45 + 40;
+    }
+    tt.classList.remove('entra-el');
+    tt.style.setProperty('--atraso', atraso + 'ms');
+    tt.setAttribute('aria-label', texto);          /* leitor de tela lê a frase, não as letras */
+    tt.innerHTML = [...texto].map((c, i) => c === ' '
+      ? ' '
+      : `<span class="letra" style="--l:${i}" aria-hidden="true">${
+          c.replace('&', '&amp;').replace('<', '&lt;')}</span>`).join('');
+    tt.classList.add('letreando');
+  },
+
+  /* Onde estão "os elementos" muda com a tela, então a lista é montada
+     aqui e não com um seletor só. Tela nova com outra estrutura? É este
+     o lugar de ensinar onde olhar. */
+  elementosDaTela(app) {
+    /* telas escuras (login, código, perfil, plano): tudo mora dentro de
+       .login-content, e o rodapé do suporte vem depois */
+    const conteudo = app.querySelector('.login-content');
+    if (conteudo) {
+      const lista = [...conteudo.children];
+      const rodape = app.querySelector('.login-footer');
+      if (rodape) lista.push(rodape);
+      return lista;
+    }
+    /* telas internas: o cabeçalho, e dentro de .tela cada cartão */
+    const lista = [];
+    for (const filho of app.children) {
+      if (filho.classList.contains('tela')) lista.push(...filho.children);
+      else lista.push(filho);
+    }
+    return lista;
+  },
+
+  /* ---------- saída da abertura ----------
+     A abertura não desliza pro lado: ela vira uma capa preta por cima da
+     tela seguinte e some. A capa é uma cópia parada do último quadro da
+     animação (sem a classe .tocar), então não tem salto na troca. */
+  async trocarDaAbertura() {
+    const capa  = document.createElement('div');
+    capa.className = 'capa-abertura';
+    capa.innerHTML = '<div class="capa-fundo"></div>';
+
+    /* A logo que vai voar é a PRÓPRIA da abertura, tirada de dentro do
+       #app e pendurada na capa, não uma cópia: <img> novo precisa
+       decodificar de novo e pisca no quadro da troca.
+       Tirar .tocar é seguro: o último quadro da animação é igual ao
+       estado natural do elemento (escala 1, recorte maior que a imagem,
+       filtros neutros) — conferido, não chutado.
+       Ela fica FORA do fundo preto porque é o fundo que desbota; se ela
+       desbotasse junto, sumiria no meio do caminho e reapareceria de
+       repente no destino. */
+    const voando = document.querySelector('#app .abertura-logo');
+    if (voando) {
+      const r = voando.getBoundingClientRect();
+      voando.classList.remove('tocar');
+      voando.style.position = 'fixed';
+      voando.style.left = r.left + 'px';
+      voando.style.top  = r.top  + 'px';
+      voando.style.margin = '0';
+      capa.appendChild(voando);
+    }
+    document.body.appendChild(capa);
+
+    this.pintar();
+    this.telaPintada = this.tela;
+
+    /* a marca não pisca duas vezes: a logo grande da capa é levada até o
+       lugar exato da logo da tela seguinte (medido na hora, não chutado),
+       e a de baixo só aparece quando a de cima já encaixou nela */
+    const app   = document.getElementById('app');
+    const tela  = document.querySelector('#app .tela-login');
+    const marca = voando;
+    if (tela) {
+      /* o conteúdo do login entra em cascata igual às outras trocas, só
+         que a logo fica de fora: ela vem voando da capa */
+      tela.classList.add('entrando');
+      [...tela.querySelectorAll('.login-content > *')]
+        .filter(el => !el.classList.contains('login-logo'))
+        .forEach((el, i) => el.style.setProperty('--i', i));
+      const tt = tela.querySelector('.login-h1');
+      if (tt) this.letrear(tela, 240 + Number(tt.style.getPropertyValue('--i') || 0) * 60);
+    } else if (app) {
+      this.cascata(app, 0);
+    }
+    if (tela && marca) {
+      const alvo = tela.querySelector('.login-logo');
+      if (alvo) {
+        const a = alvo.getBoundingClientRect(), m = marca.getBoundingClientRect();
+        marca.style.setProperty('--dx',  (a.left + a.width  / 2 - (m.left + m.width  / 2)) + 'px');
+        marca.style.setProperty('--dy',  (a.top  + a.height / 2 - (m.top  + m.height / 2)) + 'px');
+        marca.style.setProperty('--esc', a.width / m.width);
+        capa.classList.add('juntando');
+      }
+    }
+
+    capa.classList.add('saindo');
+    await new Promise(ok => setTimeout(ok, 700));
+    capa.remove();
+  },
+
+  pintar() {
     const app = document.getElementById('app');
     const nav = document.getElementById('nav');
 
     /* telas sem navegação inferior */
+    if (this.tela === 'abertura')   { app.innerHTML = Onb.abertura();   nav.style.display = 'none'; Onb.animarAbertura(); return; }
     if (this.tela === 'auth')       { app.innerHTML = Onb.auth();       nav.style.display = 'none'; return; }
     if (this.tela === 'codigo')     { app.innerHTML = Onb.codigo();     nav.style.display = 'none'; return; }
     if (this.tela === 'recebendo')  { app.innerHTML = Onb.recebendo();  nav.style.display = 'none'; return; }
     if (this.tela === 'revisao')    { app.innerHTML = Onb.revisao();    nav.style.display = 'none'; return; }
+    if (this.tela === 'criando')    { app.innerHTML = Onb.criando();    nav.style.display = 'none'; return; }
+    if (this.tela === 'plano')      { app.innerHTML = Onb.plano();      nav.style.display = 'none'; return; }
     if (this.tela === 'cadastro')   { app.innerHTML = Onb.cadastro();   nav.style.display = 'none'; return; }
     if (this.tela === 'assinatura') { app.innerHTML = Onb.assinatura(); nav.style.display = 'none'; return; }
 
-    if (!Store.temPerfil()) { this.tela = 'cadastro'; return this.render(); }
+    if (!Store.temPerfil()) { this.tela = 'cadastro'; return this.pintar(); }
 
     const fn = Telas[this.tela] || Telas.inicio;
     app.innerHTML = fn.call(Telas);
 
     /* telas internas ocupam a tela inteira, sem a barra de navegação */
-    const internas = ['biblioteca', 'cardapio'];
+    const internas = ['biblioteca', 'cardapio', 'resumo', 'fotos'];
     nav.style.display = internas.includes(this.tela) ? 'none' : 'flex';
     document.querySelectorAll('.nav button').forEach(b => {
       b.classList.toggle('on', b.dataset.tela === this.tela);
@@ -153,6 +338,111 @@ const App = {
     if (tela === 'treinos') this.diaTreino = this.indiceHoje();
     this.render();
     window.scrollTo(0, 0);
+  },
+
+  /* ---------- lembretes de refeição ---------- */
+  async alternarLembretes() {
+    if (Lembretes.ligado() && Lembretes.permitido()) {
+      Lembretes.desligar();
+      this.render();
+      return this.toast('Lembretes desligados.');
+    }
+    const r = await Lembretes.ligar();
+    this.render();
+    if (r === 'ok') {
+      const n = Lembretes.agendar();
+      return this.toast(n ? `Pronto. ${n} ${n === 1 ? 'lembrete' : 'lembretes'} hoje. 🔔`
+                          : 'Pronto. Os lembretes começam amanhã. 🔔', true);
+    }
+    if (r === 'negado') return this.toast('O celular bloqueou as notificações. Libere nas configurações do navegador.');
+    if (r === 'sem-suporte') return this.toast('Este navegador não faz notificações.');
+    this.toast('Lembretes não foram ligados.');
+  },
+
+  /* ---------- fotos de progresso ----------
+     A tela é a única do app que depende de leitura assíncrona: o
+     IndexedDB responde depois do render. Por isso ela pinta o esqueleto
+     e preenche a lista em seguida, em vez de segurar a navegação. */
+  _fotoUrls: {},
+
+  abrirFotos() {
+    this.ir('fotos');
+    this.pintarFotos();
+  },
+
+  async pintarFotos() {
+    const alvo = document.getElementById('foto-lista');
+    if (!alvo) return;
+    if (!Fotos.disponivel()) {
+      alvo.innerHTML = `<div class="card"><div class="rev-vazio">Este navegador não guarda fotos.</div></div>`;
+      return;
+    }
+    try {
+      /* solta as URLs da pintura anterior pra não vazar memória */
+      Object.values(this._fotoUrls).forEach(u => URL.revokeObjectURL(u));
+      this._fotoUrls = {};
+
+      const lista = await Fotos.listar();
+      lista.forEach(f => { this._fotoUrls[f.data] = URL.createObjectURL(f.blob); });
+      alvo.innerHTML = Telas._fotosConteudo(lista, this._fotoUrls);
+    } catch (e) {
+      alvo.innerHTML = `<div class="card"><div class="rev-vazio">Não consegui abrir suas fotos neste aparelho.</div></div>`;
+    }
+  },
+
+  async salvarFoto(input) {
+    const arquivo = input.files && input.files[0];
+    input.value = '';
+    if (!arquivo) return;
+    try {
+      /* aproveita a última pesagem pra dar contexto à foto */
+      const ult = Store.db.pesagens[Store.db.pesagens.length - 1];
+      await Fotos.salvar(arquivo, ult ? ult.peso : null);
+      await this.pintarFotos();
+      this.toast('Foto guardada neste aparelho. 📸', true);
+    } catch (e) {
+      this.toast('Não consegui guardar essa foto.');
+    }
+  },
+
+  async apagarFoto(data) {
+    if (!confirm('Apagar esta foto? Não dá pra desfazer.')) return;
+    try {
+      await Fotos.apagar(data);
+      await this.pintarFotos();
+      this.toast('Foto apagada.');
+    } catch (e) { this.toast('Não consegui apagar.'); }
+  },
+
+  /* ---------- dia fora da rotina ---------- */
+  marcarForaDaRotina() {
+    const ligou = Store.alternarForaDaRotina();
+    Backend.agendarSync();
+    this.render();
+    this.toast(ligou ? 'Dia marcado. Aproveite sem culpa. 🎉'
+                     : 'Voltou a ser um dia normal.', ligou);
+  },
+
+  /* ---------- resumo de domingo ---------- */
+  fecharResumo() {
+    Store.marcarResumoVisto();
+    Backend.agendarSync();
+    this.ir('inicio');
+  },
+
+  /* ---------- boas-vindas ---------- */
+  fecharBoasVindas() {
+    Store.fecharBoasVindas();
+    Backend.agendarSync();
+    this.render();
+  },
+
+  /* "Como usar o app", na aba de Perfil: reabre a mensagem e leva pra
+     tela inicial, que é onde ela mora */
+  verBoasVindas() {
+    if (Store.db.perfil) { Store.db.perfil.boas_vindas_visto = false; Store.save(); }
+    Backend.agendarSync();
+    this.ir('inicio');
   },
 
   /* ---------- ações do dia ---------- */
@@ -173,6 +463,45 @@ const App = {
     this.render();
     if (this.checarNivel()) return;
     this.toast('Treino concluído! +40 pontos 🏋️', true);
+    /* deixa o toast aparecer sozinho antes de puxar a pergunta */
+    setTimeout(() => this.perguntarEsforco(), 900);
+  },
+
+  /* ---------- como foi o treino ----------
+     Uma pergunta de três opções logo depois de marcar o treino. É o único
+     jeito barato de saber se a carga está certa: a pessoa responde no
+     calor do momento, em um toque, e não precisa anotar nada. */
+  perguntarEsforco() {
+    this.modal(`
+      <h3 class="display">Como foi o treino?</h3>
+      <p class="m-sub">Sua resposta ajusta a carga que o app vai sugerir. Um toque e pronto.</p>
+      <div class="esforco-fila">
+        <button class="esforco-op" onclick="App.salvarEsforco('leve')">
+          <span class="e">🙂</span><span class="t">Leve</span>
+          <span class="s">Daria pra fazer mais</span>
+        </button>
+        <button class="esforco-op" onclick="App.salvarEsforco('ponto')">
+          <span class="e">💪</span><span class="t">No ponto</span>
+          <span class="s">Exigiu, mas deu certo</span>
+        </button>
+        <button class="esforco-op" onclick="App.salvarEsforco('pesado')">
+          <span class="e">🥵</span><span class="t">Pesado</span>
+          <span class="s">Não terminei as séries</span>
+        </button>
+      </div>
+      <button class="btn sec" onclick="App.fecharModal()">Responder depois</button>
+    `);
+  },
+
+  salvarEsforco(nivel) {
+    Store.registrarEsforco(nivel);
+    Backend.agendarSync();
+    this.fecharModal();
+    this.render();
+    const fala = { leve: 'Anotado. Vamos subir a carga.',
+                   ponto: 'Esse é o ponto certo. Continua assim.',
+                   pesado: 'Anotado. Segura a carga por enquanto.' };
+    this.toast(fala[nivel] || 'Anotado.', true);
   },
 
   marcarAlimento(refId, alimId) {

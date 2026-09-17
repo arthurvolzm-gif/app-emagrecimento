@@ -27,7 +27,13 @@ const CONFIG = {
      não se propaga sozinho. */
   CHECKOUT_URL_MENSAL: 'https://app.zuptos.com.br/checkout/0c0f9d90ef9c6938',
   CHECKOUT_URL_TRIMESTRAL: 'https://app.zuptos.com.br/checkout/b8b35e1625ad65b7',
-  CHECKOUT_URL_ANUAL: 'https://app.zuptos.com.br/checkout/4c18c052c5030bd6'
+  CHECKOUT_URL_ANUAL: 'https://app.zuptos.com.br/checkout/4c18c052c5030bd6',
+
+  /* suporte: abre a conversa no WhatsApp direto, sem mensagem pronta.
+     Um lugar só — a tela de login, as boas-vindas e a aba de Perfil
+     leem daqui. Trocou o número? Troca aqui e pronto. */
+  SUPORTE_WHATS: 'https://wa.me/5541987975115',
+  SUPORTE_NUMERO: '41 98797-5115'
 };
 
 /* deixa acessível também como window.CONFIG */
