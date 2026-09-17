@@ -2,11 +2,12 @@
    APP — roteador, ações e inicialização
    ========================================================= */
 
-/* Interruptor do login. Com true, o app abre direto no cadastro, sem
-   pedir e-mail nem checar assinatura — é o modo de teste, pra olhar
-   as telas sem precisar de conta. Troque para false quando quiser o
-   fluxo real: e-mail → código → assinatura verificada. */
-const PULAR_LOGIN = true;
+/* Interruptor do login.
+   false = fluxo real: e-mail → código de 6 números → assinatura conferida.
+   true  = modo de teste, abre direto no cadastro sem pedir nada.
+   ⚠️ NUNCA publicar com true: o app fica liberado pra qualquer um que
+   souber o link, sem passar pela compra. */
+const PULAR_LOGIN = false;
 
 /* Ordem das telas pra animação de troca saber o lado: quem está mais à
    frente na lista entra pela direita, quem está atrás entra pela esquerda.

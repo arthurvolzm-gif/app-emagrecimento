@@ -1,0 +1,103 @@
+<!--
+  E-MAIL DO CÓDIGO DE ACESSO
+
+  Onde colar: painel do Supabase → Authentication → Emails →
+  template "Magic Link" → cole isto no corpo e salve.
+
+  ⚠️ O que NÃO pode sumir daqui: {{ .Token }}. É ele que vira o código de
+  6 números. O template que vem de fábrica usa {{ .ConfirmationURL }}, que
+  é um link — e o app pede o código digitado, não o link. Com o template
+  de fábrica a pessoa recebe algo que não serve e fica travada na porta.
+
+  Assunto sugerido:  Seu código de acesso: {{ .Token }}
+  (o código no assunto deixa a pessoa copiar sem nem abrir o e-mail)
+
+  A logo é carregada do próprio app. Troque o endereço abaixo pelo da sua
+  URL publicada. Se a imagem não carregar, o texto alternativo aparece no
+  lugar e o e-mail continua fazendo sentido: nada de importante depende dela.
+
+  Feito com tabela e estilo em linha de propósito: cliente de e-mail não
+  entende CSS moderno, e metade deles ignora <style> no topo.
+-->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+       style="background:#0A0F0C;margin:0;padding:32px 16px;font-family:Helvetica,Arial,sans-serif;">
+  <tr>
+    <td align="center">
+
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+             style="max-width:480px;background:#0E1512;border:1px solid rgba(63,190,124,0.28);border-radius:20px;">
+
+        <!-- marca -->
+        <tr>
+          <td align="center" style="padding:32px 28px 8px;">
+            <img src="https://SEU-APP.vercel.app/logo-focusfit.png"
+                 alt="Focus Fit" width="150"
+                 style="display:block;width:150px;max-width:60%;height:auto;border:0;">
+          </td>
+        </tr>
+
+        <!-- título -->
+        <tr>
+          <td align="center" style="padding:20px 28px 0;">
+            <h1 style="margin:0;font-size:24px;line-height:1.25;color:#FFFFFF;font-weight:bold;">
+              Seu código de acesso
+            </h1>
+            <p style="margin:12px 0 0;font-size:15px;line-height:1.6;color:#C3D6CB;">
+              Digite estes 6 números no app para entrar.
+            </p>
+          </td>
+        </tr>
+
+        <!-- o código -->
+        <tr>
+          <td align="center" style="padding:24px 28px 8px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0"
+                   style="background:#0A1F14;border:1px solid #3FBE7C;border-radius:14px;">
+              <tr>
+                <td align="center" style="padding:18px 34px;">
+                  <span style="font-family:'Courier New',Courier,monospace;font-size:34px;
+                               font-weight:bold;letter-spacing:8px;color:#FFFFFF;">{{ .Token }}</span>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <tr>
+          <td align="center" style="padding:14px 28px 0;">
+            <p style="margin:0;font-size:13px;line-height:1.6;color:#7E9389;">
+              O código vale por 1 hora. Se expirar, é só pedir outro no app.
+            </p>
+          </td>
+        </tr>
+
+        <!-- aviso de segurança -->
+        <tr>
+          <td style="padding:24px 28px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td style="border-top:1px solid rgba(63,190,124,0.18);font-size:0;line-height:0;">&nbsp;</td></tr>
+            </table>
+            <p style="margin:18px 0 0;font-size:13px;line-height:1.6;color:#7E9389;">
+              Não pediu este código? Pode ignorar este e-mail. Ninguém entra na sua
+              conta sem ele, e nós nunca vamos pedir esse número por mensagem.
+            </p>
+          </td>
+        </tr>
+
+        <!-- rodapé -->
+        <tr>
+          <td align="center" style="padding:26px 28px 30px;">
+            <p style="margin:0;font-size:12px;line-height:1.7;color:#63776D;">
+              Focus Fit · seu plano alimentar, treinos e progresso<br>
+              Precisa de ajuda? Chame no WhatsApp
+              <a href="https://wa.me/5541987975115"
+                 style="color:#4ADE8A;text-decoration:none;font-weight:bold;">41 98797-5115</a>
+            </p>
+          </td>
+        </tr>
+
+      </table>
+
+    </td>
+  </tr>
+</table>
