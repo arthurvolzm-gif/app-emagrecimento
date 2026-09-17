@@ -93,12 +93,12 @@
   /* o contorno verde é o que desenha os cartões, as divisórias de dentro
      e o trilho das barras — os três saem daqui */
   --linha:rgba(63,190,124,.20);
-  --fundo:#060D0A;
-  --branco:#0C1410;
+  --fundo:#000000;         /* preto de verdade, não um preto esverdeado */
+  --branco:#0B120F;
 
-  --nav-bg:rgba(6,13,10,.88);
+  --nav-bg:rgba(0,0,0,.88);
   --tracejado:rgba(63,190,124,.30);
-  --brilho:rgba(47,191,116,.20);
+  --brilho:rgba(47,191,116,.13);
 
   /* no escuro a sombra preta some no fundo preto: o que dá relevo é um
      brilho verde bem discreto por baixo do cartão */
