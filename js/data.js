@@ -9,16 +9,16 @@
    de gênero. `cor1`/`cor2` formam o degradê do cartão de nível,
    que vai esquentando conforme a pessoa evolui.                  */
 const NIVEIS = [
-  { n:1,  nome:'Iniciante',    min:0,     icone:'🌱', cor1:'#0C6838', cor2:'#329863', frase:'Você deu o primeiro passo.' },
-  { n:2,  nome:'Persistente',  min:250,   icone:'🔥', cor1:'#0F6842', cor2:'#3DA16E', frase:'A rotina começou a pegar.' },
-  { n:3,  nome:'Constante',    min:700,   icone:'⚡', cor1:'#0F614A', cor2:'#329B80', frase:'Já não é força de vontade, virou hábito.' },
-  { n:4,  nome:'Consistente',  min:1500,  icone:'🎯', cor1:'#0E5A58', cor2:'#30949D', frase:'Você aparece até nos dias difíceis.' },
-  { n:5,  nome:'Imbatível',    min:2800,  icone:'💪', cor1:'#125069', cor2:'#3282AA', frase:'Um mês inteiro de escolhas certas.' },
-  { n:6,  nome:'Imparável',    min:4800,  icone:'🚀', cor1:'#25427F', cor2:'#496BB3', frase:'Nada mais tira você do trilho.' },
-  { n:7,  nome:'Inabalável',   min:7500,  icone:'🪨', cor1:'#3F3586', cor2:'#6E5BBA', frase:'O corpo mudou e a cabeça também.' },
-  { n:8,  nome:'Referência',   min:11000, icone:'⭐', cor1:'#683179', cor2:'#9A56AD', frase:'As pessoas à sua volta já repararam.' },
-  { n:9,  nome:'Elite',        min:15500, icone:'💎', cor1:'#863154', cor2:'#B35A7D', frase:'Poucos chegam onde você chegou.' },
-  { n:10, nome:'Lenda',        min:21000, icone:'👑', cor1:'#8F5516', cor2:'#C08E32', frase:'Outro corpo, outra pessoa.' }
+  { n:1,  nome:'Iniciante',    min:0,     icone:'🌱', cor1:'#0A5A31', cor2:'#189A5A', frase:'Você deu o primeiro passo.' },
+  { n:2,  nome:'Persistente',  min:250,   icone:'🔥', cor1:'#095634', cor2:'#17955C', frase:'A rotina começou a pegar.' },
+  { n:3,  nome:'Constante',    min:700,   icone:'⚡', cor1:'#084E40', cor2:'#158F78', frase:'Já não é força de vontade, virou hábito.' },
+  { n:4,  nome:'Consistente',  min:1500,  icone:'🎯', cor1:'#084848', cor2:'#148A92', frase:'Você aparece até nos dias difíceis.' },
+  { n:5,  nome:'Imbatível',    min:2800,  icone:'💪', cor1:'#0C4257', cor2:'#1B7BA6', frase:'Um mês inteiro de escolhas certas.' },
+  { n:6,  nome:'Imparável',    min:4800,  icone:'🚀', cor1:'#18356A', cor2:'#3560AB', frase:'Nada mais tira você do trilho.' },
+  { n:7,  nome:'Inabalável',   min:7500,  icone:'🪨', cor1:'#2E2670', cor2:'#5748A8', frase:'O corpo mudou e a cabeça também.' },
+  { n:8,  nome:'Referência',   min:11000, icone:'⭐', cor1:'#55265F', cor2:'#8B3FA2', frase:'As pessoas à sua volta já repararam.' },
+  { n:9,  nome:'Elite',        min:15500, icone:'💎', cor1:'#6B2442', cor2:'#A9446C', frase:'Poucos chegam onde você chegou.' },
+  { n:10, nome:'Lenda',        min:21000, icone:'👑', cor1:'#72400F', cor2:'#B37C1E', frase:'Outro corpo, outra pessoa.' }
 ];
 
 /* pontos por ação concluída */
