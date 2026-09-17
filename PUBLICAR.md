@@ -47,8 +47,8 @@ não serve e fica travada na porta.
 1. **Authentication → Emails → Magic Link**
 2. Assunto: `Seu código de acesso: {{ .Token }}`
 3. Corpo: cole o conteúdo de `supabase/email-codigo.html`
-4. Dentro dele, troque `https://SEU-APP.vercel.app/logo-focusfit.png`
-   pelo endereço real depois do passo 5
+4. A logo dentro dele já aponta pra
+   `app-emagrecimento-three.vercel.app/logo-focusfit.png`
 
 O que não pode sumir do corpo: **`{{ .Token }}`**. É ele que vira o
 código.
@@ -101,8 +101,12 @@ enquanto o app estava sendo montado.
 
 Depois disso todo push publica sozinho.
 
-O `vercel.json` já responde em `/app` e `/teste`, então a URL final vai
-ser algo como `seu-projeto.vercel.app/app`.
+A URL é **https://app-emagrecimento-three.vercel.app** — a raiz já serve
+o app (`index.html`). O `vercel.json` também responde em `/app` e
+`/teste`, que levam pro mesmo lugar.
+
+O deploy substitui o que está lá hoje: a Vercel serve sempre o último
+commit da `main`.
 
 ---
 
@@ -123,7 +127,7 @@ Só depois disso o link vai pro público.
 ## O que dizer pra quem comprou
 
 > Seu acesso está liberado. Abra este link no celular:
-> **[link do app]**
+> **https://app-emagrecimento-three.vercel.app**
 >
 > Entre com o mesmo e-mail que você usou na compra. Vai chegar um código
 > de 6 números nele.
