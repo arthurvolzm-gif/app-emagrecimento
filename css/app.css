@@ -355,11 +355,19 @@ a{color:inherit;text-decoration:none;}
 .btn-ref:active{transform:scale(.97);}
 
 /* ---------- treinos ---------- */
-.plano-cab{background:linear-gradient(135deg,var(--verde-grad),var(--verde));color:#fff;border:none;}
+/* o cartão do plano é o único bloco verde cheio da tela: clareia no meio
+   e fecha escuro embaixo, como nas telas de referência */
+.plano-cab{
+  background:linear-gradient(140deg,#17A15B 0%,#3FD489 44%,#0E7A44 100%);
+  color:#fff;border:none;
+}
 .plano-cab h3{font-size:20px;margin-bottom:6px;}
 .plano-cab p{font-size:13px;opacity:.92;line-height:1.5;font-weight:500;}
 .plano-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px;}
-.tag{background:rgba(255,255,255,.20);border-radius:20px;padding:5px 11px;font-size:11.5px;font-weight:800;}
+.tag{
+  background:rgba(3,12,7,.58);border:1px solid rgba(255,255,255,.42);
+  border-radius:20px;padding:5px 12px;font-size:11.5px;font-weight:800;color:#fff;
+}
 .tag.claro{background:var(--verde-tint);color:var(--verde-esc);}
 
 .dias-fila{display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none;}
@@ -1043,7 +1051,7 @@ a{color:inherit;text-decoration:none;}
 
 /* o cartão se define pelo contorno; um véu verde bem fraco no topo dá
    o volume que a sombra dava no claro */
-[data-tema="escuro"] .card,
+[data-tema="escuro"] .card:not(.plano-cab):not(.cardio-card):not(.livre-card),
 [data-tema="escuro"] .stat,
 [data-tema="escuro"] .streak-box,
 [data-tema="escuro"] .ref,
@@ -1314,3 +1322,13 @@ body.travado{overflow:hidden;}
 }
 .btn-mini.cheio svg{color:#fff;}
 [data-tema="escuro"] .btn-mini.cheio{box-shadow:0 0 18px rgba(63,190,124,.35);}
+
+/* a razão do cardio sai do cartão verde e vira nota embaixo dele */
+.plano-porque{
+  font-size:12.5px;line-height:1.6;color:var(--cinza);font-weight:600;
+  margin:-4px 2px 16px;
+}
+
+/* botão quadrado arredondado do cabeçalho (biblioteca de exercícios) */
+.btn-mini.quadrado{width:42px;height:42px;border-radius:13px;}
+[data-tema="escuro"] .btn-mini.quadrado{border-radius:13px;border-color:var(--verde-borda);}

@@ -571,7 +571,7 @@ const Telas = {
           <h1 class="display">Treinos</h1>
           <div class="topo-sub">${plano.frequencia} · ${Store.db.perfil.local === 'casa' ? 'Em casa' : 'Academia'}</div>
         </div>
-        <button class="btn-mini" style="width:40px;height:40px" onclick="App.ir('biblioteca')">${Ic.livro(19)}</button>
+        <button class="btn-mini quadrado" onclick="App.ir('biblioteca')">${Ic.livro(19)}</button>
       </div>
 
       <div class="tela stagger">
@@ -583,10 +583,11 @@ const Telas = {
             <span class="tag">${plano.frequencia}</span>
             <span class="tag">Cardio: ${(CARDIO_POR_OBJETIVO[Store.db.perfil.objetivo] || CARDIO_POR_OBJETIVO.manutencao).frequencia.toLowerCase()}</span>
           </div>
-          <p style="font-size:12.5px;opacity:.9;margin-top:12px;line-height:1.5;font-weight:600">
-            ${(CARDIO_POR_OBJETIVO[Store.db.perfil.objetivo] || CARDIO_POR_OBJETIVO.manutencao).porque}
-          </p>
         </div>
+
+        <p class="plano-porque">
+          ${(CARDIO_POR_OBJETIVO[Store.db.perfil.objetivo] || CARDIO_POR_OBJETIVO.manutencao).porque}
+        </p>
 
         ${Telas._lidaEsforco()}
 
