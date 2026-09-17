@@ -951,9 +951,44 @@ const App = {
     return ['sexo', 'idade', 'altura', 'peso', 'objetivo'].some(k => Onb.dados[k]);
   },
 
-  async aplicarRespostasDoQuizPorEmail() {
+  /* ---------- acesso de teste (CONFIG.ACESSO_TESTE) ----------
+     Entra sem código e sem checar assinatura, mas o resto do caminho é o
+     mesmo do login de verdade: busca as respostas do quiz pelo e-mail e
+     cai na revisão do perfil ou no cadastro. É o que permite testar o app
+     publicado enquanto o envio de e-mail e o webhook da Zuptos não estão
+     de pé — e, diferente do PULAR_LOGIN, não deixa o app aberto pra
+     qualquer um com o link. */
+  async entrarSemCodigo(email) {
+    this.modoLocal = true;
+    Onb.emailPendente = email;
+    Onb.erro = '';
+
+    if (Store.temPerfil()) {
+      this.tela = 'inicio';
+      this.diaTreino = this.indiceHoje();
+      this.render();
+      return;
+    }
+
+    Store.resetar();
+    this.tela = 'recebendo';
+    this.render();
+
+    const buscando = this.aplicarRespostasDoQuizPorEmail(email);
+    await Promise.all([buscando, new Promise(ok => setTimeout(ok, 1800))]);
+
+    if (!this.dadosDoQuizChegaram()) {
+      this.tela = 'cadastro';
+      this.passo = 1;
+    } else {
+      this.tela = 'revisao';
+    }
+    this.render();
+  },
+
+  async aplicarRespostasDoQuizPorEmail(email) {
     try {
-      const respostas = await Backend.buscarRespostasQuizPorEmail();
+      const respostas = await Backend.buscarRespostasQuizPorEmail(email);
       if (!respostas) return;
       const campos = {};
       for (const k in Onb.dados) {

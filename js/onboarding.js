@@ -171,6 +171,22 @@ const Onb = {
 
     if (!email || !email.includes('@')) { this.erro = 'Digite um e-mail válido.'; App.render(); return; }
 
+    /* acesso fechado: enquanto CONFIG.ACESSO_TESTE tiver e-mails, só eles
+       entram — e entram direto, sem código, porque o envio de e-mail
+       ainda não está de pé. Ver o comentário em config.js. */
+    const lista = (CONFIG.ACESSO_TESTE || []).map(e => String(e).trim().toLowerCase());
+    if (lista.length) {
+      if (!lista.includes(email)) {
+        this.erro = 'O app ainda está em testes e este e-mail não tem acesso.';
+        App.render();
+        return;
+      }
+      this.emailPendente = email;
+      if (btn) { btn.disabled = true; btn.textContent = 'Entrando...'; }
+      await App.entrarSemCodigo(email);
+      return;
+    }
+
     if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
     this.erro = '';
 

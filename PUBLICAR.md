@@ -10,6 +10,21 @@ está com ⬜ e é a sua parte.
 
 ---
 
+## 0. Acesso fechado durante o teste ✅
+
+`CONFIG.ACESSO_TESTE` em `config.js` está com
+`['arthur.volz.m@gmail.com']`. Enquanto essa lista tiver algum e-mail:
+
+- só esses e-mails entram, e entram **direto, sem código** (o envio de
+  e-mail ainda não está de pé);
+- qualquer outro recebe "O app ainda está em testes e este e-mail não tem
+  acesso" e não passa.
+
+**Para abrir ao público, deixe a lista vazia: `ACESSO_TESTE: []`.** Aí
+volta o fluxo normal: e-mail → código → assinatura conferida.
+
+---
+
 ## 1. Modo de teste desligado ✅
 
 `PULAR_LOGIN` em `js/app.js` está em `false`, que é o fluxo real:

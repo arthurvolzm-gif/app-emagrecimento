@@ -237,9 +237,12 @@ const Backend = {
      Só roda com a pessoa já logada: a RLS compara o e-mail da linha
      com o e-mail do token de sessão, então ninguém lê a resposta de
      outro. Pega a mais recente; apagar fica pra limparRespostasQuiz(). */
-  async buscarRespostasQuizPorEmail() {
-    if (!this.ativo()) return null;
-    const email = (this.usuario.email || '').toLowerCase();
+  /* emailForcado existe pro acesso de teste (CONFIG.ACESSO_TESTE), que
+     entra sem sessão: aí não há usuário logado de quem tirar o e-mail. */
+  async buscarRespostasQuizPorEmail(emailForcado) {
+    if (!this.sb) return null;
+    if (!emailForcado && !this.ativo()) return null;
+    const email = String(emailForcado || this.usuario.email || '').trim().toLowerCase();
     if (!email) return null;
 
     const { data, error } = await this.sb

@@ -29,6 +29,23 @@ const CONFIG = {
   CHECKOUT_URL_TRIMESTRAL: 'https://app.zuptos.com.br/checkout/b8b35e1625ad65b7',
   CHECKOUT_URL_ANUAL: 'https://app.zuptos.com.br/checkout/4c18c052c5030bd6',
 
+  /* ---------- acesso fechado (modo de teste) ----------
+     Enquanto esta lista tiver algum e-mail, o app só abre para ELES, e
+     abre direto: sem pedir código e sem checar assinatura. É o que
+     permite testar o app publicado antes de o envio de e-mail e o
+     webhook da Zuptos estarem de pé.
+     Qualquer outro e-mail recebe um aviso e não entra.
+
+     ⚠️ DEIXE A LISTA VAZIA ([]) PARA ABRIR O APP AO PÚBLICO. Com ela
+     vazia volta o fluxo normal: e-mail → código → assinatura conferida.
+
+     Isto é uma tranca de porta, não um cofre: a lista está no código e
+     qualquer um consegue lê-la. Quem protege os dados de verdade são as
+     políticas RLS do Supabase, onde cada pessoa só enxerga a própria
+     linha. A lista serve pra segurar o acesso durante o teste, não pra
+     esconder segredo. */
+  ACESSO_TESTE: ['arthur.volz.m@gmail.com'],
+
   /* suporte: abre a conversa no WhatsApp direto, sem mensagem pronta.
      Um lugar só — a tela de login, as boas-vindas e a aba de Perfil
      leem daqui. Trocou o número? Troca aqui e pronto. */
