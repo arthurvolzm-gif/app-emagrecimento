@@ -987,7 +987,6 @@ const Telas = {
     const p = Store.db.perfil;
     const nv = Store.nivel();
     const email = Backend.emailAtual();
-    const escuro = Store.tema() === 'escuro';
 
     return `
       <div class="tela stagger" style="padding-top:26px">
@@ -1009,19 +1008,6 @@ const Telas = {
           <div class="lista-item"><span class="lista-k">Meta de peso</span><span class="lista-v">${p.meta_peso} kg</span></div>
           <div class="lista-item"><span class="lista-k">Objetivo</span><span class="lista-v">${App.rotuloObjetivo()}</span></div>
           <div class="lista-item"><span class="lista-k">Local de treino</span><span class="lista-v">${p.local === 'casa' ? 'Em casa' : 'Academia'}</span></div>
-        </div>
-
-        <h3 class="secao-tt">Aparência</h3>
-        <div class="card">
-          <div class="tema-linha">
-            <div class="tema-ic">${Ic.lua(20)}</div>
-            <div class="tema-txt">
-              <div class="t">Modo escuro</div>
-              <div class="s">${escuro ? 'Ligado. Melhor pra usar à noite.' : 'Desligado. O app fica claro.'}</div>
-            </div>
-            <button class="switch ${escuro ? 'on' : ''}" onclick="App.alternarTema()"
-                    aria-label="Alternar modo escuro"><i></i></button>
-          </div>
         </div>
 
         <button class="btn sec" onclick="App.abrirEditar()">Editar meus dados</button>

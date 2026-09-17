@@ -36,7 +36,6 @@ const App = {
   async iniciar() {
     Store.load();
     this.pintarNav();
-    this.aplicarTema();
 
     /* abertura: a mira cresce, encolhe e o resto da logo aparece em volta.
        O carregamento continua por baixo, então a animação não atrasa a
@@ -59,8 +58,7 @@ const App = {
     if (PULAR_LOGIN && !Store.temPerfil()) {
       this.tela = 'cadastro';
       this.modoLocal = true;
-      this.aplicarTema();
-      this.diaTreino = this.indiceHoje();
+        this.diaTreino = this.indiceHoje();
       await abertura;
       await this.trocarDaAbertura();
       return;
@@ -88,7 +86,6 @@ const App = {
       this.modoLocal = true;
     }
 
-    this.aplicarTema();          /* de novo: o tema pode ter vindo da nuvem */
     Lembretes.agendar();
     this.diaTreino = this.indiceHoje();
     await abertura;
@@ -129,22 +126,6 @@ const App = {
     this.assinaturaInfo = a;
     this.tela = 'assinatura';
     return false;
-  },
-
-  /* ---------- tema claro / escuro ---------- */
-  aplicarTema() {
-    const t = Store.tema();
-    document.documentElement.dataset.tema = t;
-    try { localStorage.setItem('app_emag_tema', t); } catch (e) {}
-    const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', t === 'escuro' ? '#0B1310' : '#0E7A42');
-  },
-
-  alternarTema() {
-    Store.definirTema(Store.tema() === 'escuro' ? 'claro' : 'escuro');
-    this.aplicarTema();
-    Backend.agendarSync();
-    this.render();
   },
 
   /* a barra de baixo é fixa no HTML; os ícones entram uma vez, aqui, pra
@@ -935,8 +916,7 @@ const App = {
       Store.save();
       this.tela = 'inicio';
       await this.verificarAssinatura();   // pode trocar pra 'assinatura' se não houver pagamento ativo
-      this.aplicarTema();
-      this.diaTreino = this.indiceHoje();
+        this.diaTreino = this.indiceHoje();
       this.render();
       return;
     }

@@ -6,9 +6,6 @@
    ========================================================= */
 
 const CHAVE = 'app_emag_v1';
-/* o tema fica numa chave separada só pra ser lido antes do app carregar,
-   evitando a tela piscar em branco antes de virar escura */
-const CHAVE_TEMA = 'app_emag_tema';
 
 const Store = {
   db: null,
@@ -29,12 +26,7 @@ const Store = {
   },
 
   vazio() {
-    /* o tema é preferência do aparelho: sobrevive a logout e a "apagar dados" */
-    /* escuro é o padrão do app: é nele que a marca foi desenhada. O claro
-       continua existindo, mas só pra quem ligar na aba de Perfil. */
-    let tema = 'escuro';
-    try { if (localStorage.getItem(CHAVE_TEMA) === 'claro') tema = 'claro'; } catch (e) {}
-    return { perfil: null, dias: {}, pesagens: [], cargas: {}, trocas: {}, tema: tema };
+    return { perfil: null, dias: {}, pesagens: [], cargas: {}, trocas: {} };
   },
 
   resetar() {
@@ -115,15 +107,6 @@ const Store = {
   },
 
   temPerfil() { return !!(this.db && this.db.perfil); },
-
-  /* ---------- tema ---------- */
-  tema() { return (this.db && this.db.tema) === 'escuro' ? 'escuro' : 'claro'; },
-
-  definirTema(t) {
-    this.db.tema = t === 'escuro' ? 'escuro' : 'claro';
-    this.save();
-    try { localStorage.setItem(CHAVE_TEMA, this.db.tema); } catch (e) {}
-  },
 
   /* ---------- cálculos de meta ---------- */
   /* Mifflin-St Jeor + fator de atividade + ajuste do objetivo */

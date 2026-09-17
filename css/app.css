@@ -1,109 +1,58 @@
 /* =========================================================
    DESIGN SYSTEM
-   Branco + verde médio. Mobile-first.
+   Preto + verde. Mobile-first, tema único.
    ========================================================= */
 
 :root{
+  /* ======================================================================
+     O app é escuro e só. O tema claro foi removido: a marca foi desenhada
+     no preto, e manter duas paletas significava testar tudo duas vezes.
+     Estes são os valores que antes viviam no bloco do tema escuro.
+     ====================================================================== */
+
+  /* --verde, --verde-claro, --ambar e --azul são FUNDOS com texto branco
+     por cima (botões, chips, checks). Clarear derruba o contraste do
+     texto. O verde usado como TEXTO é o --verde-esc. */
   --verde:#0E7A42;
-  --verde-esc:#0E7A42;
+  --verde-esc:#4ADE8A;
   --verde-claro:#3FBE7C;
-  --verde-tint:#E8F6EE;
-  --verde-tint2:#F1FAF5;
-
-  --ambar:#F0A500;
-  --ambar-tint:#FFF6E0;
-  --vermelho:#E05A4E;
-  --azul:#3B82C4;
-  --azul-tint:#EAF2FA;
-
-  --tinta:#0F1C17;
-  --tinta-2:#3C4B44;
-  --cinza:#6B7C74;
-  --cinza-c:#9CAAA3;
-  --linha:#E6EDE9;
-  --fundo:#FBFCFB;
-  --branco:#FFFFFF;
-
-  /* superfícies e textos derivados (ganham valor próprio no tema escuro) */
-  --verde-grad:#0E7A42;
-  --verde-borda:#DCEDE4;
-  --ambar-tint2:#FFFDF6;
-  --ambar-borda:#F0DFB4;
-  --ambar-tx:#8A6100;
-  --azul-tint2:#F7FBFF;
-  --azul-borda:#D6E6F5;
-  --azul-tx:#2E4658;
-  --azul-tx2:#5B7A93;
-  --roxo-tint:#EEEAFA;
-  --tint-neutro:#F4F6F5;
-  --erro-bg:#FDECEC;
-  --erro-tx:#A03A32;
-  --nav-bg:rgba(255,255,255,.92);
-  --tracejado:#C9D8D0;
-  --brilho:rgba(21,154,85,.10);
-
-  --r-sm:13px;
-  --r:20px;
-  --r-lg:26px;
-  --sombra:0 1px 2px rgba(15,28,23,.04), 0 8px 24px rgba(15,28,23,.06);
-  --sombra-alta:0 12px 40px rgba(15,28,23,.12);
-  --nav-h:76px;
-}
-
-/* =========================================================
-   TEMA ESCURO
-   Liga com data-tema="escuro" no <html>. Só troca os tokens:
-   toda regra abaixo continua igual nos dois temas.
-   ========================================================= */
-[data-tema="escuro"]{
-  /* Afinado nas telas de referência: preto quase puro, cartões com
-     contorno verde visível (é o contorno que separa, não a sombra) e
-     verde mais aceso que no tema claro.
-     --verde, --verde-claro, --ambar e --azul NÃO mudam de propósito:
-     são fundos com texto branco por cima (botões, chips, checks).
-     Clarear aqui derrubaria o contraste do texto branco em cima deles. */
-  --verde-esc:#4ADE8A;      /* verde como TEXTO */
   --verde-tint:#10291D;
   --verde-tint2:#0C1F16;
   --verde-borda:rgba(63,190,124,.34);
   --verde-grad:linear-gradient(135deg,#0E8A4A,#35C87E);
-
+  --ambar:#F0A500;
   --ambar-tint:#2C240D;
   --ambar-tint2:#231C09;
   --ambar-borda:#4A3B14;
   --ambar-tx:#F2C95E;
-
-  --vermelho:#FF7A6B;       /* esse é texto (botão "Sair"), então clareia */
+  --vermelho:#FF7A6B;
+  --azul:#3B82C4;
   --azul-tint:#0E2233;
   --azul-tint2:#0A1A27;
   --azul-borda:#1E3C55;
   --azul-tx:#AECFE9;
   --azul-tx2:#8CB2CE;
-
   --roxo-tint:#1D1836;
   --tint-neutro:#121C17;
   --erro-bg:#33150F;
   --erro-tx:#FF9E91;
-
   --tinta:#FFFFFF;
   --tinta-2:#C3D6CB;
   --cinza:#9DB2A7;
   --cinza-c:#7E9389;
-
-  /* o contorno verde é o que desenha os cartões, as divisórias de dentro
-     e o trilho das barras — os três saem daqui */
   --linha:rgba(63,190,124,.20);
-  --fundo:#000000;         /* preto de verdade, não um preto esverdeado */
+  --fundo:#000000;
   --branco:#0B120F;
-
   --nav-bg:rgba(0,0,0,.88);
   --tracejado:rgba(63,190,124,.30);
   --brilho:rgba(47,191,116,.13);
-
-  /* no escuro a sombra preta some no fundo preto: o que dá relevo é um
-     brilho verde bem discreto por baixo do cartão */
+  --r-sm:13px;
+  --r:20px;
+  --r-lg:26px;
   --sombra:0 0 0 rgba(0,0,0,0);
   --sombra-alta:0 18px 50px rgba(0,0,0,.6), 0 0 40px rgba(63,190,124,.10);
+  --nav-h:76px;
+
   color-scheme:dark;
 }
 
@@ -591,9 +540,8 @@ a{color:inherit;text-decoration:none;}
 .passo.on{background:var(--verde);}
 
 /* ---------- tela de login (e-mail + código) ----------
-   Sempre escura, com a marca — é a porta de entrada antes de a pessoa
-   escolher tema claro/escuro no app, então usa cores fixas em vez das
-   variáveis de tema (que mudam com data-tema="escuro"). */
+   Usa cores fixas em vez dos tokens: ela tem foto de fundo e degradê
+   próprios, então não acompanha as superfícies do resto do app. */
 .tela-login{
   min-height:100dvh;max-width:520px;margin:0 auto;padding:40px 26px 24px;
   position:relative;overflow:hidden;
@@ -1048,83 +996,83 @@ a{color:inherit;text-decoration:none;}
 .switch.on i{transform:translateX(21px);}
 
 /* =========================================================
-   TEMA ESCURO — ajustes de componente
-   Os tokens acima já viram o app inteiro. O que sobra aqui é o que muda
-   de FORMA, não só de cor, nas telas de referência: pílulas no lugar de
-   retângulos, contorno verde no lugar de sombra, círculos nos ícones.
-   Tudo preso a [data-tema="escuro"] pra não mexer no tema claro.
+   FORMA DOS COMPONENTES
+   Os tokens acima dão a cor do app inteiro. O que vive aqui é o que muda
+   de FORMA: pílulas no lugar de retângulos, contorno verde no lugar de
+   sombra, círculos nos ícones. Fica depois das regras base de propósito,
+   pra ganhar delas no empate de especificidade.
    ========================================================= */
 
 /* o cartão se define pelo contorno; um véu verde bem fraco no topo dá
-   o volume que a sombra dava no claro */
-[data-tema="escuro"] .card:not(.plano-cab):not(.cardio-card):not(.livre-card),
-[data-tema="escuro"] .stat,
-[data-tema="escuro"] .streak-box,
-[data-tema="escuro"] .ref,
-[data-tema="escuro"] .dia-chip{
+   o volume, já que sombra preta não aparece sobre preto */
+.card:not(.plano-cab):not(.cardio-card):not(.livre-card),
+.stat,
+.streak-box,
+.ref,
+.dia-chip{
   background:linear-gradient(180deg,rgba(63,190,124,.05),rgba(63,190,124,0) 62%),var(--branco);
 }
 
 /* o destaque virou contorno aceso, não bloco âmbar: nas telas de
    referência é sempre o contorno que marca "este aqui" */
-[data-tema="escuro"] .streak-box.destaque{
+.streak-box.destaque{
   background:linear-gradient(180deg,rgba(63,190,124,.10),rgba(63,190,124,0) 70%),var(--branco);
   border-color:#3FBE7C;color:var(--tinta);
   box-shadow:0 0 24px rgba(63,190,124,.16);
 }
-[data-tema="escuro"] .streak-box.destaque .l{color:var(--cinza);}
+.streak-box.destaque .l{color:var(--cinza);}
 
 /* botões viram pílula, com brilho verde no principal e contorno nos outros */
-[data-tema="escuro"] .btn{
+.btn{
   border-radius:999px;padding:18px;
   background:linear-gradient(90deg,#0E8A4A,#3FBE7C 52%,#0E8A4A);
   box-shadow:0 14px 30px rgba(63,190,124,.30),inset 0 1px 0 rgba(255,255,255,.22);
 }
-[data-tema="escuro"] .btn.sec{
+.btn.sec{
   background:transparent;border:1.5px solid var(--verde-borda);
   color:var(--tinta);box-shadow:none;
 }
-[data-tema="escuro"] .btn.perigo{
+.btn.perigo{
   background:transparent;border:1.5px solid rgba(255,122,107,.42);
   color:var(--vermelho);box-shadow:none;
 }
-[data-tema="escuro"] .btn-mini{border-radius:50%;width:38px;height:38px;}
+.btn-mini{border-radius:50%;width:38px;height:38px;}
 
 /* seletor de período: pílula vazada com o lado ativo preenchido */
-[data-tema="escuro"] .toggle{
+.toggle{
   background:transparent;border:1.5px solid var(--verde-borda);
   border-radius:999px;padding:5px;
 }
-[data-tema="escuro"] .toggle button{border-radius:999px;}
-[data-tema="escuro"] .toggle button.on{
+.toggle button{border-radius:999px;}
+.toggle button.on{
   background:linear-gradient(90deg,#0E8A4A,#3FBE7C);color:#fff;
   box-shadow:0 6px 18px rgba(63,190,124,.26);
 }
 
 /* ícone das metas e das refeições: círculo, como nas telas */
-[data-tema="escuro"] .meta-ic{width:44px;height:44px;border-radius:50%;}
-[data-tema="escuro"] .ref-ic{border-radius:50%;}
+.meta-ic{width:44px;height:44px;border-radius:50%;}
+.ref-ic{border-radius:50%;}
 
 /* marcar alimento: círculo cheio de verde */
-[data-tema="escuro"] .check{width:26px;height:26px;border-radius:50%;border-width:2px;}
-[data-tema="escuro"] .alim.feito .check{box-shadow:0 0 14px rgba(63,190,124,.35);}
+.check{width:26px;height:26px;border-radius:50%;border-width:2px;}
+.alim.feito .check{box-shadow:0 0 14px rgba(63,190,124,.35);}
 
 /* barra de progresso: trilho fundo e preenchimento com brilho */
-[data-tema="escuro"] .barra{background:#16241E;}
-[data-tema="escuro"] .barra i{box-shadow:0 0 12px rgba(63,190,124,.40);}
-[data-tema="escuro"] .barra.azul i{box-shadow:0 0 12px rgba(59,130,196,.40);}
-[data-tema="escuro"] .barra.roxo i{box-shadow:0 0 12px rgba(124,107,196,.40);}
+.barra{background:#16241E;}
+.barra i{box-shadow:0 0 12px rgba(63,190,124,.40);}
+.barra.azul i{box-shadow:0 0 12px rgba(59,130,196,.40);}
+.barra.roxo i{box-shadow:0 0 12px rgba(124,107,196,.40);}
 
 /* dia selecionado e item aceso da navegação ganham o mesmo brilho */
-[data-tema="escuro"] .dia-chip.ativo{
+.dia-chip.ativo{
   background:linear-gradient(135deg,#0E8A4A,#3FBE7C);
   box-shadow:0 6px 20px rgba(63,190,124,.30);
 }
-[data-tema="escuro"] .nav button.on{color:var(--verde-esc);}
-[data-tema="escuro"] .nav button.on .ic{filter:drop-shadow(0 0 10px rgba(63,190,124,.55));}
+.nav button.on{color:var(--verde-esc);}
+.nav button.on .ic{filter:drop-shadow(0 0 10px rgba(63,190,124,.55));}
 
 /* etiqueta clara dentro do cartão de nível continua legível no escuro */
-[data-tema="escuro"] .tag.claro{background:rgba(255,255,255,.16);color:#fff;}
+.tag.claro{background:rgba(255,255,255,.16);color:#fff;}
 
 /* ---------- boas-vindas (camada por cima da tela inicial) ----------
    A tela inicial continua montada e visível atrás, só escurecida: a pessoa
@@ -1148,7 +1096,7 @@ a{color:inherit;text-decoration:none;}
 }
 .bv-bg.saindo .bv-caixa{animation:bvCaixa 280ms ease both reverse;}
 @keyframes bvCaixa{from{opacity:0;transform:translateY(18px) scale(.97);}to{opacity:1;transform:none;}}
-[data-tema="escuro"] .bv-caixa{
+.bv-caixa{
   background:linear-gradient(180deg,rgba(63,190,124,.10),rgba(63,190,124,.01) 60%),var(--branco);
   border-color:#3FBE7C;box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 40px rgba(63,190,124,.14);
 }
@@ -1178,13 +1126,13 @@ body.travado{overflow:hidden;}
 .lista-link:active{opacity:.6;}
 
 /* título de cartão: nas telas de referência ele é um título de verdade,
-   branco e grande, não a etiqueta maiúscula miúda do tema claro */
-[data-tema="escuro"] .card-tt{
+   branco e grande, não uma etiqueta maiúscula miúda */
+.card-tt{
   font-family:'Bricolage Grotesque','Manrope',sans-serif;
   font-size:17px;font-weight:800;letter-spacing:-.01em;
   text-transform:none;color:var(--tinta);gap:10px;margin-bottom:16px;
 }
-[data-tema="escuro"] .card-tt .n{font-size:12.5px;font-weight:700;color:var(--cinza);}
+.card-tt .n{font-size:12.5px;font-weight:700;color:var(--cinza);}
 
 /* ---------- "como foi o treino?" ---------- */
 .esforco-fila{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
@@ -1246,7 +1194,7 @@ body.travado{overflow:hidden;}
 .fb-s{font-size:12px;color:var(--cinza);font-weight:600;margin-top:2px;}
 .fora-btn:active{opacity:.7;}
 .fora-ativo{border-color:var(--azul-borda);background:var(--azul-tint2);}
-[data-tema="escuro"] .fora-ativo{background:var(--azul-tint);border-color:var(--azul-borda);}
+.fora-ativo{background:var(--azul-tint);border-color:var(--azul-borda);}
 .fora-txt{font-size:13.5px;line-height:1.6;color:var(--tinta-2);font-weight:600;margin-bottom:14px;}
 .fora-dicas{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
 .fora-dicas div{
@@ -1303,7 +1251,7 @@ body.travado{overflow:hidden;}
   margin-top:14px;padding-top:14px;border-top:1px solid var(--linha);
 }
 .perdidas{display:flex;align-items:center;gap:13px;width:100%;text-align:left;border-color:var(--ambar-borda);}
-[data-tema="escuro"] .perdidas{background:var(--ambar-tint2);}
+.perdidas{background:var(--ambar-tint2);}
 
 /* ---------- ícones de traço (js/icones.js) ----------
    Herdam a cor de quem os contém, então o mesmo desenho serve aceso na
@@ -1327,7 +1275,7 @@ body.travado{overflow:hidden;}
   border-color:transparent;color:#fff;
 }
 .btn-mini.cheio svg{color:#fff;}
-[data-tema="escuro"] .btn-mini.cheio{box-shadow:0 0 18px rgba(63,190,124,.35);}
+.btn-mini.cheio{box-shadow:0 0 18px rgba(63,190,124,.35);}
 
 /* a razão do cardio sai do cartão verde e vira nota embaixo dele */
 .plano-porque{
@@ -1337,4 +1285,4 @@ body.travado{overflow:hidden;}
 
 /* botão quadrado arredondado do cabeçalho (biblioteca de exercícios) */
 .btn-mini.quadrado{width:42px;height:42px;border-radius:13px;}
-[data-tema="escuro"] .btn-mini.quadrado{border-radius:13px;border-color:var(--verde-borda);}
+.btn-mini.quadrado{border-radius:13px;border-color:var(--verde-borda);}
