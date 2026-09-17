@@ -556,7 +556,8 @@ a{color:inherit;text-decoration:none;}
 }
 .nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px 2px;color:var(--cinza-c);transition:color .16s;}
 .nav button.on{color:var(--verde);}
-.nav .ic{font-size:20px;line-height:1;transition:transform .2s;}
+.nav .ic{display:flex;align-items:center;justify-content:center;height:23px;transition:transform .2s;}
+.nav .ic svg{display:block;}
 .nav button.on .ic{transform:translateY(-2px) scale(1.08);}
 .nav .lbl{font-size:10px;font-weight:800;letter-spacing:-.01em;}
 
@@ -1111,28 +1112,45 @@ a{color:inherit;text-decoration:none;}
 /* etiqueta clara dentro do cartão de nível continua legível no escuro */
 [data-tema="escuro"] .tag.claro{background:rgba(255,255,255,.16);color:#fff;}
 
-/* ---------- boas-vindas (topo da tela inicial) ----------
-   Contorno verde aceso pra se separar dos outros cartões sem virar
-   outra cor: é a única coisa na tela que a pessoa precisa ler agora. */
-.bv-card{position:relative;border-color:var(--verde-borda);}
-[data-tema="escuro"] .bv-card{
-  background:linear-gradient(180deg,rgba(63,190,124,.12),rgba(63,190,124,.02) 70%),var(--branco);
-  border-color:#3FBE7C;box-shadow:0 0 30px rgba(63,190,124,.14);
+/* ---------- boas-vindas (camada por cima da tela inicial) ----------
+   A tela inicial continua montada e visível atrás, só escurecida: a pessoa
+   já vê o app dela enquanto lê, e o "Continuar" libera o que ela está
+   vendo, em vez de revelar algo desconhecido. */
+.bv-bg{
+  position:fixed;inset:0;z-index:220;display:none;
+  align-items:center;justify-content:center;padding:24px;
+  background:rgba(2,8,5,.76);backdrop-filter:blur(3px);
 }
-.bv-x{
-  position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;
+.bv-bg.on{display:flex;animation:bvFundo 260ms ease both;}
+.bv-bg.saindo{animation:bvFundo 300ms ease both reverse;}
+@keyframes bvFundo{from{opacity:0;}to{opacity:1;}}
+
+.bv-caixa{
+  width:100%;max-width:400px;max-height:100%;overflow-y:auto;
+  background:var(--branco);border:1px solid var(--verde-borda);
+  border-radius:var(--r-lg);padding:28px 24px 24px;text-align:center;
+  box-shadow:var(--sombra-alta);
+  animation:bvCaixa 380ms cubic-bezier(.2,.7,.3,1) both;
+}
+.bv-bg.saindo .bv-caixa{animation:bvCaixa 280ms ease both reverse;}
+@keyframes bvCaixa{from{opacity:0;transform:translateY(18px) scale(.97);}to{opacity:1;transform:none;}}
+[data-tema="escuro"] .bv-caixa{
+  background:linear-gradient(180deg,rgba(63,190,124,.10),rgba(63,190,124,.01) 60%),var(--branco);
+  border-color:#3FBE7C;box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 40px rgba(63,190,124,.14);
+}
+
+.bv-marca{
+  width:56px;height:56px;border-radius:50%;margin:0 auto 18px;
   display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:800;color:var(--cinza);
+  background:var(--verde-tint);color:var(--verde-esc);
 }
-.bv-x:active{background:var(--linha);}
-.bv-tt{font-size:21px;padding-right:34px;margin-bottom:10px;}
-.bv-txt{font-size:13.5px;line-height:1.65;color:var(--tinta-2);font-weight:500;margin-bottom:12px;}
+.bv-tt{font-size:24px;margin-bottom:12px;}
+.bv-txt{font-size:14px;line-height:1.65;color:var(--tinta-2);font-weight:500;margin-bottom:14px;text-align:left;}
 .bv-txt b{color:var(--tinta);font-weight:800;}
-.bv-btn{text-align:center;margin-top:4px;}
-.bv-ok{
-  display:block;width:100%;margin-top:12px;padding:6px;
-  font-size:13px;font-weight:800;color:var(--cinza);
-}
+.bv-sup{margin:4px 0 10px;text-align:center;}
+
+/* nada rola atrás enquanto a camada está aberta */
+body.travado{overflow:hidden;}
 
 /* ---------- linha de lista clicável (ajuda e suporte) ---------- */
 .lista-link{width:100%;text-align:left;gap:13px;}
@@ -1272,3 +1290,27 @@ a{color:inherit;text-decoration:none;}
 }
 .perdidas{display:flex;align-items:center;gap:13px;width:100%;text-align:left;border-color:var(--ambar-borda);}
 [data-tema="escuro"] .perdidas{background:var(--ambar-tint2);}
+
+/* ---------- ícones de traço (js/icones.js) ----------
+   Herdam a cor de quem os contém, então o mesmo desenho serve aceso na
+   navegação e apagado numa lista. Precisam ficar alinhados com o texto
+   ao lado, daí o flex nos contêineres. */
+.card-tt svg{flex-shrink:0;color:var(--verde-esc);}
+.meta-ic svg,.lista-ic svg,.fb-ic svg,.rc-ic svg,.tema-ic svg,.el-ic svg{display:block;}
+.meta-ic.agua svg{color:#5AA9E6;}
+.meta-ic.sono svg{color:#9B8CE0;}
+.meta-ic.treino svg,.meta-ic.dieta svg{color:var(--verde-esc);}
+.lista-ic svg,.tema-ic svg{color:var(--verde-esc);}
+.fb-ic,.rc-ic,.el-ic{display:flex;align-items:center;color:var(--verde-esc);}
+.btn svg,.btn.sec svg{vertical-align:-4px;margin-right:7px;color:currentColor;}
+.btn-mini svg{color:var(--verde-esc);}
+.vazio .em svg,.descanso .em svg,.rev-vazio .em svg{margin:0 auto;color:var(--verde-esc);}
+.esforco-lida.pesado .el-ic{color:var(--ambar-tx);}
+
+/* botão redondo preenchido: o "concluir treino" das telas de referência */
+.btn-mini.cheio{
+  background:linear-gradient(135deg,var(--verde),var(--verde-claro));
+  border-color:transparent;color:#fff;
+}
+.btn-mini.cheio svg{color:#fff;}
+[data-tema="escuro"] .btn-mini.cheio{box-shadow:0 0 18px rgba(63,190,124,.35);}

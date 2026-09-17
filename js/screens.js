@@ -28,7 +28,6 @@ const Telas = {
 
       <div class="tela stagger">
 
-        ${Store.boasVindasPendente() ? Telas._boasVindas(p) : ''}
         ${Store.resumoPendente() ? Telas._chamadaResumo() : ''}
         ${Telas._perdidas()}
 
@@ -51,7 +50,7 @@ const Telas = {
         </div>
 
         <div class="card">
-          <div class="card-tt">🎯 Meta de hoje</div>
+          <div class="card-tt">${Ic.alvo(20)} Meta de hoje</div>
           <div class="anel-wrap">
             ${Comp.anel(pctKcal, t.kcal, 'kcal')}
             <div class="anel-info">
@@ -64,10 +63,10 @@ const Telas = {
         </div>
 
         <div class="card">
-          <div class="card-tt">💧 Metas do dia</div>
+          <div class="card-tt">${Ic.barras(20)} Metas do dia</div>
 
           <div class="meta-linha">
-            <div class="meta-ic agua">💧</div>
+            <div class="meta-ic agua">${Ic.gota(21)}</div>
             <div class="meta-corpo">
               <div class="meta-topo">
                 <span class="meta-nome">Água</span>
@@ -80,7 +79,7 @@ const Telas = {
           </div>
 
           <div class="meta-linha">
-            <div class="meta-ic sono">😴</div>
+            <div class="meta-ic sono">${Ic.lua(21)}</div>
             <div class="meta-corpo">
               <div class="meta-topo">
                 <span class="meta-nome">Sono</span>
@@ -88,11 +87,11 @@ const Telas = {
               </div>
               <div class="barra roxo"><i style="width:${pctSono}%"></i></div>
             </div>
-            <button class="btn-mini" onclick="App.abrirSono()">✎</button>
+            <button class="btn-mini" onclick="App.abrirSono()">${Ic.lapis(17)}</button>
           </div>
 
           <div class="meta-linha">
-            <div class="meta-ic treino">🏋️</div>
+            <div class="meta-ic treino">${Ic.halter(21)}</div>
             <div class="meta-corpo">
               <div class="meta-topo">
                 <span class="meta-nome">${treinoHoje.descanso ? 'Dia de descanso' : 'Treino: ' + treinoHoje.foco}</span>
@@ -100,7 +99,7 @@ const Telas = {
               </div>
               <div class="barra"><i style="width:${t.treino ? 100 : 0}%"></i></div>
             </div>
-            ${treinoHoje.descanso || t.treino ? '' : `<button class="btn-mini" onclick="App.marcarTreino()">✓</button>`}
+            ${treinoHoje.descanso || t.treino ? '' : `<button class="btn-mini cheio" onclick="App.marcarTreino()">${Ic.visto(17)}</button>`}
           </div>
         </div>
 
@@ -108,9 +107,9 @@ const Telas = {
 
         <h3 class="secao-tt">Continuar de onde parou</h3>
         <div class="card" style="padding:0;overflow:hidden">
-          ${Comp.atalho('🍽️', 'Alimentação de hoje', `${t.marcados} de ${t.total} alimentos marcados`, 'alimentacao')}
-          ${Comp.atalho('🏋️', treinoHoje.descanso ? 'Dia de descanso' : treinoHoje.foco, treinoHoje.descanso ? 'Aproveite para recuperar' : `${treinoHoje.exercicios.length} exercícios hoje`, 'treinos')}
-          ${Comp.atalho('📈', 'Seu progresso', 'Resumo da semana e do mês', 'progresso', true)}
+          ${Comp.atalho(Ic.talher(19), 'Alimentação de hoje', `${t.marcados} de ${t.total} alimentos marcados`, 'alimentacao')}
+          ${Comp.atalho(Ic.halter(19), treinoHoje.descanso ? 'Dia de descanso' : treinoHoje.foco, treinoHoje.descanso ? 'Aproveite para recuperar' : `${treinoHoje.exercicios.length} exercícios hoje`, 'treinos')}
+          ${Comp.atalho(Ic.barras(19), 'Seu progresso', 'Resumo da semana e do mês', 'progresso', true)}
         </div>
       </div>`;
   },
@@ -124,7 +123,7 @@ const Telas = {
   _foraDaRotina() {
     if (!Store.foraDaRotina()) return `
       <button class="card fora-btn" onclick="App.marcarForaDaRotina()">
-        <span class="fb-ic">🎉</span>
+        <span class="fb-ic">${Ic.festa(21)}</span>
         <div>
           <div class="fb-t">Hoje eu vou comer fora</div>
           <div class="fb-s">Marque e o dia não conta como falha</div>
@@ -134,7 +133,7 @@ const Telas = {
 
     return `
       <div class="card fora-ativo">
-        <div class="card-tt">🎉 Dia fora da rotina<span class="n">contando como cumprido</span></div>
+        <div class="card-tt">${Ic.festa(20)} Dia fora da rotina<span class="n">contando como cumprido</span></div>
         <p class="fora-txt">
           Combinado. Hoje o cardápio abaixo é referência, não cobrança, e este dia
           já entra como cumprido na sua semana.
@@ -159,7 +158,7 @@ const Telas = {
 
     return `
       <div class="card">
-        <div class="card-tt">📅 Sua semana<span class="n">${sp.feitos} de 7 dias</span></div>
+        <div class="card-tt">${Ic.calendario(20)} Sua semana<span class="n">${sp.feitos} de 7 dias</span></div>
         <div class="sem-fila">
           ${sp.dias.map((d, i) => `
             <div class="sem-dia ${d.fora ? 'fora' : d.ativo ? 'on' : ''} ${d.hoje ? 'hoje' : ''} ${d.futuro ? 'futuro' : ''}">
@@ -188,7 +187,7 @@ const Telas = {
     if (!l.length) return '';
     return `
       <button class="card perdidas" onclick="App.ir('alimentacao')">
-        <span class="fb-ic">🔔</span>
+        <span class="fb-ic">${Ic.sino(21)}</span>
         <div>
           <div class="fb-t">${l.length === 1 ? '1 refeição ainda sem marcar' : `${l.length} refeições ainda sem marcar`}</div>
           <div class="fb-s">${l.map(r => r.nome).join(', ')}</div>
@@ -201,7 +200,7 @@ const Telas = {
   _chamadaResumo() {
     return `
       <button class="card resumo-chamada" onclick="App.ir('resumo')">
-        <span class="rc-ic">📊</span>
+        <span class="rc-ic">${Ic.barras(21)}</span>
         <div>
           <div class="rc-t">Sua semana fechou</div>
           <div class="rc-s">Veja o que você bateu e o foco da próxima</div>
@@ -290,7 +289,7 @@ const Telas = {
 
       <div class="tela">
         <div class="card foto-add">
-          <div class="card-tt">📸 Foto da semana</div>
+          <div class="card-tt">${Ic.camera(20)} Foto da semana</div>
           <p class="foto-txt">
             Tire sempre no mesmo lugar, com a mesma luz e a mesma roupa. É a
             repetição que faz a diferença aparecer.
@@ -315,7 +314,7 @@ const Telas = {
     if (!lista.length) return `
       <div class="card">
         <div class="rev-vazio">
-          <div class="em">📷</div>
+          <div class="em">${Ic.camera(34)}</div>
           <p>Nenhuma foto ainda.<br>A primeira é a mais importante: é com ela que<br>todas as outras vão ser comparadas.</p>
         </div>
       </div>`;
@@ -351,27 +350,28 @@ const Telas = {
       </div>`;
   },
 
-  /* Primeira coisa que a pessoa vê depois de entrar. Existe por dois
-     motivos: dar as boas-vindas e, principalmente, ensinar onde fica o
-     suporte — quem não acha ajuda no primeiro dia pede reembolso no
-     segundo. Some quando ela fecha, e não volta. */
-  _boasVindas(p) {
+  /* ---------- boas-vindas ----------
+     Camada por cima da tela inicial, que fica escurecida atrás: a tela já
+     está montada, mas bloqueada até a pessoa continuar. É a primeira coisa
+     que ela vê, e existe principalmente pra ensinar onde fica o suporte —
+     quem não acha ajuda no primeiro dia pede reembolso no segundo. */
+  boasVindas(p) {
     return `
-      <div class="card bv-card">
-        <button class="bv-x" onclick="App.fecharBoasVindas()" aria-label="Fechar">✕</button>
-        <div class="bv-tt display">Que bom te ver aqui, ${p.nome.split(' ')[0]}.</div>
+      <div class="bv-caixa" role="dialog" aria-modal="true" aria-labelledby="bv-tt">
+        <div class="bv-marca">${Ic.alvo(26)}</div>
+        <h2 class="bv-tt display" id="bv-tt">Bem-vinda, ${p.nome.split(' ')[0]}</h2>
         <p class="bv-txt">
           Seu plano já está montado a partir das suas respostas: o cardápio, o treino
           e as metas do dia. Marque o que for cumprindo e o app acompanha o resto.
         </p>
         <p class="bv-txt">
-          <b>Precisa de ajuda?</b> Fale com a gente no WhatsApp pelo botão abaixo.
-          Ele fica sempre disponível na aba <b>Perfil</b>, em “Ajuda e suporte”.
+          <b>Precisa de ajuda?</b> Fale com a gente no WhatsApp pelo botão abaixo. Ele
+          fica sempre disponível na aba <b>Perfil</b>, em “Ajuda e suporte”.
         </p>
-        <a class="btn bv-btn" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">
-          Falar com o suporte
+        <a class="btn sec bv-sup" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">
+          ${Ic.chat(19)} Falar com o suporte
         </a>
-        <button class="bv-ok" onclick="App.fecharBoasVindas()">Entendi, vamos começar</button>
+        <button class="btn" onclick="App.fecharBoasVindas()">Continuar</button>
       </div>`;
   },
 
@@ -407,7 +407,7 @@ const Telas = {
         </div>
 
         <button class="btn sec" style="margin-bottom:14px" onclick="App.ir('cardapio')">
-          📋  Ver cardápio completo e lista de compras
+          ${Ic.prancheta(19)} Ver cardápio completo e lista de compras
         </button>
 
         ${Telas._foraDaRotina()}
@@ -415,7 +415,7 @@ const Telas = {
         ${plano.map(r => Telas._refeicao(r)).join('')}
 
         <div class="card livre-card">
-          <div class="card-tt" style="margin-bottom:8px">🍕 Refeição livre</div>
+          <div class="card-tt" style="margin-bottom:8px">${Ic.festa(20)} Refeição livre</div>
           <p style="font-size:13.5px;color:var(--tinta-2);line-height:1.6;font-weight:600;margin:0">
             ${Store.planoBase().livre}
           </p>
@@ -499,7 +499,7 @@ const Telas = {
           }).join('')}
 
           <div class="card livre-card">
-            <div class="card-tt" style="margin-bottom:8px">🍕 Refeição livre</div>
+            <div class="card-tt" style="margin-bottom:8px">${Ic.festa(20)} Refeição livre</div>
             <p style="font-size:13.5px;color:var(--tinta-2);line-height:1.6;font-weight:600;margin:0">${Store.planoBase().livre}</p>
           </div>
         `}
@@ -571,7 +571,7 @@ const Telas = {
           <h1 class="display">Treinos</h1>
           <div class="topo-sub">${plano.frequencia} · ${Store.db.perfil.local === 'casa' ? 'Em casa' : 'Academia'}</div>
         </div>
-        <button class="btn-mini" style="width:40px;height:40px" onclick="App.ir('biblioteca')">📖</button>
+        <button class="btn-mini" style="width:40px;height:40px" onclick="App.ir('biblioteca')">${Ic.livro(19)}</button>
       </div>
 
       <div class="tela stagger">
@@ -579,9 +579,9 @@ const Telas = {
           <h3>${plano.nome}</h3>
           <p>${plano.desc}</p>
           <div class="plano-tags">
-            <span class="tag">🎯 ${App.rotuloObjetivo()}</span>
-            <span class="tag">📅 ${plano.frequencia}</span>
-            <span class="tag">🏃 Cardio: ${(CARDIO_POR_OBJETIVO[Store.db.perfil.objetivo] || CARDIO_POR_OBJETIVO.manutencao).frequencia.toLowerCase()}</span>
+            <span class="tag">${App.rotuloObjetivo()}</span>
+            <span class="tag">${plano.frequencia}</span>
+            <span class="tag">Cardio: ${(CARDIO_POR_OBJETIVO[Store.db.perfil.objetivo] || CARDIO_POR_OBJETIVO.manutencao).frequencia.toLowerCase()}</span>
           </div>
           <p style="font-size:12.5px;opacity:.9;margin-top:12px;line-height:1.5;font-weight:600">
             ${(CARDIO_POR_OBJETIVO[Store.db.perfil.objetivo] || CARDIO_POR_OBJETIVO.manutencao).porque}
@@ -601,14 +601,14 @@ const Telas = {
         ${dia.descanso ? `
           <div class="card">
             <div class="descanso">
-              <div class="em">🌙</div>
+              <div class="em">${Ic.lua(40)}</div>
               <h3>Dia de Descanso</h3>
               <p>${dia.sugestao}</p>
             </div>
           </div>
           ${Telas._cardio(true)}` : `
           <div class="card">
-            <div class="card-tt">🏋️ ${dia.foco}<span class="n">${dia.exercicios.length} exercícios</span></div>
+            <div class="card-tt">${Ic.halter(20)} ${dia.foco}<span class="n">${dia.exercicios.length} exercícios</span></div>
             ${dia.exercicios.map((e, i) => Telas._exercicio(e, i)).join('')}
           </div>
 
@@ -629,7 +629,7 @@ const Telas = {
   _lidaEsforco() {
     const l = Store.lidaDoEsforco();
     if (!l) return '';
-    const ic = { leve: '⬆️', ponto: '✅', pesado: '⚠️' };
+    const ic = { leve: Ic.halter(20), ponto: Ic.check(20), pesado: Ic.sino(20) };
     return `
       <div class="card esforco-lida ${l.tom}">
         <span class="el-ic">${ic[l.tom]}</span>
@@ -646,7 +646,7 @@ const Telas = {
     return `
       <div class="card cardio-card ${semCardio ? 'off' : ''}">
         <div class="card-tt" style="margin-bottom:10px">
-          ${semCardio ? '🛌' : '🏃'} ${bloco.titulo}
+          ${semCardio ? Ic.cama(20) : Ic.corrida(20)} ${bloco.titulo}
           <span class="n">${c.frequencia}</span>
         </div>
         <p class="cardio-txt">${bloco.texto}</p>
@@ -791,7 +791,11 @@ const Telas = {
   },
 
   /* ============ METAS ============ */
-  metas() {
+  /* ---------- peso e metas ----------
+     Era uma aba própria. Virou um bloco dentro do Progresso: peso e
+     evolução são progresso, e a barra de baixo ficou com as cinco abas
+     das telas de referência. */
+  _peso() {
     const p = Store.db.perfil;
     const ms = Store.metasSemana();
 
@@ -807,14 +811,7 @@ const Telas = {
     const naDirecao = (ganhar && variacao > 0) || (!ganhar && variacao < 0);
 
     return `
-      <div class="topo">
-        <div>
-          <h1 class="display">Suas metas</h1>
-          <div class="topo-sub">Onde você começou, onde está e onde quer chegar</div>
-        </div>
-      </div>
-
-      <div class="tela stagger">
+        <h3 class="secao-tt">Seu peso</h3>
         <div class="peso-fila">
           <div class="peso-box">
             <div class="l">Inicial</div>
@@ -845,13 +842,13 @@ const Telas = {
         </div>
 
         <div class="card">
-          <div class="card-tt">📉 Evolução do peso<span class="n">${Store.db.pesagens.length} pesagens</span></div>
+          <div class="card-tt">${Ic.balanca(20)} Evolução do peso<span class="n">${Store.db.pesagens.length} pesagens</span></div>
           ${Comp.grafico(Store.seriePeso())}
           <button class="btn" style="margin-top:14px" onclick="App.abrirPeso()">Registrar pesagem de hoje</button>
         </div>
 
         <div class="card">
-          <div class="card-tt">🎯 Metas diárias</div>
+          <div class="card-tt">${Ic.alvo(20)} Metas diárias</div>
           <div class="lista-item"><span class="lista-k">Calorias por dia</span><span class="lista-v">${p.meta_kcal} kcal</span></div>
           <div class="lista-item"><span class="lista-k">Proteína por dia</span><span class="lista-v">${p.meta_prot} g</span></div>
           <div class="lista-item"><span class="lista-k">Água por dia</span><span class="lista-v">${(p.meta_agua/1000).toFixed(1)} L</span></div>
@@ -859,15 +856,14 @@ const Telas = {
         </div>
 
         <div class="card">
-          <div class="card-tt">✅ Metas batidas nos últimos 7 dias</div>
+          <div class="card-tt">${Ic.check(20)} Metas batidas nos últimos 7 dias</div>
           <div class="grid2">
             <div class="stat" style="box-shadow:none;border-color:var(--linha)"><div class="ic">💧</div><div class="n">${ms.agua}<small>/7</small></div><div class="l">Meta de água</div></div>
             <div class="stat" style="box-shadow:none;border-color:var(--linha)"><div class="ic">😴</div><div class="n">${ms.sono}<small>/7</small></div><div class="l">Meta de sono</div></div>
             <div class="stat" style="box-shadow:none;border-color:var(--linha)"><div class="ic">🏋️</div><div class="n">${ms.treino}<small>/5</small></div><div class="l">Treinos feitos</div></div>
             <div class="stat" style="box-shadow:none;border-color:var(--linha)"><div class="ic">🍽️</div><div class="n">${ms.dieta}<small>/7</small></div><div class="l">Dieta completa</div></div>
           </div>
-        </div>
-      </div>`;
+        </div>`;
   },
 
   /* ============ PROGRESSO ============ */
@@ -900,7 +896,7 @@ const Telas = {
         </div>
 
         <div class="card" style="margin-top:14px">
-          <div class="card-tt">📅 Consistência</div>
+          <div class="card-tt">${Ic.calendario(20)} Consistência</div>
           <div class="meta-topo" style="margin-bottom:8px">
             <span class="meta-nome">Dias ativos no período</span>
             <span class="meta-num">${r.diasAtivos} de ${r.dias}</span>
@@ -912,7 +908,7 @@ const Telas = {
         </div>
 
         <button class="card fora-btn" onclick="App.abrirFotos()">
-          <span class="fb-ic">📸</span>
+          <span class="fb-ic">${Ic.camera(21)}</span>
           <div>
             <div class="fb-t">Fotos de progresso</div>
             <div class="fb-s">O que a balança não mostra. Só neste aparelho.</div>
@@ -921,6 +917,8 @@ const Telas = {
         </button>
 
         ${Telas._evolucaoCargas()}
+
+        ${Telas._peso()}
 
         <div class="card nivel-card" style="background:linear-gradient(135deg, ${nv.cor1}, ${nv.cor2})">
           <div class="nivel-topo">
@@ -970,7 +968,7 @@ const Telas = {
       <h3 class="secao-tt">Evolução de carga</h3>
       <div class="card">
         <div class="vazio" style="padding:26px 16px">
-          <div class="em">🏋️</div>
+          <div class="em">${Ic.halter(34)}</div>
           <p>Anote as cargas na aba de Treinos, tocando na seta<br>de cada exercício, e a evolução aparece aqui.</p>
         </div>
       </div>`;
@@ -980,7 +978,7 @@ const Telas = {
     return `
       <h3 class="secao-tt">Evolução de carga</h3>
       <div class="card">
-        <div class="card-tt">🏋️ Por exercício<span class="n">${lista.length} registrados</span></div>
+        <div class="card-tt">${Ic.halter(20)} Por exercício<span class="n">${lista.length} registrados</span></div>
 
         ${totalGanho > 0 ? `
           <div class="carga-destaque">
@@ -1027,7 +1025,7 @@ const Telas = {
         </div>
 
         <div class="card">
-          <div class="card-tt">👤 Seus dados</div>
+          <div class="card-tt">${Ic.pessoa(20)} Seus dados</div>
           <div class="lista-item"><span class="lista-k">Sexo</span><span class="lista-v">${p.sexo === 'feminino' ? 'Feminino' : 'Masculino'}</span></div>
           <div class="lista-item"><span class="lista-k">Idade</span><span class="lista-v">${p.idade} anos</span></div>
           <div class="lista-item"><span class="lista-k">Altura</span><span class="lista-v">${p.altura} cm</span></div>
@@ -1040,7 +1038,7 @@ const Telas = {
         <h3 class="secao-tt">Aparência</h3>
         <div class="card">
           <div class="tema-linha">
-            <div class="tema-ic">${escuro ? '🌙' : '☀️'}</div>
+            <div class="tema-ic">${Ic.lua(20)}</div>
             <div class="tema-txt">
               <div class="t">Modo escuro</div>
               <div class="s">${escuro ? 'Ligado. Melhor pra usar à noite.' : 'Desligado. O app fica claro.'}</div>
@@ -1057,7 +1055,7 @@ const Telas = {
         <h3 class="secao-tt">Lembretes</h3>
         <div class="card">
           <div class="tema-linha">
-            <div class="tema-ic">🔔</div>
+            <div class="tema-ic">${Ic.sino(20)}</div>
             <div class="tema-txt">
               <div class="t">Lembrete de refeição</div>
               <div class="s">${Lembretes.ligado() && Lembretes.permitido()
@@ -1077,7 +1075,7 @@ const Telas = {
         <h3 class="secao-tt">Ajuda e suporte</h3>
         <div class="card" style="padding:6px 18px">
           <a class="lista-item lista-link" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">
-            <span class="lista-ic">💬</span>
+            <span class="lista-ic">${Ic.chat(19)}</span>
             <div>
               <div class="lista-t">Falar com o suporte</div>
               <div class="lista-s">WhatsApp ${CONFIG.SUPORTE_NUMERO}, de segunda a sexta</div>
@@ -1085,7 +1083,7 @@ const Telas = {
             <span class="lista-seta">›</span>
           </a>
           <button class="lista-item lista-link" onclick="App.verBoasVindas()">
-            <span class="lista-ic">🧭</span>
+            <span class="lista-ic">${Ic.bussola(19)}</span>
             <div>
               <div class="lista-t">Como usar o app</div>
               <div class="lista-s">Rever a mensagem de boas-vindas</div>
@@ -1186,7 +1184,7 @@ const Comp = {
   grafico(serie) {
     if (serie.length < 2) {
       return `<div class="vazio" style="padding:30px 20px">
-                <div class="em">⚖️</div>
+                <div class="em">${Ic.balanca(34)}</div>
                 <p>Registre pelo menos duas pesagens<br>para ver a sua curva de evolução.</p>
               </div>`;
     }

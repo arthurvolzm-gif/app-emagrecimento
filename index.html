@@ -27,13 +27,16 @@
 <div id="app"></div>
 
 <nav class="nav" id="nav" style="display:none">
-  <button data-tela="inicio"      onclick="App.ir('inicio')">      <span class="ic">🏠</span><span class="lbl">Início</span></button>
-  <button data-tela="alimentacao" onclick="App.ir('alimentacao')"> <span class="ic">🍽️</span><span class="lbl">Dieta</span></button>
-  <button data-tela="treinos"     onclick="App.ir('treinos')">     <span class="ic">🏋️</span><span class="lbl">Treinos</span></button>
-  <button data-tela="progresso"   onclick="App.ir('progresso')">   <span class="ic">📈</span><span class="lbl">Progresso</span></button>
-  <button data-tela="metas"       onclick="App.ir('metas')">       <span class="ic">🎯</span><span class="lbl">Metas</span></button>
-  <button data-tela="perfil"      onclick="App.ir('perfil')">      <span class="ic">👤</span><span class="lbl">Perfil</span></button>
+  <button data-tela="inicio"      onclick="App.ir('inicio')"><span class="ic" data-ic="casa"></span><span class="lbl">Início</span></button>
+  <button data-tela="treinos"     onclick="App.ir('treinos')"><span class="ic" data-ic="halter"></span><span class="lbl">Treinos</span></button>
+  <button data-tela="alimentacao" onclick="App.ir('alimentacao')"><span class="ic" data-ic="talher"></span><span class="lbl">Comida</span></button>
+  <button data-tela="progresso"   onclick="App.ir('progresso')"><span class="ic" data-ic="barras"></span><span class="lbl">Progresso</span></button>
+  <button data-tela="perfil"      onclick="App.ir('perfil')"><span class="ic" data-ic="pessoa"></span><span class="lbl">Perfil</span></button>
 </nav>
+
+<!-- boas-vindas: camada por cima da tela inicial, que fica escurecida
+     e bloqueada atrás até a pessoa tocar em Continuar -->
+<div class="bv-bg" id="bv-bg" aria-hidden="true"></div>
 
 <div class="modal-bg" id="modal-bg" onclick="if(event.target===this)App.fecharModal()">
   <div class="modal" id="modal"></div>
@@ -45,6 +48,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
+<script src="js/icones.js"></script>
 <script src="js/data.js"></script>
 <script src="js/store.js"></script>
 <script src="js/backend.js"></script>

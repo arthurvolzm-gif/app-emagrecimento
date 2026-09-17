@@ -36,6 +36,7 @@ const App = {
   /* ---------- inicialização ---------- */
   async iniciar() {
     Store.load();
+    this.pintarNav();
     this.aplicarTema();
 
     /* abertura: a mira cresce, encolhe e o resto da logo aparece em volta.
@@ -147,6 +148,14 @@ const App = {
     this.render();
   },
 
+  /* a barra de baixo é fixa no HTML; os ícones entram uma vez, aqui, pra
+     não repetir SVG dentro do markup */
+  pintarNav() {
+    document.querySelectorAll('#nav .ic[data-ic]').forEach(el => {
+      el.innerHTML = Ic[el.dataset.ic] ? Ic[el.dataset.ic](23) : '';
+    });
+  },
+
   /* ---------- render ----------
      render() é a porta: ela decide a animação de entrada e chama pintar(),
      que é quem realmente monta o HTML. Quem já chamava App.render() antes
@@ -157,6 +166,30 @@ const App = {
     this.pintar();
     this.telaPintada = this.tela;          /* pintar() pode ter trocado */
     if (de !== undefined && de !== this.telaPintada) this.animarTroca(de, this.telaPintada);
+    this.boasVindas();
+  },
+
+  /* ---------- boas-vindas ----------
+     Camada por cima da tela inicial. A tela é montada normalmente e fica
+     escurecida atrás, então a pessoa já vê o app dela enquanto lê — e o
+     "Continuar" libera, em vez de revelar algo que ela não viu. */
+  boasVindas() {
+    const bg = document.getElementById('bv-bg');
+    if (!bg) return;
+    const mostrar = this.tela === 'inicio' && Store.temPerfil() && Store.boasVindasPendente();
+
+    if (!mostrar) {
+      if (bg.classList.contains('on')) bg.classList.remove('on');
+      bg.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('travado');
+      return;
+    }
+    if (bg.classList.contains('on')) return;          /* já está aberta */
+
+    bg.innerHTML = Telas.boasVindas(Store.db.perfil);
+    bg.classList.add('on');
+    bg.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('travado');           /* nada rola atrás */
   },
 
   /* ---------- animação de troca de tela ----------
@@ -432,9 +465,19 @@ const App = {
 
   /* ---------- boas-vindas ---------- */
   fecharBoasVindas() {
+    const bg = document.getElementById('bv-bg');
     Store.fecharBoasVindas();
     Backend.agendarSync();
-    this.render();
+    document.body.classList.remove('travado');
+    /* deixa a saída acontecer antes de tirar a camada do caminho */
+    if (bg) {
+      bg.classList.add('saindo');
+      setTimeout(() => {
+        bg.classList.remove('on', 'saindo');
+        bg.innerHTML = '';
+        bg.setAttribute('aria-hidden', 'true');
+      }, 320);
+    }
   },
 
   /* "Como usar o app", na aba de Perfil: reabre a mensagem e leva pra
@@ -442,7 +485,7 @@ const App = {
   verBoasVindas() {
     if (Store.db.perfil) { Store.db.perfil.boas_vindas_visto = false; Store.save(); }
     Backend.agendarSync();
-    this.ir('inicio');
+    this.ir('inicio');            /* o render de lá reabre a camada */
   },
 
   /* ---------- ações do dia ---------- */
