@@ -223,10 +223,16 @@ a{color:inherit;text-decoration:none;}
   background:linear-gradient(135deg,var(--verde-grad),var(--verde) 55%,var(--verde-claro));
   color:#fff;border:none;position:relative;overflow:hidden;
 }
+/* No lugar do círculo claro que ficava na direita (era um remendo pra dar
+   textura, e lia como mancha), um véu escuro na mesma diagonal do degradê:
+   aprofunda a cor sem inventar uma forma. O degradê base vem em linha, do
+   nível atual, então o escurecimento precisa ser uma camada por cima. */
 .nivel-card::after{
-  content:'';position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;
-  background:rgba(255,255,255,.10);
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(140deg,
+    rgba(255,255,255,.07) 0%, rgba(0,0,0,0) 34%, rgba(0,0,0,.28) 100%);
 }
+.nivel-card > *{position:relative;z-index:1;}
 .nivel-topo{display:flex;align-items:center;gap:13px;position:relative;}
 .nivel-emoji{font-size:34px;line-height:1;}
 .nivel-n{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.82;}

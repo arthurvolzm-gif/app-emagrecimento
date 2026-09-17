@@ -31,7 +31,7 @@ const Telas = {
         ${Store.resumoPendente() ? Telas._chamadaResumo() : ''}
         ${Telas._perdidas()}
 
-        <div class="card nivel-card" style="background:linear-gradient(135deg, ${nv.cor1}, ${nv.cor2})">
+        <div class="card nivel-card" style="background:linear-gradient(140deg, ${nv.cor2} 0%, ${nv.cor1} 62%, ${nv.cor1} 100%)">
           <div class="nivel-topo">
             <div class="nivel-emoji">${nv.icone}</div>
             <div>
@@ -896,7 +896,7 @@ const Telas = {
 
         ${Telas._peso()}
 
-        <div class="card nivel-card" style="background:linear-gradient(135deg, ${nv.cor1}, ${nv.cor2})">
+        <div class="card nivel-card" style="background:linear-gradient(140deg, ${nv.cor2} 0%, ${nv.cor1} 62%, ${nv.cor1} 100%)">
           <div class="nivel-topo">
             <div class="nivel-emoji">${nv.icone}</div>
             <div>
