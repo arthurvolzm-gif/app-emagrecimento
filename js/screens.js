@@ -798,7 +798,6 @@ const Telas = {
      das telas de referência. */
   _peso() {
     const p = Store.db.perfil;
-    const ms = Store.metasSemana();
 
     /* a meta pode ser perder OU ganhar peso — a conta vale para os dois lados */
     const dif = p.meta_peso - p.peso_inicial;
@@ -854,22 +853,12 @@ const Telas = {
           <div class="lista-item"><span class="lista-k">Proteína por dia</span><span class="lista-v">${p.meta_prot} g</span></div>
           <div class="lista-item"><span class="lista-k">Água por dia</span><span class="lista-v">${(p.meta_agua/1000).toFixed(1)} L</span></div>
           <div class="lista-item"><span class="lista-k">Sono por noite</span><span class="lista-v">${p.meta_sono} h</span></div>
-        </div>
-
-        <div class="card">
-          <div class="card-tt">${Ic.check(20)} Metas batidas nos últimos 7 dias</div>
-          <div class="grid2">
-            <div class="stat" style="box-shadow:none;border-color:var(--linha)"><div class="ic">💧</div><div class="n">${ms.agua}<small>/7</small></div><div class="l">Meta de água</div></div>
-            <div class="stat" style="box-shadow:none;border-color:var(--linha)"><div class="ic">😴</div><div class="n">${ms.sono}<small>/7</small></div><div class="l">Meta de sono</div></div>
-            <div class="stat" style="box-shadow:none;border-color:var(--linha)"><div class="ic">🏋️</div><div class="n">${ms.treino}<small>/5</small></div><div class="l">Treinos feitos</div></div>
-            <div class="stat" style="box-shadow:none;border-color:var(--linha)"><div class="ic">🍽️</div><div class="n">${ms.dieta}<small>/7</small></div><div class="l">Dieta completa</div></div>
-          </div>
         </div>`;
   },
 
   /* ============ PROGRESSO ============ */
   progresso() {
-    const r = Store.resumo(App.periodo);
+    const r = Store.resumo('semana');       /* sem seletor: a janela é sempre de 7 dias */
     const nv = Store.nivel();
     const p = Store.db.perfil;
 
@@ -882,24 +871,10 @@ const Telas = {
       </div>
 
       <div class="tela stagger">
-        <div class="toggle">
-          <button class="${App.periodo === 'semana' ? 'on' : ''}" onclick="App.setPeriodo('semana')">Semana</button>
-          <button class="${App.periodo === 'mes' ? 'on' : ''}" onclick="App.setPeriodo('mes')">Mês</button>
-        </div>
-
-        <div class="grid2">
-          <div class="stat"><div class="ic">🏋️</div><div class="n">${r.treinos}</div><div class="l">Treinos concluídos</div></div>
-          <div class="stat"><div class="ic">💧</div><div class="n">${r.agua}<small>L</small></div><div class="l">Água bebida</div></div>
-          <div class="stat"><div class="ic">🔥</div><div class="n">${r.kcalMedia}<small>kcal</small></div><div class="l">Média por dia</div></div>
-          <div class="stat"><div class="ic">🥩</div><div class="n">${r.prot}<small>g</small></div><div class="l">Proteína total</div></div>
-          <div class="stat"><div class="ic">⚖️</div><div class="n" style="color:${r.pesoPerdido > 0 ? 'var(--verde)' : 'inherit'}">${r.pesoPerdido > 0 ? '−' : ''}${Math.abs(r.pesoPerdido)}<small>kg</small></div><div class="l">Peso no período</div></div>
-          <div class="stat"><div class="ic">🍽️</div><div class="n">${r.refeicoes}</div><div class="l">Refeições completas</div></div>
-        </div>
-
-        <div class="card" style="margin-top:14px">
+        <div class="card">
           <div class="card-tt">${Ic.calendario(20)} Consistência</div>
           <div class="meta-topo" style="margin-bottom:8px">
-            <span class="meta-nome">Dias ativos no período</span>
+            <span class="meta-nome">Dias ativos na semana</span>
             <span class="meta-num">${r.diasAtivos} de ${r.dias}</span>
           </div>
           <div class="barra" style="height:9px"><i style="width:${Math.round((r.diasAtivos / r.dias) * 100)}%"></i></div>

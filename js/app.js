@@ -20,7 +20,6 @@ const ORDEM_TELAS = [
 const App = {
   tela: 'inicio',
   passo: 1,
-  periodo: 'semana',
   diaTreino: 0,
   refAberta: null,
   busca: '',
@@ -669,7 +668,6 @@ const App = {
       this.toast('Carga registrada ✅', true);
     }
   },
-  setPeriodo(p) { this.periodo = p; this.render(); },
   setAbaCardapio(a) { this.abaCardapio = a; this.render(); window.scrollTo(0, 0); },
   setCat(c) { this.cat = c; this.render(); },
 
