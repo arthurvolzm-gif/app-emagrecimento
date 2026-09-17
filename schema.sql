@@ -188,6 +188,7 @@ drop policy if exists "inserir resposta do quiz" on public.respostas_quiz;
 drop policy if exists "ler pelo token"            on public.respostas_quiz;
 drop policy if exists "ler pelo proprio email"    on public.respostas_quiz;
 drop policy if exists "apagar apos consumir"      on public.respostas_quiz;
+drop policy if exists "apagar a propria linha"    on public.respostas_quiz;
 
 -- qualquer um pode criar uma linha (é assim que o quiz, sem login,
 -- consegue salvar a resposta de quem está fazendo o teste)
@@ -195,12 +196,14 @@ create policy "inserir resposta do quiz"
   on public.respostas_quiz for insert
   with check (true);
 
--- leitura liberada porque só dá pra achar uma linha sabendo o token
--- exato (uuid aleatório, 122 bits) — não existe como "listar todo
--- mundo", só buscar uma pessoa específica que já tem o link dela
-create policy "ler pelo token"
-  on public.respostas_quiz for select
-  using (true);
+-- ⚠️ NÃO existe política de leitura aberta aqui, de propósito.
+-- Antes havia uma com `using (true)`, cujo comentário dizia que só dava
+-- pra achar uma linha sabendo o token. Isso estava errado: `using (true)`
+-- libera QUALQUER select, e a chave publishable do app é pública — então
+-- quem a copiasse baixava a tabela inteira, com nome, e-mail e respostas
+-- de todo mundo que fez o quiz.
+-- A busca por token agora passa pela função abaixo, que devolve UMA linha
+-- e só se o token bater exatamente.
 
 -- quem já está logado enxerga a linha que tem o e-mail DELA. O e-mail
 -- do JWT é verificado pelo Supabase (a pessoa só entra depois de
@@ -210,9 +213,44 @@ create policy "ler pelo proprio email"
   on public.respostas_quiz for select
   using (lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')));
 
-create policy "apagar apos consumir"
+-- apagar também não é aberto: quem está logado apaga a linha do próprio
+-- e-mail; quem veio pelo link usa a função consumir_resposta_quiz.
+create policy "apagar a propria linha"
   on public.respostas_quiz for delete
-  using (true);
+  using (lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')));
+
+-- ---------------------------------------------------------------------
+-- Busca e consumo por token, sem abrir a tabela
+--
+-- security definer: a função roda com os poderes do dono da tabela, então
+-- ela enxerga a linha mesmo com a RLS fechada. O filtro está DENTRO dela
+-- e é por igualdade de token (uuid aleatório, 122 bits), então não há
+-- como listar ninguém: ou se sabe o token exato, ou não volta nada.
+-- search_path fixo evita que alguém troque o significado de "public".
+-- ---------------------------------------------------------------------
+create or replace function public.buscar_resposta_quiz(p_token uuid)
+returns jsonb
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select respostas from public.respostas_quiz where token = p_token limit 1;
+$$;
+
+create or replace function public.consumir_resposta_quiz(p_token uuid)
+returns void
+language sql
+security definer
+set search_path = public
+as $$
+  delete from public.respostas_quiz where token = p_token;
+$$;
+
+revoke all on function public.buscar_resposta_quiz(uuid)   from public;
+revoke all on function public.consumir_resposta_quiz(uuid) from public;
+grant execute on function public.buscar_resposta_quiz(uuid)   to anon, authenticated;
+grant execute on function public.consumir_resposta_quiz(uuid) to anon, authenticated;
 
 create index if not exists respostas_quiz_criado_idx on public.respostas_quiz (criado_em);
 create index if not exists respostas_quiz_email_idx  on public.respostas_quiz (lower(email));

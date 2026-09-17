@@ -206,15 +206,14 @@ const Backend = {
 
   async buscarRespostasQuiz(token) {
     if (!this.sb || !token) return null;
-    const { data, error } = await this.sb
-      .from('respostas_quiz')
-      .select('respostas')
-      .eq('token', token)
-      .maybeSingle();
+    /* via função no banco, não direto na tabela: a RLS não deixa ler
+       respostas_quiz de fora, justamente pra ninguém baixar a lista
+       inteira com a chave pública. Ver schema.sql. */
+    const { data, error } = await this.sb.rpc('buscar_resposta_quiz', { p_token: token });
 
     if (error || !data) return null;
     this.quizLido = { campo: 'token', valor: token };
-    return data.respostas;
+    return data;
   },
 
   /* apaga as respostas do quiz que já viraram perfil. Silencioso: se
@@ -224,7 +223,13 @@ const Backend = {
     const { campo, valor } = this.quizLido;
     this.quizLido = null;
     try {
-      await this.sb.from('respostas_quiz').delete().eq(campo, valor);
+      if (campo === 'token') {
+        await this.sb.rpc('consumir_resposta_quiz', { p_token: valor });
+      } else {
+        /* por e-mail só apaga quem está logado com ele: é o que a RLS
+           permite, e é o suficiente porque a linha é dessa pessoa */
+        await this.sb.from('respostas_quiz').delete().eq(campo, valor);
+      }
     } catch (e) { /* não trava a criação do plano por causa disso */ }
   },
 

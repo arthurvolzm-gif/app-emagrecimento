@@ -47,6 +47,14 @@ coluna e subir a retenção das respostas do quiz de 48 h para 30 dias.
 É seguro rodar mais de uma vez: o arquivo usa `create table if not
 exists` e blocos que checam antes de alterar.
 
+**Esta rodada também fecha um furo de privacidade.** A tabela
+`respostas_quiz` tinha uma política de leitura com `using (true)`, o que
+liberava ler QUALQUER linha — e a chave do app é pública por natureza.
+Quem a copiasse baixava nome, e-mail e respostas de todo mundo que fez o
+quiz. Agora a busca por token passa por uma função no banco, que devolve
+uma linha só e exige o token exato; ler por e-mail continua valendo só
+pra quem está logado com aquele e-mail.
+
 ---
 
 ## 3. E-mail do código ⬜
