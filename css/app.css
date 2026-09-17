@@ -358,7 +358,7 @@ a{color:inherit;text-decoration:none;}
 /* o cartão do plano é o único bloco verde cheio da tela: clareia no meio
    e fecha escuro embaixo, como nas telas de referência */
 .plano-cab{
-  background:linear-gradient(140deg,#17A15B 0%,#3FD489 44%,#0E7A44 100%);
+  background:linear-gradient(140deg,#0C6B3C 0%,#23A063 44%,#053F24 100%);
   color:#fff;border:none;
 }
 .plano-cab h3{font-size:20px;margin-bottom:6px;}
