@@ -106,7 +106,7 @@ a{color:inherit;text-decoration:none;}
 }
 .topo-marca{
   position:absolute;left:50%;top:30px;transform:translateX(-50%);
-  width:96px;height:auto;opacity:.9;pointer-events:none;
+  width:130px;height:auto;opacity:.95;pointer-events:none;
 }
 /* ⚠️ SÓ NA TELA INICIAL a marca divide a linha com o título: ela ocupa
    dos 147px aos 243px numa tela de 390, e a saudação tem que caber antes
@@ -1310,10 +1310,18 @@ body.travado{overflow:hidden;}
 /* ---------- marca sozinha no topo (todas as abas menos a Início) ----------
    O cabeçalho vira duas etapas: a marca em cima, e só depois o título da
    tela. Dá respiro e faz a marca aparecer igual em todas elas. */
-.marca-linha{display:flex;justify-content:center;padding:22px 18px 0;}
-.marca-linha img{width:96px;height:auto;opacity:.9;display:block;}
+.marca-linha{display:flex;justify-content:center;padding:26px 18px 0;--marca:150px;}
+/* O arquivo da logo tem ar transparente: 14,4% da altura em cima e 43%
+   embaixo (medido no PNG). Sem cortar isso com margem negativa, a marca
+   parece flutuar longe do título mesmo com o espaçamento zerado. Como a
+   imagem é 2:1, a altura é metade da largura — daí os fatores. */
+.marca-linha img{
+  width:var(--marca);height:auto;opacity:.95;display:block;
+  margin-top:calc(var(--marca) * -0.072);
+  margin-bottom:calc(var(--marca) * -0.215);
+}
 
 /* com a marca fora da linha, o título não disputa espaço e volta ao
    tamanho cheio; o espaço acima dele é o que separa as duas etapas */
-.marca-linha + .topo{padding-top:30px;}
+.marca-linha + .topo{padding-top:18px;}
 .marca-linha + .topo h1{font-size:26px;}
