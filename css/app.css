@@ -1286,3 +1286,6 @@ body.travado{overflow:hidden;}
 /* botão quadrado arredondado do cabeçalho (biblioteca de exercícios) */
 .btn-mini.quadrado{width:42px;height:42px;border-radius:13px;}
 .btn-mini.quadrado{border-radius:13px;border-color:var(--verde-borda);}
+
+/* ícone da refeição: verde, como o resto dos ícones do app */
+.ref-ic svg{color:var(--verde-esc);}

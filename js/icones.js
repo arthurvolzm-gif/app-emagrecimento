@@ -41,7 +41,21 @@ const Ic = {
   check: t => Ic._svg('<circle cx="12" cy="12" r="8.8"/><path d="m8.2 12.2 2.6 2.6 5-5.4"/>', t),
   seta: t => Ic._svg('<path d="m9 5 7 7-7 7"/>', t),
   lapis: t => Ic._svg('<path d="M4 20.2h4l10.4-10.4a2.6 2.6 0 0 0-3.7-3.7L4.4 16.5z"/><path d="m14.6 7.2 3.7 3.7"/>', t),
-  visto: t => Ic._svg('<path d="m5.5 12.4 4.4 4.4 8.6-9.2"/>', t)
+  visto: t => Ic._svg('<path d="m5.5 12.4 4.4 4.4 8.6-9.2"/>', t),
+
+  /* refeições — ver Ic.refeicao() logo abaixo */
+  sol: t => Ic._svg('<circle cx="12" cy="12" r="4.4"/><path d="M12 1.8v2.6M12 19.6v2.6M4.8 4.8l1.9 1.9M17.3 17.3l1.9 1.9M1.8 12h2.6M19.6 12h2.6M4.8 19.2l1.9-1.9M17.3 6.7l1.9-1.9"/>', t),
+  maca: t => Ic._svg('<path d="M12 7.4c-1-.9-2.2-1.4-3.5-1.4C5.9 6 4 8.4 4 11.8c0 3.9 2.8 8.4 5 8.4 1 0 1.9-.6 3-.6s2 .6 3 .6c2.2 0 5-4.5 5-8.4 0-3.4-1.9-5.8-4.5-5.8-1.3 0-2.5.5-3.5 1.4z"/><path d="M12 7.4V4.6M12 4.6c1.6 0 2.8-1 3-2.4-1.6-.2-2.8.8-3 2.4z"/>', t),
+  raio: t => Ic._svg('<path d="M13.4 2.4 4.6 13.4h6.2l-.8 8.2 9-11h-6.4z"/>', t),
+  copo: t => Ic._svg('<path d="M6.4 4.2h11.2l-1.2 15.4a2 2 0 0 1-2 1.8H9.6a2 2 0 0 1-2-1.8z"/><path d="M6.9 10.4h10.2"/>', t),
+
+  /* o ícone de cada refeição sai do id, não do emoji: assim continua
+     valendo se o nome ou o horário da refeição mudarem em data.js */
+  refeicao(id, t) {
+    const mapa = { cafe: Ic.sol, lanche1: Ic.maca, almoco: Ic.talher,
+                   lanche2: Ic.raio, jantar: Ic.lua, ceia: Ic.copo };
+    return (mapa[id] || Ic.talher)(t);
+  }
 };
 
 window.Ic = Ic;

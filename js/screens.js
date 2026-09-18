@@ -359,7 +359,7 @@ const Telas = {
     return `
       <div class="bv-caixa" role="dialog" aria-modal="true" aria-labelledby="bv-tt">
         <div class="bv-marca">${Ic.alvo(26)}</div>
-        <h2 class="bv-tt display" id="bv-tt">Bem-vinda, ${p.nome.split(' ')[0]}</h2>
+        <h2 class="bv-tt display" id="bv-tt">${App.gen('Bem-vinda', 'Bem-vindo')}, ${p.nome.split(' ')[0]}</h2>
         <p class="bv-txt">
           Seu plano já está montado a partir das suas respostas: o cardápio, o treino
           e as metas do dia. Marque o que for cumprindo e o app acompanha o resto.
@@ -482,7 +482,7 @@ const Telas = {
             const kcalRef = r.alimentos.reduce((s, a) => s + (a.opcional ? 0 : a.kcal), 0);
             return `
               <div class="card">
-                <div class="card-tt">${r.icone} ${r.nome} · ${r.horario}<span class="n">${kcalRef} kcal</span></div>
+                <div class="card-tt">${Ic.refeicao(r.id, 20)} ${r.nome} · ${r.horario}<span class="n">${kcalRef} kcal</span></div>
                 ${r.variacao ? `<div class="var-nome">${r.variacao}</div>` : ''}
                 ${r.alimentos.map(a => `
                   <div class="cardapio-item ${a.opcional ? 'opc' : ''}">
@@ -515,7 +515,7 @@ const Telas = {
     return `
       <div class="ref ${aberta ? 'aberta' : ''}">
         <div class="ref-cab" onclick="App.abrirRef('${r.id}')">
-          <div class="ref-ic">${r.icone}</div>
+          <div class="ref-ic">${Ic.refeicao(r.id, 21)}</div>
           <div style="flex:1;min-width:0">
             <div class="ref-nome">${r.nome}</div>
             <div class="ref-meta">${r.variacao ? r.variacao : r.horario + ' · ' + total + ' alimentos'}</div>
@@ -1022,7 +1022,7 @@ const Telas = {
               <div class="t">Lembrete de refeição</div>
               <div class="s">${Lembretes.ligado() && Lembretes.permitido()
                 ? 'Ligado. Avisa nos horários do seu cardápio.'
-                : 'Desligado. Ligue para ser avisada nos horários do cardápio.'}</div>
+                : `Desligado. Ligue para ser ${App.gen('avisada', 'avisado')} nos horários do cardápio.`}</div>
             </div>
             <button class="switch ${Lembretes.ligado() && Lembretes.permitido() ? 'on' : ''}"
                     onclick="App.alternarLembretes()" aria-label="Alternar lembretes"><i></i></button>

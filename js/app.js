@@ -150,6 +150,14 @@ const App = {
     this.boasVindas();
   },
 
+  /* Concordância de gênero. O app fala direto com a pessoa e o perfil já
+     guarda o sexo, então não custa acertar: sem isso, metade das pessoas
+     é tratada no gênero errado. Na dúvida (perfil ainda não criado), cai
+     no feminino, que é o público principal. */
+  gen(fem, masc) {
+    return (Store.db && Store.db.perfil && Store.db.perfil.sexo === 'masculino') ? masc : fem;
+  },
+
   /* ---------- boas-vindas ----------
      Camada por cima da tela inicial. A tela é montada normalmente e fica
      escurecida atrás, então a pessoa já vê o app dela enquanto lê — e o
