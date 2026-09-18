@@ -129,6 +129,21 @@ const App = {
     return false;
   },
 
+  /* A marca no meio do cabeçalho de todas as abas. Entra aqui, depois do
+     render, e não no markup de cada tela: são seis cabeçalhos hoje, e
+     assim a próxima tela que aparecer já nasce com ela. */
+  pintarMarcaTopo() {
+    const topo = document.querySelector('#app .topo');
+    if (!topo || topo.querySelector('.topo-marca')) return;
+    const marca = document.createElement('img');
+    marca.className = 'topo-marca';
+    marca.src = 'logo-focusfit.png';
+    marca.alt = 'Focus Fit';
+    /* segunda coluna da grade: entra depois do título e antes do que
+       estiver na direita (avatar, botão) — ver .topo no CSS */
+    topo.insertBefore(marca, topo.children[1] || null);
+  },
+
   /* a barra de baixo é fixa no HTML; os ícones entram uma vez, aqui, pra
      não repetir SVG dentro do markup */
   pintarNav() {
@@ -145,6 +160,7 @@ const App = {
     const de   = this.telaPintada;
     const para = this.tela;
     this.pintar();
+    this.pintarMarcaTopo();
     this.telaPintada = this.tela;          /* pintar() pode ter trocado */
     if (de !== undefined && de !== this.telaPintada) this.animarTroca(de, this.telaPintada);
     this.boasVindas();

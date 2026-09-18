@@ -440,7 +440,7 @@ const Telas = {
     return `
       <div class="topo">
         <div>
-          <h1 class="display">${verCompras ? 'Lista de compras' : 'Cardápio completo'}</h1>
+          <h1 class="display">Cardápio</h1>
           <div class="topo-sub">${verCompras
             ? 'Quantidades para 7 dias, já somadas'
             : App.rotuloObjetivo() + ' · ' + kcalTotal + ' kcal por dia'}</div>
