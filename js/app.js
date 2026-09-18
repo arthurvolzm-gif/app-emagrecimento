@@ -129,19 +129,34 @@ const App = {
     return false;
   },
 
-  /* A marca no meio do cabeçalho de todas as abas. Entra aqui, depois do
-     render, e não no markup de cada tela: são seis cabeçalhos hoje, e
-     assim a próxima tela que aparecer já nasce com ela. */
+  /* A marca no cabeçalho, em dois arranjos:
+     - na Início, o cabeçalho já tem saudação e avatar, então ela ocupa o
+       meio que sobra entre os dois;
+     - nas outras abas ela fica sozinha numa faixa acima, e o título só
+       começa depois dela. O cabeçalho vira duas etapas em vez de uma
+       linha cheia, e o título volta ao tamanho maior porque não disputa
+       mais espaço com ela.
+     Entra aqui, depois do render, e não no markup de cada tela: são oito
+     cabeçalhos, e assim a próxima tela já nasce com ela. */
   pintarMarcaTopo() {
-    const topo = document.querySelector('#app .topo');
-    if (!topo || topo.querySelector('.topo-marca')) return;
-    const marca = document.createElement('img');
-    marca.className = 'topo-marca';
-    marca.src = 'logo-focusfit.png';
-    marca.alt = 'Focus Fit';
-    /* segunda coluna da grade: entra depois do título e antes do que
-       estiver na direita (avatar, botão) — ver .topo no CSS */
-    topo.insertBefore(marca, topo.children[1] || null);
+    const app = document.getElementById('app');
+    const topo = app && app.querySelector('.topo');
+    if (!topo || app.querySelector('.topo-marca, .marca-linha')) return;
+
+    const img = document.createElement('img');
+    img.src = 'logo-focusfit.png';
+    img.alt = 'Focus Fit';
+
+    if (this.tela === 'inicio') {
+      img.className = 'topo-marca';
+      topo.insertBefore(img, topo.children[1] || null);
+      return;
+    }
+
+    const faixa = document.createElement('div');
+    faixa.className = 'marca-linha';
+    faixa.appendChild(img);
+    topo.parentNode.insertBefore(faixa, topo);
   },
 
   /* a barra de baixo é fixa no HTML; os ícones entram uma vez, aqui, pra

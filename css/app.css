@@ -106,17 +106,16 @@ a{color:inherit;text-decoration:none;}
 }
 .topo-marca{
   position:absolute;left:50%;top:30px;transform:translateX(-50%);
-  width:80px;height:auto;opacity:.9;pointer-events:none;
+  width:96px;height:auto;opacity:.9;pointer-events:none;
 }
-/* ⚠️ A marca ocupa o meio do cabeçalho, dos 155px aos 235px numa tela de
-   390. O título da esquerda tem que caber antes disso: com 22px, cabem
-   uns 135px, o equivalente a "Alimentação". Título novo mais longo que
-   isso passa por baixo da marca — foi por isso que "Cardápio completo"
-   virou "Cardápio". A legenda embaixo pode usar a largura toda, porque a
-   marca fica na linha do título, acima dela. */
+/* ⚠️ SÓ NA TELA INICIAL a marca divide a linha com o título: ela ocupa
+   dos 147px aos 243px numa tela de 390, e a saudação tem que caber antes
+   disso. Como lá o título é "Bom dia / <primeiro nome>", sobra espaço.
+   Nas outras abas a marca fica sozinha na faixa de cima (.marca-linha) e
+   o título tem a largura toda. */
 .topo-saud{font-size:13px;color:var(--cinza);font-weight:600;}
-.topo-nome{font-size:22px;margin-top:2px;}
-.topo h1{font-size:22px;}
+.topo-nome{font-size:21px;margin-top:2px;}
+.topo h1{font-size:21px;}
 .topo-sub{font-size:13.5px;color:var(--cinza);margin-top:4px;font-weight:500;}
 
 .avatar{
@@ -1307,3 +1306,14 @@ body.travado{overflow:hidden;}
 
 /* ícone da refeição: verde, como o resto dos ícones do app */
 .ref-ic svg{color:var(--verde-esc);}
+
+/* ---------- marca sozinha no topo (todas as abas menos a Início) ----------
+   O cabeçalho vira duas etapas: a marca em cima, e só depois o título da
+   tela. Dá respiro e faz a marca aparecer igual em todas elas. */
+.marca-linha{display:flex;justify-content:center;padding:22px 18px 0;}
+.marca-linha img{width:96px;height:auto;opacity:.9;display:block;}
+
+/* com a marca fora da linha, o título não disputa espaço e volta ao
+   tamanho cheio; o espaço acima dele é o que separa as duas etapas */
+.marca-linha + .topo{padding-top:30px;}
+.marca-linha + .topo h1{font-size:26px;}
