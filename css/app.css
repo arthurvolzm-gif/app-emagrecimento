@@ -1496,3 +1496,18 @@ body.travado{overflow:hidden;}
 .reaj-depois{display:block;width:100%;margin-top:16px;background:none;border:none;cursor:pointer;
   font-family:inherit;font-size:13px;font-weight:700;color:var(--cinza-c);text-decoration:underline;}
 .reaj-depois:hover{color:var(--tinta-2);}
+
+/* ---------- reajuste: escolha entre anual e mensal ---------- */
+.reaj-planos{display:flex;flex-direction:column;gap:10px;}
+.reaj-plano{display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;
+  padding:15px 14px;border-radius:var(--r-sm);cursor:pointer;font-family:inherit;
+  background:var(--verde-tint2);border:1.5px solid var(--linha);transition:border-color .16s;}
+.reaj-plano:hover{border-color:var(--verde-borda);}
+.reaj-plano.destaque{border-color:var(--verde-logo);background:var(--verde-tint);}
+.reaj-plano .v{font-family:'Bricolage Grotesque',sans-serif;font-size:27px;font-weight:800;
+  color:var(--tinta);line-height:1;letter-spacing:-.03em;}
+.reaj-plano .v small{font-size:14px;font-weight:700;color:var(--cinza);letter-spacing:0;}
+.reaj-plano.destaque .v{color:var(--verde-logo);}
+.reaj-plano .s{font-size:12px;color:var(--cinza);font-weight:600;}
+.reaj-plano .selo{background:var(--verde-logo);color:#04150C;font-size:10.5px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.06em;padding:4px 10px;border-radius:20px;margin-bottom:4px;}

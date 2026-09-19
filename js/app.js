@@ -151,10 +151,24 @@ const App = {
     if (!Backend.ativo()) return true;
     await Backend.vincularAssinatura();
     const a = await Backend.assinatura();
-    if (Backend.assinaturaAtiva(a)) return true;
+    /* guarda sempre, não só quando está vencida: é daqui que sai o
+       `tem_videos`, que é o order bump dos vídeos de execução */
     this.assinaturaInfo = a;
+    if (Backend.assinaturaAtiva(a)) return true;
     this.tela = 'assinatura';
     return false;
+  },
+
+  /* ---------- VÍDEOS DE EXECUÇÃO (order bump) ----------
+     O bump entra na mesma assinatura do plano, então o acesso vale
+     enquanto a assinatura estiver ativa: não tem validade própria.
+
+     Sem conta (modo local) fica liberado, que é o mesmo critério do
+     resto do app: quem não tem backend não tem o que travar. */
+  temVideos() {
+    if (!Backend.ativo()) return true;
+    const a = this.assinaturaInfo;
+    return !!(a && a.tem_videos);
   },
 
   /* A marca no cabeçalho, em dois arranjos:
@@ -522,14 +536,17 @@ const App = {
     return Array.isArray(this.extras) && this.extras.indexOf('reajuste') >= 0;
   },
 
-  comprarReajuste() {
-    if (!CONFIG.CHECKOUT_URL_REAJUSTE) return;
+  comprarReajuste(periodo) {
+    const url = (periodo === 'anual' && CONFIG.CHECKOUT_URL_REAJUSTE_ANUAL)
+      ? CONFIG.CHECKOUT_URL_REAJUSTE_ANUAL
+      : CONFIG.CHECKOUT_URL_REAJUSTE;
+    if (!url) return;
     try { sessionStorage.setItem('ff_comprou_reajuste', '1'); } catch (e) {}
     const email = Backend.emailAtual();
     /* o e-mail vai junto: pagar com outro e-mail grava o acesso no
        lugar errado, e é o erro de suporte número um deste tipo de venda */
-    const sep = CONFIG.CHECKOUT_URL_REAJUSTE.includes('?') ? '&' : '?';
-    location.href = CONFIG.CHECKOUT_URL_REAJUSTE + (email ? sep + 'email=' + encodeURIComponent(email) : '');
+    const sep = url.includes('?') ? '&' : '?';
+    location.href = url + (email ? sep + 'email=' + encodeURIComponent(email) : '');
   },
 
   async verificarReajuste(silencioso) {

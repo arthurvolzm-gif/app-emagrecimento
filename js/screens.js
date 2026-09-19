@@ -754,9 +754,24 @@ const Telas = {
             </div>
           ` : `
             <div class="reaj-card preco">
-              <div class="reaj-val">${CONFIG.PRECO_REAJUSTE || 'R$9,90'}<span>/mês</span></div>
-              <div class="reaj-val-sub">Cancele quando quiser. O seu plano atual continua funcionando do mesmo jeito.</div>
-              <button class="login-btn" onclick="App.comprarReajuste()">Liberar o reajuste mensal</button>
+              ${CONFIG.CHECKOUT_URL_REAJUSTE_ANUAL ? `
+                <div class="reaj-planos">
+                  <button class="reaj-plano destaque" onclick="App.comprarReajuste('anual')">
+                    <span class="selo">Economize 2 meses</span>
+                    <span class="v">${CONFIG.PRECO_REAJUSTE_ANUAL || 'R$97'}<small>/ano</small></span>
+                    <span class="s">Sai por R$8,08 por mês</span>
+                  </button>
+                  <button class="reaj-plano" onclick="App.comprarReajuste('mensal')">
+                    <span class="v">${CONFIG.PRECO_REAJUSTE || 'R$9,90'}<small>/mês</small></span>
+                    <span class="s">Cancele quando quiser</span>
+                  </button>
+                </div>
+                <div class="reaj-val-sub" style="margin:14px 0 0">O seu plano atual continua funcionando do mesmo jeito.</div>
+              ` : `
+                <div class="reaj-val">${CONFIG.PRECO_REAJUSTE || 'R$9,90'}<span>/mês</span></div>
+                <div class="reaj-val-sub">Cancele quando quiser. O seu plano atual continua funcionando do mesmo jeito.</div>
+                <button class="login-btn" onclick="App.comprarReajuste('mensal')">Liberar o reajuste mensal</button>
+              `}
               <button class="corrida-japaguei" onclick="App.verificarReajuste()">Já paguei, liberar meu acesso</button>
             </div>
           `}

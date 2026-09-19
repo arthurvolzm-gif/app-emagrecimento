@@ -164,7 +164,7 @@ const Backend = {
     if (!this.ativo()) return null;
     const { data, error } = await this.sb
       .from('assinaturas')
-      .select('plano, status, data_expiracao, vagas, titular_email')
+      .select('plano, status, data_expiracao, vagas, titular_email, tem_videos')
       .eq('email', this.usuario.email.toLowerCase())
       .maybeSingle();
 

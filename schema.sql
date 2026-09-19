@@ -139,6 +139,12 @@ create index if not exists assinaturas_user_id_idx on public.assinaturas (user_i
 alter table public.assinaturas add column if not exists vagas int not null default 1;
 alter table public.assinaturas add column if not exists titular_email text;
 
+-- Vídeos de execução dos exercícios: order bump do checkout do plano.
+-- Fica aqui, e não em `acessos_extras`, porque o bump entra na MESMA
+-- assinatura: é cobrado junto e cancela junto. Coluna na linha da
+-- assinatura é o que representa isso sem inventar validade própria.
+alter table public.assinaturas add column if not exists tem_videos boolean not null default false;
+
 create index if not exists assinaturas_titular_idx on public.assinaturas (lower(titular_email));
 
 -- ---------------------------------------------------------------------
@@ -164,6 +170,9 @@ begin
      set status         = new.status,
          plano          = new.plano,
          data_expiracao = new.data_expiracao,
+         -- quem está na vaga do Duo enxerga os vídeos que o titular
+         -- comprou. Pra separar os dois, é só tirar esta linha.
+         tem_videos     = new.tem_videos,
          atualizado_em  = now()
    where lower(titular_email) = lower(new.email);
   return new;
@@ -172,7 +181,7 @@ $$;
 
 drop trigger if exists assinaturas_espelhar_duo on public.assinaturas;
 create trigger assinaturas_espelhar_duo
-  after update of status, plano, data_expiracao on public.assinaturas
+  after update of status, plano, data_expiracao, tem_videos on public.assinaturas
   for each row
   when (new.titular_email is null)
   execute function public.duo_espelhar_titular();

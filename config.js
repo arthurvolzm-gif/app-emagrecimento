@@ -45,6 +45,10 @@ const CONFIG = {
      todo mundo, sem cobrança (é o comportamento de antes). */
   CHECKOUT_URL_REAJUSTE: 'https://app.zuptos.com.br/checkout/4b614ef4fe65668b',
   PRECO_REAJUSTE: 'R$9,90',
+  /* o mesmo produto por ano: 9,8 meses de mensalidade, que é o desconto
+     anual padrão. Vazio = a tela do reajuste mostra só a opção mensal. */
+  CHECKOUT_URL_REAJUSTE_ANUAL: 'https://app.zuptos.com.br/checkout/56e417435f9b6728',
+  PRECO_REAJUSTE_ANUAL: 'R$97',
 
   /* ---------- acesso fechado (modo de teste) ----------
      Enquanto esta lista tiver algum e-mail, o app só abre para ELES, e

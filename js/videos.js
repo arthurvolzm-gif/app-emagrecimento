@@ -63,14 +63,25 @@ const Video = {
     return null;
   },
 
-  tem(nomeExercicio) { return !!this.de(nomeExercicio); },
+  /* Tem vídeo E a pessoa pode ver? O acesso é o order bump da compra
+     (ver App.temVideos). A tranca de verdade é o banco; isto aqui só
+     decide se o botão aparece. */
+  tem(nomeExercicio) {
+    if (!this.de(nomeExercicio)) return false;
+    return typeof App === 'undefined' || typeof App.temVideos !== 'function' || App.temVideos();
+  },
+
+  /* só o vídeo existe, ignorando o acesso */
+  existe(nomeExercicio) { return !!this.de(nomeExercicio); },
 
   /* Quantos exercícios da biblioteca já têm vídeo. Usado só pra te
      dar o número enquanto você grava; não aparece pra quem usa. */
   cobertura() {
     const total = typeof BIBLIOTECA !== 'undefined' ? BIBLIOTECA.length : 0;
+    /* existe(), não tem(): a cobertura é quanto VOCÊ já gravou, e não
+       muda conforme o acesso de quem está olhando */
     const com = typeof BIBLIOTECA !== 'undefined'
-      ? BIBLIOTECA.filter(e => Video.tem(e.nome)).length : 0;
+      ? BIBLIOTECA.filter(e => Video.existe(e.nome)).length : 0;
     return { com, total, pct: total ? Math.round(com / total * 100) : 0 };
   },
 

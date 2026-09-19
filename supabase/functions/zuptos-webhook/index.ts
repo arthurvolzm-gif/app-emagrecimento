@@ -50,6 +50,11 @@ const MARCA_CORRIDA = (Deno.env.get('ZUPTOS_MARCA_CORRIDA') || 'corrida').toLowe
 //   supabase secrets set ZUPTOS_MARCA_REAJUSTE=nome_novo
 const MARCA_REAJUSTE = (Deno.env.get('ZUPTOS_MARCA_REAJUSTE') || 'reajuste').toLowerCase();
 
+// Palavra do order bump dos videos de execucao. Como os outros bumps,
+// ele entra na MESMA assinatura do plano, entao nao vira linha propria:
+// so liga a coluna `tem_videos` na assinatura da pessoa.
+const MARCA_VIDEOS = (Deno.env.get('ZUPTOS_MARCA_VIDEOS') || 'video').toLowerCase();
+
 const sb = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
 // mapeia o texto do evento/status que a Zuptos manda pro nosso
@@ -119,6 +124,7 @@ function extrair(payload: any) {
   let cru = '';
   try { cru = JSON.stringify(payload).toLowerCase(); } catch { /* payload estranho */ }
   if (cru.includes(MARCA_DUO)) vagas = 2;
+  const temVideos = cru.includes(MARCA_VIDEOS);
 
   // ---------- MODO CORRIDA (compra avulsa) ----------
   // Produto separado da assinatura. Quando a compra e dele, esta
@@ -137,7 +143,7 @@ function extrair(payload: any) {
   // R$29,90 da pessoa. A diferenca e que este vence todo mes.
   const ehReajuste = /reajuste/i.test(plano || '') || cru.includes(MARCA_REAJUSTE);
 
-  return { email, plano, transacao, status, dataExpiracao, vagas, ehCorrida, ehReajuste };
+  return { email, plano, transacao, status, dataExpiracao, vagas, temVideos, ehCorrida, ehReajuste };
 }
 
 function tokenValido(req: Request, payload: any): boolean {
@@ -173,7 +179,7 @@ Deno.serve(async (req) => {
   // grava o payload cru sempre, mesmo se o resto abaixo falhar
   await sb.from('zuptos_webhook_logs').insert({ payload });
 
-  const { email, plano, transacao, status, dataExpiracao, vagas, ehCorrida, ehReajuste } = extrair(payload);
+  const { email, plano, transacao, status, dataExpiracao, vagas, temVideos, ehCorrida, ehReajuste } = extrair(payload);
 
   if (!email) {
     return new Response(JSON.stringify({ ok: true, aviso: 'sem e-mail no payload' }), { status: 200 });
@@ -231,6 +237,10 @@ Deno.serve(async (req) => {
       // nome do bump no payload) derrubaria a vaga extra de volta pra 1
       // e o titular perderia o Duo sem ninguem perceber.
       ...(vagas > 1 ? { vagas } : {}),
+      // mesma regra do `vagas`: so escreve quando detectou. Omitido, o
+      // upsert preserva o que ja estava la, e uma renovacao que nao
+      // repete o nome do bump no payload nao apaga o acesso.
+      ...(temVideos ? { tem_videos: true } : {}),
       atualizado_em: new Date().toISOString(),
     },
     { onConflict: 'email' },
