@@ -1177,6 +1177,41 @@ const Telas = {
   },
 
   /* linha do exercício, com seta que abre o registro de carga */
+  /* Uma linha por SÉRIE do exercício: 3x12 vira três pares de carga e
+     repetições. Antes era um par só pro exercício inteiro, o que obrigava
+     a pessoa a escolher qual série anotar (e quase todo mundo anota a
+     mais pesada, que era o que o campo acabava virando).
+
+     Cada linha já vem sugerida com o que ela fez na mesma série da última
+     vez; registro antigo, que tinha um valor só, sugere esse valor em
+     todas. As repetições do plano ficam de placeholder. */
+  _cargaForm(e, i, ultima) {
+    const series = Math.max(1, Math.min(10, Number(e.series) || 1));
+    const anteriores = Store.seriesDe(ultima);
+    const repsPlano = String(e.reps).replace(/\D/g, '') || '12';
+
+    return `
+      <div class="carga-form">
+        <div class="carga-cab">
+          <span>Série</span><span>Carga (kg)</span><span>Repetições</span>
+        </div>
+        ${Array.from({ length: series }, (_, k) => {
+          const ant = anteriores[k] || anteriores[anteriores.length - 1] || null;
+          return `
+          <div class="carga-serie">
+            <span class="cs-n">${k + 1}</span>
+            <input id="carga-peso-${k}" type="number" inputmode="decimal" step="0.5"
+                   placeholder="0" value="${ant && ant.peso ? ant.peso : ''}"
+                   onclick="event.stopPropagation()">
+            <input id="carga-reps-${k}" type="number" inputmode="numeric"
+                   placeholder="${repsPlano}" value="${ant && ant.reps ? ant.reps : ''}"
+                   onclick="event.stopPropagation()">
+          </div>`;
+        }).join('')}
+        <button class="carga-btn" onclick="event.stopPropagation();App.salvarCarga(${i}, ${series})">Salvar</button>
+      </div>`;
+  },
+
   _exercicio(e, i) {
     const nome = e.ex;
     const aberto = App.exAberto === nome;
@@ -1211,20 +1246,7 @@ const Telas = {
             </div>` : `
             <p class="carga-vazio">Ainda sem registro. Anote a carga de hoje para acompanhar sua evolução.</p>`}
 
-          <div class="carga-form">
-            <div class="carga-campo">
-              <label>Carga (kg)</label>
-              <input id="carga-peso" type="number" inputmode="decimal" step="0.5"
-                     placeholder="0" value="${ultima ? ultima.peso : ''}" onclick="event.stopPropagation()">
-            </div>
-            <div class="carga-campo">
-              <label>Repetições</label>
-              <input id="carga-reps" type="number" inputmode="numeric"
-                     placeholder="${String(e.reps).replace(/\D/g, '') || '12'}"
-                     value="${ultima && ultima.reps ? ultima.reps : ''}" onclick="event.stopPropagation()">
-            </div>
-            <button class="carga-btn" onclick="event.stopPropagation();App.salvarCarga(${i})">Salvar</button>
-          </div>
+          ${Telas._cargaForm(e, i, ultima)}
 
           ${Video.tem(nome) ? `
             <button class="video-btn" onclick="event.stopPropagation();App.verVideo('${nome.replace(/'/g, "\\'")}')">

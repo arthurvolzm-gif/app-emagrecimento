@@ -1079,15 +1079,27 @@ const App = {
     this.render();
   },
 
-  salvarCarga(i) {
+  salvarCarga(i, series) {
     const nome = this.nomeExercicio(i);
     if (!nome) return;
-    const peso = parseFloat(document.getElementById('carga-peso').value);
-    const reps = parseInt(document.getElementById('carga-reps').value, 10);
-    if (isNaN(peso) || peso < 0 || peso > 1000) return this.toast('Digite uma carga válida.');
+
+    /* lê as linhas preenchidas; série deixada em branco não vira
+       registro, pra quem parou antes do fim não gravar zero */
+    const lidas = [];
+    for (let k = 0; k < (Number(series) || 1); k++) {
+      const elP = document.getElementById('carga-peso-' + k);
+      const elR = document.getElementById('carga-reps-' + k);
+      if (!elP) continue;
+      const peso = parseFloat(elP.value);
+      if (isNaN(peso)) continue;
+      if (peso < 0 || peso > 1000) return this.toast('Digite uma carga válida.');
+      lidas.push({ peso, reps: parseInt(elR ? elR.value : '', 10) });
+    }
+    if (!lidas.length) return this.toast('Preencha a carga de pelo menos uma série.');
 
     const anterior = Store.ultimaCarga(nome);
-    Store.registrarCarga(nome, peso, reps);
+    const topo = Store.registrarCarga(nome, lidas);
+    const peso = topo ? topo.peso : 0;
     Backend.agendarSync();
     this.exAberto = null;
     this.render();

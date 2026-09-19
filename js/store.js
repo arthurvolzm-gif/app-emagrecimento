@@ -797,15 +797,40 @@ const Store = {
     return lista.length ? lista[lista.length - 1] : null;
   },
 
-  registrarCarga(ex, peso, reps) {
+  /* Recebe as séries do dia: [{peso, reps}, ...], uma por série do
+     treino. Guarda a lista inteira E um par peso/reps representativo,
+     que é a SÉRIE MAIS PESADA do dia.
+
+     O par continua existindo porque o histórico, o gráfico de evolução
+     e a sugestão de carga do reajuste leem dele. Assim os registros
+     antigos (que só tinham o par) continuam valendo sem migração, e as
+     telas não precisaram mudar. */
+  registrarCarga(ex, series) {
     if (!this.db.cargas) this.db.cargas = {};
     if (!this.db.cargas[ex]) this.db.cargas[ex] = [];
+
+    const preenchidas = (series || [])
+      .map(s => ({ peso: Number(s && s.peso), reps: Number(s && s.reps) || null }))
+      .filter(s => !isNaN(s.peso) && s.peso > 0);
+    if (!preenchidas.length) return null;
+
+    const topo = preenchidas.reduce((a, b) => (b.peso > a.peso ? b : a));
     const hoje = this.hoje();
     /* um registro por exercício por dia */
     this.db.cargas[ex] = this.db.cargas[ex].filter(r => r.data !== hoje);
-    this.db.cargas[ex].push({ data: hoje, peso: Number(peso), reps: Number(reps) || null });
+    this.db.cargas[ex].push({ data: hoje, peso: topo.peso, reps: topo.reps, series: preenchidas });
     this.db.cargas[ex].sort((a, b) => a.data.localeCompare(b.data));
     this.save();
+    return topo;
+  },
+
+  /* As séries de um registro. Registro antigo não tem `series`: o par
+     peso/reps dele vira uma série só, pra quem lê não precisar saber
+     que existiram dois formatos. */
+  seriesDe(reg) {
+    if (!reg) return [];
+    if (Array.isArray(reg.series) && reg.series.length) return reg.series;
+    return [{ peso: reg.peso, reps: reg.reps }];
   },
 
   /* resumo de evolução para a aba de progresso */
