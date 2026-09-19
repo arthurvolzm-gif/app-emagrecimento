@@ -359,6 +359,7 @@ const App = {
     document.body.appendChild(capa);
 
     this.pintar();
+    this.pintarMarcaTopo();   /* a marca do cabeçalho já tem que existir: é pra lá que a logo voa quando a pessoa cai direto na Início */
     this.telaPintada = this.tela;
 
     /* a marca não pisca duas vezes: a logo grande da capa é levada até o
@@ -379,14 +380,30 @@ const App = {
     } else if (app) {
       this.cascata(app, 0);
     }
-    if (tela && marca) {
-      const alvo = tela.querySelector('.login-logo');
+    /* Pra onde a logo voa. A tela de login tem a dela; quem já tem perfil
+       cai direto na Início, e aí o destino é a marca do cabeçalho.
+
+       Sem esse segundo caso a logo não tinha pra onde ir: o `if` não
+       rodava, ela não ganhava a classe `juntando` e ficava parada, opaca,
+       por cima do app já montado até a capa sumir. Era o "ela não some
+       junto com o fundo". */
+    if (marca) {
+      const alvo = (tela && tela.querySelector('.login-logo'))
+                || document.querySelector('#app .topo-marca, #app .marca-linha img');
+
       if (alvo) {
         const a = alvo.getBoundingClientRect(), m = marca.getBoundingClientRect();
         marca.style.setProperty('--dx',  (a.left + a.width  / 2 - (m.left + m.width  / 2)) + 'px');
         marca.style.setProperty('--dy',  (a.top  + a.height / 2 - (m.top  + m.height / 2)) + 'px');
         marca.style.setProperty('--esc', a.width / m.width);
         capa.classList.add('juntando');
+        /* a de baixo só acende quando a de cima encaixou nela, senão a
+           marca aparece duas vezes durante o voo. Na tela de login isso
+           já vem do CSS (.tela-login.entrando .login-logo). */
+        if (!tela) alvo.classList.add('marca-chegando');
+      } else {
+        /* nenhum destino: some junto com o fundo em vez de ficar parada */
+        capa.classList.add('sumindo');
       }
     }
 

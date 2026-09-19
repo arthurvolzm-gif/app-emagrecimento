@@ -646,12 +646,19 @@ a{color:inherit;text-decoration:none;}
    destino, então as duas coincidem e a troca não aparece. Acender junto
    com o pouso arriscaria um quadro sem logo nenhuma. */
 .tela-login.entrando .login-logo{animation:marcaChega 1ms 600ms both;}
+/* a marca do cabeçalho, quando é ela o destino do voo */
+.marca-chegando{animation:marcaChega 1ms 600ms both;}
+/* sem destino nenhum: a logo desbota junto com o fundo, em vez de ficar
+   parada por cima do app até a capa ser removida */
+.capa-abertura.sumindo .abertura-logo{animation:capaSai 620ms ease both;}
 @keyframes conteudoEntra{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
 @keyframes marcaChega{from{opacity:0;}to{opacity:1;}}
 
 @media (prefers-reduced-motion: reduce){
   .entra-el,.letreando .letra,
   .capa-abertura.juntando .abertura-logo,
+  .capa-abertura.sumindo .abertura-logo,
+  .marca-chegando,
   .tela-login.entrando .login-content > *,
   .tela-login.entrando .login-footer{animation:none;}
   .capa-abertura.saindo{animation-duration:1ms;}
