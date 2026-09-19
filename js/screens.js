@@ -828,6 +828,7 @@ const Telas = {
             ? 'Modo Corrida · semana ' + Store.corrida().semana + ' de ' + Store.planoCorrida(Store.corrida().semana).total
             : 'Modo Corrida'}</div>
         </div>
+        ${Telas._btnBiblioteca()}
       </div>
 
       <div class="tela stagger">
@@ -844,92 +845,65 @@ const Telas = {
   },
 
   _abasTreino() {
-    const temCorrida = this._temCorrida();
-    /* o cadeado só aparece pra quem não levou o order bump */
+    return `
+      <div class="toggle duas">
+        <button class="${App.abaTreinos === 'treino' ? 'on' : ''}" onclick="App.setAbaTreinos('treino')">Treino</button>
+        <button class="${App.abaTreinos === 'corrida' ? 'on' : ''}" onclick="App.setAbaTreinos('corrida')">Corrida</button>
+      </div>`;
+  },
+
+  /* o botão da biblioteca, no canto do cabeçalho de Treinos. Trancado,
+     ganha o cadeado e abre a camada de venda em vez da lista. */
+  _btnBiblioteca() {
     const trancada = !App.temVideos();
     return `
-      <div class="toggle${temCorrida ? '' : ' duas'}">
-        <button class="${App.abaTreinos === 'treino' ? 'on' : ''}" onclick="App.setAbaTreinos('treino')">Treino</button>
-        ${temCorrida ? `<button class="${App.abaTreinos === 'corrida' ? 'on' : ''}" onclick="App.setAbaTreinos('corrida')">Corrida</button>` : ''}
-        <button class="${App.abaTreinos === 'biblioteca' ? 'on' : ''}" onclick="App.setAbaTreinos('biblioteca')">${trancada ? '🔒 ' : ''}Biblioteca</button>
-      </div>`;
+      <button class="btn-mini quadrado bib-btn" onclick="App.abrirBiblioteca()"
+              aria-label="Biblioteca de exercícios">
+        ${Ic.livro(19)}
+        ${trancada ? `<span class="bib-cad">🔒</span>` : ''}
+      </button>`;
   },
 
-  /* ============ BIBLIOTECA DE EXERCÍCIOS (aba) ============
-     Era um ícone sem rótulo no canto do cabeçalho, que ninguém achava.
-     Virou aba, ao lado de Treino e Corrida. Quem não levou o order bump
-     vê o cadeado e, ao tocar, a tela do produto. */
-  bibliotecaAba() {
-    const liberada = App.temVideos();
-    return `
-      <div class="topo">
-        <div>
-          <h1 class="display">Treinos</h1>
-          <div class="topo-sub">Biblioteca Exercícios</div>
-        </div>
-      </div>
-
-      <div class="tela stagger">
-        ${this._abasTreino()}
-        ${liberada ? this._bibliotecaConteudo() : this._bibliotecaVenda()}
-      </div>`;
-  },
-
-  _bibliotecaVenda() {
+  /* ============ BIBLIOTECA DE EXERCÍCIOS ============
+     O botão mora no canto do cabeçalho de Treinos, onde sempre esteve.
+     Liberada, abre a lista. Trancada, abre esta camada por cima da
+     tela, no mesmo formato da mensagem de boas-vindas. */
+  bibliotecaCamada() {
     const naLoja = window.NO_APP_DA_LOJA;
-    const comVideo = typeof Video !== 'undefined' ? Video.cobertura() : { com: 0, total: BIBLIOTECA.length };
+    const temLink = !naLoja && CONFIG.CHECKOUT_URL_BIBLIOTECA;
 
     return `
-      <div class="card corrida-capa">
-        <div class="corrida-cad">${Ic.livro(30)}</div>
-        <h3>Biblioteca Exercícios</h3>
-        <p>Os ${BIBLIOTECA.length} exercícios do seu treino com o vídeo da execução, pra você ver o movimento antes de fazer.</p>
-        <span class="corrida-selo">${Ic.cadeado(13)} Ainda não liberado</span>
-      </div>
+      <div class="bv-caixa" role="dialog" aria-modal="true" aria-labelledby="bib-tt">
+        <div class="bv-marca">${Ic.livro(26)}</div>
+        <h2 class="bv-tt display" id="bib-tt">Biblioteca Exercícios</h2>
+        <p class="bv-txt" style="text-align:center">
+          Os ${BIBLIOTECA.length} exercícios do seu treino com o vídeo da execução,
+          pra você ver o movimento antes de fazer.
+        </p>
 
-      <h3 class="secao-tt">Por que vale</h3>
-      <div class="card" style="padding:6px 18px">
-        <div class="lista-item" style="align-items:flex-start">
-          <span class="lista-ic">${Ic.camera(19)}</span>
-          <div><div class="lista-t">Ver antes de fazer</div>
-          <div class="lista-s">Texto explica; vídeo mostra. Postura, amplitude e ritmo você só entende vendo.</div></div>
+        <div class="bib-razoes">
+          <div><span>${Ic.camera(17)}</span><div><b>Ver antes de fazer.</b> Texto explica; vídeo mostra. Postura, amplitude e ritmo você só entende vendo.</div></div>
+          <div><span>${Ic.halter(17)}</span><div><b>Direto do seu treino.</b> O botão aparece dentro de cada exercício do dia, sem precisar procurar.</div></div>
+          <div><span>${Ic.check(17)}</span><div><b>Pagamento único.</b> Não é mensalidade. Paga uma vez e fica enquanto você for assinante.</div></div>
         </div>
-        <div class="lista-item" style="align-items:flex-start">
-          <span class="lista-ic">${Ic.halter(19)}</span>
-          <div><div class="lista-t">Direto do seu treino</div>
-          <div class="lista-s">O botão aparece dentro de cada exercício do dia, sem precisar procurar.</div></div>
-        </div>
-        <div class="lista-item" style="align-items:flex-start">
-          <span class="lista-ic">${Ic.check(19)}</span>
-          <div><div class="lista-t">Pagamento único</div>
-          <div class="lista-s">Não é mensalidade. Paga uma vez e fica enquanto você for assinante.</div></div>
-        </div>
-      </div>
 
-      ${naLoja ? `
-        <div class="card">
-          <div class="card-tt">${Ic.chat(20)} Como liberar</div>
-          <p class="corrida-nota" style="margin:0">A biblioteca não faz parte do seu plano atual. Fale com o suporte que a gente te explica.</p>
-          <div style="height:12px"></div>
-          <a class="btn sec" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">Falar com o suporte</a>
-        </div>
-      ` : CONFIG.CHECKOUT_URL_BIBLIOTECA ? `
-        <div class="card corrida-preco">
-          <div class="corrida-val">${CONFIG.PRECO_BIBLIOTECA || 'R$9,90'}</div>
-          <div class="corrida-val-sub">Pagamento único.</div>
+        ${temLink ? `
+          <div class="bib-preco">${CONFIG.PRECO_BIBLIOTECA || 'R$9,90'}<span>pagamento único</span></div>
           <button class="btn" onclick="App.comprarBiblioteca()">Liberar a biblioteca</button>
           <button class="corrida-japaguei" onclick="App.verificarBiblioteca()">Já paguei, liberar meu acesso</button>
-        </div>
-      ` : `
-        <div class="card">
-          <div class="card-tt">${Ic.chat(20)} Como liberar</div>
-          <p class="corrida-nota" style="margin:0">A biblioteca é oferecida na hora da assinatura. Se você não levou e quer agora, chame o suporte que a gente libera pra você.</p>
-          <div style="height:12px"></div>
-          <a class="btn sec" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">Falar com o suporte</a>
-        </div>
-      `}
+        ` : `
+          <p class="bv-txt" style="text-align:center">
+            ${naLoja
+              ? 'A biblioteca não faz parte do seu plano atual. Fale com o suporte que a gente te explica.'
+              : 'A biblioteca é oferecida na hora da assinatura. Se você não levou e quer agora, chame o suporte.'}
+          </p>
+          <a class="btn sec bv-sup" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">
+            ${Ic.chat(19)} Falar com o suporte
+          </a>
+        `}
 
-      ${comVideo.com ? '' : `<p class="corrida-rodape">Os vídeos estão sendo gravados e aparecem aqui conforme ficam prontos.</p>`}`;
+        <button class="bib-depois" onclick="App.fecharCamada()">Agora não</button>
+      </div>`;
   },
 
   _bibliotecaConteudo() {
@@ -1103,7 +1077,6 @@ const Telas = {
 
   treinos() {
     if (App.abaTreinos === 'corrida') return Telas.corrida();
-    if (App.abaTreinos === 'biblioteca') return Telas.bibliotecaAba();
     const plano = Store.planoTreino();
     const dias = Store.diasTreino();
     const dia = dias[App.diaTreino];
@@ -1117,6 +1090,7 @@ const Telas = {
           <h1 class="display">Treinos</h1>
           <div class="topo-sub">${plano.frequencia} · ${Store.db.perfil.local === 'casa' ? 'Em casa' : 'Academia'}</div>
         </div>
+        ${Telas._btnBiblioteca()}
       </div>
 
       <div class="tela stagger">

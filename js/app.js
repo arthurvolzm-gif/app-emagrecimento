@@ -38,6 +38,7 @@ const App = {
      produtos extras que a pessoa comprou (vem do banco, não do
      aparelho — ver App.carregarExtras). null = ainda não consultado. */
   abaTreinos: 'treino',
+  camada: false,        /* uma camada (não a de boas-vindas) está aberta */
   extras: null,
   semanaCorrida: 0,
 
@@ -238,6 +239,7 @@ const App = {
   boasVindas() {
     const bg = document.getElementById('bv-bg');
     if (!bg) return;
+    if (this.camada) return;          /* outra camada está usando o mesmo elemento */
     const mostrar = this.tela === 'inicio' && Store.temPerfil() && Store.boasVindasPendente();
 
     if (!mostrar) {
@@ -598,7 +600,6 @@ const App = {
   setAbaTreinos(aba) {
     this.abaTreinos = aba;
     this.semanaCorrida = 0;
-    if (aba === 'biblioteca') { this.busca = ''; this.cat = 'Todos'; }
     if (aba === 'corrida') this.carregarExtras();
     this.render();
     window.scrollTo(0, 0);
@@ -607,6 +608,41 @@ const App = {
   /* ---------- BIBLIOTECA DE EXERCÍCIOS ----------
      O acesso vem do order bump (App.temVideos). Este checkout avulso é
      só pra quem já é cliente e não levou o bump na hora da assinatura. */
+  /* liberada abre a lista; trancada abre a camada de venda por cima da
+     tela, no mesmo formato da mensagem de boas-vindas */
+  abrirBiblioteca() {
+    if (this.temVideos()) { this.busca = ''; this.cat = 'Todos'; return this.ir('biblioteca'); }
+    this.abrirCamada(Telas.bibliotecaCamada());
+  },
+
+  /* ---------- camada por cima da tela ----------
+     Reaproveita o mesmo elemento e o mesmo visual da mensagem de
+     boas-vindas. A marca `camada` existe porque App.boasVindas() roda a
+     cada render e fecharia esta camada junto, por achar que a de
+     boas-vindas é que estava aberta. */
+  abrirCamada(html) {
+    const bg = document.getElementById('bv-bg');
+    if (!bg) return;
+    bg.innerHTML = html;
+    bg.classList.add('on');
+    bg.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('travado');
+    this.camada = true;
+  },
+
+  fecharCamada() {
+    const bg = document.getElementById('bv-bg');
+    this.camada = false;
+    if (!bg) return;
+    bg.classList.add('saindo');
+    setTimeout(() => {
+      bg.classList.remove('on', 'saindo');
+      bg.setAttribute('aria-hidden', 'true');
+      bg.innerHTML = '';
+      document.body.classList.remove('travado');
+    }, 280);
+  },
+
   comprarBiblioteca() {
     if (!CONFIG.CHECKOUT_URL_BIBLIOTECA) return;
     try { sessionStorage.setItem('ff_comprou_biblioteca', '1'); } catch (e) {}
@@ -624,8 +660,9 @@ const App = {
          responde é a mesma consulta de sempre */
       this.assinaturaInfo = await Backend.assinatura();
       if (this.temVideos()) {
-        this.abaTreinos = 'biblioteca';
-        this.render();
+        this.fecharCamada();
+        this.busca = ''; this.cat = 'Todos';
+        this.ir('biblioteca');
         this.toast('Biblioteca liberada ✅', true);
         return true;
       }
