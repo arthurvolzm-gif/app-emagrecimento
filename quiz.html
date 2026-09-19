@@ -519,31 +519,48 @@ body{
   .vsl-ask{font-size:20px;}
 }
 
-/* ===== POP-UP DE SAÍDA (BOTÃO VOLTAR) ===== */
-.saida-overlay{position:fixed;inset:0;background:rgba(20,40,30,.78);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999;}
+/* ===== POP-UP DE VOLTA DO CHECKOUT =====
+   Mesma paleta escura do resto do quiz (.card-quiz): quem volta do
+   checkout cai numa janela que parece a continuacao da tela, nao um
+   banner de outro site. */
+.saida-overlay{position:fixed;inset:0;background:rgba(5,12,8,.86);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999;}
 .saida-overlay.aberto{display:flex;}
-.saida-modal{background:#fff;border-radius:24px;padding:44px 32px 28px;box-shadow:0 12px 60px rgba(0,0,0,.12);width:min(460px,100%);max-height:92vh;overflow:hidden auto;text-align:center;position:relative;animation:saidaEntra .28s ease-out;}
-.saida-modal::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:var(--verde);}
+.saida-modal{background:rgba(19,29,24,.98);border:1px solid rgba(76,175,130,.18);border-radius:22px;padding:40px 26px 24px;box-shadow:0 18px 60px rgba(0,0,0,.6), 0 0 40px rgba(76,175,130,.07);width:min(470px,100%);max-height:92vh;overflow:hidden auto;text-align:center;position:relative;animation:saidaEntra .28s ease-out;}
+.saida-modal::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;border-radius:22px 22px 0 0;background:linear-gradient(90deg,#27ae60,var(--verde-claro));}
 @keyframes saidaEntra{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:none;}}
-.saida-fechar{position:absolute;top:12px;right:14px;background:none;border:none;font-size:26px;line-height:1;color:#ccc;cursor:pointer;padding:4px 8px;z-index:2;}
-.saida-fechar:hover{color:#888;}
-.saida-selo{text-transform:uppercase;color:var(--verde-claro);font-weight:700;letter-spacing:1px;font-size:13px;margin-bottom:10px;}
-.saida-titulo{font-family:'Open Sans',sans-serif;font-size:27px;font-weight:800;line-height:1.25;color:var(--verde-escuro);margin-bottom:14px;}
+.saida-fechar{position:absolute;top:10px;right:12px;background:none;border:none;font-size:26px;line-height:1;color:#6f8579;cursor:pointer;padding:4px 8px;z-index:2;}
+.saida-fechar:hover{color:#cfe0d6;}
+.saida-selo{display:inline-block;background:rgba(76,175,130,.14);border:1px solid rgba(76,175,130,.3);text-transform:uppercase;color:var(--verde-claro);font-weight:800;letter-spacing:1px;font-size:11.5px;padding:6px 14px;border-radius:20px;margin-bottom:14px;}
+.saida-titulo{font-family:'Open Sans',sans-serif;font-size:26px;font-weight:900;line-height:1.25;color:#eef5f0;margin-bottom:12px;}
 .saida-titulo span{color:var(--verde-claro);}
-.saida-sub{color:#222;font-weight:700;font-size:15px;line-height:1.7;letter-spacing:.3px;margin-bottom:24px;}
-.saida-de{font-size:16px;color:#aaa;text-decoration:line-through;margin-bottom:4px;}
-.saida-por{font-size:13px;text-transform:uppercase;color:var(--verde-claro);font-weight:700;letter-spacing:1px;margin-bottom:4px;}
-.saida-val{font-family:'Open Sans',sans-serif;font-size:46px;font-weight:900;color:var(--verde-escuro);line-height:1;margin-bottom:6px;}
-.saida-economia{font-size:15px;font-weight:700;color:var(--verde);margin-bottom:26px;}
-.saida-modal .btn{font-size:16px;padding:17px 24px;}
-.saida-recusa{display:inline-block;margin-top:14px;font-size:13px;color:#aaa;text-decoration:underline;background:none;border:none;cursor:pointer;font-family:inherit;}
-.saida-recusa:hover{color:#888;}
-.saida-rodape{font-size:12px;color:#999;margin-top:12px;letter-spacing:.3px;}
+.saida-sub{color:#cfe0d6;font-size:14.5px;line-height:1.7;margin-bottom:20px;}
+.saida-lista{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 16px;margin-bottom:18px;text-align:left;}
+.saida-lista h4{font-size:12px;text-transform:uppercase;letter-spacing:.9px;color:var(--verde-claro);font-weight:800;margin-bottom:6px;text-align:center;}
+.saida-it{display:flex;align-items:flex-start;gap:9px;padding:8px 0;font-size:13.5px;color:#b9cec4;line-height:1.5;border-bottom:1px solid rgba(255,255,255,.06);}
+.saida-it:last-child{border-bottom:none;}
+.saida-it .ic{width:19px;height:19px;border-radius:50%;background:var(--verde);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.saida-it strong{color:#eef5f0;}
+.saida-preco{background:rgba(76,175,130,.12);border:1px solid rgba(76,175,130,.24);border-radius:16px;padding:18px 16px;margin-bottom:18px;}
+.saida-de{font-size:15px;color:#8aa79a;text-decoration:line-through;}
+.saida-por{font-size:12px;text-transform:uppercase;color:var(--verde-claro);font-weight:800;letter-spacing:1px;margin-top:4px;}
+.saida-val{font-family:'Open Sans',sans-serif;font-size:46px;font-weight:900;color:#eef5f0;line-height:1;margin:2px 0 4px;}
+.saida-economia{font-size:13.5px;font-weight:800;color:var(--verde-claro);}
+.saida-depois{font-size:12px;color:#8aa79a;line-height:1.55;margin-top:10px;}
+/* o conteudo e mais alto que a tela do celular: o botao fica colado no
+   rodape do modal enquanto a lista rola, e volta pro lugar no fim.
+   O degrade na faixa evita o texto da lista passando por baixo dele. */
+.saida-acao{position:sticky;bottom:0;z-index:3;padding:16px 0 8px;background:linear-gradient(180deg,rgba(19,29,24,0) 0,rgba(19,29,24,.97) 16px);box-shadow:0 24px 0 0 rgba(19,29,24,.97);margin-bottom:24px;}
+.saida-modal .btn{font-size:15.5px;padding:17px 18px;}
+.saida-recusa{display:inline-block;margin-top:0;font-size:13px;color:#7c9186;text-decoration:underline;background:none;border:none;cursor:pointer;font-family:inherit;}
+.saida-recusa:hover{color:#cfe0d6;}
+.saida-rodape{font-size:11.5px;color:#7c9186;margin-top:12px;line-height:1.6;letter-spacing:.2px;}
 @media (max-width:768px){
-  .saida-modal{padding:36px 20px 22px;border-radius:18px;}
+  .saida-modal{padding:34px 18px 20px;border-radius:18px;}
   .saida-titulo{font-size:22px;}
-  .saida-sub{font-size:14px;}
+  .saida-sub{font-size:13.5px;}
+  .saida-it{font-size:13px;}
   .saida-val{font-size:38px;}
+  .saida-modal .btn{font-size:14.5px;padding:16px 14px;}
 }
 </style>
 </head>
@@ -1305,8 +1322,21 @@ async function enviarRespostasEIr(destino){
   location.href = token ? (destino + sep + 'quiz=' + token) : destino;
 }
 
+/* Os planos nao sao links: sao divs com onclick que chamam
+   location.href la no fim. Entao a ida ao checkout tem que ser marcada
+   aqui, na mao — nenhum listener de clique em <a> pega esse caso.
+   Guardamos tambem em que tela a pessoa estava, porque se o navegador
+   recarregar a pagina na volta o quiz comecaria do zero. */
+function guardarVoltaDoCheckout(){
+  try{
+    sessionStorage.setItem('ff_check', '1');
+    sessionStorage.setItem('ff_volta', JSON.stringify({ idx: state.idx, answers: state.answers }));
+  }catch(e){}
+}
+
 function irParaPlano(chave){
   salvarParaOApp();
+  guardarVoltaDoCheckout();
   track('quiz_checkout', { indice: calcIndiceConstancia(), objetivo: objetivoId(), plano: chave });
   px('InitiateCheckout', true);
 
@@ -1854,32 +1884,60 @@ function startMidnightCountdown(){
 }
 
 /* start */
+/* volta do checkout com a pagina recarregada: devolve a pessoa na
+   mesma tela de onde ela saiu, em vez de recomecar o quiz */
+try{
+  if(sessionStorage.getItem('ff_check') === '1'){
+    const volta = JSON.parse(sessionStorage.getItem('ff_volta') || 'null');
+    if(volta && typeof volta.idx === 'number' && FLOW[volta.idx]){
+      state.idx = volta.idx;
+      state.answers = volta.answers || {};
+    }
+  }
+}catch(e){}
+
 render();
 </script>
 
-<!-- ===== POP-UP DE SAÍDA (BOTÃO VOLTAR) ===== -->
+<!-- ===== POP-UP DE VOLTA DO CHECKOUT =====
+     Abre quando a pessoa foi pro checkout e voltou sem comprar, e
+     tambem quando ela aperta voltar na tela final do quiz. -->
 <div class="saida-overlay" id="saida-overlay" role="dialog" aria-modal="true" aria-labelledby="saida-titulo">
   <div class="saida-modal">
     <button class="saida-fechar" id="saida-fechar" aria-label="Fechar">&times;</button>
-    <div class="saida-selo">Espere um segundo</div>
-    <h3 class="saida-titulo" id="saida-titulo">Você ganhou <span>33% de desconto</span></h3>
-    <p class="saida-sub">É a única vez que esse valor aparece. Fechando esta janela, o preço volta ao normal.</p>
+    <div class="saida-selo">Você não terminou a compra</div>
+    <h3 class="saida-titulo" id="saida-titulo">Leve o seu primeiro mês por <span>R$2,99</span></h3>
+    <p class="saida-sub">Você voltou sem finalizar, então liberamos <strong style="color:#eef5f0;">90% de desconto no primeiro mês</strong> do Focus Fit. Você entra hoje, usa o app inteiro por 30 dias e só continua se fizer sentido pra você.</p>
 
-    <div class="saida-de">De R$ 107,90</div>
-    <div class="saida-por">Por apenas</div>
-    <div class="saida-val">R$ 19,90</div>
-    <div class="saida-economia">Você economiza R$97,90 + R$10,00</div>
+    <div class="saida-preco">
+      <div class="saida-de">R$29,90</div>
+      <div class="saida-por">Primeiro mês por</div>
+      <div class="saida-val">R$2,99</div>
+      <div class="saida-economia">Você economiza R$27,00 hoje</div>
+      <p class="saida-depois">Depois do primeiro mês, R$29,90 por mês. Cancele quando quiser.</p>
+    </div>
 
-    <a href="#" class="btn" id="saida-btn">Quero o método com desconto &rarr;</a>
-    <button class="saida-recusa" id="saida-recusa">Não quero o desconto, prefiro pagar o valor cheio</button>
-    <p class="saida-rodape">Acesso imediato &bull; Compra segura pela Ticto &bull; Garantia de 7 dias</p>
+    <div class="saida-lista">
+      <h4>O que você recebe hoje</h4>
+      <div class="saida-it"><span class="ic">&#10003;</span><span><strong>Cardápio completo</strong>, calculado na sua meta, com troca de alimentos em cada refeição.</span></div>
+      <div class="saida-it"><span class="ic">&#10003;</span><span><strong>Treino montado pra você</strong>, pro seu sexo e pro lugar onde você treina, casa ou academia.</span></div>
+      <div class="saida-it"><span class="ic">&#10003;</span><span><strong>Metas de água e sono</strong> acompanhadas todo dia dentro do app.</span></div>
+      <div class="saida-it"><span class="ic">&#10003;</span><span><strong>Registro de evolução</strong>: pesagem, fotos de progresso e o resumo da sua semana.</span></div>
+      <div class="saida-it"><span class="ic">&#10003;</span><span><strong>Pontos e níveis</strong> pra constância aparecer em número, não só na balança.</span></div>
+      <div class="saida-it"><span class="ic">&#10003;</span><span><strong>Lembretes das refeições</strong> nos horários que você escolher.</span></div>
+      <div class="saida-it"><span class="ic">&#10003;</span><span><strong>Suporte no WhatsApp</strong> pra dúvida que aparecer no caminho.</span></div>
+    </div>
+
+    <div class="saida-acao"><a href="#" class="btn" id="saida-btn">Quero meu 1º mês por R$2,99 &rarr;</a></div>
+    <button class="saida-recusa" id="saida-recusa">Não quero o desconto, prefiro ver os planos</button>
+    <p class="saida-rodape">Pix ou cartão &bull; Acesso imediato &bull; Garantia de 30 dias</p>
   </div>
 </div>
 
 <script>
 (function () {
-  /* Link do checkout da oferta com desconto (R$19,90). */
-  var CHECKOUT_DESCONTO = 'https://payment.ticto.app/O1376B6BC';
+  /* Checkout com 90% de desconto no primeiro mes (R$2,99). */
+  var CHECKOUT_DESCONTO = 'https://app.zuptos.com.br/checkout/d8f47f9b763749c5';
 
   var overlay = document.getElementById('saida-overlay');
   var btn     = document.getElementById('saida-btn');
@@ -1887,31 +1945,32 @@ render();
   var usado   = false;   /* uma camada so: depois de exibido, o voltar funciona normal */
 
   function jaExibido() {
-    try { return sessionStorage.getItem('cz_saida') === '1'; } catch (e) { return false; }
+    try { return sessionStorage.getItem('ff_saida') === '1'; } catch (e) { return false; }
   }
 
   function marcarExibido() {
-    try { sessionStorage.setItem('cz_saida', '1'); } catch (e) {}
+    try { sessionStorage.setItem('ff_saida', '1'); } catch (e) {}
   }
 
-  /* O pop-up so vale na tela final do quiz (a mini landing com a oferta).
+  /* O pop-up so vale na tela final do quiz (a projecao com os planos).
      Durante as perguntas o botao voltar funciona normalmente. */
-  function naMiniLanding() {
+  function naTelaFinal() {
     try { return FLOW[state.idx] && FLOW[state.idx].type === 'projecao'; }
     catch (e) { return false; }
   }
 
   function armar() {
-    if (armado || usado || jaExibido() || !naMiniLanding()) return;
-    try { history.pushState({ cz: 1 }, ''); armado = true; } catch (err) {}
+    if (armado || usado || jaExibido() || !naTelaFinal()) return;
+    try { history.pushState({ ff: 1 }, ''); armado = true; } catch (err) {}
   }
 
-  function abrir() {
+  function abrir(origem) {
     overlay.classList.add('aberto');
     document.body.style.overflow = 'hidden';
     usado = true;
     marcarExibido();
-    if (typeof px === 'function') { px('ExitOffer'); }
+    track('quiz_oferta_saida', { origem: origem || 'botao_voltar' });
+    px('ExitOffer');
   }
 
   function fechar() {
@@ -1920,37 +1979,37 @@ render();
   }
 
   window.addEventListener('popstate', function () {
-    if (usado || jaExibido() || !armado) return;   /* so abre se foi armado na mini landing */
-    abrir();
+    if (usado || jaExibido() || !armado) return;   /* so abre se foi armado na tela final */
+    abrir('botao_voltar');
   });
 
   /* apenas gestos que contam como user activation no Chrome: scroll NAO conta */
   ['pointerdown', 'mousedown', 'click', 'touchstart', 'keydown'].forEach(function (evt) {
-    window.addEventListener(evt, armar, { passive: true });   /* sem 'once': arma quando a pessoa chegar na mini landing */
+    window.addEventListener(evt, armar, { passive: true });   /* sem 'once': arma quando a pessoa chegar na tela final */
   });
 
   btn.addEventListener('click', function (e) {
     e.preventDefault();
-    if (typeof px === 'function') { px('ExitOfferClick'); }
-    window.location.href = CHECKOUT_DESCONTO;
+    track('quiz_oferta_saida_clique', {});
+    px('InitiateCheckout', true);
+    salvarParaOApp();                 /* o cadastro do app ja abre preenchido */
+    try { sessionStorage.removeItem('ff_check'); } catch (err) {}   /* nao reabre o pop-up se voltar de novo */
+    enviarRespostasEIr(CHECKOUT_DESCONTO);
   });
 
-  /* ===== RETORNO DO CHECKOUT =====
-     Quem aperta voltar no checkout da Ticto cai de novo nesta pagina. */
-  function marcarIdaAoCheckout(e) {
-    var a = e.target && e.target.closest ? e.target.closest('a[href*="payment.ticto.app"]') : null;
-    if (!a || a.id === 'saida-btn') return;
-    try { sessionStorage.setItem('cz_check', '1'); } catch (err) {}
-  }
-
-  document.addEventListener('click', marcarIdaAoCheckout, true);
-
+  /* ===== VOLTA DO CHECKOUT =====
+     guardarVoltaDoCheckout() marcou 'ff_check' na ida (ver irParaPlano).
+     Se a pessoa esta de volta aqui, ela nao comprou. */
   window.addEventListener('pageshow', function () {
     var voltou = false;
-    try { voltou = sessionStorage.getItem('cz_check') === '1'; } catch (err) {}
+    try { voltou = sessionStorage.getItem('ff_check') === '1'; } catch (err) {}
     if (!voltou) return;
-    try { sessionStorage.removeItem('cz_check'); } catch (err) {}
-    setTimeout(abrir, 400);
+    try {
+      sessionStorage.removeItem('ff_check');
+      sessionStorage.removeItem('ff_volta');
+      sessionStorage.removeItem('ff_saida');   /* volta do checkout sempre mostra, mesmo se o voltar ja tivesse aberto antes */
+    } catch (err) {}
+    setTimeout(function () { abrir('volta_checkout'); }, 400);
   });
 
   document.getElementById('saida-fechar').addEventListener('click', fechar);
