@@ -1309,7 +1309,34 @@ const Telas = {
 
         ${Telas._peso()}
 
-        <h3 class="secao-tt">Todos os níveis</h3>
+        <button class="card fora-btn" onclick="App.ir('niveis')">
+          <span class="fb-ic">${Ic.festa(21)}</span>
+          <div>
+            <div class="fb-t">Ver níveis de evolução</div>
+            <div class="fb-s">Os 10 níveis e como ganhar pontos</div>
+          </div>
+          <span class="lista-seta">›</span>
+        </button>
+      </div>`;
+  },
+
+  /* ============ NÍVEIS ============
+     Era uma lista de dez níveis mais uma tabela de pontos empilhadas no
+     fim do Progresso: muita rolagem pra uma coisa que se lê uma vez.
+     Virou tela própria, atrás de um botão. */
+  niveis() {
+    const nv = Store.nivel();
+
+    return `
+      <div class="topo">
+        <div>
+          <h1 class="display">Níveis</h1>
+          <div class="topo-sub">Você está no ${nv.n} de ${nv.totalNiveis} · ${nv.pontos} pontos</div>
+        </div>
+        <button class="btn-mini" style="width:40px;height:40px" onclick="App.ir('progresso')">✕</button>
+      </div>
+
+      <div class="tela stagger">
         <div class="card">
           ${NIVEIS.map(n => `
             <div class="lista-item" style="${n.n === nv.n ? 'background:var(--verde-tint2);margin:0 -18px;padding:15px 18px;border-radius:12px' : ''}">
@@ -1318,7 +1345,7 @@ const Telas = {
                 <div style="font-size:14px;font-weight:800">${n.nome}</div>
                 <div style="font-size:11.5px;color:var(--cinza);font-weight:600">${n.frase}</div>
               </div>
-              <span class="lista-v" style="font-size:12.5px;color:${nv.pontos >= n.min ? 'var(--verde)' : 'var(--cinza-c)'}">
+              <span class="lista-v" style="font-size:12.5px;color:${nv.pontos >= n.min ? 'var(--verde-esc)' : 'var(--cinza-c)'}">
                 ${nv.pontos >= n.min ? '✓' : n.min + ' pts'}
               </span>
             </div>`).join('')}
@@ -1332,6 +1359,7 @@ const Telas = {
           <div class="lista-item"><span class="lista-k">Bater a meta de sono</span><span class="lista-v">+${PONTOS.sono}</span></div>
           <div class="lista-item"><span class="lista-k">Concluir o treino do dia</span><span class="lista-v">+${PONTOS.treino}</span></div>
           <div class="lista-item"><span class="lista-k">Registrar uma pesagem</span><span class="lista-v">+${PONTOS.pesagem}</span></div>
+          ${App.temCorrida() ? `<div class="lista-item"><span class="lista-k">Concluir uma sessão de corrida</span><span class="lista-v">+${PONTOS.corrida}</span></div>` : ''}
         </div>
       </div>`;
   },

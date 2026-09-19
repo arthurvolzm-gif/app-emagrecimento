@@ -417,7 +417,7 @@ const App = {
     app.innerHTML = fn.call(Telas);
 
     /* telas internas ocupam a tela inteira, sem a barra de navegação */
-    const internas = ['biblioteca', 'cardapio', 'resumo', 'fotos', 'notificacoes'];
+    const internas = ['biblioteca', 'cardapio', 'resumo', 'fotos', 'notificacoes', 'niveis'];
     nav.style.display = internas.includes(this.tela) ? 'none' : 'flex';
     document.querySelectorAll('.nav button').forEach(b => {
       b.classList.toggle('on', b.dataset.tela === this.tela);
