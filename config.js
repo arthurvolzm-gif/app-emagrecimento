@@ -44,7 +44,7 @@ const CONFIG = {
      e não levou o bump não tem como comprar pelo checkout do plano, então
      este link avulso é o caminho dela.
      Vazio = a aba mostra "fale com o suporte" em vez do botão. */
-  CHECKOUT_URL_BIBLIOTECA: '',
+  CHECKOUT_URL_BIBLIOTECA: 'https://app.zuptos.com.br/checkout/23e17f361bb0cf57',
   PRECO_BIBLIOTECA: 'R$9,90',
 
   /* ---------- Reajuste mensal (extra recorrente, R$9,90/mês) ----------
