@@ -760,6 +760,12 @@ const App = {
   },
 
   /* ---------- dia fora da rotina ---------- */
+  verDicasFora(ver) {
+    Store.verDicasFora(ver);
+    Backend.agendarSync();
+    this.render();
+  },
+
   marcarForaDaRotina() {
     const ligou = Store.alternarForaDaRotina();
     Backend.agendarSync();

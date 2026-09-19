@@ -1206,19 +1206,44 @@ body.travado{overflow:hidden;}
 
 /* ---------- dia fora da rotina ---------- */
 .fora-btn{display:flex;align-items:center;gap:13px;width:100%;text-align:left;}
-.fb-ic{font-size:22px;flex-shrink:0;}
+.fb-ic{flex-shrink:0;display:flex;color:var(--verde-esc);}
 .fb-t{font-size:14.5px;font-weight:800;color:var(--tinta);}
 .fb-s{font-size:12px;color:var(--cinza);font-weight:600;margin-top:2px;}
 .fora-btn:active{opacity:.7;}
-.fora-ativo{border-color:var(--azul-borda);background:var(--azul-tint2);}
-.fora-ativo{background:var(--azul-tint);border-color:var(--azul-borda);}
+/* Estava em azul, que é cor de nada neste app. E o fundo azul nem
+   chegava a aparecer: `.card:not(...)` lá embaixo tem especificidade
+   maior que `.fora-ativo` e vencia. Agora o cartão é escuro como os
+   outros e o que marca o estado ligado é o contorno verde. */
+.fora-ativo{border-color:var(--verde-esc);}
 .fora-txt{font-size:13.5px;line-height:1.6;color:var(--tinta-2);font-weight:600;margin-bottom:14px;}
 .fora-dicas{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
 .fora-dicas div{
   font-size:12.5px;line-height:1.55;color:var(--tinta-2);font-weight:500;
-  padding-left:13px;border-left:2px solid var(--azul);
+  padding-left:13px;border-left:2px solid var(--verde-esc);
 }
 .fora-dicas b{color:var(--tinta);font-weight:800;}
+/* o desmarcar fica abaixo do "Entendi" e mais quieto que ele: é a saída,
+   não o caminho principal */
+.fora-desmarcar{display:block;width:100%;margin-top:12px;background:none;border:none;
+  cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:700;
+  color:var(--cinza-c);text-decoration:underline;padding:4px;}
+.fora-desmarcar:hover{color:var(--tinta-2);}
+
+/* a versão de uma linha, depois do "Entendi" */
+.fora-curto{display:flex;align-items:center;gap:11px;}
+.fora-curto-txt{flex:1;min-width:0;}
+.fora-curto-acoes{display:flex;align-items:center;gap:14px;flex-shrink:0;}
+/* em tela estreita (iPhone SE e afins) os dois links espremem o texto em
+   duas linhas cada; aí eles descem pra uma linha própria */
+@media (max-width:374px){
+  .fora-curto{flex-wrap:wrap;}
+  .fora-curto-txt{min-width:calc(100% - 30px);}
+  .fora-curto-acoes{margin-left:auto;}
+}
+.fora-link{background:none;border:none;cursor:pointer;font-family:inherit;flex-shrink:0;
+  font-size:12.5px;font-weight:800;color:var(--verde-esc);padding:6px 2px;}
+.fora-link.apaga{color:var(--cinza-c);}
+.fora-link:hover{opacity:.75;}
 
 /* ---------- resumo de domingo ---------- */
 .resumo-chamada{display:flex;align-items:center;gap:13px;width:100%;text-align:left;border-color:var(--verde-borda);}

@@ -133,9 +133,25 @@ const Telas = {
         <span class="lista-seta">›</span>
       </button>`;
 
+    /* Depois de ler as dicas o cartão vira uma linha só: o dia continua
+       marcado, mas ele para de ocupar meia tela toda vez que ela abre a
+       aba. Os dois caminhos continuam à mão. */
+    if (Store.foraDicasVistas()) return `
+      <div class="card fora-ativo fora-curto">
+        <span class="fb-ic">${Ic.festa(19)}</span>
+        <div class="fora-curto-txt">
+          <div class="fb-t">Dia fora da rotina</div>
+          <div class="fb-s">Conta como cumprido</div>
+        </div>
+        <div class="fora-curto-acoes">
+          <button class="fora-link" onclick="App.verDicasFora(true)">Ver dicas</button>
+          <button class="fora-link apaga" onclick="App.marcarForaDaRotina()">Desmarcar</button>
+        </div>
+      </div>`;
+
     return `
       <div class="card fora-ativo">
-        <div class="card-tt">${Ic.festa(20)} Dia fora da rotina<span class="n">contando como cumprido</span></div>
+        <div class="card-tt">${Ic.festa(20)} Dia fora da rotina</div>
         <p class="fora-txt">
           Combinado. Hoje o cardápio abaixo é referência, não cobrança, e este dia
           já entra como cumprido na sua semana.
@@ -145,7 +161,8 @@ const Telas = {
           <div><b>Beba água antes.</b> Um copo antes de sentar corta boa parte da fome de ansiedade.</div>
           <div><b>Amanhã é dia normal.</b> Não compense pulando refeição: compensar é o que vira efeito sanfona.</div>
         </div>
-        <button class="btn sec" onclick="App.marcarForaDaRotina()">Cancelar, hoje é dia normal</button>
+        <button class="btn" onclick="App.verDicasFora(false)">Entendi</button>
+        <button class="fora-desmarcar" onclick="App.marcarForaDaRotina()">Desmarcar: hoje é um dia normal</button>
       </div>`;
   },
 

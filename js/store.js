@@ -984,8 +984,22 @@ const Store = {
   alternarForaDaRotina() {
     const d = this.dia();
     d.fora_rotina = !d.fora_rotina;
+    d.fora_dicas_vistas = false;     /* remarcou o dia: as dicas voltam a aparecer */
     this.save();
     return d.fora_rotina;
+  },
+
+  /* As três dicas ocupam meia tela e a pessoa lê uma vez. Depois do
+     "Entendi" o cartão encolhe pra uma linha, e continua tendo como
+     reabrir e como desmarcar — que era o que faltava: antes o único
+     botão do cartão desfazia tudo. */
+  foraDicasVistas(data) {
+    return !!this.dia(data).fora_dicas_vistas;
+  },
+
+  verDicasFora(ver) {
+    this.dia().fora_dicas_vistas = !ver;
+    this.save();
   },
 
   /* ---------- streak (dias seguidos com atividade) ---------- */
