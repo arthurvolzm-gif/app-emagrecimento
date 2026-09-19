@@ -50,10 +50,16 @@ const MARCA_CORRIDA = (Deno.env.get('ZUPTOS_MARCA_CORRIDA') || 'corrida').toLowe
 //   supabase secrets set ZUPTOS_MARCA_REAJUSTE=nome_novo
 const MARCA_REAJUSTE = (Deno.env.get('ZUPTOS_MARCA_REAJUSTE') || 'reajuste').toLowerCase();
 
-// Palavra do order bump dos videos de execucao. Como os outros bumps,
-// ele entra na MESMA assinatura do plano, entao nao vira linha propria:
-// so liga a coluna `tem_videos` na assinatura da pessoa.
-const MARCA_VIDEOS = (Deno.env.get('ZUPTOS_MARCA_VIDEOS') || 'video').toLowerCase();
+// Palavra do order bump da biblioteca de exercicios (os videos de
+// execucao). Como os outros bumps, ele entra na MESMA assinatura do
+// plano, entao nao vira linha propria: so liga a coluna `tem_videos`.
+//
+// O padrao e "biblioteca", e NAO "video", de proposito: a busca varre o
+// payload inteiro, e "video" e uma palavra que aparece sozinha em UTM de
+// criativo de video ("utm_content=video_03"). Qualquer compra vinda de um
+// anuncio em video ganharia a biblioteca de graca. "biblioteca" nao
+// aparece por acaso em lugar nenhum.
+const MARCA_VIDEOS = (Deno.env.get('ZUPTOS_MARCA_VIDEOS') || 'biblioteca').toLowerCase();
 
 const sb = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
@@ -65,6 +71,28 @@ function statusInterno(evento: string | undefined): string {
   if (/(atras|pendente|venc)/.test(e)) return 'atrasada';
   if (/(pago|aprovad|renovad|confirmad)/.test(e)) return 'ativa';
   return 'inativa';
+}
+
+// O texto onde as marcas dos bumps sao procuradas.
+//
+// E o payload inteiro serializado MENOS os campos de rastreio. Sem essa
+// limpeza, um "utm_campaign=corrida-frio" ou um "src=duo-teste" ligaria
+// o produto errado numa compra que nao o comprou. O nome do produto e o
+// que deve mandar; UTM e parametro de anuncio, nao de venda.
+//
+// ⚠️ Enquanto o payload real da Zuptos nao for conferido, esta e a
+// melhor aproximacao: varrer tudo e tirar o que sabidamente e ruido.
+// Com o payload em maos, da pra trocar por uma leitura do campo certo.
+const CAMPOS_DE_RASTREIO = /utm|track|sck|_src$|^src$|referr|origem|campaign|adset|creative/i;
+
+function textoDoPayload(valor: any): string {
+  try {
+    return JSON.stringify(valor, (chave, v) =>
+      CAMPOS_DE_RASTREIO.test(String(chave)) ? undefined : v
+    ).toLowerCase();
+  } catch {
+    return '';
+  }
 }
 
 function extrair(payload: any) {
@@ -121,8 +149,7 @@ function extrair(payload: any) {
   // palavra "duo" aparecer em qualquer outro campo, a compra ganha a
   // vaga extra sem ter sido paga.
   let vagas = 1;
-  let cru = '';
-  try { cru = JSON.stringify(payload).toLowerCase(); } catch { /* payload estranho */ }
+  const cru = textoDoPayload(payload);
   if (cru.includes(MARCA_DUO)) vagas = 2;
   const temVideos = cru.includes(MARCA_VIDEOS);
 

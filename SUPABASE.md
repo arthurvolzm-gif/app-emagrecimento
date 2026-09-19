@@ -123,7 +123,8 @@ Anote a URL que aparece:
 | `ZUPTOS_WEBHOOK_TOKEN` | o token que a Zuptos te deu | sem ele, qualquer um na internet consegue se declarar pago chamando a sua URL |
 | `ZUPTOS_MARCA_DUO` | `duo` | a palavra que identifica o order bump |
 | `ZUPTOS_MARCA_CORRIDA` | `corrida` | a palavra que identifica o Modo Corrida |
-| `ZUPTOS_MARCA_REAJUSTE` | `reajuste` | a palavra que identifica o reajuste mensal |
+| `ZUPTOS_MARCA_REAJUSTE` | `reajuste` | a palavra que identifica o reajuste |
+| `ZUPTOS_MARCA_VIDEOS` | `biblioteca` | a palavra que identifica o bump da biblioteca |
 
 > Os dois últimos só são necessários se você **não** usar essas palavras
 > nos nomes das ofertas. Usando, pode deixar em branco: o padrão já é
@@ -146,13 +147,21 @@ Isto não é firula, é o que o webhook usa pra separar as compras:
 | Produto | Precisa ter no nome |
 |---|---|
 | Assinatura mensal / trimestral / anual | nada de especial |
-| Order bump do Plano Duo | a palavra **duo** |
-| Modo Corrida (avulso, compra única) | a palavra **corrida** |
-| Reajuste mensal (assinatura de R$9,90) | a palavra **reajuste** |
+| Order bump do Plano Duo (R$14,90/mês) | a palavra **duo** |
+| Order bump da Biblioteca de exercícios (R$9,90 único) | a palavra **biblioteca** |
+| Modo Corrida (avulso) | a palavra **corrida** |
+| Reajuste Estratégico (mensal e anual) | a palavra **reajuste** |
 
 ⚠️ Se o Modo Corrida **não** tiver "corrida" no nome, o webhook trata
 como assinatura, sobrescreve o plano da pessoa e ela **perde o acesso
 ao app inteiro por ter comprado um extra**.
+
+**Por que "biblioteca" e não "video":** a busca varre o payload todo, e
+"video" é palavra que aparece sozinha em UTM de criativo em vídeo
+(`utm_content=video_03`). Toda compra vinda de anúncio em vídeo ganharia
+a biblioteca de graça. Os campos de rastreio (utm, src, sck, campaign,
+adset, creative) agora são ignorados na busca, mas o nome específico
+continua sendo a proteção principal.
 
 ### 4.5 Me mandar o payload real
 

@@ -245,7 +245,7 @@ produto e a sua assinatura por trás dele.
 
 ---
 
-## 6.75 Reajuste mensal como extra pago (R$9,90/mês) ⬜
+## 6.75 Reajuste Estratégico como extra pago (R$9,90/mês ou R$97/ano) ⬜
 
 ### O que ficou pago, e o que NÃO ficou
 
@@ -296,23 +296,38 @@ da renovação mensal.
 
 ### O que você precisa fazer
 
-- **Criar o produto na Zuptos como ASSINATURA mensal**, com a palavra
-  **"reajuste"** no nome. Não como compra única: se for única, a pessoa
-  paga R$9,90 uma vez e fica pra sempre.
-- **Colar o link em `config.js`**, em `CHECKOUT_URL_REAJUSTE`.
-  **Enquanto estiver vazio, o reajuste fica liberado pra todo mundo** —
-  é o comportamento de antes, então dá pra publicar o app e ligar a
-  cobrança depois.
+- **Criar os produtos na Zuptos como ASSINATURA**, um mensal e um anual,
+  com a palavra **"reajuste"** no nome. Não como compra única: se for
+  única, a pessoa paga uma vez e fica pra sempre.
+- **Colar os links em `config.js`**, em `CHECKOUT_URL_REAJUSTE` e
+  `CHECKOUT_URL_REAJUSTE_ANUAL`. **Enquanto o mensal estiver vazio, o
+  reajuste fica liberado pra todo mundo** — é o comportamento de antes,
+  então dá pra publicar o app e ligar a cobrança depois. Sem o anual, a
+  tela mostra só a opção mensal.
+
+O anual a R$97 equivale a 9,8 mensalidades, que é o desconto padrão, e
+por isso o selo "Economize 2 meses" na tela é verdade, não ancoragem
+inventada.
 - **Rodar o `schema.sql` de novo** (ganhou `data_expiracao`).
 
 ---
 
-## 6.8 Vídeos de execução dos exercícios ⬜
+## 6.8 Biblioteca de exercícios (order bump, R$9,90 único) ⬜
 
-A estrutura está pronta e vazia, esperando os seus vídeos.
+Os vídeos de execução deixaram de ser abertos e viraram order bump do
+checkout do plano, com o nome **"Biblioteca de exercícios"**.
 
-**Onde colar:** `js/videos.js`, no bloco `VIDEOS`. Uma linha por
-exercício, com o nome **igual** ao da biblioteca em `js/data.js`:
+O acesso é a coluna `tem_videos` na linha da assinatura, e não uma linha
+em `acessos_extras`: o bump entra na mesma assinatura do plano, então
+não tem validade própria e cai junto se a pessoa cancelar. Quem está na
+vaga do Plano Duo enxerga os vídeos que o titular comprou.
+
+Sem o bump, o botão "Ver execução" não aparece em lugar nenhum.
+
+### Onde colar os vídeos
+
+`js/videos.js`, no bloco `VIDEOS`. Uma linha por exercício, com o nome
+**igual** ao da biblioteca em `js/data.js`:
 
 ```js
 const VIDEOS = {
@@ -321,17 +336,16 @@ const VIDEOS = {
 };
 ```
 
-Aceita link inteiro do YouTube, só o id, link do Vimeo, ou o endereço
-de um `.mp4`. Exercício sem vídeo não mostra botão nenhum: nada quebra
-e a pessoa não vê buraco.
+Aceita link inteiro do YouTube, só o id, link do Vimeo, ou o endereço de
+um `.mp4`. Exercício sem vídeo não mostra botão: nada quebra e a pessoa
+não vê buraco.
 
 **Como gravar:** 15 a 30 segundos bastam, dois ou três movimentos
 completos, de lado e de frente. São 48 exercícios na biblioteca.
 
 **Onde hospedar: YouTube como "Não listado".** Não aparece na busca nem
-no seu canal, mas abre pra quem tem o link — que é o que o app precisa.
-Custo zero de banda e o vídeo chega no tamanho certo pra conexão de
-cada pessoa.
+no seu canal, mas abre pra quem tem o link. Custo zero de banda e o
+vídeo chega no tamanho certo pra conexão de cada pessoa.
 
 > **"Privado" não funciona.** Nem embutido o app consegue tocar. Tem que
 > ser **Não listado**.
@@ -343,6 +357,13 @@ exercícios vistos várias vezes por dia, a conta cresce rápido.
 O player abre só no toque, num pop-up, e usa o domínio
 `youtube-nocookie`. Carregar um vídeo embutido em cada exercício da
 lista derrubaria a tela e gastaria os dados dela à toa.
+
+### A brecha que falta fechar
+
+Como a biblioteca só é vendida no checkout, **quem já é cliente e não
+levou o bump não tem como comprar depois.** Isso vira mensagem no
+suporte. Se você criar um checkout avulso, dá pra colocar um botão na
+aba de treinos, igual ao do Modo Corrida.
 
 ---
 
