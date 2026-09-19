@@ -23,7 +23,10 @@ const Telas = {
           <div class="topo-saud">${App.saudacao()}</div>
           <div class="topo-nome display">${p.nome.split(' ')[0]}</div>
         </div>
-        <div class="avatar">${p.nome[0].toUpperCase()}</div>
+        <button class="sino-btn" onclick="App.ir('notificacoes')" aria-label="Notificações">
+          ${Ic.sino(21)}
+          ${Notif.naoLidas().length ? `<span class="sino-bolha">${Notif.naoLidas().length}</span>` : ''}
+        </button>
       </div>
 
       <div class="tela stagger">
@@ -31,9 +34,8 @@ const Telas = {
         ${Store.resumoPendente() ? Telas._chamadaResumo() : ''}
         ${Telas._perdidas()}
 
-        <div class="card nivel-card" style="background:linear-gradient(140deg, ${nv.cor2} 0%, ${nv.cor1} 62%, ${nv.cor1} 100%)">
+        <div class="card nivel-card">
           <div class="nivel-topo">
-            <div class="nivel-emoji">${nv.icone}</div>
             <div>
               <div class="nivel-n">Nível ${nv.n}</div>
               <div class="nivel-nome">${nv.nome}</div>
@@ -45,8 +47,8 @@ const Telas = {
           </div>
           <div class="nivel-barra"><i style="width:${nv.pct}%"></i></div>
           <div class="nivel-falta">${nv.proximo
-            ? `Faltam <b>${nv.faltam} pontos</b> para ${nv.proximo.nome} ${nv.proximo.icone}`
-            : 'Nível máximo alcançado. Você chegou lá. 👑'}</div>
+            ? `Faltam <b>${nv.faltam} pontos</b> para ${nv.proximo.nome}`
+            : 'Nível máximo alcançado. Você chegou lá.'}</div>
         </div>
 
         <div class="card">
@@ -57,7 +59,7 @@ const Telas = {
               <div class="meta-grande">Meta diária</div>
               <div class="meta-val">${p.meta_kcal} kcal</div>
               <div class="mini-stat"><span class="k">Proteína</span><span class="v">${t.prot}g <small style="color:var(--cinza-c)">/ ${p.meta_prot}g</small></span></div>
-              <div class="mini-stat"><span class="k">Refeições</span><span class="v">${t.marcados}/${t.total}</span></div>
+              <div class="mini-stat"><span class="k">Refeições</span><span class="v">${t.refeicoes}/${t.refeicoesTotal}</span></div>
             </div>
           </div>
         </div>
@@ -557,7 +559,398 @@ const Telas = {
   },
 
   /* ============ TREINOS ============ */
+  /* ============ NOTIFICAÇÕES ============
+     A caixa do sininho. Tudo aqui sai de fato que já aconteceu nos
+     dados dela (ver js/notificacoes.js) — caixa que vira mural de
+     propaganda a pessoa aprende a ignorar, e aí a notificação de
+     verdade também não é lida.                                     */
+  notificacoes() {
+    const lista = Notif.lista();
+    const lidas = Notif.lidas();
+
+    return `
+      <div class="topo">
+        <div>
+          <h1 class="display">Notificações</h1>
+          <div class="topo-sub">${lista.length ? Notif.naoLidas().length + ' sem ler' : 'Tudo em dia'}</div>
+        </div>
+        <button class="btn-mini" style="width:40px;height:40px" onclick="App.ir('inicio')">✕</button>
+      </div>
+
+      <div class="tela stagger">
+        ${lista.length ? lista.map(n => {
+          const lida = lidas.indexOf(n.id) >= 0;
+          return `
+          <div class="notif ${n.tom} ${lida ? 'lida' : ''}">
+            <div class="notif-ic">${(Ic[n.ic] || Ic.sino)(20)}</div>
+            <div class="notif-txt">
+              <div class="notif-t">${n.titulo}</div>
+              <div class="notif-s">${n.texto}</div>
+              <button class="notif-acao" onclick="Notif.marcarLida('${n.id}');${n.acao}">${n.rotulo} ›</button>
+            </div>
+            ${lida ? '' : '<span class="notif-ponto"></span>'}
+          </div>`;
+        }).join('') : `
+          <div class="vazio">
+            <div class="em">${Ic.sino(34)}</div>
+            <p>Nada por aqui.<br>A gente só avisa quando tem motivo.</p>
+          </div>`}
+
+        ${Notif.naoLidas().length ? `
+          <button class="btn sec" style="margin-top:6px" onclick="App.lerTodasNotif()">Marcar todas como lidas</button>` : ''}
+      </div>`;
+  },
+
+  /* ============ REAJUSTE MENSAL ============
+     A virada de mês. Aparece uma vez por mês, no primeiro acesso, e
+     mostra o que mudou no plano dela e por quê.
+
+     Todo número aqui sai de dado que ela mesma registrou: as pesagens,
+     a meta recalculada, a fase do treino. Nada inventado — é o que
+     torna a tela uma prova de que a assinatura está viva, em vez de
+     mais uma notificação.                                            */
+  reajuste() {
+    const r = App.reajusteDados;
+    if (!r) return '';
+    const p = Store.db.perfil;
+    const nome = (p.nome || '').split(' ')[0];
+    const perdeu = r.difPeso < 0;
+
+    if (!Store.reajusteLiberado()) return this._reajusteTrancado(r, nome, perdeu);
+
+    return `
+      <div class="tela-login tela-reajuste">
+        <div class="login-content">
+          <div class="reaj-selo">Plano de ${r.mesNome}</div>
+          <h1 class="login-h1 esq">${nome ? nome + ', seu' : 'Seu'} plano foi reajustado</h1>
+          <p class="login-sub esq">${r.primeiro
+            ? 'Todo mês o app refaz as suas contas com o que você registrou. Este é o primeiro.'
+            : 'Refizemos as contas com o que você registrou desde o mês passado.'}</p>
+
+          ${r.difPeso !== 0 ? `
+            <div class="reaj-card destaque">
+              <div class="reaj-rot">Seu peso</div>
+              <div class="reaj-linha">
+                <span class="de">${r.antes.peso} kg</span>
+                <span class="seta">→</span>
+                <span class="para">${r.agora.peso} kg</span>
+              </div>
+              <div class="reaj-nota ${perdeu ? 'bom' : ''}">${perdeu
+                ? Math.abs(r.difPeso) + ' kg a menos que no último reajuste.'
+                : r.difPeso + ' kg a mais. Acontece, e o plano já se ajustou a isso.'}</div>
+            </div>` : `
+            <div class="reaj-card">
+              <div class="reaj-rot">Seu peso</div>
+              <div class="reaj-linha"><span class="para">${r.agora.peso} kg</span></div>
+              <div class="reaj-nota">Sem mudança desde o último reajuste. ${Store.db.pesagens.length < 2
+                ? 'Registre a pesagem mais vezes pro app acertar melhor as suas contas.'
+                : 'O plano segue calibrado no mesmo ponto.'}</div>
+            </div>`}
+
+          <div class="reaj-card">
+            <div class="reaj-rot">Sua meta de calorias</div>
+            <div class="reaj-linha">
+              ${r.difKcal !== 0 ? `<span class="de">${r.antes.meta_kcal} kcal</span><span class="seta">→</span>` : ''}
+              <span class="para">${r.agora.meta_kcal} kcal</span>
+            </div>
+            <div class="reaj-nota">${r.difKcal === 0
+              ? 'Continua na mesma, porque o seu peso e os seus dados não mudaram.'
+              : (r.difKcal < 0
+                ? Math.abs(r.difKcal) + ' kcal a menos. Corpo mais leve gasta menos, então a conta acompanha.'
+                : '+' + r.difKcal + ' kcal. A sua meta subiu junto com os seus números.')}</div>
+          </div>
+
+          ${r.pctPorcao !== 0 ? `
+            <div class="reaj-card">
+              <div class="reaj-rot">O seu cardápio</div>
+              <div class="reaj-linha"><span class="para">${r.pctPorcao > 0 ? '+' : ''}${r.pctPorcao}%</span></div>
+              <div class="reaj-nota">As gramagens de todas as refeições já foram ajustadas. Abra a aba Comida e confira: os pesos estão diferentes dos do mês passado.</div>
+            </div>` : ''}
+
+          <div class="reaj-card">
+            <div class="reaj-rot">Seu treino agora é fase ${r.fase.n}</div>
+            <div class="reaj-linha">
+              ${r.faseAntes.nome !== r.fase.nome ? `<span class="de">${r.faseAntes.nome}</span><span class="seta">→</span>` : ''}
+              <span class="para">${r.fase.nome}</span>
+            </div>
+            <div class="reaj-nota">${r.fase.detalhe}</div>
+            <div class="reaj-fases">
+              ${FASES_TREINO.map(f => `<span class="${f.n === r.fase.n ? 'on' : ''}">${f.n}</span>`).join('')}
+            </div>
+            <div class="reaj-nota" style="margin-top:10px">Os exercícios continuam os mesmos de propósito: é assim que você enxerga a carga subindo. O que muda é o estímulo.</div>
+          </div>
+
+          ${this._reajusteCargas()}
+
+          <button class="login-btn" style="margin-top:22px" onclick="App.fecharReajuste()">Ver meu plano de ${r.mesNome}</button>
+        </div>
+      </div>`;
+  },
+
+  /* ---------- a versão trancada (R$9,90/mês) ----------
+     Mostra o que é DELA de graça (o peso que ela mesma registrou e há
+     quanto tempo o plano está parado) e tranca o que a assinatura
+     entrega: as metas recalculadas, a fase nova do treino e as cargas.
+
+     O que NÃO está aqui, de propósito: nada que ela já tinha. As
+     calorias e as gramagens do cardápio seguem se reajustando a cada
+     pesagem pra todo mundo. Tirar isso de quem não paga seria piorar
+     o produto que ela já comprou, e vira cancelamento.             */
+  _reajusteTrancado(r, nome, perdeu) {
+    const naLoja = window.NO_APP_DA_LOJA;
+    const dias = Store.diasSemReajuste();
+
+    return `
+      <div class="tela-login tela-reajuste">
+        <div class="login-content">
+          <div class="reaj-selo">Virada de ${r.mesNome}</div>
+          <h1 class="login-h1 esq">${nome ? nome + ', seu' : 'Seu'} plano pode ser reajustado</h1>
+          <p class="login-sub esq">Você está há ${Store.frasedias(dias)} com o mesmo plano. O seu corpo mudou desde que ele foi montado.</p>
+
+          ${r.difPeso !== 0 ? `
+            <div class="reaj-card destaque">
+              <div class="reaj-rot">Seu peso</div>
+              <div class="reaj-linha">
+                <span class="de">${r.antes.peso} kg</span>
+                <span class="seta">→</span>
+                <span class="para">${r.agora.peso} kg</span>
+              </div>
+              <div class="reaj-nota ${perdeu ? 'bom' : ''}">${perdeu
+                ? Math.abs(r.difPeso) + ' kg a menos. Isso muda as contas do seu plano.'
+                : r.difPeso + ' kg a mais desde o último reajuste.'}</div>
+            </div>` : ''}
+
+          <div class="reaj-card trancado">
+            <div class="reaj-cad">${Ic.cadeado(24)}</div>
+            <div class="reaj-rot">O que o reajuste faz</div>
+            <div class="reaj-item">${Ic.alvo(18)}<div><b>Recalcula as suas metas</b> com o peso de hoje, não com o de quando você começou.</div></div>
+            <div class="reaj-item">${Ic.halter(18)}<div><b>Evolui o seu treino de fase</b>: volume, intensidade e descanso mudam mês a mês, nos mesmos exercícios.</div></div>
+            <div class="reaj-item">${Ic.barras(18)}<div><b>Diz quais cargas subir</b>, exercício por exercício, a partir do que você registrou.</div></div>
+            <div class="reaj-item">${Ic.calendario(18)}<div><b>Um relatório todo mês</b> mostrando o que mudou e por quê.</div></div>
+          </div>
+
+          ${naLoja ? `
+            <div class="reaj-card">
+              <div class="reaj-rot">Como liberar</div>
+              <div class="reaj-nota">O reajuste mensal não faz parte do seu plano atual. Fale com o suporte que a gente te explica.</div>
+              <a class="btn sec" style="margin-top:14px" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">Falar com o suporte</a>
+            </div>
+          ` : `
+            <div class="reaj-card preco">
+              <div class="reaj-val">${CONFIG.PRECO_REAJUSTE || 'R$9,90'}<span>/mês</span></div>
+              <div class="reaj-val-sub">Cancele quando quiser. O seu plano atual continua funcionando do mesmo jeito.</div>
+              <button class="login-btn" onclick="App.comprarReajuste()">Liberar o reajuste mensal</button>
+              <button class="corrida-japaguei" onclick="App.verificarReajuste()">Já paguei, liberar meu acesso</button>
+            </div>
+          `}
+
+          <button class="reaj-depois" onclick="App.fecharReajuste()">Agora não, continuar com o plano atual</button>
+        </div>
+      </div>`;
+  },
+
+  /* as cargas que já dá pra subir, tiradas do histórico dela.
+     Só aparece se houver exercício com registro suficiente. */
+  _reajusteCargas() {
+    const vistos = {};
+    Store.planoTreino().dias.forEach(d => {
+      if (d.descanso || !d.exercicios) return;
+      d.exercicios.forEach(e => {
+        if (vistos[e.ex]) return;
+        const hist = Store.cargas(e.ex);
+        const sug = Store.cargaSugerida(e.ex);
+        if (sug) vistos[e.ex] = { atual: hist[hist.length - 1].peso, sug };
+      });
+    });
+
+    const lista = Object.keys(vistos).slice(0, 5);
+    if (!lista.length) return '';
+
+    return `
+      <div class="reaj-card">
+        <div class="reaj-rot">Dá pra subir a carga</div>
+        ${lista.map(ex => `
+          <div class="reaj-carga">
+            <span class="ex">${ex}</span>
+            <span class="v"><b>${vistos[ex].atual}</b> → <b class="alvo">${vistos[ex].sug} kg</b></span>
+          </div>`).join('')}
+        <div class="reaj-nota" style="margin-top:12px">Sugestão a partir do que você registrou. Se a última série sair sem esforço, suba. Se a execução piorar, fique onde está mais um mês.</div>
+      </div>`;
+  },
+
+  /* ============ MODO CORRIDA ============
+     Vive dentro da aba Treinos, atrás do botão "Corrida". Três estados:
+     - comprado  -> o plano de 8 semanas (Telas._corridaLiberada)
+     - não comprado -> a tela de venda com o preço (Telas._corridaVenda)
+     - dentro do app da Play Store -> nem venda nem preço, só o aviso,
+       porque o Google não deixa app da loja mandar pagar fora dela
+       (a mesma regra que já vale na tela de assinatura). */
+  corrida() {
+    const liberado = App.temCorrida();
+
+    return `
+      <div class="topo">
+        <div>
+          <h1 class="display">Treinos</h1>
+          <div class="topo-sub">${liberado
+            ? 'Modo Corrida · semana ' + Store.corrida().semana + ' de ' + Store.planoCorrida(Store.corrida().semana).total
+            : 'Modo Corrida'}</div>
+        </div>
+        <button class="btn-mini quadrado" onclick="App.ir('biblioteca')">${Ic.livro(19)}</button>
+      </div>
+
+      <div class="tela stagger">
+        ${this._abasTreino()}
+        ${liberado ? this._corridaLiberada() : this._corridaVenda()}
+      </div>`;
+  },
+
+  /* O botão "Corrida" só aparece se houver o que mostrar atrás dele:
+     ou a pessoa comprou, ou existe link de pagamento configurado. Sem
+     isso, a aba Treinos fica exatamente como era. */
+  _temCorrida() {
+    return App.temCorrida() || !!CONFIG.CHECKOUT_URL_CORRIDA;
+  },
+
+  _abasTreino() {
+    return `
+      <div class="toggle">
+        <button class="${App.abaTreinos === 'treino' ? 'on' : ''}" onclick="App.setAbaTreinos('treino')">Treino</button>
+        <button class="${App.abaTreinos === 'corrida' ? 'on' : ''}" onclick="App.setAbaTreinos('corrida')">Corrida</button>
+      </div>`;
+  },
+
+  /* ---------- a tela de venda ---------- */
+  _corridaVenda() {
+    const nivel = CORRIDA_NIVEIS[Store.nivelCorrida()];
+    const naLoja = window.NO_APP_DA_LOJA;
+
+    return `
+      <div class="card corrida-capa">
+        <div class="corrida-cad">${Ic.corrida(30)}</div>
+        <h3>Modo Corrida</h3>
+        <p>Um plano de 8 semanas pra sair da primeira caminhada e chegar em ${nivel.meta.toLowerCase()}. Montado no seu nível, encaixado nos seus dias de treino.</p>
+        <span class="corrida-selo">${Ic.cadeado(13)} Ainda não liberado</span>
+      </div>
+
+      <h3 class="secao-tt">O que vem no Modo Corrida</h3>
+      <div class="card" style="padding:6px 18px">
+        ${CORRIDA_BENEFICIOS.map(([ic, tt, txt]) => `
+          <div class="lista-item" style="align-items:flex-start">
+            <span class="lista-ic">${Telas._icCorrida(ic)}</span>
+            <div>
+              <div class="lista-t">${tt}</div>
+              <div class="lista-s">${txt}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+
+      <h3 class="secao-tt">A sua progressão</h3>
+      <div class="card">
+        <div class="card-tt">${Ic.calendario(20)} ${nivel.nome}</div>
+        <p class="corrida-papel">${nivel.sub}. ${nivel.meta}.</p>
+        <div class="corrida-previa">
+          ${nivel.semanas.map((sem, i) => `
+            <div class="corrida-sem ${i === 0 ? 'aberta' : ''}">
+              <span class="n">${i + 1}</span>
+              <span class="t">${i === 0
+                ? (sem.anda ? `${sem.blocos} blocos de ${sem.corre} min correndo e ${sem.anda} min caminhando` : `${sem.corre} minutos correndo`)
+                : '•••••'}</span>
+            </div>`).join('')}
+        </div>
+        <p class="corrida-nota">A semana 1 fica à mostra pra você ver o formato. O resto abre quando você liberar.</p>
+      </div>
+
+      ${naLoja ? `
+        <div class="card">
+          <div class="card-tt">${Ic.chat(20)} Como liberar</div>
+          <p class="corrida-nota" style="margin:0">O Modo Corrida não faz parte do seu plano atual. Fale com o suporte que a gente te explica como funciona.</p>
+          <div style="height:12px"></div>
+          <a class="btn sec" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">Falar com o suporte</a>
+        </div>
+      ` : `
+        <div class="card corrida-preco">
+          <div class="corrida-val">${CONFIG.PRECO_CORRIDA || 'R$29,90'}</div>
+          <div class="corrida-val-sub">Pagamento único. O acesso não vence junto com a sua assinatura.</div>
+          ${CONFIG.CHECKOUT_URL_CORRIDA
+            ? `<button class="btn" onclick="App.comprarCorrida()">Liberar o Modo Corrida</button>
+               <button class="corrida-japaguei" onclick="App.verificarCorrida()">Já paguei, liberar meu acesso</button>`
+            : `<div class="aviso" style="margin:0">O link de pagamento do Modo Corrida ainda não foi configurado em config.js.</div>`}
+        </div>
+      `}
+`;
+  },
+
+  _icCorrida(nome) {
+    const mapa = { calendario:'calendario', medalha:'check', relogio:'lua', alvo:'alvo', halter:'halter', trofeu:'festa' };
+    const fn = Ic[mapa[nome]] || Ic.alvo;
+    return fn(19);
+  },
+
+  /* ---------- a tela liberada ---------- */
+  _corridaLiberada() {
+    const c = Store.corrida();
+    /* App.semanaCorrida = 0 significa "a semana em que ela está"; outro
+       número é a pessoa espiando uma semana pelos chips de cima */
+    const p = Store.planoCorrida(App.semanaCorrida || c.semana);
+    const feitasNaSemana = p.sessoes.filter(s => Store.corridaFeita(p.semana, s.id)).length;
+
+    return `
+      <div class="card plano-cab">
+        <h3>${p.nivel.nome}</h3>
+        <p>${p.nivel.meta}</p>
+        <div class="plano-tags">
+          <span class="tag">Semana ${p.semana} de ${p.total}</span>
+          <span class="tag">${feitasNaSemana} de ${p.sessoes.length} feitas</span>
+        </div>
+      </div>
+
+      <p class="plano-porque">${p.foco}</p>
+
+      <div class="dias-fila">
+        ${Array.from({ length: p.total }, (_, i) => i + 1).map(n => `
+          <button class="dia-chip ${n === p.semana ? 'ativo' : ''} ${n < c.semana ? 'hoje' : ''}"
+                  onclick="App.verSemanaCorrida(${n})">
+            <div class="d">S${n}</div>
+            <div class="p"></div>
+          </button>`).join('')}
+      </div>
+
+      ${p.sessoes.map(s => {
+        const feita = Store.corridaFeita(p.semana, s.id);
+        return `
+        <div class="card">
+          <div class="card-tt">${Ic.corrida(20)} ${s.nome}<span class="n">${s.minutos} min</span></div>
+          <p class="corrida-papel">${s.papel}</p>
+          ${s.passos.map(b => `
+            <div class="corrida-bloco">
+              <span class="d">${b.d}</span>
+              <div>
+                <div class="t">${b.t}</div>
+                <div class="s">${b.txt}</div>
+              </div>
+            </div>`).join('')}
+          <button class="btn ${feita ? 'sec' : ''}" style="margin-top:14px"
+                  onclick="App.marcarCorrida(${p.semana},'${s.id}')">
+            ${feita ? '✓ Feita. Toque para desmarcar' : 'Marcar sessão como feita'}
+          </button>
+        </div>`;
+      }).join('')}
+
+      <h3 class="secao-tt">Como saber o ritmo</h3>
+      <div class="card" style="padding:6px 18px">
+        ${CORRIDA_ESFORCO.map(([t, txt]) => `
+          <div class="lista-item" style="align-items:flex-start">
+            <span class="lista-ic">${Ic.alvo(19)}</span>
+            <div><div class="lista-t">${t}</div><div class="lista-s">${txt}</div></div>
+          </div>`).join('')}
+      </div>
+
+      <p class="corrida-rodape">Material educativo de apoio. Não substitui acompanhamento médico. Dor aguda, tontura ou falta de ar fora do normal: pare e procure um profissional.</p>`;
+  },
+
   treinos() {
+    if (App.abaTreinos === 'corrida') return Telas.corrida();
     const plano = Store.planoTreino();
     const dias = Store.diasTreino();
     const dia = dias[App.diaTreino];
@@ -575,6 +968,8 @@ const Telas = {
       </div>
 
       <div class="tela stagger">
+        ${Telas._temCorrida() ? Telas._abasTreino() : ''}
+
         <div class="card plano-cab">
           <h3>${plano.nome}</h3>
           <p>${plano.desc}</p>
@@ -704,6 +1099,11 @@ const Telas = {
             </div>
             <button class="carga-btn" onclick="event.stopPropagation();App.salvarCarga(${i})">Salvar</button>
           </div>
+
+          ${Video.tem(nome) ? `
+            <button class="video-btn" onclick="event.stopPropagation();App.verVideo('${nome.replace(/'/g, "\\'")}')">
+              ${Ic.camera(17)} Ver execução
+            </button>` : ''}
         </div>
       </div>`;
   },
@@ -783,6 +1183,10 @@ const Telas = {
             </div>
             <div class="bib-desc">${e.desc}</div>
             <div class="bib-musc">${e.musc.map(m => `<span class="musc">${m}</span>`).join('')}</div>
+            ${Video.tem(e.nome) ? `
+              <button class="video-btn" onclick="App.verVideo('${e.nome.replace(/'/g, "\\'")}')">
+                ${Ic.camera(17)} Ver execução
+              </button>` : ''}
           </div>`).join('') : `
           <div class="vazio">
             <div class="em">🔍</div>
@@ -845,14 +1249,6 @@ const Telas = {
           <div class="card-tt">${Ic.balanca(20)} Evolução do peso<span class="n">${Store.db.pesagens.length} pesagens</span></div>
           ${Comp.grafico(Store.seriePeso())}
           <button class="btn" style="margin-top:14px" onclick="App.abrirPeso()">Registrar pesagem de hoje</button>
-        </div>
-
-        <div class="card">
-          <div class="card-tt">${Ic.alvo(20)} Metas diárias</div>
-          <div class="lista-item"><span class="lista-k">Calorias por dia</span><span class="lista-v">${p.meta_kcal} kcal</span></div>
-          <div class="lista-item"><span class="lista-k">Proteína por dia</span><span class="lista-v">${p.meta_prot} g</span></div>
-          <div class="lista-item"><span class="lista-k">Água por dia</span><span class="lista-v">${(p.meta_agua/1000).toFixed(1)} L</span></div>
-          <div class="lista-item"><span class="lista-k">Sono por noite</span><span class="lista-v">${p.meta_sono} h</span></div>
         </div>`;
   },
 
@@ -895,19 +1291,6 @@ const Telas = {
         ${Telas._evolucaoCargas()}
 
         ${Telas._peso()}
-
-        <div class="card nivel-card" style="background:linear-gradient(140deg, ${nv.cor2} 0%, ${nv.cor1} 62%, ${nv.cor1} 100%)">
-          <div class="nivel-topo">
-            <div class="nivel-emoji">${nv.icone}</div>
-            <div>
-              <div class="nivel-n">Nível ${nv.n} de ${nv.totalNiveis}</div>
-              <div class="nivel-nome">${nv.nome}</div>
-            </div>
-            <div class="nivel-pts"><b>${nv.pontos}</b><span>pontos</span></div>
-          </div>
-          <div class="nivel-barra"><i style="width:${nv.pct}%"></i></div>
-          <div class="nivel-falta">${nv.proximo ? `Faltam ${nv.faltam} pontos para <b>${nv.proximo.nome}</b>` : 'Nível máximo. 👑'}</div>
-        </div>
 
         <h3 class="secao-tt">Todos os níveis</h3>
         <div class="card">
@@ -983,6 +1366,67 @@ const Telas = {
   },
 
   /* ============ PERFIL ============ */
+  /* ---------- PLANO DUO ----------
+     Aparece em três formas, e em mais nenhuma:
+     - quem comprou o Duo e ainda não chamou ninguém: o convite;
+     - quem já chamou: quem está na vaga, e o botão de tirar;
+     - quem ENTROU por convite: só o aviso de quem pagou pra ela.
+     Plano normal não vê nada disso. O estado vem de App.duo, carregado
+     ao abrir a aba (App.carregarDuo). */
+  _duo() {
+    const d = App.duo;
+    if (!Backend.ativo() || !d || !d.ok) return '';
+
+    if (d.titular_email) {
+      return `
+        <h3 class="secao-tt">Seu acesso</h3>
+        <div class="card">
+          <div class="tema-linha">
+            <div class="tema-ic">${Ic.pessoa(20)}</div>
+            <div class="tema-txt">
+              <div class="t">Você está no Plano Duo</div>
+              <div class="s">A sua vaga veio da assinatura de <strong>${d.titular_email}</strong>. Seu plano, suas metas e seu progresso são só seus: ninguém mais enxerga.</div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    if (Number(d.vagas || 1) < 2) return '';
+
+    const convidados = d.convidados || [];
+    const livre = convidados.length < Number(d.vagas) - 1;
+
+    return `
+      <h3 class="secao-tt">Plano Duo</h3>
+      <div class="card">
+        ${convidados.length ? convidados.map(c => `
+          <div class="tema-linha">
+            <div class="tema-ic">${Ic.pessoa(20)}</div>
+            <div class="tema-txt">
+              <div class="t">${c.email}</div>
+              <div class="s">${c.status === 'ativa' ? 'Com acesso liberado. É só ela entrar no app com esse e-mail.' : 'Sem acesso no momento.'}</div>
+            </div>
+            <button class="btn sec" style="width:auto;padding:9px 14px;font-size:13px"
+                    onclick="App.duoRemover('${c.email}')">Tirar</button>
+          </div>`).join('') : ''}
+
+        ${livre ? `
+          <div class="tema-txt" style="padding:4px 0 12px">
+            <div class="t">Você tem uma vaga para outra pessoa</div>
+            <div class="s">Digite o e-mail dela. Ela entra no app com esse e-mail, monta o plano dela e o progresso de vocês fica separado.</div>
+          </div>
+          ${App.duoErro ? `<div class="erro">${App.duoErro}</div>` : ''}
+          <div class="login-campo" style="margin-bottom:10px">
+            <input type="email" id="in-duo" placeholder="E-mail da segunda pessoa" autocomplete="off"
+                   onkeydown="if(event.key==='Enter')App.duoConvidar()">
+          </div>
+          <button class="btn" id="btn-duo" onclick="App.duoConvidar()">Liberar acesso para ela</button>
+        ` : `
+          <p class="lembrete-nota">A vaga do seu plano está ocupada. Para chamar outra pessoa, tire a atual primeiro.</p>
+        `}
+      </div>`;
+  },
+
   perfil() {
     const p = Store.db.perfil;
     const nv = Store.nivel();
@@ -1013,6 +1457,8 @@ const Telas = {
         <button class="btn sec" onclick="App.abrirEditar()">Editar meus dados</button>
         <div style="height:10px"></div>
         <button class="btn sec" onclick="App.abrirPeso()">Registrar pesagem</button>
+
+        ${this._duo()}
 
         <h3 class="secao-tt">Lembretes</h3>
         <div class="card">

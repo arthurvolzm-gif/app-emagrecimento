@@ -28,7 +28,8 @@ const PONTOS = {
   agua:       20,  // bater a meta de água do dia
   sono:       20,  // bater a meta de sono do dia
   treino:     40,  // concluir o treino do dia
-  pesagem:    15   // registrar uma pesagem
+  pesagem:    15,  // registrar uma pesagem
+  corrida:    35   // concluir uma sessão do Modo Corrida (produto extra)
 };
 
 /* ---------- PLANOS ALIMENTARES ----------
@@ -832,3 +833,156 @@ const CATEGORIAS = ['Todos', 'Pernas', 'Glúteos', 'Costas', 'Peito', 'Ombro', '
 /* ordem fixa da semana — a posição no array é o dia, o conteúdo é trocável */
 const DIAS_SEMANA = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 const DIAS_SEMANA_LONGO = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
+
+/* =========================================================
+   MODO CORRIDA  ·  produto extra, comprado dentro do app
+
+   ⚠️ O CONTEÚDO ABAIXO É UMA PRIMEIRA VERSÃO, PRA REVISAR.
+   A progressão segue o padrão de corrida/caminhada que os programas
+   de iniciante usam (tipo Couch to 5K): sobe o tempo de corrida aos
+   poucos e mantém a caminhada como descanso ativo. Está conservadora
+   de propósito. Revise antes de vender, principalmente as semanas
+   finais — é o seu produto e a sua assinatura por trás dele.
+
+   Tudo aqui é texto e número: pra mudar o plano, mexa nesta lista,
+   não na tela.
+   ========================================================= */
+
+/* o que aparece na tela de venda (Modo Corrida bloqueado) */
+const CORRIDA_BENEFICIOS = [
+  ['calendario', 'Plano de 8 semanas',
+   'Da primeira caminhada até correr 30 minutos sem parar. Cada semana já vem montada, você só abre e faz.'],
+  ['medalha', 'Ajustado ao seu nível',
+   'Começando do zero, voltando depois de um tempo parado ou já correndo: o app escolhe a progressão pelo que você respondeu no cadastro.'],
+  ['relogio', 'Cada sessão minuto a minuto',
+   'Aquecimento, os blocos de corrida e caminhada, e o desaquecimento. Sem precisar contar nada de cabeça.'],
+  ['alvo', 'Ritmo por esforço, não por velocidade',
+   'Cada bloco diz em que esforço correr, do jeito que dá pra sentir na hora. Sem depender de relógio caro nem de pace.'],
+  ['halter', 'Encaixado no seu treino',
+   'O plano respeita os seus dias de musculação e diz em qual dia a corrida cai melhor, pra uma coisa não atrapalhar a outra.'],
+  ['trofeu', 'Conta pontos igual ao resto',
+   'Sessão de corrida concluída entra nos seus pontos, no seu nível e na sua semana perfeita.']
+];
+
+/* A progressão. Cada semana diz quantos blocos, quantos minutos
+   correndo e quantos caminhando. As três sessões da semana saem daqui
+   (ver Store.planoCorrida): duas iguais e a terceira um bloco maior. */
+const CORRIDA_NIVEIS = {
+  iniciante: {
+    nome: 'Começando do zero',
+    sub: 'Pra quem não corre hoje',
+    meta: 'Correr 30 minutos seguidos na semana 8',
+    semanas: [
+      { corre: 1, anda: 4, blocos: 6, foco: 'Só acostumar o corpo. Se o trote parecer fácil demais, está certo.' },
+      { corre: 2, anda: 3, blocos: 6, foco: 'Mesmo tempo total, mais tempo correndo. A caminhada ainda é a maior parte.' },
+      { corre: 3, anda: 3, blocos: 5, foco: 'Primeira semana em que o corredor passa do caminhante. Vá devagar.' },
+      { corre: 5, anda: 3, blocos: 4, foco: 'Blocos maiores. Se precisar andar antes da hora, ande: a semana não está perdida.' },
+      { corre: 8, anda: 3, blocos: 3, foco: 'Aqui muita gente descobre que consegue. O ritmo continua sendo o de conversar.' },
+      { corre: 12, anda: 3, blocos: 2, foco: 'Dois blocos longos. O segredo é sair mais devagar do que você quer.' },
+      { corre: 20, anda: 3, blocos: 1, foco: 'Um bloco só, mais a volta. Vinte minutos é a barreira mental do programa.' },
+      { corre: 30, anda: 0, blocos: 1, foco: 'A meta. Sem caminhada no meio, no ritmo mais leve que você tiver.' }
+    ]
+  },
+  intermediario: {
+    nome: 'Voltando a correr',
+    sub: 'Pra quem já correu e parou',
+    meta: 'Correr 45 minutos seguidos na semana 8',
+    semanas: [
+      { corre: 5, anda: 2, blocos: 4, foco: 'Retomada. O corpo lembra mais rápido que o fôlego, então segure o ritmo.' },
+      { corre: 8, anda: 2, blocos: 3, foco: 'Blocos maiores, mesma ideia: terminar com gás sobrando.' },
+      { corre: 12, anda: 2, blocos: 3, foco: 'Primeira semana de volume de verdade. Cuide do sono e da água.' },
+      { corre: 15, anda: 2, blocos: 2, foco: 'Dois blocos longos. Se a canela reclamar, tire um dia e volte.' },
+      { corre: 20, anda: 2, blocos: 2, foco: 'Quarenta minutos correndo no total. O ritmo segue sendo o de conversar.' },
+      { corre: 30, anda: 3, blocos: 1, foco: 'Um bloco contínuo de meia hora. Saia devagar de propósito.' },
+      { corre: 35, anda: 0, blocos: 1, foco: 'Contínuo, sem pausa. A partir daqui é fôlego, não perna.' },
+      { corre: 45, anda: 0, blocos: 1, foco: 'A meta. Se precisar dividir em dois, tudo bem: repita a semana.' }
+    ]
+  },
+  avancado: {
+    nome: 'Correndo com constância',
+    sub: 'Pra quem já corre toda semana',
+    meta: 'Um longo de 60 minutos na semana 8',
+    semanas: [
+      { corre: 10, anda: 2, blocos: 3, foco: 'Semana de base. Nada de forçar: o ganho vem do acúmulo, não de um treino.' },
+      { corre: 15, anda: 2, blocos: 3, foco: 'Volume subindo. Mantenha o esforço em que dá pra falar frases inteiras.' },
+      { corre: 20, anda: 2, blocos: 2, foco: 'Dois blocos fortes. A pausa curta é pra segurar o ritmo, não pra descansar.' },
+      { corre: 30, anda: 2, blocos: 2, foco: 'Primeira semana pesada. Se acordar cansada dois dias seguidos, alivie.' },
+      { corre: 40, anda: 0, blocos: 1, foco: 'Contínuo. Aqui a cabeça treina tanto quanto a perna.' },
+      { corre: 45, anda: 0, blocos: 1, foco: 'Quase lá. Coma antes de sair se for treino de manhã.' },
+      { corre: 50, anda: 0, blocos: 1, foco: 'Semana de pico antes do longo final.' },
+      { corre: 60, anda: 0, blocos: 1, foco: 'A meta: uma hora correndo. Ritmo constante do começo ao fim.' }
+    ]
+  }
+};
+
+/* os três nomes de sessão da semana, na ordem */
+const CORRIDA_SESSOES = [
+  { id: 'a', nome: 'Sessão A', papel: 'Primeira da semana, no ritmo do plano.' },
+  { id: 'b', nome: 'Sessão B', papel: 'Repete a A. É a repetição que constrói, não a novidade.' },
+  { id: 'c', nome: 'Sessão C', papel: 'Um bloco a mais que as outras duas. É a mais longa da semana.' }
+];
+
+/* escala de esforço, sem depender de relógio, GPS ou frequencímetro */
+const CORRIDA_ESFORCO = [
+  ['Caminhada', 'Passo firme, respiração normal. Dá pra cantar.'],
+  ['Trote leve', 'Mais lento do que você acha que deveria. Dá pra falar frases inteiras.'],
+  ['Ritmo do plano', 'Dá pra falar frases curtas, mas não cantar. É aqui que quase todo o plano acontece.']
+];
+
+/* =========================================================
+   REAJUSTE MENSAL  ·  as fases do treino
+
+   O cardápio já se reajusta sozinho a cada pesagem (as gramagens
+   escalam pela meta de calorias). O treino não se mexia: a pessoa fazia
+   a mesma planilha no mês 1 e no mês 6.
+
+   Estas quatro fases giram mês a mês em cima do MESMO plano de treino.
+   Não trocam os exercícios de propósito: trocar tudo todo mês impede a
+   pessoa de ver progresso na carga, que é o que prende. O que muda é o
+   estímulo — volume, intensidade e descanso — em cima dos exercícios
+   que ela já sabe fazer.
+
+   Depois da fase 4 volta pra 1, com as cargas mais altas que ela
+   alcançou. É assim que periodização funciona na prática.
+   ========================================================= */
+const FASES_TREINO = [
+  {
+    n: 1,
+    nome: 'Adaptação',
+    resumo: 'Firmar a execução antes de somar peso.',
+    detalhe: 'Séries e repetições da base, no descanso confortável. O foco do mês é fazer certo, não fazer pesado.',
+    series: 0,        // quanto somar nas séries dos 2 primeiros exercícios
+    reps: 0,          // quanto somar nas repetições
+    descanso: 0       // segundos a somar no descanso
+  },
+  {
+    n: 2,
+    nome: 'Volume',
+    resumo: 'Mais séries nos exercícios principais.',
+    detalhe: 'Os dois primeiros exercícios de cada dia ganham uma série. Mesma carga, mais trabalho total.',
+    series: 1, reps: 0, descanso: 0
+  },
+  {
+    n: 3,
+    nome: 'Intensidade',
+    resumo: 'Menos repetições, mais carga.',
+    detalhe: 'Duas repetições a menos e 15 segundos a mais de descanso, para você conseguir subir o peso na barra.',
+    series: 0, reps: -2, descanso: 15
+  },
+  {
+    n: 4,
+    nome: 'Densidade',
+    resumo: 'Mesmo treino, menos descanso.',
+    detalhe: 'Séries e repetições da base com 15 segundos a menos entre elas. O treino fica mais curto e mais difícil.',
+    series: 0, reps: 0, descanso: -15
+  }
+];
+
+/* quanto sugerir de aumento de carga por exercício, quando há histórico.
+   Percentual pequeno de propósito: subir demais é como as pessoas se
+   machucam e param. */
+const CARGA_INCREMENTO = 0.05;      // 5% sobre a última carga registrada
+const CARGA_MIN_SESSOES = 2;        // só sugere com pelo menos 2 registros
+
+const MESES_PT = ['janeiro','fevereiro','março','abril','maio','junho',
+                  'julho','agosto','setembro','outubro','novembro','dezembro'];

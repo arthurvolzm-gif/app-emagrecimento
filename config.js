@@ -29,6 +29,23 @@ const CONFIG = {
   CHECKOUT_URL_TRIMESTRAL: 'https://app.zuptos.com.br/checkout/b8b35e1625ad65b7',
   CHECKOUT_URL_ANUAL: 'https://app.zuptos.com.br/checkout/4c18c052c5030bd6',
 
+  /* ---------- Modo Corrida (produto extra, R$29,90) ----------
+     Compra avulsa feita DENTRO do app, na aba Treinos. Crie o produto
+     na Zuptos com a palavra "corrida" no nome — é por ela que o
+     webhook sabe que a compra é deste produto e grava em
+     `acessos_extras` em vez de mexer na assinatura da pessoa.
+     Vazio = o botão não aparece e o Modo Corrida some da aba. */
+  CHECKOUT_URL_CORRIDA: 'https://app.zuptos.com.br/checkout/93042bb4f9eaa131',
+  PRECO_CORRIDA: 'R$29,90',
+
+  /* ---------- Reajuste mensal (extra recorrente, R$9,90/mês) ----------
+     Libera as fases do treino, as sugestões de carga e o relatório de
+     virada de mês. Crie o produto na Zuptos como ASSINATURA mensal, com
+     a palavra "reajuste" no nome. Vazio = o reajuste fica liberado pra
+     todo mundo, sem cobrança (é o comportamento de antes). */
+  CHECKOUT_URL_REAJUSTE: 'https://app.zuptos.com.br/checkout/4b614ef4fe65668b',
+  PRECO_REAJUSTE: 'R$9,90',
+
   /* ---------- acesso fechado (modo de teste) ----------
      Enquanto esta lista tiver algum e-mail, o app só abre para ELES, e
      abre direto: sem pedir código e sem checar assinatura. É o que

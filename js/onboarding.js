@@ -92,6 +92,19 @@ const Onb = {
   /* e-mail digitado na primeira etapa, guardado pra confirmar o código */
   emailPendente: '',
 
+  /* A tela "Seu perfil" atende dois públicos:
+     - quem veio do quiz: chega preenchida, e o trabalho é conferir;
+     - quem nunca fez o quiz (o caso do Plano Duo, mas também de quem
+       comprou por outro caminho): chega em branco, e o trabalho é
+       preencher.
+     É a mesma tela e a mesma lista de campos de propósito — o que muda
+     é o texto, porque "confira o que você respondeu" pra quem não
+     respondeu nada é confuso. */
+  emBranco: false,
+
+  /* e-mail de quem pagou, quando a pessoa entrou pela vaga do Plano Duo */
+  convidadoPor: '',
+
   /* ---------- etapa 1: pedir o e-mail ----------
      Um caminho só pra entrar e pra criar conta: quem nunca entrou
      tem a conta criada na hora que confirma o código. O que decide
@@ -299,18 +312,29 @@ const Onb = {
       ? `<div class="rev-secao">${c.secao}</div>`
       : this.perfilLinha(c)).join('');
 
+    const branco = this.emBranco;
+
     return `
       <div class="tela-login tela-perfil">
         <div class="login-content">
           ${this.logoHTML()}
-          <h1 class="login-h1 esq">Seu perfil</h1>
-          <p class="login-sub esq">Confira o que você respondeu antes de criar seu plano.</p>
+
+          ${this.convidadoPor ? `
+            <div class="aviso" style="margin-bottom:18px">
+              Seu acesso foi liberado por <strong>${this.convidadoPor}</strong>, pelo Plano Duo.
+              O plano que você montar aqui é só seu: metas, cardápio, treino e progresso separados.
+            </div>` : ''}
+
+          <h1 class="login-h1 esq">${branco ? 'Seus dados' : 'Seu perfil'}</h1>
+          <p class="login-sub esq">${branco
+            ? 'Preencha para o app montar o seu cardápio, o seu treino e as suas metas. Toque em cada linha para responder.'
+            : 'Confira o que você respondeu antes de criar seu plano.'}</p>
 
           ${this.erro ? `<div class="erro">${this.erro}</div>` : ''}
 
           ${linhas}
 
-          <button class="login-btn" style="margin-top:22px" onclick="Onb.confirmarPerfil()">Confirmar e criar meu plano</button>
+          <button class="login-btn" style="margin-top:22px" onclick="Onb.confirmarPerfil()">${branco ? 'Criar meu plano' : 'Confirmar e criar meu plano'}</button>
         </div>
         ${this.suporteHTML()}
       </div>`;
@@ -330,7 +354,7 @@ const Onb = {
           </span>
           <span class="rev-txt">
             <span class="rev-rot">${c.rot}</span>
-            <span class="rev-val${vazio ? ' rev-vazio' : ''}">${valor || 'Toque para escolher'}</span>
+            <span class="rev-val${vazio ? ' rev-vazio' : ''}">${valor || (c.tipo === 'texto' || c.tipo === 'numero' ? 'Toque para preencher' : 'Toque para escolher')}</span>
           </span>
           <span class="rev-seta">
             <svg viewBox="0 0 24 24" fill="none" stroke="#3FBE7C" stroke-width="2.2"
@@ -762,6 +786,34 @@ const Onb = {
         : a.status === 'cancelada'
           ? `Sua assinatura (${a.plano || 'plano'}) foi cancelada.`
           : `Sua assinatura (${a.plano || 'plano'}) expirou.`;
+
+    /* ---------- versão da Play Store ----------
+       O Google não deixa um app da loja mandar a pessoa pagar fora da
+       Play (política de Pagamentos). Um botão de checkout aqui dentro
+       derruba a publicação. O que é permitido é o modelo do Netflix:
+       quem já assinou entra com a conta, e o app não fala de preço,
+       de link nem de onde comprar. É isso que esta tela vira dentro
+       do app da loja. Fora dela (navegador, iPhone) nada muda. */
+    if (window.NO_APP_DA_LOJA) {
+      return `
+        <div class="onb">
+          <div class="onb-logo">🔒</div>
+          <h1 class="display">Não encontramos sua assinatura</h1>
+          <p class="sub">${statusTexto} Entre com o mesmo e-mail que você usou na contratação.</p>
+
+          <button class="btn" id="btn-verificar-pgto" onclick="Onb.verificarPagamento()">Verificar de novo</button>
+
+          <a class="btn sec" style="margin-top:10px" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">
+            Falar com o suporte
+          </a>
+
+          <div style="text-align:center;margin-top:22px">
+            <button style="font-size:13px;color:var(--cinza);font-weight:700" onclick="Backend.sair().then(()=>location.reload())">
+              Entrar com outro e-mail
+            </button>
+          </div>
+        </div>`;
+    }
 
     return `
       <div class="onb">

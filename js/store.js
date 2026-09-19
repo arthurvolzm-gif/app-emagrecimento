@@ -26,7 +26,99 @@ const Store = {
   },
 
   vazio() {
-    return { perfil: null, dias: {}, pesagens: [], cargas: {}, trocas: {} };
+    return { perfil: null, dias: {}, pesagens: [], cargas: {}, trocas: {}, corrida: null, reajustes: [] };
+  },
+
+  /* ---------- MODO CORRIDA ----------
+     Produto extra. O que decide se a pessoa VÊ o plano é o acesso no
+     banco (Backend.temExtra), não isto aqui: o que mora no aparelho é
+     só em que semana ela está e o que já fez. Guardar o acesso no
+     localStorage seria a mesma coisa que não ter tranca nenhuma. */
+  corrida() {
+    if (!this.db.corrida) this.db.corrida = { semana: 1, feitos: {} };
+    if (!this.db.corrida.feitos) this.db.corrida.feitos = {};
+    return this.db.corrida;
+  },
+
+  /* o nível vem do que a pessoa respondeu no cadastro; quem não
+     respondeu cai em iniciante, que é o caminho seguro */
+  nivelCorrida() {
+    const n = (this.db.perfil && this.db.perfil.nivel_treino) || 'iniciante';
+    return CORRIDA_NIVEIS[n] ? n : 'iniciante';
+  },
+
+  /* monta a semana atual: três sessões a partir da linha da progressão.
+     A e B são iguais; a C leva um bloco a mais (quando há mais de um). */
+  planoCorrida(semana) {
+    const nivel = CORRIDA_NIVEIS[this.nivelCorrida()];
+    const n = Math.min(Math.max(Number(semana || this.corrida().semana), 1), nivel.semanas.length);
+    const base = nivel.semanas[n - 1];
+
+    const sessoes = CORRIDA_SESSOES.map(s => {
+      const blocos = s.id === 'c' && base.blocos > 1 ? base.blocos + 1 : base.blocos;
+      const minutos = 5 + blocos * (base.corre + base.anda) + 5;   /* aquecimento + blocos + volta à calma */
+      return {
+        id: s.id,
+        nome: s.nome,
+        papel: s.papel,
+        blocos,
+        corre: base.corre,
+        anda: base.anda,
+        minutos,
+        passos: this.passosCorrida(blocos, base.corre, base.anda)
+      };
+    });
+
+    return { nivel, semana: n, total: nivel.semanas.length, foco: base.foco, sessoes };
+  },
+
+  passosCorrida(blocos, corre, anda) {
+    const lista = [
+      { t: 'Aquecimento', d: '5 min', txt: 'Caminhada em passo firme, só pra o corpo entender que vai trabalhar.' }
+    ];
+    if (anda > 0) {
+      lista.push({
+        t: 'Parte principal',
+        d: blocos + 'x',
+        txt: `${blocos} blocos de: ${corre} min correndo no ritmo do plano + ${anda} min caminhando.`
+      });
+    } else {
+      lista.push({
+        t: 'Parte principal',
+        d: corre + ' min',
+        txt: `${corre} minutos correndo sem parar, em ritmo constante. Saia mais devagar do que você quer.`
+      });
+    }
+    lista.push({ t: 'Volta à calma', d: '5 min', txt: 'Caminhada leve até a respiração voltar ao normal. Não pule.' });
+    return lista;
+  },
+
+  corridaFeita(semana, sessaoId) {
+    return !!this.corrida().feitos[semana + ':' + sessaoId];
+  },
+
+  /* marca a sessão e, quando as três da semana estão feitas, avança.
+     Devolve true se a semana virou, pra tela poder comemorar. */
+  marcarCorrida(semana, sessaoId) {
+    const c = this.corrida();
+    const chave = semana + ':' + sessaoId;
+    if (c.feitos[chave]) { delete c.feitos[chave]; this.save(); return false; }
+
+    c.feitos[chave] = this.hoje();
+    /* os pontos não são gravados: pontosTotais() conta as sessões feitas,
+       igual faz com as pesagens. Um lugar só decide o placar. */
+
+    const plano = this.planoCorrida(semana);
+    const todas = plano.sessoes.every(s => c.feitos[semana + ':' + s.id]);
+    let virou = false;
+    if (todas && c.semana === semana && semana < plano.total) { c.semana = semana + 1; virou = true; }
+
+    this.save();
+    return virou;
+  },
+
+  corridaConcluidas() {
+    return Object.keys(this.corrida().feitos).length;
   },
 
   resetar() {
@@ -250,7 +342,189 @@ const Store = {
   planoTreino() {
     const p = this.db.perfil;
     const base = PLANOS_TREINO[`${p.sexo}_${p.local}`] || PLANOS_TREINO.feminino_academia;
-    return this.montarSemana(base, p.dias_treino);
+    return this.aplicarFase(this.montarSemana(base, p.dias_treino));
+  },
+
+  /* ---------- REAJUSTE MENSAL ----------
+     O cardápio já reajusta sozinho (as gramagens escalam pela meta de
+     calorias, que é recalculada a cada pesagem). O treino não reajustava
+     nada: mesma planilha no mês 1 e no mês 6. Estas funções resolvem
+     isso, e a tela de virada de mês mostra o que mudou.
+
+     Nada disto vai pro Supabase: é cálculo em cima do perfil, roda no
+     aparelho. O Supabase só guarda quem tem acesso.                    */
+
+  mesAtual() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  },
+
+  reajustes() {
+    if (!Array.isArray(this.db.reajustes)) this.db.reajustes = [];
+    return this.db.reajustes;
+  },
+
+  ultimoReajuste() {
+    const r = this.reajustes();
+    return r.length ? r[r.length - 1] : null;
+  },
+
+  /* O reajuste é um extra pago (R$9,90/mês). Quem não assina fica na
+     fase 1, que é o plano base — exatamente o que ela já tinha antes
+     de existir reajuste. Nada é tirado de ninguém: o que a assinatura
+     compra são as fases seguintes, as sugestões de carga e o relatório
+     de virada de mês.
+
+     Fica aqui embaixo de App porque a tranca de verdade é do servidor
+     (Backend.extras); isto é só a porta da tela. */
+  reajusteLiberado() {
+    if (typeof CONFIG !== 'undefined' && !CONFIG.CHECKOUT_URL_REAJUSTE) return true;  /* sem produto criado, liberado pra todos */
+    return typeof App !== 'undefined' && typeof App.temReajuste === 'function' && App.temReajuste();
+  },
+
+  /* a fase gira 1 → 2 → 3 → 4 → 1... a cada mês fechado */
+  faseAtual() {
+    if (!this.reajusteLiberado()) return FASES_TREINO[0];
+    const ult = this.ultimoReajuste();
+    const n = ult && ult.fase ? ult.fase : 1;
+    return FASES_TREINO[(n - 1) % FASES_TREINO.length];
+  },
+
+  /* Quantos dias no mesmo plano. É o número que a notificação mostra,
+     então tem que ser verdade.
+
+     Conta a partir do último reajuste QUE FOI APLICADO. O retrato do
+     mês é gravado mesmo pra quem não assina (senão a virada de mês
+     reapareceria a cada abertura do app), mas o plano dela não mudou —
+     contar a partir dele diria "0 dias no mesmo plano" pra quem está
+     no mesmo plano há dois meses. */
+  /* "1 dia" / "47 dias" — sem isto a tela escreve "há 1 dias" */
+  frasedias(n) { return n + (n === 1 ? ' dia' : ' dias'); },
+
+  diasSemReajuste() {
+    const aplicado = this.reajustes().filter(r => r.liberado).pop();
+    const desde = (aplicado && aplicado.data) || (this.db.perfil && this.db.perfil.criado_em);
+    if (!desde) return 0;
+    return Math.max(0, Math.round((Date.now() - this.deIso(desde).getTime()) / 86400000));
+  },
+
+  /* aplica a fase por cima da semana montada: só os DOIS primeiros
+     exercícios ganham série (são os compostos, onde volume rende), e
+     repetição só mexe quando o texto é um número puro — '15 cada' e
+     '10-12' ficam como estão em vez de virar bobagem. */
+  /* recebe e devolve o OBJETO do plano ({nome, desc, frequencia, dias}),
+     não a lista de dias: é assim que planoTreino() entrega pro resto do
+     app, e trocar a forma aqui quebraria todas as telas de treino. */
+  aplicarFase(plano) {
+    const f = this.faseAtual();
+    if (f.series === 0 && f.reps === 0 && f.descanso === 0) return plano;
+
+    return { ...plano, dias: plano.dias.map(dia => {
+      if (dia.descanso || !dia.exercicios) return dia;
+      return {
+        ...dia,
+        exercicios: dia.exercicios.map((e, i) => {
+          const novo = { ...e };
+          if (f.series && i < 2) novo.series = e.series + f.series;
+
+          if (f.reps && /^\d+$/.test(String(e.reps))) {
+            novo.reps = String(Math.max(6, Number(e.reps) + f.reps));
+          }
+
+          if (f.descanso) {
+            const seg = parseInt(String(e.desc), 10);
+            if (!isNaN(seg)) novo.desc = Math.max(30, seg + f.descanso) + 's';
+          }
+          return novo;
+        })
+      };
+    }) };
+  },
+
+  /* carga sugerida pro exercício: a última que ela registrou, mais um
+     passo pequeno. Só sugere com histórico de verdade — chutar carga
+     pra quem nunca registrou nada é como as pessoas se machucam. */
+  cargaSugerida(ex) {
+    const hist = this.cargas(ex);
+    if (hist.length < CARGA_MIN_SESSOES) return null;
+    const ultima = hist[hist.length - 1].peso;
+    if (!ultima) return null;
+    /* arredonda pra 0,5 kg, que é o menor par de anilhas de verdade */
+    const alvo = Math.round(ultima * (1 + CARGA_INCREMENTO) * 2) / 2;
+    return alvo > ultima ? alvo : ultima + 0.5;
+  },
+
+  /* tem virada de mês pra mostrar?
+     Só pra quem entrou num mês anterior: quem criou a conta há três
+     dias não tem o que reajustar, e a tela viraria enfeite. */
+  reajustePendente() {
+    if (!this.db.perfil) return false;
+    const mes = this.mesAtual();
+    /* pra quem não assina, "pendente" continua valendo: é o que faz a
+       notificação aparecer e a tela mostrar a oferta. O que ela não vê
+       são os números novos. */
+    const ult = this.ultimoReajuste();
+    if (ult && ult.mes === mes) return false;
+    const criado = String(this.db.perfil.criado_em || '').slice(0, 7);
+    return !!criado && criado < mes;
+  },
+
+  /* fecha o mês: guarda o retrato de agora e devolve a comparação com
+     o retrato anterior, que é o que a tela mostra. */
+  fecharReajuste() {
+    const p = this.db.perfil;
+    const mes = this.mesAtual();
+    const ult = this.ultimoReajuste();
+    const liberado = this.reajusteLiberado();
+    /* a fase só anda pra quem assina o reajuste. Sem isso, quem não
+       paga acumularia fases no retrato e pularia direto pra fase 4 no
+       dia que assinasse. */
+    const faseNova = !liberado ? (ult && ult.fase ? ult.fase : 1)
+                   : (ult && ult.fase ? (ult.fase % FASES_TREINO.length) + 1 : 1);
+
+    /* No PRIMEIRO reajuste não existe retrato anterior. Usar o
+       `meta_kcal` de agora como "antes" mostraria 1730 → 1730 mesmo
+       para quem emagreceu 4 kg, porque a meta já foi recalculada na
+       pesagem. Então recalculamos com o peso inicial: é o número que
+       ela realmente tinha quando começou. */
+    const perfilInicial = { ...p, peso_atual: p.peso_inicial };
+    /* compara com o último reajuste aplicado de verdade: os retratos de
+       quem só viu a oferta não são um "antes", porque nada mudou neles */
+    const base = this.reajustes().filter(r => r.liberado).pop() || ult;
+    const antes = base || {
+      peso: p.peso_inicial,
+      meta_kcal: this.calcMetaKcal(perfilInicial),
+      meta_prot: this.calcMetaProt(perfilInicial),
+      fase: 1
+    };
+
+    const retrato = {
+      mes,
+      data: this.hoje(),
+      peso: p.peso_atual,
+      meta_kcal: p.meta_kcal,
+      meta_prot: p.meta_prot,
+      fase: faseNova,
+      liberado                   /* false = ela viu a oferta e não assinou */
+    };
+    this.reajustes().push(retrato);
+    this.save();
+
+    const mesNum = Number(mes.slice(5)) - 1;
+    return {
+      mesNome: MESES_PT[mesNum] || '',
+      antes,
+      agora: retrato,
+      difPeso: Math.round((p.peso_atual - antes.peso) * 10) / 10,
+      difKcal: Math.round(p.meta_kcal - antes.meta_kcal),
+      difProt: Math.round((p.meta_prot || 0) - (antes.meta_prot || 0)),
+      /* o quanto o prato encolheu ou cresceu, que é o reajuste que ela
+         vê no cardápio todo dia */
+      pctPorcao: antes.meta_kcal ? Math.round((p.meta_kcal / antes.meta_kcal - 1) * 100) : 0,
+      fase: FASES_TREINO[(faseNova - 1) % FASES_TREINO.length],
+      faseAntes: FASES_TREINO[(antes.fase - 1) % FASES_TREINO.length],
+      primeiro: !ult
+    };
   },
 
   /* monta a semana de 7 dias a partir dos focos musculares fixos do plano
@@ -563,19 +837,27 @@ const Store = {
     const d = this.db.dias[dia];
     const plano = this.planoAlimentar(dia);
     let kcal = 0, prot = 0, marcados = 0, total = 0;
+    /* duas contagens diferentes, e as telas usam cada uma no lugar dela:
+       `marcados/total` são ALIMENTOS; `refeicoes/refeicoesTotal` são as
+       refeições fechadas. Uma refeição só conta quando todos os itens
+       obrigatórios dela estão marcados — a mesma regra que o sistema de
+       pontos já usa pro bônus de refeição completa. */
+    let refeicoes = 0, refeicoesTotal = 0;
 
     plano.forEach(r => {
+      let obrig = 0, feitos = 0;
       r.alimentos.forEach(a => {
         const feito = d && d.alimentos.indexOf(`${r.id}:${a.id}`) >= 0;
         /* opcionais (sobremesa) não entram na conta do "completou tudo",
            mas somam calorias se a pessoa marcar */
-        if (!a.opcional) { total++; if (feito) marcados++; }
+        if (!a.opcional) { total++; obrig++; if (feito) { marcados++; feitos++; } }
         if (feito) { kcal += a.kcal; prot += a.prot; }
       });
+      if (obrig > 0) { refeicoesTotal++; if (feitos === obrig) refeicoes++; }
     });
 
     return {
-      kcal, prot, marcados, total,
+      kcal, prot, marcados, total, refeicoes, refeicoesTotal,
       agua: d ? d.agua : 0,
       sono: d ? d.sono : 0,
       treino: d ? d.treino : false
@@ -613,6 +895,7 @@ const Store = {
   pontosTotais() {
     let total = Object.keys(this.db.dias).reduce((s, d) => s + this.pontosDoDia(d), 0);
     total += this.db.pesagens.length * PONTOS.pesagem;
+    total += this.corridaConcluidas() * PONTOS.corrida;
     return total;
   },
 

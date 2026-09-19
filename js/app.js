@@ -15,7 +15,7 @@ const PULAR_LOGIN = false;
    Mexeu no fluxo do onboarding? Mexa aqui junto. */
 const ORDEM_TELAS = [
   'abertura', 'auth', 'codigo', 'recebendo', 'revisao',
-  'criando', 'plano', 'cadastro', 'assinatura', 'inicio'
+  'criando', 'plano', 'cadastro', 'assinatura', 'reajuste', 'inicio'
 ];
 
 const App = {
@@ -28,6 +28,22 @@ const App = {
   exAberto: null,
   abaCardapio: 'cardapio',
   modoLocal: false,
+
+  /* Plano Duo: o retrato que o banco devolve (vagas, quem está na vaga,
+     quem convidou). null = ainda não consultado. Ver App.carregarDuo. */
+  duo: null,
+  duoErro: '',
+
+  /* Modo Corrida: qual botão da aba Treinos está ativo, e a lista de
+     produtos extras que a pessoa comprou (vem do banco, não do
+     aparelho — ver App.carregarExtras). null = ainda não consultado. */
+  abaTreinos: 'treino',
+  extras: null,
+  semanaCorrida: 0,
+
+  /* a virada de mês: o resultado de Store.fecharReajuste(), guardado
+     enquanto a tela está aberta */
+  reajusteDados: null,
 
   /* última tela realmente pintada — a animação de troca compara com ela
      pra não reanimar quando a mesma tela é redesenhada no lugar */
@@ -73,10 +89,22 @@ const App = {
           Store.db = remoto;
           Store.save();
           this.tela = 'inicio';
+        } else if (Store.temPerfil()) {
+          this.tela = 'inicio';
         } else {
-          this.tela = Store.temPerfil() ? 'inicio' : 'cadastro';
+          /* conta de verdade, ainda sem plano: cai na mesma tela "Seu
+             perfil" do login — preenchida pra quem fez o quiz com este
+             e-mail, em branco pra quem não fez (é o caso de quem entrou
+             pela vaga do Plano Duo). A busca roda enquanto a animação de
+             abertura está na tela, então não atrasa nada. */
+          await this.aplicarRespostasDoQuizPorEmail();
+          this.setarModoDoPerfil();
+          this.tela = 'revisao';
         }
         if (this.tela === 'inicio') await this.verificarAssinatura();
+        /* os extras vêm antes da virada de mês: é a lista deles que diz
+           se ela vê o reajuste completo ou a versão com a oferta */
+        if (this.tela === 'inicio') { await this.carregarExtras(); this.checarReajuste(); }
       } else {
         /* sem sessão: se já usava o app localmente, respeita o modo local */
         this.tela = Store.temPerfil() ? 'inicio' : 'auth';
@@ -130,8 +158,8 @@ const App = {
   },
 
   /* A marca no cabeçalho, em dois arranjos:
-     - na Início, o cabeçalho já tem saudação e avatar, então ela ocupa o
-       meio que sobra entre os dois;
+     - na Início, o cabeçalho já tem a saudação de um lado e o sino do
+       outro, então ela ocupa o meio que sobra entre os dois;
      - nas outras abas ela fica sozinha numa faixa acima, e o título só
        começa depois dela. O cabeçalho vira duas etapas em vez de uma
        linha cheia, e o título volta ao tamanho maior porque não disputa
@@ -262,10 +290,19 @@ const App = {
     tt.classList.remove('entra-el');
     tt.style.setProperty('--atraso', atraso + 'ms');
     tt.setAttribute('aria-label', texto);          /* leitor de tela lê a frase, não as letras */
-    tt.innerHTML = [...texto].map((c, i) => c === ' '
-      ? ' '
-      : `<span class="letra" style="--l:${i}" aria-hidden="true">${
-          c.replace('&', '&amp;').replace('<', '&lt;')}</span>`).join('');
+    /* As letras vão agrupadas por PALAVRA, não soltas. Cada letra é um
+       inline-block, e inline-block solto pode quebrar linha em qualquer
+       ponto — foi assim que "reajustado" virou "reaj / ustado" no fim
+       de uma linha. A palavra em volta segura as letras juntas; a
+       quebra volta a acontecer só nos espaços, como em texto normal.
+       O índice `--l` continua corrido entre as palavras pra cascata
+       não dar salto na troca. */
+    let i = 0;
+    tt.innerHTML = texto.split(' ').map(palavra =>
+      `<span class="palavra">${[...palavra].map(c =>
+        `<span class="letra" style="--l:${i++}" aria-hidden="true">${
+          c.replace('&', '&amp;').replace('<', '&lt;')}</span>`).join('')}</span>`
+    ).join(' ');
     tt.classList.add('letreando');
   },
 
@@ -368,6 +405,7 @@ const App = {
     if (this.tela === 'codigo')     { app.innerHTML = Onb.codigo();     nav.style.display = 'none'; return; }
     if (this.tela === 'recebendo')  { app.innerHTML = Onb.recebendo();  nav.style.display = 'none'; return; }
     if (this.tela === 'revisao')    { app.innerHTML = Onb.revisao();    nav.style.display = 'none'; return; }
+    if (this.tela === 'reajuste')   { app.innerHTML = Telas.reajuste();  nav.style.display = 'none'; return; }
     if (this.tela === 'criando')    { app.innerHTML = Onb.criando();    nav.style.display = 'none'; return; }
     if (this.tela === 'plano')      { app.innerHTML = Onb.plano();      nav.style.display = 'none'; return; }
     if (this.tela === 'cadastro')   { app.innerHTML = Onb.cadastro();   nav.style.display = 'none'; return; }
@@ -379,7 +417,7 @@ const App = {
     app.innerHTML = fn.call(Telas);
 
     /* telas internas ocupam a tela inteira, sem a barra de navegação */
-    const internas = ['biblioteca', 'cardapio', 'resumo', 'fotos'];
+    const internas = ['biblioteca', 'cardapio', 'resumo', 'fotos', 'notificacoes'];
     nav.style.display = internas.includes(this.tela) ? 'none' : 'flex';
     document.querySelectorAll('.nav button').forEach(b => {
       b.classList.toggle('on', b.dataset.tela === this.tela);
@@ -388,9 +426,263 @@ const App = {
 
   ir(tela) {
     this.tela = tela;
-    if (tela === 'treinos') this.diaTreino = this.indiceHoje();
+    if (tela === 'treinos') { this.diaTreino = this.indiceHoje(); this.carregarExtras(); }
+    if (tela === 'perfil') this.carregarDuo();   // pinta agora, o cartão do Duo entra quando a resposta chegar
     this.render();
     window.scrollTo(0, 0);
+  },
+
+  /* ---------- VÍDEO DE EXECUÇÃO ----------
+     O player entra só agora, no toque. A lista de exercícios tem
+     dezenas de itens: um iframe em cada um derrubaria o desempenho da
+     tela e gastaria os dados da pessoa com vídeo que ela nem abriu. */
+  verVideo(nome) {
+    if (!Video.tem(nome)) return;
+    const ex = (typeof BIBLIOTECA !== 'undefined' ? BIBLIOTECA.find(b => b.nome === nome) : null);
+    this.modal(`
+      <h3>${nome}</h3>
+      ${ex ? `<p class="m-sub">${ex.desc}</p>` : '<div style="height:8px"></div>'}
+      ${Video.html(nome)}
+      <div style="height:14px"></div>
+      <button class="btn sec" onclick="App.fecharModal()">Fechar</button>`);
+  },
+
+  /* ---------- REAJUSTE MENSAL ----------
+     Uma vez por mês, no primeiro acesso, antes da tela inicial. É o
+     momento em que a assinatura mostra serviço: o plano dela mudou, e
+     ela vê por quê.
+
+     Roda depois da assinatura conferida, nunca antes: quem está
+     devendo vê a tela de pagamento, não a de reajuste.            */
+  checarReajuste() {
+    if (this.tela !== 'inicio') return false;
+    if (!Store.reajustePendente()) return false;
+    this.abrirReajuste();
+    return true;
+  },
+
+  /* Fecha o mês e abre a tela. Quem não assina o reajuste também passa
+     por aqui: o retrato é gravado do mesmo jeito (senão a virada de
+     mês reapareceria a cada abertura do app, virando perseguição), e
+     a tela mostra a versão trancada. */
+  abrirReajuste() {
+    this.reajusteDados = Store.fecharReajuste();
+    Backend.agendarSync();
+    this.tela = 'reajuste';
+  },
+
+  /* entrada pela notificação: se o mês já foi fechado, remonta o
+     retrato do último reajuste em vez de gravar outro */
+  irReajuste() {
+    if (Store.reajustePendente()) this.abrirReajuste();
+    else {
+      const ult = Store.ultimoReajuste();
+      if (!ult) return this.toast('Ainda não há reajuste para mostrar.');
+      Store.db.reajustes.pop();          /* desfaz pra fecharReajuste() recompor a mesma comparação */
+      this.abrirReajuste();
+    }
+    this.render();
+    window.scrollTo(0, 0);
+  },
+
+  fecharReajuste() {
+    this.reajusteDados = null;
+    this.tela = 'inicio';
+    this.diaTreino = this.indiceHoje();
+    this.render();
+    window.scrollTo(0, 0);
+  },
+
+  lerTodasNotif() {
+    Notif.marcarTodasLidas();
+    Backend.agendarSync();
+    this.render();
+  },
+
+  /* ---------- REAJUSTE MENSAL: a compra (R$9,90/mês) ---------- */
+  temReajuste() {
+    if (!CONFIG.CHECKOUT_URL_REAJUSTE) return true;   /* produto não criado: liberado pra todos */
+    return Array.isArray(this.extras) && this.extras.indexOf('reajuste') >= 0;
+  },
+
+  comprarReajuste() {
+    if (!CONFIG.CHECKOUT_URL_REAJUSTE) return;
+    try { sessionStorage.setItem('ff_comprou_reajuste', '1'); } catch (e) {}
+    const email = Backend.emailAtual();
+    /* o e-mail vai junto: pagar com outro e-mail grava o acesso no
+       lugar errado, e é o erro de suporte número um deste tipo de venda */
+    const sep = CONFIG.CHECKOUT_URL_REAJUSTE.includes('?') ? '&' : '?';
+    location.href = CONFIG.CHECKOUT_URL_REAJUSTE + (email ? sep + 'email=' + encodeURIComponent(email) : '');
+  },
+
+  async verificarReajuste(silencioso) {
+    if (!Backend.ativo()) return false;
+    if (!silencioso) this.toast('Conferindo seu pagamento...');
+
+    for (let t = 0; t < 5; t++) {
+      await this.carregarExtras(true);
+      if (this.temReajuste()) {
+        /* refaz o retrato agora que as fases estão liberadas, senão
+           ela veria a tela cheia ainda calculada como fase 1 */
+        if (Store.reajustes().length) Store.db.reajustes.pop();
+        this.abrirReajuste();
+        this.render();
+        this.toast('Reajuste liberado ✅', true);
+        return true;
+      }
+      await new Promise(ok => setTimeout(ok, 2500));
+    }
+
+    if (!silencioso) {
+      this.modal(`
+        <h3>Ainda não achamos o pagamento</h3>
+        <p class="m-sub">Pode levar alguns minutos pra cair. Se você já pagou, feche e abra o app daqui a pouco. Se não aparecer, chame o suporte que a gente libera na mão.</p>
+        <a class="btn sec" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">Falar com o suporte</a>
+        <div style="height:10px"></div>
+        <button class="btn sec" onclick="App.fecharModal()">Fechar</button>`);
+    }
+    return false;
+  },
+
+  /* ---------- MODO CORRIDA (produto extra) ----------
+     A tranca fica no servidor: o app pergunta ao banco quais produtos
+     este e-mail comprou. Guardar isso no aparelho seria o mesmo que não
+     ter tranca — qualquer um editaria o localStorage e liberaria. */
+  temCorrida() {
+    return Array.isArray(this.extras) && this.extras.indexOf('corrida') >= 0;
+  },
+
+  async carregarExtras(forcar) {
+    if (!Backend.ativo()) { if (this.extras === null) this.extras = []; return; }
+    if (this.extras && !forcar) return;
+    const lista = await Backend.extras();
+    const mudou = JSON.stringify(lista) !== JSON.stringify(this.extras);
+    this.extras = lista;
+    if (mudou && this.tela === 'treinos') this.render();
+  },
+
+  setAbaTreinos(aba) {
+    this.abaTreinos = aba;
+    this.semanaCorrida = 0;
+    if (aba === 'corrida') this.carregarExtras();
+    this.render();
+    window.scrollTo(0, 0);
+  },
+
+  verSemanaCorrida(n) {
+    this.semanaCorrida = n;
+    this.render();
+  },
+
+  marcarCorrida(semana, id) {
+    const virou = Store.marcarCorrida(semana, id);
+    Backend.agendarSync();
+    this.render();
+    if (virou) {
+      this.semanaCorrida = 0;
+      this.toast('Semana ' + semana + ' fechada. Semana ' + (semana + 1) + ' liberada 🏃', true);
+    } else if (Store.corridaFeita(semana, id)) {
+      this.toast('Sessão registrada. +' + PONTOS.corrida + ' pontos', true);
+    }
+  },
+
+  /* leva pro checkout e deixa marcado que foi, pra quando voltar o app
+     já conferir sozinho se o pagamento caiu (ver o pageshow no fim) */
+  comprarCorrida() {
+    if (!CONFIG.CHECKOUT_URL_CORRIDA) return;
+    try { sessionStorage.setItem('ff_comprou_corrida', '1'); } catch (e) {}
+    const email = Backend.emailAtual();
+    /* leva o e-mail pro checkout já preenchido: se a pessoa pagar com
+       OUTRO e-mail, o webhook grava o acesso no e-mail errado e ela não
+       libera nada. É o erro de suporte mais comum nesse tipo de venda. */
+    const sep = CONFIG.CHECKOUT_URL_CORRIDA.includes('?') ? '&' : '?';
+    location.href = CONFIG.CHECKOUT_URL_CORRIDA + (email ? sep + 'email=' + encodeURIComponent(email) : '');
+  },
+
+  /* pergunta de novo ao banco. Usada pelo "já paguei" e pela volta do
+     checkout: o webhook pode demorar alguns segundos, então tenta
+     algumas vezes antes de desistir. */
+  async verificarCorrida(silencioso) {
+    if (!Backend.ativo()) return false;
+    if (!silencioso) this.toast('Conferindo seu pagamento...');
+
+    for (let tentativa = 0; tentativa < 5; tentativa++) {
+      await this.carregarExtras(true);
+      if (this.temCorrida()) {
+        this.abaTreinos = 'corrida';
+        this.render();
+        this.toast('Modo Corrida liberado 🏃 Bom treino!', true);
+        return true;
+      }
+      await new Promise(ok => setTimeout(ok, 2500));
+    }
+
+    if (!silencioso) {
+      this.modal(`
+        <h3>Ainda não achamos o pagamento</h3>
+        <p class="m-sub">Pode levar alguns minutos pra cair. Se você já pagou, feche e abra o app daqui a pouco. Se não aparecer, chame o suporte que a gente libera na mão.</p>
+        <a class="btn sec" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">Falar com o suporte</a>
+        <div style="height:10px"></div>
+        <button class="btn sec" onclick="App.fecharModal()">Fechar</button>`);
+    }
+    return false;
+  },
+
+  /* ---------- PLANO DUO ----------
+     Quem comprou o Duo ganhou uma vaga pra outra pessoa, e é ele quem
+     diz qual e-mail vai ocupar — a plataforma de pagamento só conheceu
+     o dele. Quem confere se pode e grava é o banco (ver schema.sql);
+     aqui é só a tela.
+
+     Carrega uma vez por sessão: não muda sozinho, e a aba de perfil é
+     aberta muitas vezes. duoRecarregar() força depois de convidar ou
+     remover. */
+  async carregarDuo(forcar) {
+    if (!Backend.ativo()) return;
+    if (this.duo && !forcar) return;
+    const d = await Backend.duoEstado();
+    if (!d) return;
+    this.duo = d;
+    if (this.tela === 'perfil') this.render();
+  },
+
+  async duoConvidar() {
+    const campo = document.getElementById('in-duo');
+    const btn = document.getElementById('btn-duo');
+    const email = (campo && campo.value || '').trim();
+    if (!email) { this.duoErro = 'Digite o e-mail da pessoa.'; return this.render(); }
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Liberando...'; }
+    const r = await Backend.duoConvidar(email);
+
+    if (!r.ok) {
+      this.duoErro = r.erro || 'Não foi possível convidar.';
+      this.render();
+      return;
+    }
+    this.duoErro = '';
+    await this.carregarDuo(true);
+    this.render();
+    this.toast('Acesso liberado para ' + r.email + ' ✅', true);
+  },
+
+  async duoRemover(email) {
+    this.modal(`
+      <h3>Tirar do seu plano?</h3>
+      <p class="m-sub">${email} perde o acesso ao app na hora. Os dados dela ficam guardados: se você chamar de novo, está tudo lá.</p>
+      <button class="btn perigo" onclick="App.duoRemoverConfirmado('${email}')">Tirar do plano</button>
+      <div style="height:10px"></div>
+      <button class="btn sec" onclick="App.fecharModal()">Cancelar</button>`);
+  },
+
+  async duoRemoverConfirmado(email) {
+    this.fecharModal();
+    const r = await Backend.duoRemover(email);
+    if (!r.ok) { this.duoErro = r.erro || 'Não foi possível remover.'; return this.render(); }
+    this.duoErro = '';
+    await this.carregarDuo(true);
+    this.render();
+    this.toast('Vaga liberada. Você já pode chamar outra pessoa.');
   },
 
   /* ---------- lembretes de refeição ---------- */
@@ -956,6 +1248,8 @@ const App = {
       Store.save();
       this.tela = 'inicio';
       await this.verificarAssinatura();   // pode trocar pra 'assinatura' se não houver pagamento ativo
+      await this.carregarExtras();        // o que ela comprou decide o que o reajuste mostra
+      this.checarReajuste();              // virada de mês, se for o primeiro acesso do mês
         this.diaTreino = this.indiceHoje();
       this.render();
       return;
@@ -973,16 +1267,33 @@ const App = {
        piscar e sumir passa a impressão de que nada foi carregado */
     await Promise.all([buscando, new Promise(ok => setTimeout(ok, 1800))]);
 
-    if (!this.dadosDoQuizChegaram()) {
-      /* sem respostas do quiz não há o que revisar: segue pelo cadastro */
-      this.tela = 'cadastro';
-      this.passo = 1;
-      this.render();
-      return;
-    }
+    /* Sem respostas do quiz, a mesma tela "Seu perfil" abre em branco e a
+       pessoa preenche ali. É o caminho de quem entrou pela vaga do Plano
+       Duo (nunca fez o quiz, porque quem fez foi quem pagou) e de quem
+       comprou por fora do funil.
 
+       Antes esse caso caía no cadastro de 3 passos, que só pergunta 8 dos
+       15 campos: sono, água, frequência, nível, tempo de treino,
+       refeições e restrições ficavam de fora, e o plano saía montado com
+       os padrões em vez das respostas dela. */
+    this.setarModoDoPerfil();
     this.tela = 'revisao';
     this.render();
+  },
+
+  /* decide se a tela "Seu perfil" abre preenchida ou em branco, e
+     descobre quem convidou (quando a pessoa entrou pelo Plano Duo) */
+  async setarModoDoPerfil() {
+    Onb.emBranco = !this.dadosDoQuizChegaram();
+    Onb.convidadoPor = '';
+    if (!Onb.emBranco) return;
+    try {
+      const a = await Backend.assinatura();
+      if (a && a.titular_email) {
+        Onb.convidadoPor = a.titular_email;
+        if (this.tela === 'revisao') this.render();
+      }
+    } catch (e) { /* o aviso de quem convidou é enfeite: não trava o cadastro */ }
   },
 
   /* veio alguma resposta do quiz? (só o e-mail não conta) */
@@ -1016,12 +1327,8 @@ const App = {
     const buscando = this.aplicarRespostasDoQuizPorEmail(email);
     await Promise.all([buscando, new Promise(ok => setTimeout(ok, 1800))]);
 
-    if (!this.dadosDoQuizChegaram()) {
-      this.tela = 'cadastro';
-      this.passo = 1;
-    } else {
-      this.tela = 'revisao';
-    }
+    this.setarModoDoPerfil();
+    this.tela = 'revisao';
     this.render();
   },
 
@@ -1049,6 +1356,9 @@ const App = {
     await Backend.salvar();
     await Backend.sair();
     Store.resetar();
+    this.extras = null;          /* acesso é por e-mail: some junto com a conta */
+    this.duo = null;
+    this.abaTreinos = 'treino';
     this.tela = 'auth';
     Onb.emailPendente = '';
     Onb.erro = '';

@@ -10,8 +10,14 @@
 <link rel="apple-touch-icon" href="icone-180.png">
 <link rel="icon" href="icone-512.png" type="image/png" sizes="512x512">
 <link rel="icon" href="icone.svg" type="image/svg+xml">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<!-- "black": no iPhone a barra de status fica preta com os icones brancos,
+     que e o unico jeito de ela combinar com o app. Com "default" ela vinha
+     clara e cortava o topo preto no meio. -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Focus Fit">
+<meta name="format-detection" content="telephone=no">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -50,13 +56,76 @@
 <script src="config.js"></script>
 <script src="js/icones.js"></script>
 <script src="js/data.js"></script>
+<script src="js/videos.js"></script>
 <script src="js/store.js"></script>
 <script src="js/backend.js"></script>
 <script src="js/fotos.js"></script>
 <script src="js/lembretes.js"></script>
+<script src="js/notificacoes.js"></script>
 <script src="js/screens.js"></script>
 <script src="js/onboarding.js"></script>
 <script src="js/app.js"></script>
+
+<script>
+/* ---------- SERVICE WORKER ----------
+   E o que faz o app abrir sem internet. Sem ele a Play Store reprova
+   (app que mostra erro de navegador offline) e o iPhone nao consegue
+   receber notificacao nem instalado na tela de inicio.
+
+   So registra em https (ou localhost, pra dar pra testar aqui). Em
+   file:// o navegador bloqueia, e a gente abre o app assim pra testar,
+   entao o if nao e paranoia. */
+var LOCAL = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || LOCAL)) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function () {});
+  });
+}
+
+/* ---------- ONDE O APP ESTA RODANDO ----------
+   Marca no <html> se a pessoa abriu pelo app instalado (Play Store,
+   tela de inicio do iPhone) ou pelo navegador. O CSS e o JS usam isso;
+   em especial, dentro do app da Play Store nao pode aparecer link de
+   pagamento externo — e regra do Google, nao gosto nosso. */
+(function () {
+  var doc = document.documentElement;
+  var instalado = window.matchMedia('(display-mode: standalone)').matches
+               || window.navigator.standalone === true;
+  /* o app da Play Store e uma TWA: o Chrome entrega a pagina com este
+     referrer, que navegador nenhum consegue forjar */
+  var androidApp = document.referrer.indexOf('android-app://') === 0
+                || new URLSearchParams(location.search).get('origem') === 'twa';
+  if (androidApp) { try { sessionStorage.setItem('ff_twa', '1'); } catch (e) {} }
+  try { androidApp = androidApp || sessionStorage.getItem('ff_twa') === '1'; } catch (e) {}
+
+  doc.dataset.instalado = instalado ? 'sim' : 'nao';
+  doc.dataset.loja = androidApp ? 'play' : 'nao';
+  window.NO_APP_DA_LOJA = androidApp;
+})();
+
+/* ---------- VOLTA DO CHECKOUT DO MODO CORRIDA ----------
+   Quem sai pra pagar e volta cai aqui. O webhook pode levar alguns
+   segundos pra escrever o acesso, entao App.verificarCorrida tenta
+   algumas vezes antes de desistir — sem barulho: se nao achar, a tela
+   de venda continua como estava e a pessoa usa o "ja paguei". */
+window.addEventListener('pageshow', function () {
+  var corrida = false, reajuste = false;
+  try {
+    corrida  = sessionStorage.getItem('ff_comprou_corrida')  === '1';
+    reajuste = sessionStorage.getItem('ff_comprou_reajuste') === '1';
+  } catch (e) {}
+  if (!corrida && !reajuste) return;
+  try {
+    sessionStorage.removeItem('ff_comprou_corrida');
+    sessionStorage.removeItem('ff_comprou_reajuste');
+  } catch (e) {}
+  setTimeout(function () {
+    if (!window.App) return;
+    if (corrida  && App.verificarCorrida)  App.verificarCorrida(true);
+    if (reajuste && App.verificarReajuste) App.verificarReajuste(true);
+  }, 1200);
+});
+</script>
 
 </body>
 </html>

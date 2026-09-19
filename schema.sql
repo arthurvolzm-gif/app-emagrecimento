@@ -120,6 +120,252 @@ create policy "vincular a propria conta"
 create index if not exists assinaturas_user_id_idx on public.assinaturas (user_id);
 
 -- =========================================================
+-- PLANO DUO (order bump: a pessoa compra e leva outra junto)
+--
+-- O problema: a plataforma de pagamento só conhece UM e-mail, o de
+-- quem pagou. A segunda pessoa tem outro e-mail, que o checkout nunca
+-- viu. Então quem cria a vaga da segunda pessoa é o próprio titular,
+-- de dentro do app, depois da compra.
+--
+-- Duas colunas dão conta:
+--   vagas          quantas pessoas aquela compra libera (1 normal, 2 no Duo)
+--   titular_email  preenchido SÓ na linha da pessoa convidada, apontando
+--                  pra linha de quem pagou
+--
+-- A linha da convidada é uma linha normal de `assinaturas`: o app não
+-- precisa saber de nada disso pra liberar o acesso dela, o gate de
+-- sempre (status = 'ativa' e não vencida) já funciona.
+-- =========================================================
+alter table public.assinaturas add column if not exists vagas int not null default 1;
+alter table public.assinaturas add column if not exists titular_email text;
+
+create index if not exists assinaturas_titular_idx on public.assinaturas (lower(titular_email));
+
+-- ---------------------------------------------------------------------
+-- A convidada segue o titular, sempre
+--
+-- Se o titular cancela, atrasa ou renova, a vaga dela acompanha na mesma
+-- hora. Sem isto, quem cancelasse continuaria com a segunda pessoa
+-- usando o app de graça pra sempre — e o webhook não tem como saber que
+-- existe uma segunda pessoa, porque ela nunca apareceu no pagamento.
+--
+-- O `when (new.titular_email is null)` evita laço infinito: o trigger só
+-- dispara em linha de titular, e o que ele escreve são linhas de
+-- convidada, que não disparam de novo.
+-- ---------------------------------------------------------------------
+create or replace function public.duo_espelhar_titular()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  update public.assinaturas
+     set status         = new.status,
+         plano          = new.plano,
+         data_expiracao = new.data_expiracao,
+         atualizado_em  = now()
+   where lower(titular_email) = lower(new.email);
+  return new;
+end;
+$$;
+
+drop trigger if exists assinaturas_espelhar_duo on public.assinaturas;
+create trigger assinaturas_espelhar_duo
+  after update of status, plano, data_expiracao on public.assinaturas
+  for each row
+  when (new.titular_email is null)
+  execute function public.duo_espelhar_titular();
+
+-- ---------------------------------------------------------------------
+-- Convidar / remover / consultar
+--
+-- `assinaturas` é fechada pra escrita de propósito: se o app pudesse
+-- gravar nela, qualquer um se declarava assinante editando o que o
+-- navegador manda. Estas três funções são a única porta, e cada uma
+-- confere tudo do lado do banco:
+--   - quem chama tem que estar logado (o e-mail vem do JWT, que o
+--     Supabase assina — o navegador não consegue forjar);
+--   - a assinatura de quem chama tem que estar ativa e ter vaga;
+--   - o e-mail convidado não pode já ter assinatura própria (senão dava
+--     pra sobrescrever a linha paga de outra pessoa).
+-- ---------------------------------------------------------------------
+create or replace function public.duo_convidar(p_email text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_titular  text := lower(coalesce(auth.jwt() ->> 'email', ''));
+  v_alvo     text := lower(btrim(coalesce(p_email, '')));
+  t          public.assinaturas%rowtype;
+  ja         public.assinaturas%rowtype;
+  usadas     int;
+begin
+  if v_titular = '' then
+    return jsonb_build_object('ok', false, 'erro', 'Entre na sua conta para convidar.');
+  end if;
+  if v_alvo !~ '^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$' then
+    return jsonb_build_object('ok', false, 'erro', 'Digite um e-mail válido.');
+  end if;
+  if v_alvo = v_titular then
+    return jsonb_build_object('ok', false, 'erro', 'Esse é o seu próprio e-mail.');
+  end if;
+
+  select * into t from public.assinaturas where lower(email) = v_titular;
+  if not found or t.status <> 'ativa' then
+    return jsonb_build_object('ok', false, 'erro', 'Sua assinatura precisa estar ativa para convidar alguém.');
+  end if;
+  if t.titular_email is not null then
+    return jsonb_build_object('ok', false, 'erro', 'Você entrou pelo convite de outra pessoa, então não tem vaga para convidar.');
+  end if;
+  if coalesce(t.vagas, 1) < 2 then
+    return jsonb_build_object('ok', false, 'erro', 'Seu plano não inclui vaga para uma segunda pessoa.');
+  end if;
+
+  select count(*) into usadas from public.assinaturas where lower(titular_email) = v_titular;
+  if usadas >= coalesce(t.vagas, 1) - 1 then
+    return jsonb_build_object('ok', false, 'erro', 'A vaga do seu plano já está ocupada. Remova quem está nela para convidar outra pessoa.');
+  end if;
+
+  select * into ja from public.assinaturas where lower(email) = v_alvo;
+  if found and ja.titular_email is null then
+    return jsonb_build_object('ok', false, 'erro', 'Esse e-mail já tem uma assinatura própria.');
+  end if;
+  if found and lower(ja.titular_email) <> v_titular then
+    return jsonb_build_object('ok', false, 'erro', 'Esse e-mail já está ocupando a vaga de outro plano.');
+  end if;
+
+  insert into public.assinaturas
+    (email, plano, status, vagas, titular_email, data_inicio, data_expiracao, atualizado_em)
+  values
+    (v_alvo, t.plano, t.status, 1, v_titular, coalesce(t.data_inicio, now()), t.data_expiracao, now())
+  on conflict (email) do update
+    set plano          = excluded.plano,
+        status         = excluded.status,
+        titular_email  = excluded.titular_email,
+        data_expiracao = excluded.data_expiracao,
+        atualizado_em  = now();
+
+  return jsonb_build_object('ok', true, 'email', v_alvo);
+end;
+$$;
+
+create or replace function public.duo_remover(p_email text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_titular text := lower(coalesce(auth.jwt() ->> 'email', ''));
+  v_alvo    text := lower(btrim(coalesce(p_email, '')));
+  n         int;
+begin
+  if v_titular = '' then
+    return jsonb_build_object('ok', false, 'erro', 'Entre na sua conta.');
+  end if;
+
+  -- só apaga linha de convidada DESTE titular. Uma linha de assinatura
+  -- própria (titular_email nulo) nunca é tocada aqui.
+  delete from public.assinaturas
+   where lower(email) = v_alvo
+     and lower(titular_email) = v_titular;
+  get diagnostics n = row_count;
+
+  if n = 0 then
+    return jsonb_build_object('ok', false, 'erro', 'Essa pessoa não está na vaga do seu plano.');
+  end if;
+  return jsonb_build_object('ok', true);
+end;
+$$;
+
+-- devolve o retrato do plano de quem está logado: quantas vagas tem,
+-- quem está usando, e (se for o caso) quem convidou a pessoa.
+create or replace function public.duo_estado()
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+stable
+as $$
+declare
+  v_email text := lower(coalesce(auth.jwt() ->> 'email', ''));
+  t       public.assinaturas%rowtype;
+  lista   jsonb;
+begin
+  if v_email = '' then return jsonb_build_object('ok', false); end if;
+
+  select * into t from public.assinaturas where lower(email) = v_email;
+  if not found then return jsonb_build_object('ok', true, 'vagas', 1, 'convidados', '[]'::jsonb); end if;
+
+  select coalesce(jsonb_agg(jsonb_build_object('email', email, 'status', status) order by criado_em), '[]'::jsonb)
+    into lista
+    from public.assinaturas
+   where lower(titular_email) = v_email;
+
+  return jsonb_build_object(
+    'ok', true,
+    'plano', t.plano,
+    'status', t.status,
+    'vagas', coalesce(t.vagas, 1),
+    'titular_email', t.titular_email,
+    'convidados', lista
+  );
+end;
+$$;
+
+revoke all on function public.duo_convidar(text) from public;
+revoke all on function public.duo_remover(text)  from public;
+revoke all on function public.duo_estado()       from public;
+-- só quem está logado: o e-mail do JWT é a identidade em que as três confiam
+grant execute on function public.duo_convidar(text) to authenticated;
+grant execute on function public.duo_remover(text)  to authenticated;
+grant execute on function public.duo_estado()       to authenticated;
+
+-- =========================================================
+-- ACESSOS EXTRAS (produtos avulsos comprados dentro do app)
+--
+-- O primeiro é o Modo Corrida. São compras únicas, separadas da
+-- assinatura: a pessoa paga uma vez e o acesso não vence junto com o
+-- plano mensal dela.
+--
+-- Por que tabela própria em vez de uma coluna em `assinaturas`:
+-- o webhook da Zuptos faz upsert por e-mail em `assinaturas`. Se a
+-- compra do Modo Corrida caísse lá, ela sobrescreveria o plano da
+-- pessoa (plano viraria "Modo Corrida" e a validade viraria a da
+-- compra avulsa) e o acesso ao app inteiro ia junto. Separando, uma
+-- compra não encosta na outra.
+--
+-- Mesma regra de sempre: só a function (service_role) grava. O app
+-- apenas lê a própria linha.
+-- =========================================================
+create table if not exists public.acessos_extras (
+  email         text not null,
+  produto       text not null,          -- 'corrida' (e o que vier depois)
+  status        text not null default 'ativo',  -- 'ativo' | 'cancelado'
+  transacao_id  text,
+  criado_em     timestamptz not null default now(),
+  atualizado_em timestamptz not null default now(),
+  primary key (email, produto)
+);
+
+alter table public.acessos_extras enable row level security;
+
+drop policy if exists "ler os proprios acessos" on public.acessos_extras;
+create policy "ler os proprios acessos"
+  on public.acessos_extras for select
+  using (lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')));
+
+-- Extra que é ASSINATURA, não compra única (o reajuste mensal, R$9,90).
+-- Nulo = acesso vitalício, que é o caso do Modo Corrida. Preenchido = o
+-- app compara com a data de hoje, igual faz com a assinatura principal.
+alter table public.acessos_extras add column if not exists data_expiracao timestamptz;
+
+create index if not exists acessos_extras_email_idx on public.acessos_extras (lower(email));
+
+-- =========================================================
 -- LOG BRUTO DO WEBHOOK DA TICTO
 --
 -- Guarda cada aviso exatamente como a Ticto mandou, sem tentar

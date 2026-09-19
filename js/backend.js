@@ -164,7 +164,7 @@ const Backend = {
     if (!this.ativo()) return null;
     const { data, error } = await this.sb
       .from('assinaturas')
-      .select('plano, status, data_expiracao')
+      .select('plano, status, data_expiracao, vagas, titular_email')
       .eq('email', this.usuario.email.toLowerCase())
       .maybeSingle();
 
@@ -191,6 +191,64 @@ const Backend = {
         .eq('email', this.usuario.email.toLowerCase())
         .is('user_id', null);
     } catch (e) { /* não bloqueia o login por causa disso */ }
+  },
+
+  /* ---------- ACESSOS EXTRAS (Modo Corrida) ----------
+     Compra avulsa, separada da assinatura. Quem grava é o webhook
+     (service_role); o app só lê, e só a própria linha — a RLS compara
+     com o e-mail do token de sessão.
+
+     Devolve uma lista de nomes de produto: ['corrida']. Sem sessão
+     devolve lista vazia, que é o mesmo que "não comprou" — a tranca
+     fica do lado do servidor, nunca no aparelho. */
+  async extras() {
+    if (!this.ativo()) return [];
+    const { data, error } = await this.sb
+      .from('acessos_extras')
+      .select('produto, status, data_expiracao')
+      .eq('email', this.usuario.email.toLowerCase());
+
+    if (error) { console.warn('Erro ao consultar acessos extras:', error.message); return []; }
+    const agora = Date.now();
+    return (data || [])
+      /* data_expiracao nula = vitalício (Modo Corrida). Preenchida = é
+         assinatura (reajuste mensal) e precisa estar em dia. */
+      .filter(r => r.status === 'ativo' &&
+                   (!r.data_expiracao || new Date(r.data_expiracao).getTime() > agora))
+      .map(r => r.produto);
+  },
+
+  /* ---------- PLANO DUO ----------
+     A vaga da segunda pessoa não nasce do pagamento: a plataforma de
+     checkout só conhece o e-mail de quem pagou. Quem cria a vaga é o
+     titular, aqui de dentro, depois da compra.
+
+     As três chamadas passam por função no banco (security definer), não
+     pela tabela: `assinaturas` é fechada pra escrita justamente pra
+     ninguém se declarar assinante editando o que o navegador manda. Toda
+     a conferência (assinatura ativa, vaga livre, e-mail que já tem plano
+     próprio) acontece lá dentro, onde o navegador não alcança — e a
+     identidade de quem chama vem do token de sessão, que o Supabase
+     assina. Ver schema.sql. */
+  async duoEstado() {
+    if (!this.ativo()) return null;
+    const { data, error } = await this.sb.rpc('duo_estado');
+    if (error) { console.warn('Erro ao consultar o plano duo:', error.message); return null; }
+    return data;
+  },
+
+  async duoConvidar(email) {
+    if (!this.ativo()) return { ok: false, erro: 'Entre na sua conta para convidar.' };
+    const { data, error } = await this.sb.rpc('duo_convidar', { p_email: email });
+    if (error) return { ok: false, erro: 'Não foi possível convidar agora. Tente de novo.' };
+    return data || { ok: false, erro: 'Não foi possível convidar agora.' };
+  },
+
+  async duoRemover(email) {
+    if (!this.ativo()) return { ok: false, erro: 'Entre na sua conta.' };
+    const { data, error } = await this.sb.rpc('duo_remover', { p_email: email });
+    if (error) return { ok: false, erro: 'Não foi possível remover agora. Tente de novo.' };
+    return data || { ok: false, erro: 'Não foi possível remover agora.' };
   },
 
   /* ---------- ponte quiz -> cadastro (respostas salvas no Supabase) ----------
