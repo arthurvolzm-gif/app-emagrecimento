@@ -598,9 +598,49 @@ const App = {
   setAbaTreinos(aba) {
     this.abaTreinos = aba;
     this.semanaCorrida = 0;
+    if (aba === 'biblioteca') { this.busca = ''; this.cat = 'Todos'; }
     if (aba === 'corrida') this.carregarExtras();
     this.render();
     window.scrollTo(0, 0);
+  },
+
+  /* ---------- BIBLIOTECA DE EXERCÍCIOS ----------
+     O acesso vem do order bump (App.temVideos). Este checkout avulso é
+     só pra quem já é cliente e não levou o bump na hora da assinatura. */
+  comprarBiblioteca() {
+    if (!CONFIG.CHECKOUT_URL_BIBLIOTECA) return;
+    try { sessionStorage.setItem('ff_comprou_biblioteca', '1'); } catch (e) {}
+    const email = Backend.emailAtual();
+    const sep = CONFIG.CHECKOUT_URL_BIBLIOTECA.includes('?') ? '&' : '?';
+    location.href = CONFIG.CHECKOUT_URL_BIBLIOTECA + (email ? sep + 'email=' + encodeURIComponent(email) : '');
+  },
+
+  async verificarBiblioteca(silencioso) {
+    if (!Backend.ativo()) return false;
+    if (!silencioso) this.toast('Conferindo seu pagamento...');
+
+    for (let t = 0; t < 5; t++) {
+      /* o acesso mora na linha da assinatura (tem_videos), então quem
+         responde é a mesma consulta de sempre */
+      this.assinaturaInfo = await Backend.assinatura();
+      if (this.temVideos()) {
+        this.abaTreinos = 'biblioteca';
+        this.render();
+        this.toast('Biblioteca liberada ✅', true);
+        return true;
+      }
+      await new Promise(ok => setTimeout(ok, 2500));
+    }
+
+    if (!silencioso) {
+      this.modal(`
+        <h3>Ainda não achamos o pagamento</h3>
+        <p class="m-sub">Pode levar alguns minutos pra cair. Se você já pagou, feche e abra o app daqui a pouco. Se não aparecer, chame o suporte que a gente libera na mão.</p>
+        <a class="btn sec" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">Falar com o suporte</a>
+        <div style="height:10px"></div>
+        <button class="btn sec" onclick="App.fecharModal()">Fechar</button>`);
+    }
+    return false;
   },
 
   verSemanaCorrida(n) {

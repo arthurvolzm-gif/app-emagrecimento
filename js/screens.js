@@ -828,7 +828,6 @@ const Telas = {
             ? 'Modo Corrida · semana ' + Store.corrida().semana + ' de ' + Store.planoCorrida(Store.corrida().semana).total
             : 'Modo Corrida'}</div>
         </div>
-        <button class="btn-mini quadrado" onclick="App.ir('biblioteca')">${Ic.livro(19)}</button>
       </div>
 
       <div class="tela stagger">
@@ -845,11 +844,132 @@ const Telas = {
   },
 
   _abasTreino() {
+    const temCorrida = this._temCorrida();
+    /* o cadeado só aparece pra quem não levou o order bump */
+    const trancada = !App.temVideos();
     return `
-      <div class="toggle">
+      <div class="toggle${temCorrida ? '' : ' duas'}">
         <button class="${App.abaTreinos === 'treino' ? 'on' : ''}" onclick="App.setAbaTreinos('treino')">Treino</button>
-        <button class="${App.abaTreinos === 'corrida' ? 'on' : ''}" onclick="App.setAbaTreinos('corrida')">Corrida</button>
+        ${temCorrida ? `<button class="${App.abaTreinos === 'corrida' ? 'on' : ''}" onclick="App.setAbaTreinos('corrida')">Corrida</button>` : ''}
+        <button class="${App.abaTreinos === 'biblioteca' ? 'on' : ''}" onclick="App.setAbaTreinos('biblioteca')">${trancada ? '🔒 ' : ''}Biblioteca</button>
       </div>`;
+  },
+
+  /* ============ BIBLIOTECA DE EXERCÍCIOS (aba) ============
+     Era um ícone sem rótulo no canto do cabeçalho, que ninguém achava.
+     Virou aba, ao lado de Treino e Corrida. Quem não levou o order bump
+     vê o cadeado e, ao tocar, a tela do produto. */
+  bibliotecaAba() {
+    const liberada = App.temVideos();
+    return `
+      <div class="topo">
+        <div>
+          <h1 class="display">Treinos</h1>
+          <div class="topo-sub">Biblioteca Exercícios</div>
+        </div>
+      </div>
+
+      <div class="tela stagger">
+        ${this._abasTreino()}
+        ${liberada ? this._bibliotecaConteudo() : this._bibliotecaVenda()}
+      </div>`;
+  },
+
+  _bibliotecaVenda() {
+    const naLoja = window.NO_APP_DA_LOJA;
+    const comVideo = typeof Video !== 'undefined' ? Video.cobertura() : { com: 0, total: BIBLIOTECA.length };
+
+    return `
+      <div class="card corrida-capa">
+        <div class="corrida-cad">${Ic.livro(30)}</div>
+        <h3>Biblioteca Exercícios</h3>
+        <p>Os ${BIBLIOTECA.length} exercícios do seu treino com o vídeo da execução, pra você ver o movimento antes de fazer.</p>
+        <span class="corrida-selo">${Ic.cadeado(13)} Ainda não liberado</span>
+      </div>
+
+      <h3 class="secao-tt">Por que vale</h3>
+      <div class="card" style="padding:6px 18px">
+        <div class="lista-item" style="align-items:flex-start">
+          <span class="lista-ic">${Ic.camera(19)}</span>
+          <div><div class="lista-t">Ver antes de fazer</div>
+          <div class="lista-s">Texto explica; vídeo mostra. Postura, amplitude e ritmo você só entende vendo.</div></div>
+        </div>
+        <div class="lista-item" style="align-items:flex-start">
+          <span class="lista-ic">${Ic.halter(19)}</span>
+          <div><div class="lista-t">Direto do seu treino</div>
+          <div class="lista-s">O botão aparece dentro de cada exercício do dia, sem precisar procurar.</div></div>
+        </div>
+        <div class="lista-item" style="align-items:flex-start">
+          <span class="lista-ic">${Ic.check(19)}</span>
+          <div><div class="lista-t">Pagamento único</div>
+          <div class="lista-s">Não é mensalidade. Paga uma vez e fica enquanto você for assinante.</div></div>
+        </div>
+      </div>
+
+      ${naLoja ? `
+        <div class="card">
+          <div class="card-tt">${Ic.chat(20)} Como liberar</div>
+          <p class="corrida-nota" style="margin:0">A biblioteca não faz parte do seu plano atual. Fale com o suporte que a gente te explica.</p>
+          <div style="height:12px"></div>
+          <a class="btn sec" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">Falar com o suporte</a>
+        </div>
+      ` : CONFIG.CHECKOUT_URL_BIBLIOTECA ? `
+        <div class="card corrida-preco">
+          <div class="corrida-val">${CONFIG.PRECO_BIBLIOTECA || 'R$9,90'}</div>
+          <div class="corrida-val-sub">Pagamento único.</div>
+          <button class="btn" onclick="App.comprarBiblioteca()">Liberar a biblioteca</button>
+          <button class="corrida-japaguei" onclick="App.verificarBiblioteca()">Já paguei, liberar meu acesso</button>
+        </div>
+      ` : `
+        <div class="card">
+          <div class="card-tt">${Ic.chat(20)} Como liberar</div>
+          <p class="corrida-nota" style="margin:0">A biblioteca é oferecida na hora da assinatura. Se você não levou e quer agora, chame o suporte que a gente libera pra você.</p>
+          <div style="height:12px"></div>
+          <a class="btn sec" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">Falar com o suporte</a>
+        </div>
+      `}
+
+      ${comVideo.com ? '' : `<p class="corrida-rodape">Os vídeos estão sendo gravados e aparecem aqui conforme ficam prontos.</p>`}`;
+  },
+
+  _bibliotecaConteudo() {
+    const busca = App.busca.toLowerCase();
+    const lista = BIBLIOTECA.filter(e =>
+      (App.cat === 'Todos' || e.cat === App.cat) &&
+      (!busca || e.nome.toLowerCase().includes(busca) || e.musc.join(' ').toLowerCase().includes(busca))
+    );
+
+    return `
+      <input class="busca" placeholder="Buscar exercício ou músculo..." value="${App.busca}"
+             oninput="App.buscar(this.value)">
+
+      <div class="cats">
+        ${CATEGORIAS.map(c => `
+          <button class="cat ${App.cat === c ? 'on' : ''}" onclick="App.setCat('${c}')">
+            ${c}${c === 'Todos' ? ` (${BIBLIOTECA.length})` : ` (${BIBLIOTECA.filter(e => e.cat === c).length})`}
+          </button>`).join('')}
+      </div>
+
+      ${lista.length ? lista.map(e => `
+        <div class="bib-item">
+          <div class="bib-topo">
+            <div class="bib-ic">${App.iconeCat(e.cat)}</div>
+            <div>
+              <div class="bib-nome">${e.nome}</div>
+              <div class="bib-cat">${e.cat}</div>
+            </div>
+          </div>
+          <div class="bib-desc">${e.desc}</div>
+          <div class="bib-musc">${e.musc.map(m => `<span class="musc">${m}</span>`).join('')}</div>
+          ${Video.tem(e.nome) ? `
+            <button class="video-btn" onclick="App.verVideo('${e.nome.replace(/'/g, "\\'")}')">
+              ${Ic.camera(17)} Ver execução
+            </button>` : ''}
+        </div>`).join('') : `
+        <div class="vazio">
+          <div class="em">🔍</div>
+          <p>Nenhum exercício encontrado para essa busca.</p>
+        </div>`}`;
   },
 
   /* ---------- a tela de venda ---------- */
@@ -983,6 +1103,7 @@ const Telas = {
 
   treinos() {
     if (App.abaTreinos === 'corrida') return Telas.corrida();
+    if (App.abaTreinos === 'biblioteca') return Telas.bibliotecaAba();
     const plano = Store.planoTreino();
     const dias = Store.diasTreino();
     const dia = dias[App.diaTreino];
@@ -996,11 +1117,10 @@ const Telas = {
           <h1 class="display">Treinos</h1>
           <div class="topo-sub">${plano.frequencia} · ${Store.db.perfil.local === 'casa' ? 'Em casa' : 'Academia'}</div>
         </div>
-        <button class="btn-mini quadrado" onclick="App.ir('biblioteca')">${Ic.livro(19)}</button>
       </div>
 
       <div class="tela stagger">
-        ${Telas._temCorrida() ? Telas._abasTreino() : ''}
+        ${Telas._abasTreino()}
 
         <div class="card plano-cab">
           <h3>${plano.nome}</h3>
@@ -1177,13 +1297,9 @@ const Telas = {
   },
 
   /* ============ BIBLIOTECA DE EXERCÍCIOS ============ */
+  /* a tela solta continua existindo (rota 'biblioteca'), mas o caminho
+     normal agora é a aba dentro de Treinos */
   biblioteca() {
-    const busca = App.busca.toLowerCase();
-    const lista = BIBLIOTECA.filter(e =>
-      (App.cat === 'Todos' || e.cat === App.cat) &&
-      (!busca || e.nome.toLowerCase().includes(busca) || e.musc.join(' ').toLowerCase().includes(busca))
-    );
-
     return `
       <div class="topo">
         <div>
@@ -1194,36 +1310,7 @@ const Telas = {
       </div>
 
       <div class="tela">
-        <input class="busca" placeholder="Buscar exercício ou músculo..." value="${App.busca}"
-               oninput="App.buscar(this.value)">
-
-        <div class="cats">
-          ${CATEGORIAS.map(c => `
-            <button class="cat ${App.cat === c ? 'on' : ''}" onclick="App.setCat('${c}')">
-              ${c}${c === 'Todos' ? ` (${BIBLIOTECA.length})` : ` (${BIBLIOTECA.filter(e => e.cat === c).length})`}
-            </button>`).join('')}
-        </div>
-
-        ${lista.length ? lista.map(e => `
-          <div class="bib-item">
-            <div class="bib-topo">
-              <div class="bib-ic">${App.iconeCat(e.cat)}</div>
-              <div>
-                <div class="bib-nome">${e.nome}</div>
-                <div class="bib-cat">${e.cat}</div>
-              </div>
-            </div>
-            <div class="bib-desc">${e.desc}</div>
-            <div class="bib-musc">${e.musc.map(m => `<span class="musc">${m}</span>`).join('')}</div>
-            ${Video.tem(e.nome) ? `
-              <button class="video-btn" onclick="App.verVideo('${e.nome.replace(/'/g, "\\'")}')">
-                ${Ic.camera(17)} Ver execução
-              </button>` : ''}
-          </div>`).join('') : `
-          <div class="vazio">
-            <div class="em">🔍</div>
-            <p>Nenhum exercício encontrado para essa busca.</p>
-          </div>`}
+        ${this._bibliotecaConteudo()}
       </div>`;
   },
 

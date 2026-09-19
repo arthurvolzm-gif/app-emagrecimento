@@ -38,6 +38,15 @@ const CONFIG = {
   CHECKOUT_URL_CORRIDA: 'https://app.zuptos.com.br/checkout/93042bb4f9eaa131',
   PRECO_CORRIDA: 'R$29,90',
 
+  /* ---------- Biblioteca de exercícios ----------
+     Vendida como order bump do checkout do plano, com "biblioteca" no
+     nome (é por essa palavra que o webhook reconhece). Quem já é cliente
+     e não levou o bump não tem como comprar pelo checkout do plano, então
+     este link avulso é o caminho dela.
+     Vazio = a aba mostra "fale com o suporte" em vez do botão. */
+  CHECKOUT_URL_BIBLIOTECA: '',
+  PRECO_BIBLIOTECA: 'R$9,90',
+
   /* ---------- Reajuste mensal (extra recorrente, R$9,90/mês) ----------
      Libera as fases do treino, as sugestões de carga e o relatório de
      virada de mês. Crie o produto na Zuptos como ASSINATURA mensal, com

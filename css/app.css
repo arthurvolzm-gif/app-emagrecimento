@@ -1068,6 +1068,10 @@ a{color:inherit;text-decoration:none;}
   border-radius:999px;padding:5px;
 }
 .toggle button{border-radius:999px;}
+/* com três abas (Treino, Corrida e Biblioteca) o rótulo aperta em tela
+   estreita; o cadeado da Biblioteca ainda soma um caractere */
+.toggle button{padding-left:4px;padding-right:4px;font-size:12.5px;white-space:nowrap;}
+.toggle.duas button{font-size:13px;}
 .toggle button.on{
   background:linear-gradient(90deg,#0E8A4A,#3FBE7C);color:#fff;
   box-shadow:0 6px 18px rgba(63,190,124,.26);

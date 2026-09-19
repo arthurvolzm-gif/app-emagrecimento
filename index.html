@@ -109,20 +109,23 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || LOCAL)) {
    algumas vezes antes de desistir — sem barulho: se nao achar, a tela
    de venda continua como estava e a pessoa usa o "ja paguei". */
 window.addEventListener('pageshow', function () {
-  var corrida = false, reajuste = false;
+  var corrida = false, reajuste = false, biblioteca = false;
   try {
-    corrida  = sessionStorage.getItem('ff_comprou_corrida')  === '1';
-    reajuste = sessionStorage.getItem('ff_comprou_reajuste') === '1';
+    corrida    = sessionStorage.getItem('ff_comprou_corrida')    === '1';
+    reajuste   = sessionStorage.getItem('ff_comprou_reajuste')   === '1';
+    biblioteca = sessionStorage.getItem('ff_comprou_biblioteca') === '1';
   } catch (e) {}
-  if (!corrida && !reajuste) return;
+  if (!corrida && !reajuste && !biblioteca) return;
   try {
     sessionStorage.removeItem('ff_comprou_corrida');
     sessionStorage.removeItem('ff_comprou_reajuste');
+    sessionStorage.removeItem('ff_comprou_biblioteca');
   } catch (e) {}
   setTimeout(function () {
     if (!window.App) return;
-    if (corrida  && App.verificarCorrida)  App.verificarCorrida(true);
-    if (reajuste && App.verificarReajuste) App.verificarReajuste(true);
+    if (corrida    && App.verificarCorrida)    App.verificarCorrida(true);
+    if (reajuste   && App.verificarReajuste)   App.verificarReajuste(true);
+    if (biblioteca && App.verificarBiblioteca) App.verificarBiblioteca(true);
   }, 1200);
 });
 </script>
