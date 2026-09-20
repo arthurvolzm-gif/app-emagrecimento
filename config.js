@@ -53,7 +53,7 @@ const CONFIG = {
      Este link avulso é pra quem JÁ é cliente e não levou o bump: é o
      que a notificação e a tela do Duo abrem.
      Vazio = a oferta não aparece em lugar nenhum (nem a notificação). */
-  CHECKOUT_URL_DUO: '',
+  CHECKOUT_URL_DUO: 'https://app.zuptos.com.br/checkout/2ab6c1841faaa564',
   PRECO_DUO: 'R$14,90',
 
   /* ---------- Reajuste mensal (extra recorrente, R$9,90/mês) ----------

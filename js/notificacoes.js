@@ -195,9 +195,9 @@ const Notif = {
       ic: 'pessoa',
       tom: 'oferta',
       titulo: 'Chame alguém para o seu plano',
-      texto: `O Plano Duo abre uma segunda vaga na sua assinatura por ${CONFIG.PRECO_DUO || 'R$14,90'} por mês. A outra pessoa monta o plano dela, com as metas dela, e cada uma enxerga só o seu.`,
-      acao: 'App.abrirDuo()',
-      rotulo: 'Ver como funciona'
+      texto: `Por ${CONFIG.PRECO_DUO || 'R$14,90'} por mês some uma segunda vaga na sua assinatura. Você paga, volta aqui e libera o acesso pelo e-mail da pessoa: ela responde as perguntas dela e recebe o plano dela. Cada uma enxerga só o que é seu.`,
+      acao: 'App.comprarDuo()',
+      rotulo: 'Abrir a segunda vaga'
     }];
 
     return [{
