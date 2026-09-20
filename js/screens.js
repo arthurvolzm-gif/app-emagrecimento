@@ -119,50 +119,45 @@ const Telas = {
   /* ============ ALIMENTAÇÃO ============ */
   /* ---------- dia fora da rotina ----------
      Aniversário, viagem, almoço de domingo. Sem isso a pessoa não marca
-     nada, vê o dia vazio e se sente fracassada — e é aí que desinstala.
-     Marcado, o dia conta como cumprido na semana e o app troca a cobrança
-     por três instruções do que fazer. */
-  _foraDaRotina() {
-    if (!Store.foraDaRotina()) return `
-      <button class="card fora-btn" onclick="App.marcarForaDaRotina()">
-        <span class="fb-ic">${Ic.festa(21)}</span>
-        <div>
-          <div class="fb-t">Hoje eu vou comer fora</div>
-          <div class="fb-s">Marque e o dia não conta como falha</div>
-        </div>
-        <span class="lista-seta">›</span>
-      </button>`;
+     nada, vê o dia vazio e se sente fracassada, e é aí que desinstala.
 
-    /* Depois de ler as dicas o cartão vira uma linha só: o dia continua
-       marcado, mas ele para de ocupar meia tela toda vez que ela abre a
-       aba. Os dois caminhos continuam à mão. */
-    if (Store.foraDicasVistas()) return `
-      <div class="card fora-ativo fora-curto">
-        <span class="fb-ic">${Ic.festa(19)}</span>
-        <div class="fora-curto-txt">
-          <div class="fb-t">Dia fora da rotina</div>
-          <div class="fb-s">Conta como cumprido</div>
-        </div>
-        <div class="fora-curto-acoes">
-          <button class="fora-link" onclick="App.verDicasFora(true)">Ver dicas</button>
-          <button class="fora-link apaga" onclick="App.marcarForaDaRotina()">Desmarcar</button>
-        </div>
-      </div>`;
+     Encolhido por padrão, como as refeições: abre na seta. Vale uma vez
+     por semana (Store.podeForaDaRotina). */
+  _foraDaRotina() {
+    const marcadoHoje = Store.foraDaRotina();
+    const usadoEm = Store.foraDaRotinaNaSemana();
+    const jaFoi = usadoEm && usadoEm !== Store.hoje();
+    const aberta = App.foraAberta;
 
     return `
-      <div class="card fora-ativo">
-        <div class="card-tt">${Ic.festa(20)} Dia fora da rotina</div>
-        <p class="fora-txt">
-          Combinado. Hoje o cardápio abaixo é referência, não cobrança, e este dia
-          já entra como cumprido na sua semana.
-        </p>
-        <div class="fora-dicas">
-          <div><b>Proteína primeiro.</b> Comece pelo que tem carne, ovo ou queijo. Chega no doce com menos fome.</div>
-          <div><b>Beba água antes.</b> Um copo antes de sentar corta boa parte da fome de ansiedade.</div>
-          <div><b>Amanhã é dia normal.</b> Não compense pulando refeição: compensar é o que vira efeito sanfona.</div>
+      <div class="ref fora-ref ${aberta ? 'aberta' : ''}">
+        <div class="ref-cab" onclick="App.abrirFora()">
+          <div class="ref-ic">${Ic.festa(21)}</div>
+          <div>
+            <div class="ref-nome">Dia fora da rotina</div>
+            <div class="ref-meta">${marcadoHoje
+              ? 'Ativo hoje · conta como cumprido'
+              : jaFoi
+                ? 'Já usado em ' + App.dataCurta(usadoEm)
+                : 'Uma vez por semana'}</div>
+          </div>
+          <div class="ref-dir">
+            ${marcadoHoje ? `<div class="ref-prog">✓ Hoje</div>` : ''}
+          </div>
+          <div class="ref-seta">▾</div>
         </div>
-        <button class="btn" onclick="App.verDicasFora(false)">Entendi</button>
-        <button class="fora-desmarcar" onclick="App.marcarForaDaRotina()">Desmarcar: hoje é um dia normal</button>
+
+        <div class="ref-corpo">
+          <p class="fora-txt">Marcando esta opção, você fica livre para se alimentar fora da dieta. E o dia já entra como cumprido nas metas.</p>
+          <p class="fora-aviso">Atenção: essa opção só poderá ser marcada uma vez por semana.</p>
+
+          ${marcadoHoje
+            ? `<button class="btn sec" onclick="App.marcarForaDaRotina()">Desmarcar: hoje é um dia normal</button>`
+            : jaFoi
+              ? `<button class="btn" disabled>Usar Hoje</button>
+                 <p class="fora-bloqueado">Você já usou esta semana, em ${App.dataCurta(usadoEm)}. Libera de novo na segunda.</p>`
+              : `<button class="btn" onclick="App.marcarForaDaRotina()">Usar Hoje</button>`}
+        </div>
       </div>`;
   },
 
@@ -811,21 +806,22 @@ const Telas = {
   },
 
   /* ============ MODO CORRIDA ============
-     Vive dentro da aba Treinos, atrás do botão "Corrida". Três estados:
-     - comprado  -> o plano de 8 semanas (Telas._corridaLiberada)
-     - não comprado -> a tela de venda com o preço (Telas._corridaVenda)
+     Registro de corrida: cronômetro, distância, ritmo e calorias.
+     Vive dentro da aba Treinos, atrás do botão "Corrida".
+     - comprado     -> o painel com o botão de iniciar e o histórico
+     - não comprado -> a tela de venda com o preço
      - dentro do app da Play Store -> nem venda nem preço, só o aviso,
-       porque o Google não deixa app da loja mandar pagar fora dela
-       (a mesma regra que já vale na tela de assinatura). */
+       porque o Google não deixa app da loja mandar pagar fora dela. */
   corrida() {
     const liberado = App.temCorrida();
+    const r = liberado ? Store.resumoCorridas() : null;
 
     return `
       <div class="topo">
         <div>
           <h1 class="display">Treinos</h1>
           <div class="topo-sub">${liberado
-            ? 'Modo Corrida · semana ' + Store.corrida().semana + ' de ' + Store.planoCorrida(Store.corrida().semana).total
+            ? (r.total ? r.total + (r.total === 1 ? ' corrida registrada' : ' corridas registradas') : 'Modo Corrida')
             : 'Modo Corrida'}</div>
         </div>
         ${Telas._btnBiblioteca()}
@@ -833,15 +829,59 @@ const Telas = {
 
       <div class="tela stagger">
         ${this._abasTreino()}
-        ${liberado ? this._corridaLiberada() : this._corridaVenda()}
+        ${liberado ? this._corridaPainel(r) : this._corridaVenda()}
       </div>`;
   },
 
-  /* O botão "Corrida" só aparece se houver o que mostrar atrás dele:
-     ou a pessoa comprou, ou existe link de pagamento configurado. Sem
-     isso, a aba Treinos fica exatamente como era. */
-  _temCorrida() {
-    return App.temCorrida() || !!CONFIG.CHECKOUT_URL_CORRIDA;
+  /* ---------- painel de quem comprou ---------- */
+  _corridaPainel(r) {
+    const lista = Store.corridas().slice().reverse();
+
+    return `
+      <button class="btn corrida-iniciar" onclick="App.iniciarCorrida()">
+        ${Ic.corrida(22)} Iniciar corrida
+      </button>
+
+      <div class="grid2" style="margin-top:14px">
+        <div class="stat"><div class="ic">${Ic.alvo(19)}</div>
+          <div class="n">${App.km(r.metros, 1)}<small>km</small></div>
+          <div class="l">Distância total</div></div>
+        <div class="stat"><div class="ic">${Ic.lua(19)}</div>
+          <div class="n">${App.duracaoCurta(r.segundos)}</div>
+          <div class="l">Tempo correndo</div></div>
+        <div class="stat"><div class="ic">${Ic.raio(19)}</div>
+          <div class="n">${r.melhor ? App.paceTexto(r.melhor) : '--'}<small>/km</small></div>
+          <div class="l">Melhor ritmo</div></div>
+        <div class="stat"><div class="ic">${Ic.fogo(19)}</div>
+          <div class="n">${r.kcal}<small>kcal</small></div>
+          <div class="l">Calorias estimadas</div></div>
+      </div>
+
+      ${r.semanaQtd ? `
+        <div class="card" style="margin-top:14px">
+          <div class="card-tt">${Ic.calendario(20)} Esta semana</div>
+          <p class="corrida-papel" style="margin:0">${r.semanaQtd} ${r.semanaQtd === 1 ? 'corrida' : 'corridas'} · ${App.km(r.semanaMetros, 1)} km</p>
+        </div>` : ''}
+
+      <h3 class="secao-tt">Suas corridas</h3>
+      ${lista.length ? `
+        <div class="card" style="padding:6px 18px">
+          ${lista.slice(0, 20).map(c => `
+            <div class="lista-item">
+              <span class="lista-ic">${Ic.corrida(19)}</span>
+              <div>
+                <div class="lista-t">${App.km(c.metros)} km · ${App.duracaoCurta(c.segundos)}</div>
+                <div class="lista-s">${App.dataCurta(c.data)} · ${c.ritmo ? App.paceTexto(c.ritmo) + '/km' : 'sem distância'} · ${c.kcal} kcal${c.gps ? '' : ' · distância digitada'}</div>
+              </div>
+              <button class="corrida-apagar" onclick="App.apagarCorrida('${c.quando}')" aria-label="Apagar">&times;</button>
+            </div>`).join('')}
+        </div>` : `
+        <div class="card"><div class="vazio" style="padding:26px 16px">
+          <div class="em">${Ic.corrida(34)}</div>
+          <p>Nenhuma corrida ainda.<br>Toque em iniciar e o app conta o resto.</p>
+        </div></div>`}
+
+      <p class="corrida-rodape">As calorias são uma estimativa, calculada pelo seu peso e pela intensidade. Sem medir frequência cardíaca não existe número exato.</p>`;
   },
 
   _abasTreino() {
@@ -857,10 +897,8 @@ const Telas = {
   _btnBiblioteca() {
     const trancada = !App.temVideos();
     return `
-      <button class="btn-mini quadrado bib-btn" onclick="App.abrirBiblioteca()"
-              aria-label="Biblioteca de exercícios">
-        ${Ic.livro(19)}
-        ${trancada ? `<span class="bib-cad">🔒</span>` : ''}
+      <button class="bib-link" onclick="App.abrirBiblioteca()">
+        ${trancada ? '🔒 ' : ''}Biblioteca de Exercícios
       </button>`;
   },
 
@@ -948,14 +986,13 @@ const Telas = {
 
   /* ---------- a tela de venda ---------- */
   _corridaVenda() {
-    const nivel = CORRIDA_NIVEIS[Store.nivelCorrida()];
     const naLoja = window.NO_APP_DA_LOJA;
 
     return `
       <div class="card corrida-capa">
         <div class="corrida-cad">${Ic.corrida(30)}</div>
         <h3>Modo Corrida</h3>
-        <p>Um plano de 8 semanas pra sair da primeira caminhada e chegar em ${nivel.meta.toLowerCase()}. Montado no seu nível, encaixado nos seus dias de treino.</p>
+        <p>Cronômetro, distância, ritmo e calorias de cada corrida sua, dentro do mesmo app do seu plano.</p>
         <span class="corrida-selo">${Ic.cadeado(13)} Ainda não liberado</span>
       </div>
 
@@ -964,27 +1001,8 @@ const Telas = {
         ${CORRIDA_BENEFICIOS.map(([ic, tt, txt]) => `
           <div class="lista-item" style="align-items:flex-start">
             <span class="lista-ic">${Telas._icCorrida(ic)}</span>
-            <div>
-              <div class="lista-t">${tt}</div>
-              <div class="lista-s">${txt}</div>
-            </div>
+            <div><div class="lista-t">${tt}</div><div class="lista-s">${txt}</div></div>
           </div>`).join('')}
-      </div>
-
-      <h3 class="secao-tt">A sua progressão</h3>
-      <div class="card">
-        <div class="card-tt">${Ic.calendario(20)} ${nivel.nome}</div>
-        <p class="corrida-papel">${nivel.sub}. ${nivel.meta}.</p>
-        <div class="corrida-previa">
-          ${nivel.semanas.map((sem, i) => `
-            <div class="corrida-sem ${i === 0 ? 'aberta' : ''}">
-              <span class="n">${i + 1}</span>
-              <span class="t">${i === 0
-                ? (sem.anda ? `${sem.blocos} blocos de ${sem.corre} min correndo e ${sem.anda} min caminhando` : `${sem.corre} minutos correndo`)
-                : '•••••'}</span>
-            </div>`).join('')}
-        </div>
-        <p class="corrida-nota">A semana 1 fica à mostra pra você ver o formato. O resto abre quando você liberar.</p>
       </div>
 
       ${naLoja ? `
@@ -996,85 +1014,60 @@ const Telas = {
         </div>
       ` : `
         <div class="card corrida-preco">
-          <div class="corrida-val">${CONFIG.PRECO_CORRIDA || 'R$29,90'}</div>
-          <div class="corrida-val-sub">Pagamento único. O acesso não vence junto com a sua assinatura.</div>
+          <div class="corrida-val">${CONFIG.PRECO_CORRIDA || 'R$19,90'}<small>/ano</small></div>
+          <div class="corrida-val-sub">Um ano de acesso, cobrado uma vez.</div>
           ${CONFIG.CHECKOUT_URL_CORRIDA
             ? `<button class="btn" onclick="App.comprarCorrida()">Liberar o Modo Corrida</button>
                <button class="corrida-japaguei" onclick="App.verificarCorrida()">Já paguei, liberar meu acesso</button>`
             : `<div class="aviso" style="margin:0">O link de pagamento do Modo Corrida ainda não foi configurado em config.js.</div>`}
         </div>
       `}
-`;
+
+      <p class="corrida-rodape">A distância vem do GPS do celular e a tela fica acesa durante a corrida. Com o celular bloqueado, nenhum app de navegador consegue medir percurso.</p>`;
   },
 
   _icCorrida(nome) {
-    const mapa = { calendario:'calendario', medalha:'check', relogio:'lua', alvo:'alvo', halter:'halter', trofeu:'festa' };
+    const mapa = { calendario:'calendario', relogio:'lua', alvo:'alvo', fogo:'fogo', barras:'barras', trofeu:'festa' };
     const fn = Ic[mapa[nome]] || Ic.alvo;
     return fn(19);
   },
 
-  /* ---------- a tela liberada ---------- */
-  _corridaLiberada() {
-    const c = Store.corrida();
-    /* App.semanaCorrida = 0 significa "a semana em que ela está"; outro
-       número é a pessoa espiando uma semana pelos chips de cima */
-    const p = Store.planoCorrida(App.semanaCorrida || c.semana);
-    const feitasNaSemana = p.sessoes.filter(s => Store.corridaFeita(p.semana, s.id)).length;
+  /* ---------- tela cheia: contagem 3-2-1 e corrida em andamento ---------- */
+  corridaAtiva() {
+    const c = App.corridaEstado;
+    if (!c) return '';
+
+    if (c.contagem > 0) return `
+      <div class="corrida-tela contando">
+        <div class="corrida-num" key="${c.contagem}">${c.contagem}</div>
+        <div class="corrida-prep">Prepare-se</div>
+      </div>`;
+
+    const ritmo = Store.ritmo(c.metros, c.segundos);
 
     return `
-      <div class="card plano-cab">
-        <h3>${p.nivel.nome}</h3>
-        <p>${p.nivel.meta}</p>
-        <div class="plano-tags">
-          <span class="tag">Semana ${p.semana} de ${p.total}</span>
-          <span class="tag">${feitasNaSemana} de ${p.sessoes.length} feitas</span>
+      <div class="corrida-tela">
+        <div id="cr-gps" class="corrida-gps ${c.gpsOk ? 'on' : ''}">${c.gpsOk ? 'GPS ativo' : (c.gpsErro || 'Procurando GPS...')}</div>
+
+        <div id="cr-tempo" class="corrida-crono">${App.duracaoLonga(c.segundos)}</div>
+        <div class="corrida-crono-l">${c.pausado ? 'Pausado' : 'Tempo em movimento'}</div>
+
+        <div class="corrida-linhas">
+          <div><b id="cr-km">${App.km(c.metros)}</b><span>km</span></div>
+          <div><b id="cr-ritmo">${ritmo ? App.paceTexto(ritmo) : '--:--'}</b><span>min/km</span></div>
+          <div><b id="cr-kcal">${Store.caloriasCorrida(c.metros, c.segundos)}</b><span>kcal</span></div>
         </div>
-      </div>
 
-      <p class="plano-porque">${p.foco}</p>
+        <div class="corrida-acoes">
+          <button class="btn ${c.pausado ? '' : 'sec'}" onclick="App.pausarCorrida()">${c.pausado ? 'Retomar' : 'Pausar'}</button>
+          <button class="btn perigo" onclick="App.finalizarCorrida()">Finalizar</button>
+        </div>
 
-      <div class="dias-fila">
-        ${Array.from({ length: p.total }, (_, i) => i + 1).map(n => `
-          <button class="dia-chip ${n === p.semana ? 'ativo' : ''} ${n < c.semana ? 'hoje' : ''}"
-                  onclick="App.verSemanaCorrida(${n})">
-            <div class="d">S${n}</div>
-            <div class="p"></div>
-          </button>`).join('')}
-      </div>
-
-      ${p.sessoes.map(s => {
-        const feita = Store.corridaFeita(p.semana, s.id);
-        return `
-        <div class="card">
-          <div class="card-tt">${Ic.corrida(20)} ${s.nome}<span class="n">${s.minutos} min</span></div>
-          <p class="corrida-papel">${s.papel}</p>
-          ${s.passos.map(b => `
-            <div class="corrida-bloco">
-              <span class="d">${b.d}</span>
-              <div>
-                <div class="t">${b.t}</div>
-                <div class="s">${b.txt}</div>
-              </div>
-            </div>`).join('')}
-          <button class="btn ${feita ? 'sec' : ''}" style="margin-top:14px"
-                  onclick="App.marcarCorrida(${p.semana},'${s.id}')">
-            ${feita ? '✓ Feita. Toque para desmarcar' : 'Marcar sessão como feita'}
-          </button>
-        </div>`;
-      }).join('')}
-
-      <h3 class="secao-tt">Como saber o ritmo</h3>
-      <div class="card" style="padding:6px 18px">
-        ${CORRIDA_ESFORCO.map(([t, txt]) => `
-          <div class="lista-item" style="align-items:flex-start">
-            <span class="lista-ic">${Ic.alvo(19)}</span>
-            <div><div class="lista-t">${t}</div><div class="lista-s">${txt}</div></div>
-          </div>`).join('')}
-      </div>
-
-      <p class="corrida-rodape">Material educativo de apoio. Não substitui acompanhamento médico. Dor aguda, tontura ou falta de ar fora do normal: pare e procure um profissional.</p>`;
+        <p class="corrida-aviso-tela">Mantenha esta tela aberta. Com o celular bloqueado o percurso para de ser medido.</p>
+      </div>`;
   },
 
+  /* ============ TREINOS ============ */
   treinos() {
     if (App.abaTreinos === 'corrida') return Telas.corrida();
     const plano = Store.planoTreino();
@@ -1142,7 +1135,181 @@ const Telas = {
             <div class="aviso">Este é o treino de ${dia.diaLongo}. Você só marca como concluído no dia.</div>`}
         `}
 
+        ${Telas._agendaTreino()}
+
+        <h3 class="secao-tt">Seu mês</h3>
+        ${Telas._calendarioTreino()}
+
         ${Telas._organizarSemana(plano, dias)}
+      </div>`;
+  },
+
+  /* uma linha de switch de lembrete. Os três do Perfil são iguais em
+     tudo menos no texto, então vale uma função só. */
+  _switchLembrete(tipo, icone, titulo, ligadoTxt, oQue) {
+    const on = Lembretes.ligado(tipo) && Lembretes.permitido();
+    return `
+      <div class="tema-linha">
+        <div class="tema-ic">${icone}</div>
+        <div class="tema-txt">
+          <div class="t">${titulo}</div>
+          <div class="s">${on ? 'Ligado. ' + ligadoTxt
+            : `Desligado. Ligue para ser ${App.gen('avisada', 'avisado')} ${oQue}.`}</div>
+        </div>
+        <button class="switch ${on ? 'on' : ''}"
+                onclick="App.alternarLembrete('${tipo}')" aria-label="Alternar ${titulo}"><i></i></button>
+      </div>`;
+  },
+
+  /* ---------- camada de venda do Plano Duo ----------
+     Mesmo formato da biblioteca: por cima da tela, sem tirar ela do
+     lugar. Quem já tem a segunda vaga nunca chega aqui (ver Notif._podeDuo). */
+  duoCamada() {
+    const naLoja = window.NO_APP_DA_LOJA;
+    const temLink = !naLoja && CONFIG.CHECKOUT_URL_DUO;
+
+    return `
+      <div class="bv-caixa" role="dialog" aria-modal="true" aria-labelledby="duo-tt">
+        <div class="bv-marca">${Ic.pessoa(26)}</div>
+        <h2 class="bv-tt display" id="duo-tt">Plano Duo</h2>
+        <p class="bv-txt" style="text-align:center">
+          Uma segunda vaga na sua assinatura, para quem você quiser chamar.
+        </p>
+
+        <div class="bib-razoes">
+          <div><span>${Ic.pessoa(17)}</span><div><b>O plano é dela, não o seu.</b> A pessoa responde as perguntas dela e recebe as metas dela, do tamanho dela.</div></div>
+          <div><span>${Ic.cadeado(17)}</span><div><b>Cada uma vê só o que é seu.</b> Peso, fotos e registros não cruzam entre as duas contas.</div></div>
+          <div><span>${Ic.festa(17)}</span><div><b>Ninguém desiste sozinho.</b> Fazer junto com alguém é o que mais segura gente no plano depois do primeiro mês.</div></div>
+        </div>
+
+        ${temLink ? `
+          <div class="bib-preco">${CONFIG.PRECO_DUO || 'R$14,90'}<span>por mês, junto da sua assinatura</span></div>
+          <button class="btn" onclick="App.comprarDuo()">Abrir a segunda vaga</button>
+          <button class="corrida-japaguei" onclick="App.verificarDuo()">Já paguei, liberar minha vaga</button>
+        ` : `
+          <p class="bv-txt" style="text-align:center">
+            ${naLoja
+              ? 'O Plano Duo não faz parte do seu plano atual. Fale com o suporte que a gente te explica.'
+              : 'O Plano Duo é oferecido na hora da assinatura. Se você não levou e quer agora, chame o suporte.'}
+          </p>
+          <a class="btn sec bv-sup" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">
+            ${Ic.chat(19)} Falar com o suporte
+          </a>
+        `}
+
+        <button class="bib-depois" onclick="App.fecharCamada()">Agora não</button>
+      </div>`;
+  },
+
+  /* ---------- a agenda do treino ----------
+     O lembrete de treino no celular e o horário que ele usa. Fica no
+     topo da aba, acima do calendário, porque é o que dá sentido a ele:
+     sem horário marcado, o calendário é só um histórico. */
+  _agendaTreino() {
+    const pos = App.indiceHoje();
+    const hoje = Store.diasTreino()[pos];
+    const hora = Store.horaTreino(pos);
+    const ligado = Lembretes.ligado('treino') && Lembretes.permitido();
+    const salvas = Object.values(Store.horasTreino());
+    const marcados = salvas.length;
+    /* o campo mostra o horário de hoje; num dia de descanso mostra o que
+       ela já usa nos outros dias, senão pareceria que nada foi salvo */
+    const noCampo = hora || salvas[0] || HORA_TREINO_PADRAO;
+
+    return `
+      <div class="card agenda-card">
+        <div class="tema-linha">
+          <div class="tema-ic">${Ic.sino(20)}</div>
+          <div class="tema-txt">
+            <div class="t">Lembrete de treino</div>
+            <div class="s">${!marcados
+              ? 'Escolha o seu horário abaixo e o app avisa na hora do treino.'
+              : ligado
+                ? (hoje && hoje.descanso
+                    ? 'Ligado. Hoje é descanso, então não vai tocar.'
+                    : hora ? `Ligado. Hoje toca às ${hora}.` : 'Ligado. Hoje não tem horário marcado.')
+                : `Desligado. Ligue para ser ${App.gen('avisada', 'avisado')} na hora do treino.`}</div>
+          </div>
+          <button class="switch ${ligado ? 'on' : ''}"
+                  onclick="App.alternarLembrete('treino')" aria-label="Alternar lembrete de treino"><i></i></button>
+        </div>
+
+        <div class="agenda-hora">
+          <label for="ag-hora">Meu horário de treino</label>
+          <input id="ag-hora" type="time" value="${noCampo}"
+                 onchange="App.salvarHoraTreinoTodos(this.value)">
+        </div>
+        <p class="agenda-nota">Vale para todos os dias de treino da semana. Para mudar um dia só, toque nele no calendário.</p>
+      </div>`;
+  },
+
+  /* ---------- calendário do mês ----------
+     Cada dia mostra o que é: treino feito, treino marcado que ainda vai
+     acontecer, treino que ela deixou passar, ou descanso. O dia de hoje
+     é o círculo verde. Tocar em qualquer dia abre o que é o treino dele
+     e o horário. */
+  _calendarioTreino() {
+    const base = App.mesCalendario();
+    const ano = base.getFullYear(), mes = base.getMonth();
+    const hojeIso = Store.hoje();
+    const criado = (Store.db.perfil && Store.db.perfil.criado_em) || '';
+
+    const primeiro = new Date(ano, mes, 1);
+    const inicio = (primeiro.getDay() + 6) % 7;        /* quantas casas vazias antes do dia 1 */
+    const ultimo = new Date(ano, mes + 1, 0).getDate();
+
+    const celulas = [];
+    for (let i = 0; i < inicio; i++) celulas.push('<div class="cal-vazio"></div>');
+
+    for (let d = 1; d <= ultimo; d++) {
+      const iso = Store.iso(new Date(ano, mes, d));
+      const t = Store.treinoDaData(iso);
+      const descanso = !t || t.descanso;
+      const feito = Store.treinoFeitoEm(iso);
+      const hora = descanso ? '' : Store.horaTreino(t.pos);
+      const ehHoje = iso === hojeIso;
+      const passou = iso < hojeIso;
+      /* antes de ela existir no app não há treino perdido: marcar de
+         vermelho o mês inteiro que antecede o cadastro é cobrar alguém
+         por um plano que ainda não tinha */
+      const antesDoPlano = criado && iso < criado;
+
+      const estado = feito ? 'feito'
+                   : antesDoPlano ? 'antes'
+                   : descanso ? 'descanso'
+                   : passou ? 'perdido'
+                   : 'previsto';
+
+      celulas.push(`
+        <button class="cal-dia ${estado} ${ehHoje ? 'hoje' : ''}"
+                ${antesDoPlano ? 'disabled' : `onclick="App.abrirDataTreino('${iso}')"`}
+                aria-label="${d} de ${MESES_PT[mes]}">
+          <span class="cd-n">${d}</span>
+          <span class="cd-p"></span>
+          ${hora && !feito && !passou ? `<span class="cd-h">${hora}</span>` : ''}
+        </button>`);
+    }
+
+    return `
+      <div class="card cal-card">
+        <div class="cal-topo">
+          <button class="cal-nav" onclick="App.mudarMes(-1)" aria-label="Mês anterior">‹</button>
+          <div class="cal-mes">${MESES_PT[mes].charAt(0).toUpperCase() + MESES_PT[mes].slice(1)} de ${ano}</div>
+          <button class="cal-nav" onclick="App.mudarMes(1)" aria-label="Próximo mês">›</button>
+        </div>
+
+        <div class="cal-grade cal-cab">
+          ${DIAS_SEMANA.map(d => `<div>${d}</div>`).join('')}
+        </div>
+
+        <div class="cal-grade">${celulas.join('')}</div>
+
+        <div class="cal-legenda">
+          <span class="cl feito">Feito</span>
+          <span class="cl previsto">A fazer</span>
+          <span class="cl perdido">Passou</span>
+          <span class="cl descanso">Descanso</span>
+        </div>
       </div>`;
   },
 
@@ -1291,6 +1458,7 @@ const Telas = {
           </button>`}
       </div>`;
   },
+
 
   /* ============ BIBLIOTECA DE EXERCÍCIOS ============ */
   /* a tela solta continua existindo (rota 'biblioteca'), mas o caminho
@@ -1605,23 +1773,17 @@ const Telas = {
 
         <h3 class="secao-tt">Lembretes</h3>
         <div class="card">
-          <div class="tema-linha">
-            <div class="tema-ic">${Ic.sino(20)}</div>
-            <div class="tema-txt">
-              <div class="t">Lembrete de refeição</div>
-              <div class="s">${Lembretes.ligado() && Lembretes.permitido()
-                ? 'Ligado. Avisa nos horários do seu cardápio.'
-                : `Desligado. Ligue para ser ${App.gen('avisada', 'avisado')} nos horários do cardápio.`}</div>
-            </div>
-            <button class="switch ${Lembretes.ligado() && Lembretes.permitido() ? 'on' : ''}"
-                    onclick="App.alternarLembretes()" aria-label="Alternar lembretes"><i></i></button>
-          </div>
-          <p class="lembrete-nota">
-            Com o app fechado o celular não avisa: isso é limite do navegador, não do app.
-            Enquanto ele estiver aberto, mesmo em segundo plano, o lembrete chega. Ao voltar,
-            o app mostra o que passou.
-          </p>
+          ${Telas._switchLembrete('refeicao', Ic.talher(20), 'Lembrete de refeição',
+            'Avisa nos horários do seu cardápio.',
+            'nos horários do cardápio')}
+          ${Telas._switchLembrete('agua', Ic.gota(20), 'Lembrete de água',
+            `Avisa ${AGUA_HORARIOS.length} vezes ao dia, de ${AGUA_HORARIOS[0]} às ${AGUA_HORARIOS[AGUA_HORARIOS.length - 1]}.`,
+            'de beber água durante o dia')}
+          ${Telas._switchLembrete('sono', Ic.lua(20), 'Lembrete de sono',
+            `Avisa às ${HORA_SONO} para começar a desacelerar.`,
+            `às ${HORA_SONO} de ir dormir`)}
         </div>
+        <p class="agenda-nota" style="margin-top:-8px">O lembrete de treino fica na aba Treinos, junto com o horário que você escolhe.</p>
 
         <h3 class="secao-tt">Ajuda e suporte</h3>
         <div class="card" style="padding:6px 18px">
@@ -1633,14 +1795,6 @@ const Telas = {
             </div>
             <span class="lista-seta">›</span>
           </a>
-          <button class="lista-item lista-link" onclick="App.verBoasVindas()">
-            <span class="lista-ic">${Ic.bussola(19)}</span>
-            <div>
-              <div class="lista-t">Como usar o app</div>
-              <div class="lista-s">Rever a mensagem de boas-vindas</div>
-            </div>
-            <span class="lista-seta">›</span>
-          </button>
         </div>
 
         <h3 class="secao-tt">Conta</h3>

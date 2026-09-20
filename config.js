@@ -29,14 +29,14 @@ const CONFIG = {
   CHECKOUT_URL_TRIMESTRAL: 'https://app.zuptos.com.br/checkout/b8b35e1625ad65b7',
   CHECKOUT_URL_ANUAL: 'https://app.zuptos.com.br/checkout/4c18c052c5030bd6',
 
-  /* ---------- Modo Corrida (produto extra, R$29,90) ----------
+  /* ---------- Modo Corrida (produto extra, R$19,90/ano) ----------
      Compra avulsa feita DENTRO do app, na aba Treinos. Crie o produto
      na Zuptos com a palavra "corrida" no nome — é por ela que o
      webhook sabe que a compra é deste produto e grava em
      `acessos_extras` em vez de mexer na assinatura da pessoa.
      Vazio = o botão não aparece e o Modo Corrida some da aba. */
   CHECKOUT_URL_CORRIDA: 'https://app.zuptos.com.br/checkout/93042bb4f9eaa131',
-  PRECO_CORRIDA: 'R$29,90',
+  PRECO_CORRIDA: 'R$19,90',
 
   /* ---------- Biblioteca de exercícios ----------
      Vendida como order bump do checkout do plano, com "biblioteca" no
@@ -46,6 +46,15 @@ const CONFIG = {
      Vazio = a aba mostra "fale com o suporte" em vez do botão. */
   CHECKOUT_URL_BIBLIOTECA: 'https://app.zuptos.com.br/checkout/23e17f361bb0cf57',
   PRECO_BIBLIOTECA: 'R$9,90',
+
+  /* ---------- Plano Duo (segunda vaga, R$14,90/mês) ----------
+     Vendido como order bump do checkout do plano, com "duo" no nome (é
+     por essa palavra que o webhook reconhece e sobe `vagas` pra 2).
+     Este link avulso é pra quem JÁ é cliente e não levou o bump: é o
+     que a notificação e a tela do Duo abrem.
+     Vazio = a oferta não aparece em lugar nenhum (nem a notificação). */
+  CHECKOUT_URL_DUO: '',
+  PRECO_DUO: 'R$14,90',
 
   /* ---------- Reajuste mensal (extra recorrente, R$9,90/mês) ----------
      Libera as fases do treino, as sugestões de carga e o relatório de

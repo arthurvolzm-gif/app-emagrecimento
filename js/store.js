@@ -26,99 +26,98 @@ const Store = {
   },
 
   vazio() {
-    return { perfil: null, dias: {}, pesagens: [], cargas: {}, trocas: {}, corrida: null, reajustes: [] };
+    return { perfil: null, dias: {}, pesagens: [], cargas: {}, trocas: {}, corridas: [], reajustes: [] };
   },
 
   /* ---------- MODO CORRIDA ----------
-     Produto extra. O que decide se a pessoa VÊ o plano é o acesso no
-     banco (Backend.temExtra), não isto aqui: o que mora no aparelho é
-     só em que semana ela está e o que já fez. Guardar o acesso no
-     localStorage seria a mesma coisa que não ter tranca nenhuma. */
-  corrida() {
-    if (!this.db.corrida) this.db.corrida = { semana: 1, feitos: {} };
-    if (!this.db.corrida.feitos) this.db.corrida.feitos = {};
-    return this.db.corrida;
+     Registro das corridas dela: tempo, distância, ritmo e calorias.
+     Cada corrida é uma linha; nada aqui decide acesso (isso é
+     App.temCorrida, que pergunta ao banco). */
+  corridas() {
+    if (!Array.isArray(this.db.corridas)) this.db.corridas = [];
+    return this.db.corridas;
   },
 
-  /* o nível vem do que a pessoa respondeu no cadastro; quem não
-     respondeu cai em iniciante, que é o caminho seguro */
-  nivelCorrida() {
-    const n = (this.db.perfil && this.db.perfil.nivel_treino) || 'iniciante';
-    return CORRIDA_NIVEIS[n] ? n : 'iniciante';
+  /* velocidade em km/h a partir de metros e segundos */
+  velocidade(metros, segundos) {
+    if (!segundos || !metros) return 0;
+    return (metros / 1000) / (segundos / 3600);
   },
 
-  /* monta a semana atual: três sessões a partir da linha da progressão.
-     A e B são iguais; a C leva um bloco a mais (quando há mais de um). */
-  planoCorrida(semana) {
-    const nivel = CORRIDA_NIVEIS[this.nivelCorrida()];
-    const n = Math.min(Math.max(Number(semana || this.corrida().semana), 1), nivel.semanas.length);
-    const base = nivel.semanas[n - 1];
-
-    const sessoes = CORRIDA_SESSOES.map(s => {
-      const blocos = s.id === 'c' && base.blocos > 1 ? base.blocos + 1 : base.blocos;
-      const minutos = 5 + blocos * (base.corre + base.anda) + 5;   /* aquecimento + blocos + volta à calma */
-      return {
-        id: s.id,
-        nome: s.nome,
-        papel: s.papel,
-        blocos,
-        corre: base.corre,
-        anda: base.anda,
-        minutos,
-        passos: this.passosCorrida(blocos, base.corre, base.anda)
-      };
-    });
-
-    return { nivel, semana: n, total: nivel.semanas.length, foco: base.foco, sessoes };
+  /* kcal = MET × 3,5 × peso / 200 × minutos (Compêndio de Atividades
+     Físicas). ESTIMATIVA: sem frequência cardíaca não há número exato,
+     e a tela diz isso em vez de fingir precisão. */
+  caloriasCorrida(metros, segundos) {
+    const peso = (this.db.perfil && this.db.perfil.peso_atual) || 70;
+    const kmh = this.velocidade(metros, segundos);
+    let met = CORRIDA_MET[0][1];
+    for (const [v, m] of CORRIDA_MET) if (kmh >= v) met = m;
+    return Math.round(met * 3.5 * peso / 200 * (segundos / 60));
   },
 
-  passosCorrida(blocos, corre, anda) {
-    const lista = [
-      { t: 'Aquecimento', d: '5 min', txt: 'Caminhada em passo firme, só pra o corpo entender que vai trabalhar.' }
-    ];
-    if (anda > 0) {
-      lista.push({
-        t: 'Parte principal',
-        d: blocos + 'x',
-        txt: `${blocos} blocos de: ${corre} min correndo no ritmo do plano + ${anda} min caminhando.`
-      });
-    } else {
-      lista.push({
-        t: 'Parte principal',
-        d: corre + ' min',
-        txt: `${corre} minutos correndo sem parar, em ritmo constante. Saia mais devagar do que você quer.`
-      });
-    }
-    lista.push({ t: 'Volta à calma', d: '5 min', txt: 'Caminhada leve até a respiração voltar ao normal. Não pule.' });
-    return lista;
+  /* ritmo em segundos por km (o "pace"), que é como corredor pensa */
+  ritmo(metros, segundos) {
+    if (!metros || metros < 50) return 0;
+    return Math.round(segundos / (metros / 1000));
   },
 
-  corridaFeita(semana, sessaoId) {
-    return !!this.corrida().feitos[semana + ':' + sessaoId];
+  faixaCorrida(metros, segundos) {
+    const kmh = this.velocidade(metros, segundos);
+    let nome = CORRIDA_FAIXAS[0][1];
+    for (const [v, n] of CORRIDA_FAIXAS) if (kmh >= v) nome = n;
+    return nome;
   },
 
-  /* marca a sessão e, quando as três da semana estão feitas, avança.
-     Devolve true se a semana virou, pra tela poder comemorar. */
-  marcarCorrida(semana, sessaoId) {
-    const c = this.corrida();
-    const chave = semana + ':' + sessaoId;
-    if (c.feitos[chave]) { delete c.feitos[chave]; this.save(); return false; }
-
-    c.feitos[chave] = this.hoje();
-    /* os pontos não são gravados: pontosTotais() conta as sessões feitas,
-       igual faz com as pesagens. Um lugar só decide o placar. */
-
-    const plano = this.planoCorrida(semana);
-    const todas = plano.sessoes.every(s => c.feitos[semana + ':' + s.id]);
-    let virou = false;
-    if (todas && c.semana === semana && semana < plano.total) { c.semana = semana + 1; virou = true; }
-
+  salvarCorrida({ segundos, metros, gps }) {
+    const c = this.corridas();
+    const reg = {
+      data: this.hoje(),
+      quando: new Date().toISOString(),
+      segundos: Math.round(Number(segundos) || 0),
+      metros: Math.round(Number(metros) || 0),
+      gps: !!gps
+    };
+    reg.kcal = this.caloriasCorrida(reg.metros, reg.segundos);
+    reg.ritmo = this.ritmo(reg.metros, reg.segundos);
+    c.push(reg);
     this.save();
-    return virou;
+    return reg;
   },
 
+  apagarCorrida(quando) {
+    this.db.corridas = this.corridas().filter(c => c.quando !== quando);
+    this.save();
+  },
+
+  /* os números do topo da tela: total, melhor ritmo, semana atual */
+  resumoCorridas() {
+    const lista = this.corridas();
+    const metros = lista.reduce((s, c) => s + c.metros, 0);
+    const segundos = lista.reduce((s, c) => s + c.segundos, 0);
+    const kcal = lista.reduce((s, c) => s + (c.kcal || 0), 0);
+
+    /* melhor ritmo só entre corridas com distância de verdade: 300m
+       medidos torto dariam um "recorde" que nunca aconteceu */
+    const comRitmo = lista.filter(c => c.metros >= 1000 && c.ritmo);
+    const melhor = comRitmo.length ? Math.min(...comRitmo.map(c => c.ritmo)) : 0;
+
+    const hoje = new Date();
+    const desdeSegunda = (hoje.getDay() + 6) % 7;
+    const inicioSemana = this.diasAtras(desdeSegunda);
+    const semana = lista.filter(c => c.data >= inicioSemana);
+
+    return {
+      total: lista.length,
+      metros, segundos, kcal, melhor,
+      maisLonga: lista.reduce((a, c) => (c.metros > (a ? a.metros : 0) ? c : a), null),
+      semanaQtd: semana.length,
+      semanaMetros: semana.reduce((s, c) => s + c.metros, 0)
+    };
+  },
+
+  /* quantas corridas registradas: é o que vira ponto (ver pontosTotais) */
   corridaConcluidas() {
-    return Object.keys(this.corrida().feitos).length;
+    return this.corridas().length;
   },
 
   resetar() {
@@ -590,6 +589,59 @@ const Store = {
     return true;
   },
 
+  /* ---------- horário de treino ----------
+     Guardado POR DIA DA SEMANA (posição 0 = segunda), porque treino é
+     rotina: quem marca "terça às 19h" quer isso toda terça, não só na
+     terça que vem. Fica no perfil pra viajar junto na nuvem.
+
+     Vazio em tudo = ninguém escolheu nada ainda, e aí o lembrete de
+     treino não toca. Só passa a tocar depois que ela marcar um horário. */
+  horasTreino() {
+    const p = this.db.perfil;
+    if (!p) return {};
+    if (!p.treino_horas || typeof p.treino_horas !== 'object') p.treino_horas = {};
+    return p.treino_horas;
+  },
+
+  horaTreino(pos) {
+    return this.horasTreino()[pos] || '';
+  },
+
+  /* hora vazia apaga o horário daquele dia */
+  definirHoraTreino(pos, hora) {
+    const h = this.horasTreino();
+    if (hora) h[pos] = hora; else delete h[pos];
+    this.save();
+    return this.horaTreino(pos);
+  },
+
+  /* aplica o mesmo horário em todos os dias que TÊM treino. É o botão
+     "usar em todos os dias": quem treina sempre às 19h não vai abrir
+     sete vezes o calendário pra dizer isso. */
+  definirHoraTreinoTodos(hora) {
+    const h = this.horasTreino();
+    this.diasTreino().forEach((d, pos) => {
+      if (d.descanso) delete h[pos];
+      else if (hora) h[pos] = hora;
+      else delete h[pos];
+    });
+    this.save();
+  },
+
+  /* o treino de uma data qualquer, respeitando a ordem que ela montou */
+  treinoDaData(iso) {
+    const d = this.deIso(iso).getDay();          // 0 = domingo
+    const pos = d === 0 ? 6 : d - 1;
+    const dia = this.diasTreino()[pos];
+    return dia ? { ...dia, pos } : null;
+  },
+
+  /* fez o treino naquele dia? lê o registro, sem criar dia novo */
+  treinoFeitoEm(iso) {
+    const d = this.db.dias[iso];
+    return !!(d && d.treino);
+  },
+
   restaurarOrdemTreino() {
     this.db.perfil.ordem_treino = [0, 1, 2, 3, 4, 5, 6];
     this.save();
@@ -1006,25 +1058,33 @@ const Store = {
     return !!this.dia(data).fora_rotina;
   },
 
+  /* O dia fora da rotina vale uma vez por semana. Devolve a data em que
+     já foi usado nesta semana (segunda a domingo), ou null.
+
+     A semana começa na segunda, igual à semanaPerfeita(): getDay() dá
+     0 pra domingo, então (dia + 6) % 7 põe a segunda no zero. */
+  foraDaRotinaNaSemana() {
+    const hoje = new Date();
+    const desdeSegunda = (hoje.getDay() + 6) % 7;
+    for (let i = 0; i <= desdeSegunda; i++) {
+      const data = this.diasAtras(desdeSegunda - i);
+      const d = this.db.dias[data];
+      if (d && d.fora_rotina) return data;
+    }
+    return null;
+  },
+
+  /* pode marcar hoje? Só se a semana ainda não tiver um. */
+  podeForaDaRotina() {
+    const usado = this.foraDaRotinaNaSemana();
+    return !usado || usado === this.hoje();
+  },
+
   alternarForaDaRotina() {
     const d = this.dia();
     d.fora_rotina = !d.fora_rotina;
-    d.fora_dicas_vistas = false;     /* remarcou o dia: as dicas voltam a aparecer */
     this.save();
     return d.fora_rotina;
-  },
-
-  /* As três dicas ocupam meia tela e a pessoa lê uma vez. Depois do
-     "Entendi" o cartão encolhe pra uma linha, e continua tendo como
-     reabrir e como desmarcar — que era o que faltava: antes o único
-     botão do cartão desfazia tudo. */
-  foraDicasVistas(data) {
-    return !!this.dia(data).fora_dicas_vistas;
-  },
-
-  verDicasFora(ver) {
-    this.dia().fora_dicas_vistas = !ver;
-    this.save();
   },
 
   /* ---------- streak (dias seguidos com atividade) ---------- */

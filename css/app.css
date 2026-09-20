@@ -1228,46 +1228,18 @@ body.travado{overflow:hidden;}
 .sem-nums b small{font-size:12px;color:var(--cinza-c);}
 .sem-nums span{display:block;font-size:10.5px;color:var(--cinza);font-weight:700;margin-top:5px;}
 
-/* ---------- dia fora da rotina ---------- */
-.fora-btn{display:flex;align-items:center;gap:13px;width:100%;text-align:left;}
-.fb-ic{flex-shrink:0;display:flex;color:var(--verde-esc);}
-.fb-t{font-size:14.5px;font-weight:800;color:var(--tinta);}
-.fb-s{font-size:12px;color:var(--cinza);font-weight:600;margin-top:2px;}
-.fora-btn:active{opacity:.7;}
-/* Estava em azul, que é cor de nada neste app. E o fundo azul nem
-   chegava a aparecer: `.card:not(...)` lá embaixo tem especificidade
-   maior que `.fora-ativo` e vencia. Agora o cartão é escuro como os
-   outros e o que marca o estado ligado é o contorno verde. */
-.fora-ativo{border-color:var(--verde-esc);}
-.fora-txt{font-size:13.5px;line-height:1.6;color:var(--tinta-2);font-weight:600;margin-bottom:14px;}
-.fora-dicas{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
-.fora-dicas div{
-  font-size:12.5px;line-height:1.55;color:var(--tinta-2);font-weight:500;
-  padding-left:13px;border-left:2px solid var(--verde-esc);
-}
-.fora-dicas b{color:var(--tinta);font-weight:800;}
-/* o desmarcar fica abaixo do "Entendi" e mais quieto que ele: é a saída,
-   não o caminho principal */
-.fora-desmarcar{display:block;width:100%;margin-top:12px;background:none;border:none;
-  cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:700;
-  color:var(--cinza-c);text-decoration:underline;padding:4px;}
-.fora-desmarcar:hover{color:var(--tinta-2);}
-
-/* a versão de uma linha, depois do "Entendi" */
-.fora-curto{display:flex;align-items:center;gap:11px;}
-.fora-curto-txt{flex:1;min-width:0;}
-.fora-curto-acoes{display:flex;align-items:center;gap:14px;flex-shrink:0;}
-/* em tela estreita (iPhone SE e afins) os dois links espremem o texto em
-   duas linhas cada; aí eles descem pra uma linha própria */
-@media (max-width:374px){
-  .fora-curto{flex-wrap:wrap;}
-  .fora-curto-txt{min-width:calc(100% - 30px);}
-  .fora-curto-acoes{margin-left:auto;}
-}
-.fora-link{background:none;border:none;cursor:pointer;font-family:inherit;flex-shrink:0;
-  font-size:12.5px;font-weight:800;color:var(--verde-esc);padding:6px 2px;}
-.fora-link.apaga{color:var(--cinza-c);}
-.fora-link:hover{opacity:.75;}
+/* ---------- dia fora da rotina ----------
+   Usa a mesma casca das refeições (.ref), então encolhe e abre igual a
+   elas; o que está aqui é só o miolo. */
+.fora-ref .ref-ic{color:var(--verde-esc);}
+.fora-ref .ref-prog{font-size:12px;}
+.fora-txt{font-size:13.5px;line-height:1.6;color:var(--tinta-2);font-weight:600;margin:14px 0 12px;}
+.fora-aviso{font-size:12.5px;line-height:1.6;color:var(--ambar-tx);font-weight:700;
+  background:var(--ambar-tint);border-radius:12px;padding:11px 13px;margin-bottom:16px;}
+.fora-bloqueado{font-size:12px;color:var(--cinza-c);font-weight:600;line-height:1.55;
+  text-align:center;margin-top:10px;}
+.ref-corpo .btn[disabled]{opacity:.45;cursor:not-allowed;box-shadow:none;}
+.ref-corpo .btn[disabled]:hover{transform:none;}
 
 /* ---------- resumo de domingo ---------- */
 .resumo-chamada{display:flex;align-items:center;gap:13px;width:100%;text-align:left;border-color:var(--verde-borda);}
@@ -1375,6 +1347,87 @@ body.travado{overflow:hidden;}
 .marca-linha + .topo{padding-top:18px;}
 .marca-linha + .topo h1{font-size:26px;}
 
+/* ===== AGENDA E CALENDÁRIO DO TREINO ===== */
+.agenda-card .tema-linha{margin-bottom:2px;}
+.agenda-hora{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin-top:14px;padding-top:14px;border-top:1px solid var(--linha);}
+.agenda-hora label{font-size:13.5px;font-weight:700;color:var(--tinta-2);}
+.agenda-hora input{
+  flex-shrink:0;background:var(--verde-tint2);border:1px solid var(--verde-borda);
+  color:var(--tinta);border-radius:12px;padding:10px 13px;
+  font-family:inherit;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;
+  color-scheme:dark;                        /* senão o relógio do navegador vem branco */
+}
+.agenda-nota{font-size:11.5px;color:var(--cinza-c);line-height:1.6;font-weight:600;margin-top:10px;}
+
+.cal-card{padding:16px 14px 14px;}
+.cal-topo{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.cal-mes{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800;
+  color:var(--tinta);letter-spacing:-.01em;}
+.cal-nav{width:34px;height:34px;flex-shrink:0;border-radius:11px;border:1px solid var(--linha);
+  background:var(--verde-tint2);color:var(--tinta-2);font-size:19px;line-height:1;
+  cursor:pointer;font-family:inherit;}
+.cal-nav:hover{color:var(--verde-esc);border-color:var(--verde-borda);}
+
+.cal-grade{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-cab{margin-bottom:6px;}
+.cal-cab div{text-align:center;font-size:10px;font-weight:800;letter-spacing:.02em;
+  color:var(--cinza-c);text-transform:uppercase;}
+.cal-vazio{aspect-ratio:1;}
+
+.cal-dia{
+  position:relative;aspect-ratio:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;
+  border:1px solid transparent;border-radius:12px;background:var(--verde-tint2);
+  cursor:pointer;font-family:inherit;padding:0;
+}
+.cal-dia:hover{border-color:var(--verde-borda);}
+.cd-n{font-size:13px;font-weight:700;color:var(--tinta-2);font-variant-numeric:tabular-nums;line-height:1;}
+.cd-p{width:5px;height:5px;border-radius:50%;background:transparent;}
+.cd-h{position:absolute;bottom:3px;font-size:8.5px;font-weight:800;color:var(--cinza-c);
+  letter-spacing:-.02em;line-height:1;}
+
+/* os quatro estados do dia */
+.cal-dia.feito{background:var(--verde-tint);border-color:var(--verde-borda);}
+.cal-dia.feito .cd-n{color:var(--verde-esc);font-weight:800;}
+.cal-dia.feito .cd-p{background:var(--verde-esc);}
+.cal-dia.previsto .cd-p{background:var(--cinza-c);}
+.cal-dia.perdido{opacity:.55;}
+.cal-dia.perdido .cd-p{background:var(--vermelho);}
+.cal-dia.descanso{background:transparent;}
+/* antes do cadastro: o dia existe no mês, mas não é dela */
+.cal-dia.antes{background:transparent;opacity:.3;cursor:default;}
+.cal-dia.antes .cd-n{color:var(--cinza-c);font-weight:600;}
+.cal-dia.antes:hover{border-color:transparent;}
+.cal-dia.descanso .cd-n{color:var(--cinza-c);font-weight:600;}
+
+/* HOJE: o círculo verde. Fica por cima de qualquer estado. */
+.cal-dia.hoje{border-radius:50%;background:var(--verde);border-color:transparent;}
+.cal-dia.hoje .cd-n{color:#fff;font-weight:800;}
+.cal-dia.hoje .cd-p{background:rgba(255,255,255,.8);}
+.cal-dia.hoje .cd-h{color:rgba(255,255,255,.85);}
+.cal-dia.hoje.perdido{opacity:1;}
+/* hoje sendo descanso, o ponto sumiria de qualquer jeito: sem ele o
+   círculo não promete um treino que não existe */
+.cal-dia.hoje.descanso .cd-p,
+.cal-dia.hoje.antes .cd-p{background:transparent;}
+
+.cal-legenda{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;
+  margin-top:14px;padding-top:12px;border-top:1px solid var(--linha);}
+.cl{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;color:var(--cinza);}
+.cl::before{content:'';width:6px;height:6px;border-radius:50%;}
+.cl.feito::before{background:var(--verde-esc);}
+.cl.previsto::before{background:var(--cinza-c);}
+.cl.perdido::before{background:var(--vermelho);}
+.cl.descanso::before{background:transparent;border:1px solid var(--cinza-c);}
+
+/* a lista de exercícios dentro do modal do dia */
+.dia-ex{margin:4px 0 16px;display:flex;flex-direction:column;gap:7px;}
+.dia-ex > div{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:var(--tinta-2);}
+.dia-ex span{flex-shrink:0;min-width:42px;text-align:center;background:var(--verde-tint);
+  color:var(--verde-esc);border-radius:7px;padding:3px 6px;font-size:11px;font-weight:800;}
+.dia-ex-mais{font-size:12px;color:var(--cinza-c);font-weight:700;padding-left:52px;}
+
 /* ===== MODO CORRIDA (produto extra) ===== */
 .corrida-capa{
   background:linear-gradient(140deg,#0C6B3C 0%,#23A063 44%,#053F24 100%);
@@ -1393,21 +1446,13 @@ body.travado{overflow:hidden;}
   background:rgba(3,12,7,.58);border:1px solid rgba(255,255,255,.42);border-radius:20px;
   padding:6px 14px;font-size:11.5px;font-weight:800;color:#fff;}
 
-/* prévia da progressão: a semana 1 aberta, o resto coberto */
-.corrida-previa{margin-top:4px;}
-.corrida-sem{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--linha);}
-.corrida-sem:last-child{border-bottom:none;}
-.corrida-sem .n{width:26px;height:26px;flex-shrink:0;border-radius:50%;background:var(--verde-tint);
-  color:var(--verde-esc);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;}
-.corrida-sem .t{font-size:13px;font-weight:700;color:var(--cinza);letter-spacing:.06em;}
-.corrida-sem.aberta .n{background:var(--verde-esc);color:#04150C;}
-.corrida-sem.aberta .t{color:var(--tinta-2);letter-spacing:0;font-weight:600;}
 .corrida-nota{font-size:12px;color:var(--cinza-c);line-height:1.6;font-weight:600;margin-top:14px;}
 
 /* o bloco do preço */
 .corrida-preco{text-align:center;}
 .corrida-val{font-family:'Bricolage Grotesque',sans-serif;font-size:40px;font-weight:800;
   color:var(--verde-esc);line-height:1;letter-spacing:-.03em;}
+.corrida-val small{font-size:17px;font-weight:800;letter-spacing:0;color:var(--cinza);margin-left:2px;}
 .corrida-val-sub{font-size:12.5px;color:var(--cinza);font-weight:600;line-height:1.6;margin:8px 0 18px;}
 .corrida-japaguei{display:block;width:100%;margin-top:12px;font-size:13px;font-weight:700;
   color:var(--cinza-c);text-decoration:underline;background:none;border:none;cursor:pointer;font-family:inherit;}
@@ -1415,12 +1460,78 @@ body.travado{overflow:hidden;}
 
 /* a sessão liberada */
 .corrida-papel{font-size:12.5px;color:var(--cinza);font-weight:600;line-height:1.6;margin:-4px 0 14px;}
-.corrida-bloco{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--linha);}
-.corrida-bloco:last-of-type{border-bottom:none;}
-.corrida-bloco .d{flex-shrink:0;min-width:52px;background:var(--verde-tint);color:var(--verde-esc);
-  border-radius:9px;padding:6px 8px;text-align:center;font-size:12px;font-weight:800;}
-.corrida-bloco .t{font-size:14px;font-weight:800;color:var(--tinta);}
-.corrida-bloco .s{font-size:12.5px;color:var(--cinza);font-weight:600;line-height:1.55;margin-top:3px;}
+/* o botão que abre o cronômetro: é a ação principal da aba */
+.corrida-iniciar{display:flex;align-items:center;justify-content:center;gap:10px;
+  font-size:16px;padding:17px 18px;}
+
+/* o × que apaga uma corrida do histórico */
+.corrida-apagar{margin-left:auto;flex-shrink:0;width:28px;height:28px;border-radius:50%;
+  background:none;border:none;cursor:pointer;font-family:inherit;font-size:19px;line-height:1;
+  color:var(--cinza-c);opacity:.7;}
+.corrida-apagar:hover{opacity:1;color:var(--vermelho);background:var(--tint-neutro);}
+
+/* ===== CRONÔMETRO EM TELA CHEIA =====
+   Sai da rolagem do app: enquanto corre, a pessoa olha de relance, com o
+   celular na mão ou na braçadeira. Números grandes, nada mais. */
+.corrida-tela{
+  position:fixed;inset:0;z-index:70;background:var(--fundo);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:26px 20px calc(26px + env(safe-area-inset-bottom, 0px));text-align:center;
+}
+.corrida-tela.contando{justify-content:center;gap:10px;}
+
+/* a contagem 3, 2, 1 */
+.corrida-num{
+  font-family:'Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-.05em;
+  font-size:min(46vw,230px);line-height:1;color:var(--verde-esc);
+  text-shadow:0 0 70px rgba(74,222,138,.38);
+  animation:corridaPulso .92s cubic-bezier(.16,.9,.3,1) both;
+}
+.corrida-prep{font-size:15px;font-weight:800;letter-spacing:.24em;text-transform:uppercase;color:var(--cinza);}
+@keyframes corridaPulso{
+  0%{transform:scale(.45);opacity:0;}
+  26%{transform:scale(1.06);opacity:1;}
+  56%{transform:scale(1);opacity:1;}
+  100%{transform:scale(.94);opacity:.45;}
+}
+
+/* a faixinha do GPS, no alto */
+.corrida-gps{
+  position:absolute;top:calc(18px + env(safe-area-inset-top, 0px));left:50%;transform:translateX(-50%);
+  display:inline-flex;align-items:center;gap:8px;white-space:nowrap;
+  background:var(--tint-neutro);border:1px solid var(--linha);border-radius:20px;
+  padding:7px 15px;font-size:11.5px;font-weight:800;color:var(--cinza);
+}
+.corrida-gps::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--cinza-c);}
+.corrida-gps.on{color:var(--verde-esc);border-color:var(--verde-borda);}
+.corrida-gps.on::before{background:var(--verde-esc);animation:corridaPisca 1.8s ease-in-out infinite;}
+@keyframes corridaPisca{0%,100%{opacity:1;}50%{opacity:.25;}}
+
+/* o cronômetro. Tabular pra largura não dançar a cada segundo */
+.corrida-crono{
+  font-family:'Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-.04em;
+  font-size:min(21vw,86px);line-height:1;color:var(--tinta);
+  font-variant-numeric:tabular-nums;font-feature-settings:'tnum' 1;
+}
+.corrida-crono-l{margin-top:8px;font-size:11.5px;font-weight:800;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--cinza);}
+
+/* km, ritmo e calorias, lado a lado */
+.corrida-linhas{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:400px;margin-top:34px;
+  background:var(--branco);border:1px solid var(--linha);border-radius:var(--r);padding:18px 10px;
+}
+.corrida-linhas > div{display:flex;flex-direction:column;align-items:center;gap:5px;}
+.corrida-linhas > div + div{border-left:1px solid var(--linha);}
+.corrida-linhas b{font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:800;
+  letter-spacing:-.02em;color:var(--verde-esc);font-variant-numeric:tabular-nums;}
+.corrida-linhas span{font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--cinza-c);}
+
+.corrida-acoes{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:400px;margin-top:20px;}
+.corrida-acoes .btn{margin:0;}
+
+.corrida-aviso-tela{margin-top:18px;max-width:330px;font-size:11.5px;line-height:1.6;
+  font-weight:600;color:var(--cinza-c);}
 
 .corrida-rodape{text-align:center;font-size:11.5px;color:var(--cinza-c);line-height:1.6;
   font-weight:600;margin:22px 0 6px;}
@@ -1529,10 +1640,21 @@ body.travado{overflow:hidden;}
 .reaj-plano .selo{background:var(--verde-logo);color:#04150C;font-size:10.5px;font-weight:800;
   text-transform:uppercase;letter-spacing:.06em;padding:4px 10px;border-radius:20px;margin-bottom:4px;}
 
-/* ---------- botão da biblioteca no cabeçalho ---------- */
-.bib-btn{position:relative;overflow:visible;}
-.bib-cad{position:absolute;top:-5px;right:-5px;font-size:11px;line-height:1;
-  background:var(--fundo);border-radius:50%;padding:2px;}
+/* ---------- botão da biblioteca no cabeçalho ----------
+   Era um ícone de livro sem rótulo, que ninguém associava a nada. Virou
+   o nome escrito, numa pílula ao lado do título. */
+.bib-link{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;
+  max-width:64%;padding:9px 13px;border-radius:999px;cursor:pointer;font-family:inherit;
+  background:var(--branco);border:1px solid var(--verde-borda);color:var(--verde-esc);
+  font-size:11.5px;font-weight:800;line-height:1.25;text-align:center;
+  transition:border-color .16s,background .16s;}
+.bib-link:hover{border-color:var(--verde-esc);background:var(--verde-tint);}
+.bib-link:active{transform:scale(.97);}
+/* em tela estreita o nome inteiro mais o cadeado não cabem numa linha
+   ao lado do título; encolhe um pouco em vez de quebrar em duas */
+@media (max-width:374px){
+  .bib-link{font-size:10.5px;padding:8px 10px;max-width:68%;}
+}
 
 /* a camada de venda da biblioteca (mesmo formato da de boas-vindas) */
 .bib-razoes{display:flex;flex-direction:column;gap:11px;margin:4px 0 18px;text-align:left;}

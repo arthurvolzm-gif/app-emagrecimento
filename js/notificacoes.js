@@ -133,22 +133,81 @@ const Notif = {
       });
     }
 
-    /* ---------- 5. semana perfeita ---------- */
-    try {
-      const sp = Store.semanaPerfeita();
-      if (sp && sp.completa) {
-        out.push({
-          id: 'semana:' + Store.hoje().slice(0, 7) + ':' + (sp.dias ? sp.dias.length : 7),
-          ic: 'festa',
-          tom: 'verde',
-          titulo: 'Semana perfeita',
-          texto: 'Você fechou todos os dias da semana. Isso é o que move o ponteiro.',
-          acao: "App.ir('progresso')",
-          rotulo: 'Ver o progresso'
-        });
-      }
-    } catch (e) { /* estrutura diferente: melhor não avisar do que avisar errado */ }
+    /* ---------- 5. as duas ofertas de produto ----------
+       Entram DEPOIS dos avisos de uso, nunca antes: a caixa é dela, não
+       é vitrine. E cada uma aparece uma vez por mês, só depois que a
+       pessoa já usou o app por alguns dias — oferecer no primeiro acesso
+       é vender pra quem ainda não viu o que comprou. */
+    out.push.apply(out, this._ofertas());
 
     return out;
+  },
+
+  /* ---------- as ofertas de produto ----------
+     Regras que valem pras duas:
+       • só depois de DIAS_ATE_OFERTA dias de app, contados do cadastro;
+       • só pra quem AINDA não tem aquilo;
+       • nunca dentro do app da Play Store (o Google não deixa app da
+         loja mandar pagar fora dela);
+       • uma por mês, e nunca as duas no mesmo mês: duas ofertas na
+         mesma caixa é a hora em que a pessoa para de abrir a caixa.
+     Em mês par vai a do Duo, em ímpar a da Corrida, e se uma delas não
+     se aplica a outra ocupa a vez. */
+  DIAS_ATE_OFERTA: { corrida: 5, duo: 10 },
+
+  /* quantos dias de app ela tem */
+  _diasDeApp() {
+    const p = Store.db.perfil;
+    if (!p || !p.criado_em) return 0;
+    return Math.max(0, Math.round((Date.now() - Store.deIso(p.criado_em).getTime()) / 86400000));
+  },
+
+  _podeCorrida() {
+    if (window.NO_APP_DA_LOJA) return false;
+    if (!CONFIG.CHECKOUT_URL_CORRIDA) return false;
+    if (this._diasDeApp() < this.DIAS_ATE_OFERTA.corrida) return false;
+    /* App.extras null = ainda não consultado: não ofereço o que ela
+       talvez já tenha comprado */
+    return Array.isArray(App.extras) && App.extras.indexOf('corrida') < 0;
+  },
+
+  _podeDuo() {
+    if (window.NO_APP_DA_LOJA) return false;
+    if (!CONFIG.CHECKOUT_URL_DUO) return false;
+    if (this._diasDeApp() < this.DIAS_ATE_OFERTA.duo) return false;
+    const d = App.duo;
+    if (!d || !d.ok) return false;              /* ainda não consultado */
+    if (d.titular_email) return false;          /* ela JÁ é a convidada de alguém */
+    return Number(d.vagas || 1) < 2;            /* já tem a segunda vaga? então não */
+  },
+
+  _ofertas() {
+    const corrida = this._podeCorrida();
+    const duo = this._podeDuo();
+    if (!corrida && !duo) return [];
+
+    const mes = Store.mesAtual();
+    const par = Number(mes.slice(5)) % 2 === 0;
+    const vez = (par && duo) || !corrida ? 'duo' : 'corrida';
+
+    if (vez === 'duo') return [{
+      id: 'oferta-duo:' + mes,
+      ic: 'pessoa',
+      tom: 'oferta',
+      titulo: 'Chame alguém para o seu plano',
+      texto: `O Plano Duo abre uma segunda vaga na sua assinatura por ${CONFIG.PRECO_DUO || 'R$14,90'} por mês. A outra pessoa monta o plano dela, com as metas dela, e cada uma enxerga só o seu.`,
+      acao: 'App.abrirDuo()',
+      rotulo: 'Ver como funciona'
+    }];
+
+    return [{
+      id: 'oferta-corrida:' + mes,
+      ic: 'corrida',
+      tom: 'oferta',
+      titulo: 'Seu app também conta corrida',
+      texto: `O Modo Corrida mede distância, tempo, ritmo e calorias de cada corrida sua, na mesma tela do seu plano. São ${CONFIG.PRECO_CORRIDA || 'R$19,90'} por um ano.`,
+      acao: "App.irCorrida()",
+      rotulo: 'Ver o Modo Corrida'
+    }];
   }
 };

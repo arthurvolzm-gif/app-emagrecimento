@@ -39,8 +39,8 @@ const App = {
      aparelho — ver App.carregarExtras). null = ainda não consultado. */
   abaTreinos: 'treino',
   camada: false,        /* uma camada (não a de boas-vindas) está aberta */
+  foraAberta: false,    /* o cartão do dia fora da rotina está expandido */
   extras: null,
-  semanaCorrida: 0,
 
   /* a virada de mês: o resultado de Store.fecharReajuste(), guardado
      enquanto a tela está aberta */
@@ -106,6 +106,10 @@ const App = {
         /* os extras vêm antes da virada de mês: é a lista deles que diz
            se ela vê o reajuste completo ou a versão com a oferta */
         if (this.tela === 'inicio') { await this.carregarExtras(); this.checarReajuste(); }
+        /* o Duo vai sem await: a caixa de notificações consulta App.duo
+           e, quando a resposta chega, o próximo render já a inclui. Não
+           vale segurar a abertura do app por causa de uma oferta. */
+        if (this.tela === 'inicio') this.carregarDuo();
       } else {
         /* sem sessão: se já usava o app localmente, respeita o modo local */
         this.tela = Store.temPerfil() ? 'inicio' : 'auth';
@@ -450,7 +454,7 @@ const App = {
     app.innerHTML = fn.call(Telas);
 
     /* telas internas ocupam a tela inteira, sem a barra de navegação */
-    const internas = ['biblioteca', 'cardapio', 'resumo', 'fotos', 'notificacoes', 'niveis'];
+    const internas = ['biblioteca', 'cardapio', 'resumo', 'fotos', 'notificacoes', 'niveis', 'corridaAtiva'];
     nav.style.display = internas.includes(this.tela) ? 'none' : 'flex';
     document.querySelectorAll('.nav button').forEach(b => {
       b.classList.toggle('on', b.dataset.tela === this.tela);
@@ -599,7 +603,6 @@ const App = {
 
   setAbaTreinos(aba) {
     this.abaTreinos = aba;
-    this.semanaCorrida = 0;
     if (aba === 'corrida') this.carregarExtras();
     this.render();
     window.scrollTo(0, 0);
@@ -680,21 +683,249 @@ const App = {
     return false;
   },
 
-  verSemanaCorrida(n) {
-    this.semanaCorrida = n;
+  /* ---------- MOTOR DA CORRIDA ----------
+     Cronômetro + GPS. Tudo vive em App.corridaEstado enquanto dura; só
+     o resultado final vai pro Store.
+
+     ⚠️ Limite da plataforma: navegador não rastreia com a tela apagada.
+     Por isso o app segura a tela acesa (Wake Lock) e, no fim, deixa
+     corrigir a distância na mão. Fingir que funciona bloqueado seria
+     vender o que o app não entrega. */
+  corridaEstado: null,
+
+  /* km com vírgula, que é como se escreve número aqui */
+  km(metros, casas) {
+    return ((Number(metros) || 0) / 1000).toFixed(casas === undefined ? 2 : casas).replace('.', ',');
+  },
+
+  duracaoLonga(seg) {
+    seg = Math.max(0, Math.round(seg));
+    const h = Math.floor(seg / 3600), m = Math.floor((seg % 3600) / 60), x = seg % 60;
+    const dois = n => String(n).padStart(2, '0');
+    return (h ? h + ':' : '') + dois(m) + ':' + dois(x);
+  },
+
+  duracaoCurta(seg) {
+    seg = Math.max(0, Math.round(seg));
+    const h = Math.floor(seg / 3600), m = Math.round((seg % 3600) / 60);
+    return h ? h + 'h' + String(m).padStart(2, '0') : m + 'min';
+  },
+
+  /* ritmo vem em segundos por km e se lê como 5:30 */
+  paceTexto(seg) {
+    /* acima de 99 min/km não é ritmo de corrida: é distância curta demais
+       ou medida torto. Um traço diz a verdade melhor que um número absurdo. */
+    if (!seg || seg > 5999) return '--:--';
+    const m = Math.floor(seg / 60), x = Math.round(seg % 60);
+    return m + ':' + String(x).padStart(2, '0');
+  },
+
+  async iniciarCorrida() {
+    if (!this.temCorrida()) return;
+    this.corridaEstado = {
+      contagem: 3, segundos: 0, metros: 0, pausado: false, acumulado: 0, inicio: 0,
+      gpsOk: false, gpsErro: '', ultimo: null, watch: null, wake: null, timer: null
+    };
+    this.tela = 'corridaAtiva';
+    this.render();
+
+    this.segurarTela();
+    this.ligarGPS();
+
+    /* 3, 2, 1 e vai */
+    const passo = () => {
+      const c = this.corridaEstado;
+      if (!c) return;
+      c.contagem--;
+      this.render();
+      if (c.contagem > 0) return setTimeout(passo, 1000);
+      c.inicio = Date.now();
+      c.acumulado = 0;
+      c.timer = setInterval(() => this.tiqueCorrida(), 1000);
+      this.render();
+    };
+    setTimeout(passo, 1000);
+  },
+
+  /* O tempo vem do relógio do aparelho, não da contagem de tiques: o
+     navegador atrasa ou pula setInterval quando a aba sai da frente, e
+     somar 1 a cada tique faria a corrida terminar com menos tempo do
+     que ela durou de verdade. */
+  tiqueCorrida() {
+    const c = this.corridaEstado;
+    if (!c || c.pausado || c.contagem > 0) return;
+    c.segundos = c.acumulado + Math.floor((Date.now() - c.inicio) / 1000);
+    this.atualizarCorrida();
+  },
+
+  /* Troca só os números na tela. Remontar a tela inteira a cada segundo
+     pisca o cronômetro e reinicia as animações do CSS. */
+  atualizarCorrida() {
+    const c = this.corridaEstado;
+    if (!c || this.tela !== 'corridaAtiva') return;
+
+    const tempo = document.getElementById('cr-tempo');
+    if (!tempo) return this.render();     /* a tela ainda não está montada */
+
+    const ritmo = Store.ritmo(c.metros, c.segundos);
+    const põe = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+
+    tempo.textContent = this.duracaoLonga(c.segundos);
+    põe('cr-km', this.km(c.metros));
+    põe('cr-ritmo', ritmo ? this.paceTexto(ritmo) : '--:--');
+    põe('cr-kcal', Store.caloriasCorrida(c.metros, c.segundos));
+
+    const gps = document.getElementById('cr-gps');
+    if (gps) {
+      gps.textContent = c.gpsOk ? 'GPS ativo' : (c.gpsErro || 'Procurando GPS...');
+      gps.classList.toggle('on', c.gpsOk);
+    }
+  },
+
+  /* mantém a tela acesa enquanto corre; se o navegador não tiver a API,
+     segue sem ela (o aviso na tela já explica o risco) */
+  async segurarTela() {
+    try {
+      if ('wakeLock' in navigator) {
+        this.corridaEstado.wake = await navigator.wakeLock.request('screen');
+      }
+    } catch (e) { /* negado ou indisponível: não trava a corrida */ }
+  },
+
+  ligarGPS() {
+    const c = this.corridaEstado;
+    if (!navigator.geolocation) { c.gpsErro = 'Sem GPS neste aparelho'; return this.atualizarCorrida(); }
+
+    c.watch = navigator.geolocation.watchPosition(
+      pos => {
+        const e = this.corridaEstado;
+        if (!e || e.pausado || e.contagem > 0) return;
+        /* leitura ruim atrapalha mais que ajuda: acima de 25m de erro,
+           o ponto é ruído e inflaria a distância */
+        if (pos.coords.accuracy > 25) return;
+        e.gpsOk = true; e.gpsErro = '';
+        if (e.ultimo) {
+          const d = this.distanciaEntre(e.ultimo, pos.coords);
+          if (d > 1 && d < 60) e.metros += d;   /* passo mínimo e salto máximo */
+        }
+        e.ultimo = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
+      },
+      err => {
+        const e = this.corridaEstado;
+        if (!e) return;
+        e.gpsErro = err.code === 1 ? 'GPS negado' : 'GPS indisponível';
+        e.gpsOk = false;
+        this.atualizarCorrida();
+      },
+      { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
+    );
+  },
+
+  /* haversine: distância em metros entre dois pontos do globo */
+  distanciaEntre(a, b) {
+    const R = 6371000, rad = x => x * Math.PI / 180;
+    const dLat = rad(b.latitude - a.latitude), dLon = rad(b.longitude - a.longitude);
+    const h = Math.sin(dLat / 2) ** 2 +
+              Math.cos(rad(a.latitude)) * Math.cos(rad(b.latitude)) * Math.sin(dLon / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+  },
+
+  pausarCorrida() {
+    const c = this.corridaEstado;
+    if (!c || c.contagem > 0) return;
+
+    if (c.pausado) {
+      c.inicio = Date.now();              /* retoma contando a partir de agora */
+      c.pausado = false;
+    } else {
+      c.acumulado = c.segundos;           /* guarda o que já correu */
+      c.pausado = true;
+    }
+    c.ultimo = null;          /* retomar não pode contar o trecho parado */
     this.render();
   },
 
-  marcarCorrida(semana, id) {
-    const virou = Store.marcarCorrida(semana, id);
-    Backend.agendarSync();
-    this.render();
-    if (virou) {
-      this.semanaCorrida = 0;
-      this.toast('Semana ' + semana + ' fechada. Semana ' + (semana + 1) + ' liberada 🏃', true);
-    } else if (Store.corridaFeita(semana, id)) {
-      this.toast('Sessão registrada. +' + PONTOS.corrida + ' pontos', true);
+  encerrarRecursos() {
+    const c = this.corridaEstado;
+    if (!c) return;
+    clearInterval(c.timer);
+    if (c.watch != null && navigator.geolocation) navigator.geolocation.clearWatch(c.watch);
+    if (c.wake) { try { c.wake.release(); } catch (e) {} }
+    c.timer = null; c.watch = null; c.wake = null;
+  },
+
+  finalizarCorrida() {
+    const c = this.corridaEstado;
+    if (!c) return;
+    this.encerrarRecursos();
+
+    if (c.segundos < 10) {
+      this.corridaEstado = null;
+      this.tela = 'treinos'; this.abaTreinos = 'corrida';
+      this.render();
+      return this.toast('Corrida curta demais para registrar.');
     }
+
+    const km = (c.metros / 1000).toFixed(2);
+    this.modal(`
+      <h3>Corrida concluída</h3>
+      <p class="m-sub">${this.duracaoLonga(c.segundos)} em movimento. Confira a distância antes de salvar.</p>
+      <div class="campo">
+        <label>Distância (km)</label>
+        <input id="fim-km" type="number" inputmode="decimal" step="0.01" value="${km}">
+        <div class="dica">${c.gpsOk
+          ? 'Medida pelo GPS. Se o percurso ficou torto, corrija aqui.'
+          : 'O GPS não mediu o percurso. Digite quantos quilômetros você fez.'}</div>
+      </div>
+      <button class="btn" onclick="App.salvarCorrida()">Salvar corrida</button>
+      <div style="height:10px"></div>
+      <button class="btn sec" onclick="App.descartarCorrida()">Descartar</button>`);
+  },
+
+  salvarCorrida() {
+    const c = this.corridaEstado;
+    if (!c) return;
+    const el = document.getElementById('fim-km');
+    const km = parseFloat(el ? el.value : '0');
+    const metros = isNaN(km) || km < 0 ? 0 : Math.round(km * 1000);
+
+    /* "gps" só vale se ela não mexeu no número que o GPS sugeriu. O
+       sugerido é o valor JÁ arredondado que apareceu no campo, senão a
+       comparação nunca bate e toda corrida vira "distância digitada". */
+    const sugerido = Math.round(parseFloat((c.metros / 1000).toFixed(2)) * 1000);
+    const reg = Store.salvarCorrida({ segundos: c.segundos, metros, gps: c.gpsOk && metros === sugerido });
+    Backend.agendarSync();
+    this.corridaEstado = null;
+    this.fecharModal();
+    this.tela = 'treinos'; this.abaTreinos = 'corrida';
+    this.render();
+    if (this.checarNivel()) return;
+    this.toast(`${(reg.metros / 1000).toFixed(2)} km registrados. +${PONTOS.corrida} pontos 🏃`, true);
+  },
+
+  descartarCorrida() {
+    this.encerrarRecursos();
+    this.corridaEstado = null;
+    this.fecharModal();
+    this.tela = 'treinos'; this.abaTreinos = 'corrida';
+    this.render();
+  },
+
+  apagarCorrida(quando) {
+    this.modal(`
+      <h3>Apagar esta corrida?</h3>
+      <p class="m-sub">Ela sai do seu histórico e dos seus totais. Não tem como desfazer.</p>
+      <button class="btn perigo" onclick="App.apagarCorridaConfirmado('${quando}')">Apagar</button>
+      <div style="height:10px"></div>
+      <button class="btn sec" onclick="App.fecharModal()">Cancelar</button>`);
+  },
+
+  apagarCorridaConfirmado(quando) {
+    Store.apagarCorrida(quando);
+    Backend.agendarSync();
+    this.fecharModal();
+    this.render();
+    this.toast('Corrida apagada.');
   },
 
   /* leva pro checkout e deixa marcado que foi, pra quando voltar o app
@@ -754,7 +985,9 @@ const App = {
     const d = await Backend.duoEstado();
     if (!d) return;
     this.duo = d;
-    if (this.tela === 'perfil') this.render();
+    /* a Início entra na lista porque o sininho conta as notificações e
+       uma delas depende do estado do Duo */
+    if (this.tela === 'perfil' || this.tela === 'inicio') this.render();
   },
 
   async duoConvidar() {
@@ -797,23 +1030,159 @@ const App = {
   },
 
   /* ---------- lembretes de refeição ---------- */
-  async alternarLembretes() {
-    if (Lembretes.ligado() && Lembretes.permitido()) {
-      Lembretes.desligar();
+  /* ---------- lembretes do celular ----------
+     São quatro switches independentes (refeição, água, sono, treino).
+     alternarLembretes() continua existindo com o nome antigo porque é
+     o que a tela do Perfil chama; ela só repassa pro tipo 'refeicao'. */
+  alternarLembretes() { return this.alternarLembrete('refeicao'); },
+
+  NOME_LEMBRETE: {
+    refeicao: 'Lembrete de refeição',
+    agua: 'Lembrete de água',
+    sono: 'Lembrete de sono',
+    treino: 'Lembrete de treino'
+  },
+
+  async alternarLembrete(tipo) {
+    const nome = this.NOME_LEMBRETE[tipo] || 'Lembretes';
+
+    if (Lembretes.ligado(tipo) && Lembretes.permitido()) {
+      Lembretes.desligar(tipo);
       this.render();
-      return this.toast('Lembretes desligados.');
+      return this.toast(nome + ' desligado.');
     }
-    const r = await Lembretes.ligar();
+
+    /* o lembrete de treino sem horário nenhum marcado não teria quando
+       tocar: avisa em vez de ligar um switch que não faz nada */
+    if (tipo === 'treino' && !Object.keys(Store.horasTreino()).length) {
+      return this.toast('Marque primeiro o seu horário de treino.');
+    }
+
+    const r = await Lembretes.ligar(tipo);
     this.render();
     if (r === 'ok') {
       const n = Lembretes.agendar();
-      return this.toast(n ? `Pronto. ${n} ${n === 1 ? 'lembrete' : 'lembretes'} hoje. 🔔`
-                          : 'Pronto. Os lembretes começam amanhã. 🔔', true);
+      return this.toast(n ? `Pronto. ${n} ${n === 1 ? 'aviso' : 'avisos'} ainda hoje. 🔔`
+                          : 'Pronto. Os avisos começam amanhã. 🔔', true);
     }
     if (r === 'negado') return this.toast('O celular bloqueou as notificações. Libere nas configurações do navegador.');
     if (r === 'sem-suporte') return this.toast('Este navegador não faz notificações.');
-    this.toast('Lembretes não foram ligados.');
+    this.toast('Não foi possível ligar.');
   },
+
+  /* ---------- horário de treino ---------- */
+  salvarHoraTreinoTodos(hora) {
+    Store.definirHoraTreinoTodos(hora);
+    Backend.agendarSync();
+    Lembretes.agendar();
+    this.render();
+    this.toast(hora ? `Treino marcado para as ${hora} nos seus dias de treino.` : 'Horário de treino removido.');
+  },
+
+  salvarHoraDoDia(pos, hora) {
+    Store.definirHoraTreino(pos, hora);
+    Backend.agendarSync();
+    Lembretes.agendar();
+    this.fecharModal();
+    this.render();
+    this.toast(hora ? `${DIAS_SEMANA_LONGO[pos]}: treino às ${hora}.` : `${DIAS_SEMANA_LONGO[pos]}: horário removido.`);
+  },
+
+  /* ---------- calendário ----------
+     Guarda só o deslocamento em meses a partir do atual, não uma data:
+     assim o calendário nunca fica preso num mês velho quando o app
+     passa a virada da meia-noite aberto. */
+  mesOffset: 0,
+
+  mesCalendario() {
+    const d = new Date();
+    d.setDate(1);
+    d.setMonth(d.getMonth() + this.mesOffset);
+    return d;
+  },
+
+  mudarMes(n) {
+    this.mesOffset += n;
+    this.render();
+  },
+
+  /* toque num dia do calendário: mostra QUAL é o treino daquele dia e
+     deixa marcar o horário dele */
+  abrirDataTreino(iso) {
+    const t = Store.treinoDaData(iso);
+    if (!t) return;
+
+    const feito = Store.treinoFeitoEm(iso);
+    const hoje = Store.hoje();
+    const quando = iso === hoje ? 'Hoje' : this.dataBr(iso);
+    const hora = Store.horaTreino(t.pos);
+
+    if (t.descanso) {
+      return this.modal(`
+        <h3>${quando} · descanso</h3>
+        <p class="m-sub">${DIAS_SEMANA_LONGO[t.pos]} é o seu dia de descanso. ${t.sugestao || ''}</p>
+        <button class="btn sec" onclick="App.fecharModal()">Fechar</button>`);
+    }
+
+    this.modal(`
+      <h3>${quando} · ${t.foco}</h3>
+      <p class="m-sub">${DIAS_SEMANA_LONGO[t.pos]} · ${t.exercicios.length} exercícios${feito ? ' · já concluído' : ''}</p>
+
+      <div class="dia-ex">
+        ${t.exercicios.slice(0, 6).map(e => `
+          <div><span>${e.series}x${e.reps}</span>${e.ex}</div>`).join('')}
+        ${t.exercicios.length > 6 ? `<div class="dia-ex-mais">e mais ${t.exercicios.length - 6}</div>` : ''}
+      </div>
+
+      <div class="campo">
+        <label for="dia-hora">Horário do treino de ${DIAS_SEMANA_LONGO[t.pos].toLowerCase()}</label>
+        <input id="dia-hora" type="time" value="${hora || HORA_TREINO_PADRAO}">
+        <div class="dica">Vale para toda ${DIAS_SEMANA_LONGO[t.pos].toLowerCase()}, porque treino é rotina.</div>
+      </div>
+
+      <button class="btn" onclick="App.salvarHoraDoDia(${t.pos}, document.getElementById('dia-hora').value)">Salvar horário</button>
+      <div style="height:10px"></div>
+      ${hora ? `<button class="btn sec" onclick="App.salvarHoraDoDia(${t.pos}, '')">Tirar o horário</button>`
+             : `<button class="btn sec" onclick="App.fecharModal()">Fechar</button>`}`);
+  },
+
+  /* ---------- Plano Duo (oferta) ---------- */
+  abrirDuo() {
+    this.abrirCamada(Telas.duoCamada());
+  },
+
+  comprarDuo() {
+    if (!CONFIG.CHECKOUT_URL_DUO) return;
+    try { sessionStorage.setItem('ff_comprou_duo', '1'); } catch (e) {}
+    const email = Backend.emailAtual();
+    const sep = CONFIG.CHECKOUT_URL_DUO.includes('?') ? '&' : '?';
+    location.href = CONFIG.CHECKOUT_URL_DUO + (email ? sep + 'email=' + encodeURIComponent(email) : '');
+  },
+
+  async verificarDuo(silencioso) {
+    if (!Backend.ativo()) return false;
+    if (!silencioso) this.toast('Conferindo seu pagamento...');
+
+    for (let tentativa = 0; tentativa < 5; tentativa++) {
+      await this.carregarDuo(true);
+      if (this.duo && this.duo.ok && Number(this.duo.vagas || 1) >= 2) {
+        this.fecharCamada();
+        this.render();
+        this.toast('Segunda vaga liberada. Chame a pessoa no seu Perfil. 🎉', true);
+        return true;
+      }
+      await new Promise(ok => setTimeout(ok, 2000));
+    }
+    if (!silencioso) this.toast('Ainda não achamos o pagamento. Se você acabou de pagar, tente de novo em um minuto.');
+    return false;
+  },
+
+  /* atalho da notificação: leva direto pra aba Corrida */
+  irCorrida() {
+    this.abaTreinos = 'corrida';
+    this.ir('treinos');
+  },
+
 
   /* ---------- fotos de progresso ----------
      A tela é a única do app que depende de leitura assíncrona: o
@@ -871,15 +1240,19 @@ const App = {
   },
 
   /* ---------- dia fora da rotina ---------- */
-  verDicasFora(ver) {
-    Store.verDicasFora(ver);
-    Backend.agendarSync();
+  abrirFora() {
+    this.foraAberta = !this.foraAberta;
     this.render();
   },
 
   marcarForaDaRotina() {
+    /* a trava de uma vez por semana mora no Store; aqui é só o aviso */
+    if (!Store.foraDaRotina() && !Store.podeForaDaRotina()) {
+      return this.toast('Você já usou o dia fora da rotina nesta semana.');
+    }
     const ligou = Store.alternarForaDaRotina();
     Backend.agendarSync();
+    this.foraAberta = true;          /* continua aberto pra ela ver o que mudou */
     this.render();
     this.toast(ligou ? 'Dia marcado. Aproveite sem culpa. 🎉'
                      : 'Voltou a ser um dia normal.', ligou);
@@ -907,14 +1280,6 @@ const App = {
         bg.setAttribute('aria-hidden', 'true');
       }, 320);
     }
-  },
-
-  /* "Como usar o app", na aba de Perfil: reabre a mensagem e leva pra
-     tela inicial, que é onde ela mora */
-  verBoasVindas() {
-    if (Store.db.perfil) { Store.db.perfil.boas_vindas_visto = false; Store.save(); }
-    Backend.agendarSync();
-    this.ir('inicio');            /* o render de lá reabre a camada */
   },
 
   /* ---------- ações do dia ---------- */

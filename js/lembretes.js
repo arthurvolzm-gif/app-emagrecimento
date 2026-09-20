@@ -1,5 +1,5 @@
 /* =========================================================
-   LEMBRETES DE REFEIÇÃO
+   LEMBRETES NO CELULAR
 
    ⚠️ LEIA ANTES DE MEXER — o limite aqui é do navegador, não do código.
    Site não agenda notificação para disparar com ele FECHADO. A API que
@@ -14,37 +14,55 @@
    Quando existir o APK, o lembrete com app fechado vira código nativo do
    wrapper lendo os mesmos horários daqui. A parte de decidir QUANDO
    lembrar já está pronta e é o que se aproveita.
+
+   ── QUATRO LEMBRETES, QUATRO CHAVES ──────────────────────
+   Cada um liga e desliga sozinho, porque são pedidos diferentes: quem
+   quer ser lembrada de beber água não necessariamente quer ser cobrada
+   pelo treino. A chave da refeição continua com o nome antigo
+   (`focusfit_lembretes`) de propósito: quem já tinha ligado não perde.
    ========================================================= */
 const Lembretes = {
-  CHAVE: 'focusfit_lembretes',
+  CHAVES: {
+    refeicao: 'focusfit_lembretes',
+    agua:     'focusfit_lembretes_agua',
+    sono:     'focusfit_lembretes_sono',
+    treino:   'focusfit_lembretes_treino'
+  },
   _timers: [],
 
   suportado() {
     try { return typeof Notification !== 'undefined'; } catch (e) { return false; }
   },
 
-  ligado() {
-    try { return localStorage.getItem(this.CHAVE) === '1'; } catch (e) { return false; }
-  },
-
   permitido() {
     return this.suportado() && Notification.permission === 'granted';
   },
 
-  /* liga: pede permissão e só grava se a pessoa aceitar */
-  async ligar() {
+  ligado(tipo) {
+    const chave = this.CHAVES[tipo || 'refeicao'];
+    try { return localStorage.getItem(chave) === '1'; } catch (e) { return false; }
+  },
+
+  /* algum dos quatro ligado? é o que decide se vale reagendar */
+  algumLigado() {
+    return Object.keys(this.CHAVES).some(t => this.ligado(t));
+  },
+
+  /* liga um: pede permissão e só grava se a pessoa aceitar */
+  async ligar(tipo) {
+    tipo = tipo || 'refeicao';
     if (!this.suportado()) return 'sem-suporte';
     let p = Notification.permission;
     if (p === 'default') p = await Notification.requestPermission();
     if (p !== 'granted') return p === 'denied' ? 'negado' : 'cancelado';
-    try { localStorage.setItem(this.CHAVE, '1'); } catch (e) {}
+    try { localStorage.setItem(this.CHAVES[tipo], '1'); } catch (e) {}
     this.agendar();
     return 'ok';
   },
 
-  desligar() {
-    try { localStorage.setItem(this.CHAVE, '0'); } catch (e) {}
-    this.limpar();
+  desligar(tipo) {
+    try { localStorage.setItem(this.CHAVES[tipo || 'refeicao'], '0'); } catch (e) {}
+    this.agendar();
   },
 
   limpar() {
@@ -52,42 +70,102 @@ const Lembretes = {
     this._timers = [];
   },
 
-  /* horários vêm do próprio cardápio: o dado já existe, não invento nada */
-  horarios() {
+  /* ---------- os horários de cada tipo ----------
+     Todos devolvem [{ hora:'HH:MM', titulo, corpo, tag }]. */
+
+  /* refeição: os horários vêm do próprio cardápio, não invento nada */
+  _horasRefeicao() {
     try {
       return Store.planoAlimentar()
         .filter(r => r.horario)
-        .map(r => ({ hora: r.horario, nome: r.nome }));
+        .map(r => ({
+          hora: r.horario,
+          titulo: `${r.nome} · Focus Fit`,
+          corpo: 'Hora da sua refeição. Abra o app e marque o que comeu.',
+          tag: 'refeicao'
+        }));
     } catch (e) { return []; }
   },
 
-  /* um setTimeout por refeição que ainda não passou hoje */
+  /* água: horários fixos espalhados no dia acordado. A meta em ml é a
+     do perfil, então o lembrete fala o número dela, não um genérico. */
+  _horasAgua() {
+    let meta = 0;
+    try { meta = Number(Store.db.perfil && Store.db.perfil.meta_agua) || 0; } catch (e) {}
+    const alvo = meta ? (meta / 1000).toFixed(1).replace('.', ',') + ' L' : 'a sua meta';
+    return AGUA_HORARIOS.map(hora => ({
+      hora,
+      titulo: 'Hora de beber água · Focus Fit',
+      corpo: `Um copo agora e você segue no ritmo de ${alvo} hoje.`,
+      tag: 'agua'                                  /* um só na bandeja, sem empilhar */
+    }));
+  },
+
+  /* sono: um por noite, no horário do HORA_SONO */
+  _horasSono() {
+    return [{
+      hora: HORA_SONO,
+      titulo: 'Hora de desacelerar · Focus Fit',
+      corpo: 'Comece a se preparar para dormir. O sono é parte do plano, igual ao treino.',
+      tag: 'sono'
+    }];
+  },
+
+  /* treino: só nos dias que TÊM treino, no horário que ela escolheu.
+     Dia de descanso não cobra ninguém. */
+  _horasTreino() {
+    try {
+      const pos = App.indiceHoje();
+      const dia = Store.diasTreino()[pos];
+      if (!dia || dia.descanso) return [];
+      const hora = Store.horaTreino(pos);
+      if (!hora) return [];
+      return [{
+        hora,
+        titulo: `Treino de ${dia.foco} · Focus Fit`,
+        corpo: 'Seu horário de treino chegou. Abra o app e veja os exercícios de hoje.',
+        tag: 'treino'
+      }];
+    } catch (e) { return []; }
+  },
+
+  /* tudo que ainda vai tocar hoje, já filtrado pelo que está ligado */
+  agenda() {
+    let lista = [];
+    if (this.ligado('refeicao')) lista = lista.concat(this._horasRefeicao());
+    if (this.ligado('agua'))     lista = lista.concat(this._horasAgua());
+    if (this.ligado('sono'))     lista = lista.concat(this._horasSono());
+    if (this.ligado('treino'))   lista = lista.concat(this._horasTreino());
+    return lista;
+  },
+
+  /* um setTimeout por aviso que ainda não passou hoje */
   agendar() {
     this.limpar();
-    if (!this.ligado() || !this.permitido()) return 0;
+    if (!this.permitido() || !this.algumLigado()) return 0;
 
     const agora = new Date();
     let n = 0;
-    this.horarios().forEach(({ hora, nome }) => {
-      const [h, m] = String(hora).split(':').map(Number);
+    this.agenda().forEach(av => {
+      const [h, m] = String(av.hora).split(':').map(Number);
       if (isNaN(h)) return;
       const quando = new Date();
       quando.setHours(h, m || 0, 0, 0);
       const falta = quando - agora;
       if (falta <= 0) return;                      /* já passou hoje */
       n++;
-      this._timers.push(setTimeout(() => this.disparar(nome), falta));
+      this._timers.push(setTimeout(() => this.disparar(av), falta));
     });
     return n;
   },
 
-  disparar(nome) {
+  disparar(av) {
     if (!this.permitido()) return;
     try {
-      new Notification(`${nome} · Focus Fit`, {
-        body: 'Hora da sua refeição. Abra o app e marque o que comeu.',
+      new Notification(av.titulo, {
+        body: av.corpo,
         icon: 'logo-focusfit.png',
-        tag: 'refeicao'                            /* não empilha lembrete repetido */
+        tag: av.tag                                /* não empilha lembrete repetido */
       });
     } catch (e) {}
   },

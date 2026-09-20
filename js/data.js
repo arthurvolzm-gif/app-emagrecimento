@@ -832,101 +832,80 @@ const CATEGORIAS = ['Todos', 'Pernas', 'Glúteos', 'Costas', 'Peito', 'Ombro', '
 
 /* ordem fixa da semana — a posição no array é o dia, o conteúdo é trocável */
 const DIAS_SEMANA = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+
+/* =========================================================
+   HORÁRIOS DOS LEMBRETES (água e sono)
+
+   Água: espalhada no dia acordado, de duas em duas horas. Não é ciência
+   exata, é o intervalo que faz a pessoa lembrar sem virar barulho: mais
+   apertado que isso e ela desliga o lembrete na segunda semana.
+
+   Sono: um só, às 22h, que é a hora de COMEÇAR a desacelerar, não a de
+   apagar a luz. Avisar na hora de dormir já é tarde.
+   ========================================================= */
+const AGUA_HORARIOS = ['09:00', '11:00', '13:00', '15:00', '17:00', '19:00'];
+const HORA_SONO = '22:00';
+
+/* o horário sugerido de treino, quando a pessoa ainda não escolheu o dela */
+const HORA_TREINO_PADRAO = '18:30';
+
 const DIAS_SEMANA_LONGO = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
 
 /* =========================================================
    MODO CORRIDA  ·  produto extra, comprado dentro do app
 
-   ⚠️ O CONTEÚDO ABAIXO É UMA PRIMEIRA VERSÃO, PRA REVISAR.
-   A progressão segue o padrão de corrida/caminhada que os programas
-   de iniciante usam (tipo Couch to 5K): sobe o tempo de corrida aos
-   poucos e mantém a caminhada como descanso ativo. Está conservadora
-   de propósito. Revise antes de vender, principalmente as semanas
-   finais — é o seu produto e a sua assinatura por trás dele.
+   Não é plano de treino: é o registro das corridas dela. Cronômetro,
+   distância, ritmo, calorias e a evolução ao longo do tempo.
 
-   Tudo aqui é texto e número: pra mudar o plano, mexa nesta lista,
-   não na tela.
+   ⚠️ LIMITE DA PLATAFORMA, e é honesto dizer em voz alta:
+   app de navegador NÃO rastreia com a tela apagada. Se a pessoa
+   bloquear o celular no meio da corrida, o GPS para e o cronômetro
+   congela. Por isso o app mantém a tela acesa (Wake Lock) durante a
+   corrida, e por isso existe a correção manual de distância no fim:
+   se o GPS falhar ou vier torto, ela digita o número e o resto é
+   recalculado.
    ========================================================= */
 
 /* o que aparece na tela de venda (Modo Corrida bloqueado) */
 const CORRIDA_BENEFICIOS = [
-  ['calendario', 'Plano de 8 semanas',
-   'Da primeira caminhada até correr 30 minutos sem parar. Cada semana já vem montada, você só abre e faz.'],
-  ['medalha', 'Ajustado ao seu nível',
-   'Começando do zero, voltando depois de um tempo parado ou já correndo: o app escolhe a progressão pelo que você respondeu no cadastro.'],
-  ['relogio', 'Cada sessão minuto a minuto',
-   'Aquecimento, os blocos de corrida e caminhada, e o desaquecimento. Sem precisar contar nada de cabeça.'],
-  ['alvo', 'Ritmo por esforço, não por velocidade',
-   'Cada bloco diz em que esforço correr, do jeito que dá pra sentir na hora. Sem depender de relógio caro nem de pace.'],
-  ['halter', 'Encaixado no seu treino',
-   'O plano respeita os seus dias de musculação e diz em qual dia a corrida cai melhor, pra uma coisa não atrapalhar a outra.'],
+  ['relogio', 'Cronômetro na tela',
+   'Toca em iniciar, conta 3, 2, 1 e começa. Tempo, distância e ritmo grandes na tela, dá pra ler correndo.'],
+  ['alvo', 'Distância e ritmo pelo GPS',
+   'O app mede o percurso enquanto você corre e mostra o seu ritmo em minutos por quilômetro, atualizado na hora.'],
+  ['fogo', 'Calorias da corrida',
+   'Estimadas pelo seu peso e pela intensidade do que você acabou de fazer, não por uma tabela genérica.'],
+  ['barras', 'Sua evolução',
+   'Cada corrida entra no histórico. Você vê a distância total, o melhor ritmo e como os números mudaram mês a mês.'],
+  ['calendario', 'Sem depender de relógio',
+   'Nada de comprar aparelho nem instalar outro app. O que você precisa está na mesma tela do resto do seu plano.'],
   ['trofeu', 'Conta pontos igual ao resto',
-   'Sessão de corrida concluída entra nos seus pontos, no seu nível e na sua semana perfeita.']
+   'Corrida registrada entra nos seus pontos, no seu nível e na sua semana perfeita.']
 ];
 
-/* A progressão. Cada semana diz quantos blocos, quantos minutos
-   correndo e quantos caminhando. As três sessões da semana saem daqui
-   (ver Store.planoCorrida): duas iguais e a terceira um bloco maior. */
-const CORRIDA_NIVEIS = {
-  iniciante: {
-    nome: 'Começando do zero',
-    sub: 'Pra quem não corre hoje',
-    meta: 'Correr 30 minutos seguidos na semana 8',
-    semanas: [
-      { corre: 1, anda: 4, blocos: 6, foco: 'Só acostumar o corpo. Se o trote parecer fácil demais, está certo.' },
-      { corre: 2, anda: 3, blocos: 6, foco: 'Mesmo tempo total, mais tempo correndo. A caminhada ainda é a maior parte.' },
-      { corre: 3, anda: 3, blocos: 5, foco: 'Primeira semana em que o corredor passa do caminhante. Vá devagar.' },
-      { corre: 5, anda: 3, blocos: 4, foco: 'Blocos maiores. Se precisar andar antes da hora, ande: a semana não está perdida.' },
-      { corre: 8, anda: 3, blocos: 3, foco: 'Aqui muita gente descobre que consegue. O ritmo continua sendo o de conversar.' },
-      { corre: 12, anda: 3, blocos: 2, foco: 'Dois blocos longos. O segredo é sair mais devagar do que você quer.' },
-      { corre: 20, anda: 3, blocos: 1, foco: 'Um bloco só, mais a volta. Vinte minutos é a barreira mental do programa.' },
-      { corre: 30, anda: 0, blocos: 1, foco: 'A meta. Sem caminhada no meio, no ritmo mais leve que você tiver.' }
-    ]
-  },
-  intermediario: {
-    nome: 'Voltando a correr',
-    sub: 'Pra quem já correu e parou',
-    meta: 'Correr 45 minutos seguidos na semana 8',
-    semanas: [
-      { corre: 5, anda: 2, blocos: 4, foco: 'Retomada. O corpo lembra mais rápido que o fôlego, então segure o ritmo.' },
-      { corre: 8, anda: 2, blocos: 3, foco: 'Blocos maiores, mesma ideia: terminar com gás sobrando.' },
-      { corre: 12, anda: 2, blocos: 3, foco: 'Primeira semana de volume de verdade. Cuide do sono e da água.' },
-      { corre: 15, anda: 2, blocos: 2, foco: 'Dois blocos longos. Se a canela reclamar, tire um dia e volte.' },
-      { corre: 20, anda: 2, blocos: 2, foco: 'Quarenta minutos correndo no total. O ritmo segue sendo o de conversar.' },
-      { corre: 30, anda: 3, blocos: 1, foco: 'Um bloco contínuo de meia hora. Saia devagar de propósito.' },
-      { corre: 35, anda: 0, blocos: 1, foco: 'Contínuo, sem pausa. A partir daqui é fôlego, não perna.' },
-      { corre: 45, anda: 0, blocos: 1, foco: 'A meta. Se precisar dividir em dois, tudo bem: repita a semana.' }
-    ]
-  },
-  avancado: {
-    nome: 'Correndo com constância',
-    sub: 'Pra quem já corre toda semana',
-    meta: 'Um longo de 60 minutos na semana 8',
-    semanas: [
-      { corre: 10, anda: 2, blocos: 3, foco: 'Semana de base. Nada de forçar: o ganho vem do acúmulo, não de um treino.' },
-      { corre: 15, anda: 2, blocos: 3, foco: 'Volume subindo. Mantenha o esforço em que dá pra falar frases inteiras.' },
-      { corre: 20, anda: 2, blocos: 2, foco: 'Dois blocos fortes. A pausa curta é pra segurar o ritmo, não pra descansar.' },
-      { corre: 30, anda: 2, blocos: 2, foco: 'Primeira semana pesada. Se acordar cansada dois dias seguidos, alivie.' },
-      { corre: 40, anda: 0, blocos: 1, foco: 'Contínuo. Aqui a cabeça treina tanto quanto a perna.' },
-      { corre: 45, anda: 0, blocos: 1, foco: 'Quase lá. Coma antes de sair se for treino de manhã.' },
-      { corre: 50, anda: 0, blocos: 1, foco: 'Semana de pico antes do longo final.' },
-      { corre: 60, anda: 0, blocos: 1, foco: 'A meta: uma hora correndo. Ritmo constante do começo ao fim.' }
-    ]
-  }
-};
-
-/* os três nomes de sessão da semana, na ordem */
-const CORRIDA_SESSOES = [
-  { id: 'a', nome: 'Sessão A', papel: 'Primeira da semana, no ritmo do plano.' },
-  { id: 'b', nome: 'Sessão B', papel: 'Repete a A. É a repetição que constrói, não a novidade.' },
-  { id: 'c', nome: 'Sessão C', papel: 'Um bloco a mais que as outras duas. É a mais longa da semana.' }
+/* MET (equivalente metabólico) por faixa de velocidade, do Compêndio de
+   Atividades Físicas. É a base do cálculo de caloria:
+       kcal = MET × 3,5 × peso(kg) / 200 × minutos
+   Continua sendo ESTIMATIVA, e a tela diz isso. Sem frequência cardíaca
+   não existe número exato, e fingir precisão aqui seria mentira. */
+const CORRIDA_MET = [
+  [0,   2.0],   // parado / muito devagar
+  [4.0, 3.0],   // caminhada leve
+  [5.5, 4.3],   // caminhada rápida
+  [6.5, 6.0],   // trote
+  [8.0, 8.3],   // corrida leve
+  [9.7, 9.8],   // corrida moderada
+  [11.3, 11.0], // corrida forte
+  [12.9, 11.8], // corrida rápida
+  [14.5, 12.8]  // muito rápida
 ];
 
-/* escala de esforço, sem depender de relógio, GPS ou frequencímetro */
-const CORRIDA_ESFORCO = [
-  ['Caminhada', 'Passo firme, respiração normal. Dá pra cantar.'],
-  ['Trote leve', 'Mais lento do que você acha que deveria. Dá pra falar frases inteiras.'],
-  ['Ritmo do plano', 'Dá pra falar frases curtas, mas não cantar. É aqui que quase todo o plano acontece.']
+/* como o app chama cada faixa de ritmo, pra não mostrar só número */
+const CORRIDA_FAIXAS = [
+  [0,   'Caminhada'],
+  [6.5, 'Trote'],
+  [8.0, 'Corrida leve'],
+  [9.7, 'Corrida moderada'],
+  [11.3, 'Corrida forte']
 ];
 
 /* =========================================================
