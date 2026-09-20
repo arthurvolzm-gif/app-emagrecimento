@@ -1168,13 +1168,25 @@ const App = {
       if (this.duo && this.duo.ok && Number(this.duo.vagas || 1) >= 2) {
         this.fecharCamada();
         this.render();
-        this.toast('Segunda vaga liberada. Chame a pessoa no seu Perfil. 🎉', true);
+        /* a camada em vez do toast: o toast some em três segundos e a
+           pessoa fica sem saber que ainda falta chamar alguém */
+        setTimeout(() => this.abrirCamada(Telas.duoVagaCamada()), 320);
         return true;
       }
       await new Promise(ok => setTimeout(ok, 2000));
     }
     if (!silencioso) this.toast('Ainda não achamos o pagamento. Se você acabou de pagar, tente de novo em um minuto.');
     return false;
+  },
+
+  /* leva pro Perfil, onde mora o campo de convite do Duo */
+  irConvidarDuo() {
+    this.fecharCamada();
+    this.ir('perfil');
+    setTimeout(() => {
+      const campo = document.getElementById('in-duo');
+      if (campo) { campo.scrollIntoView({ block: 'center', behavior: 'smooth' }); campo.focus(); }
+    }, 350);
   },
 
   /* atalho da notificação: leva direto pra aba Corrida */

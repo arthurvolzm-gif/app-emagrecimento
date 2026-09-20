@@ -1201,6 +1201,22 @@ const Telas = {
       </div>`;
   },
 
+  /* depois da compra do Duo: a vaga existe, falta a pessoa. Sem isto a
+     compra fica parada, porque nada no app diz que falta um passo. */
+  duoVagaCamada() {
+    return `
+      <div class="bv-caixa" role="dialog" aria-modal="true" aria-labelledby="dv-tt">
+        <div class="bv-marca">${Ic.festa(26)}</div>
+        <h2 class="bv-tt display" id="dv-tt">Sua segunda vaga está aberta</h2>
+        <p class="bv-txt" style="text-align:center">
+          Falta só dizer quem vai usar. Você digita o e-mail da pessoa e ela entra no app
+          com esse mesmo e-mail, responde as perguntas dela e recebe o plano dela.
+        </p>
+        <button class="btn" onclick="App.irConvidarDuo()">Chamar a pessoa agora</button>
+        <button class="bib-depois" onclick="App.fecharCamada()">Faço isso depois</button>
+      </div>`;
+  },
+
   /* ---------- a agenda do treino ----------
      O lembrete de treino no celular e o horário que ele usa. Fica no
      topo da aba, acima do calendário, porque é o que dá sentido a ele:

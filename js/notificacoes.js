@@ -133,7 +133,25 @@ const Notif = {
       });
     }
 
-    /* ---------- 5. as duas ofertas de produto ----------
+    /* ---------- 5. vaga do Duo comprada e ainda vazia ----------
+       Aparece antes das ofertas porque não é oferta: é dinheiro que ela
+       já gastou e ainda não usou. */
+    const duo = App.duo;
+    if (duo && duo.ok && !duo.titular_email &&
+        Number(duo.vagas || 1) >= 2 &&
+        (duo.convidados || []).length < Number(duo.vagas) - 1) {
+      out.push({
+        id: 'duo-vaga:' + mes,
+        ic: 'pessoa',
+        tom: 'verde',
+        titulo: 'Você tem uma vaga livre no seu plano',
+        texto: 'O Plano Duo já está pago, mas ninguém está usando a segunda vaga. Digite o e-mail da pessoa e ela entra com o plano dela.',
+        acao: 'App.irConvidarDuo()',
+        rotulo: 'Chamar a pessoa'
+      });
+    }
+
+    /* ---------- 6. as duas ofertas de produto ----------
        Entram DEPOIS dos avisos de uso, nunca antes: a caixa é dela, não
        é vitrine. E cada uma aparece uma vez por mês, só depois que a
        pessoa já usou o app por alguns dias — oferecer no primeiro acesso
