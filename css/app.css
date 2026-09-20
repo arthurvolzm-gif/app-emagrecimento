@@ -1347,6 +1347,12 @@ body.travado{overflow:hidden;}
 .marca-linha + .topo{padding-top:18px;}
 .marca-linha + .topo h1{font-size:26px;}
 
+/* o "Criar Conta" embaixo do botão de código, na tela de login */
+.login-criar{display:block;width:100%;margin-top:16px;text-align:center;
+  font-size:13.5px;font-weight:600;color:var(--cinza);text-decoration:none;}
+.login-criar strong{color:var(--verde-esc);font-weight:800;text-decoration:underline;}
+.login-criar:hover strong{color:var(--tinta);}
+
 /* ===== AGENDA E CALENDÁRIO DO TREINO ===== */
 .agenda-card .tema-linha{margin-bottom:2px;}
 .agenda-hora{display:flex;align-items:center;justify-content:space-between;gap:12px;

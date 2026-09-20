@@ -140,6 +140,14 @@ const Onb = {
           </div>
 
           <button class="login-btn" id="btn-auth" onclick="Onb.pedirCodigo()">Receber código</button>
+
+          <!-- quem baixou o app sem ter passado pelo quiz não tem conta
+               nenhuma: o login por código só funciona pra quem já comprou.
+               Este link manda essa pessoa pro WhatsApp, que é por onde a
+               venda dela acontece. -->
+          <a class="login-criar" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">
+            Ainda não tem conta? <strong>Criar Conta</strong>
+          </a>
         </div>
         ${this.suporteHTML()}
       </div>`;
