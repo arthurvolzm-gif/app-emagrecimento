@@ -527,25 +527,29 @@ body{
 }
 
 /* ===== POP-UP DE SAÍDA (BOTÃO VOLTAR) ===== */
-.saida-overlay{position:fixed;inset:0;background:rgba(20,40,30,.78);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999;}
+.saida-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999;}
 .saida-overlay.aberto{display:flex;}
-.saida-modal{background:#fff;border-radius:24px;padding:44px 32px 28px;box-shadow:0 12px 60px rgba(0,0,0,.12);width:min(460px,100%);max-height:92vh;overflow:hidden auto;text-align:center;position:relative;animation:saidaEntra .28s ease-out;}
-.saida-modal::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:var(--verde);}
+.saida-modal{background:#000;border-radius:24px;padding:44px 32px 28px;box-shadow:0 12px 60px rgba(0,0,0,.6), 0 0 40px rgba(76,175,130,.08);border:1px solid rgba(76,175,130,.16);width:min(460px,100%);max-height:92vh;overflow:hidden auto;text-align:center;position:relative;animation:saidaEntra .28s ease-out;}
+.saida-modal::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--verde),var(--verde-claro));}
 @keyframes saidaEntra{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:none;}}
-.saida-fechar{position:absolute;top:12px;right:14px;background:none;border:none;font-size:26px;line-height:1;color:#ccc;cursor:pointer;padding:4px 8px;z-index:2;}
-.saida-fechar:hover{color:#888;}
+.saida-fechar{position:absolute;top:12px;right:14px;background:none;border:none;font-size:26px;line-height:1;color:#5c6b63;cursor:pointer;padding:4px 8px;z-index:2;}
+.saida-fechar:hover{color:var(--verde-claro);}
 .saida-selo{text-transform:uppercase;color:var(--verde-claro);font-weight:700;letter-spacing:1px;font-size:13px;margin-bottom:10px;}
-.saida-titulo{font-family:'Open Sans',sans-serif;font-size:27px;font-weight:800;line-height:1.25;color:var(--verde-escuro);margin-bottom:14px;}
+.saida-titulo{font-family:'Open Sans',sans-serif;font-size:27px;font-weight:800;line-height:1.25;color:#eef5f0;margin-bottom:14px;}
 .saida-titulo span{color:var(--verde-claro);}
-.saida-sub{color:#222;font-weight:700;font-size:15px;line-height:1.7;letter-spacing:.3px;margin-bottom:24px;}
-.saida-de{font-size:16px;color:#aaa;text-decoration:line-through;margin-bottom:4px;}
+.saida-sub{color:#c3d4cb;font-weight:700;font-size:15px;line-height:1.7;letter-spacing:.3px;margin-bottom:24px;}
+.saida-de{font-size:16px;color:#6f8579;text-decoration:line-through;margin-bottom:4px;}
 .saida-por{font-size:13px;text-transform:uppercase;color:var(--verde-claro);font-weight:700;letter-spacing:1px;margin-bottom:4px;}
-.saida-val{font-family:'Open Sans',sans-serif;font-size:46px;font-weight:900;color:var(--verde-escuro);line-height:1;margin-bottom:6px;}
-.saida-economia{font-size:15px;font-weight:700;color:var(--verde);margin-bottom:26px;}
+.saida-val{font-family:'Open Sans',sans-serif;font-size:46px;font-weight:900;color:#eef5f0;line-height:1;margin-bottom:6px;}
+.saida-economia{font-size:15px;font-weight:700;color:var(--verde-claro);margin-bottom:22px;}
+.saida-beneficios{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:6px 18px;margin:0 0 22px;text-align:left;}
+.saida-beneficios .sb-item{display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:700;color:#dfeae4;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07);}
+.saida-beneficios .sb-item:last-child{border-bottom:none;}
+.saida-beneficios .sb-ic{flex-shrink:0;width:18px;height:18px;border-radius:50%;background:var(--verde);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;}
 .saida-modal .btn{font-size:16px;padding:17px 24px;}
-.saida-recusa{display:inline-block;margin-top:14px;font-size:13px;color:#aaa;text-decoration:underline;background:none;border:none;cursor:pointer;font-family:inherit;}
-.saida-recusa:hover{color:#888;}
-.saida-rodape{font-size:12px;color:#999;margin-top:12px;letter-spacing:.3px;}
+.saida-recusa{display:inline-block;margin-top:14px;font-size:13px;color:#6f8579;text-decoration:underline;background:none;border:none;cursor:pointer;font-family:inherit;}
+.saida-recusa:hover{color:#9aa8a2;}
+.saida-rodape{font-size:12px;color:#6f8579;margin-top:12px;letter-spacing:.3px;}
 @media (max-width:768px){
   .saida-modal{padding:36px 20px 22px;border-radius:18px;}
   .saida-titulo{font-size:22px;}
@@ -1963,6 +1967,18 @@ render();
     <div class="saida-por">Por apenas</div>
     <div class="saida-val">R$ 2,90</div>
     <div class="saida-economia">Você economiza R$27,00</div>
+
+    <div class="saida-beneficios">
+      <div class="sb-item"><span class="sb-ic">✓</span>Treino para hipertrofia ou emagrecimento</div>
+      <div class="sb-item"><span class="sb-ic">✓</span>Do iniciante ao avançado</div>
+      <div class="sb-item"><span class="sb-ic">✓</span>Cardápio personalizado pro seu corpo</div>
+      <div class="sb-item"><span class="sb-ic">✓</span>Contagem de calorias</div>
+      <div class="sb-item"><span class="sb-ic">✓</span>Metas de água e sono</div>
+      <div class="sb-item"><span class="sb-ic">✓</span>Registro de progresso, pesagem e cargas</div>
+      <div class="sb-item"><span class="sb-ic">✓</span>Sistema de pontos e níveis</div>
+      <div class="sb-item"><span class="sb-ic">✓</span>Plano reajustado todo mês</div>
+      <div class="sb-item"><span class="sb-ic">✓</span>Suporte por WhatsApp</div>
+    </div>
 
     <a href="#" class="btn" id="saida-btn">Quero o Focus Fit com desconto &rarr;</a>
     <button class="saida-recusa" id="saida-recusa">Não quero o desconto, prefiro pagar o valor cheio</button>
