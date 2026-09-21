@@ -47,6 +47,27 @@ const CONFIG = {
   CHECKOUT_URL_BIBLIOTECA: 'https://app.zuptos.com.br/checkout/23e17f361bb0cf57',
   PRECO_BIBLIOTECA: 'R$9,90',
 
+  /* ---------- Receitas + Lista de Compras (e-book, order bump) ----------
+     Vendida como order bump do checkout do plano, com "receitas" no
+     nome (é por essa palavra que o webhook reconhece e liga a coluna
+     `tem_receitas`, igual à Biblioteca). Quem já é cliente e não levou
+     o bump usa este checkout avulso.
+
+     ⚠️ Chamamos de "Receitas" na tela, não de "Lista de Compras": o app
+     já tem uma lista de compras GRÁTIS (Comida → Cardápio → aba
+     Compras), automática a partir do cardápio calculado. É outra
+     coisa — a lista de lá é quantidade por macro; esta é a lista de
+     ingredientes de cada receita do e-book. Mas o nome tem que deixar
+     isso óbvio, senão vira ticket de suporte de gente achando que
+     pagou de novo por algo que já tinha.
+
+     RECEITAS_PDF_URL é o link do e-book (Google Drive, Dropbox, o que
+     for) pra quem já comprou. Vazio = a tela liberada mostra "fale com
+     o suporte" em vez do botão de abrir. */
+  CHECKOUT_URL_RECEITAS: '',
+  PRECO_RECEITAS: 'R$19,90',
+  RECEITAS_PDF_URL: '',
+
   /* ---------- Plano Duo (segunda vaga, R$14,90/mês) ----------
      Vendido como order bump do checkout do plano, com "duo" no nome (é
      por essa palavra que o webhook reconhece e sobe `vagas` pra 2).

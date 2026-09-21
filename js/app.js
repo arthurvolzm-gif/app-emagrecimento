@@ -65,6 +65,7 @@ const App = {
 
     await Backend.carregarLib();
     const temBackend = Backend.init();
+    let precisaDuo = false;   /* ver comentário perto do carregarDuo() abaixo */
 
     /* se a pessoa chegou com ?quiz=TOKEN (link do fim do quiz), busca as
        respostas no Supabase e já deixa o cadastro pré-preenchido —
@@ -106,10 +107,17 @@ const App = {
         /* os extras vêm antes da virada de mês: é a lista deles que diz
            se ela vê o reajuste completo ou a versão com a oferta */
         if (this.tela === 'inicio') { await this.carregarExtras(); this.checarReajuste(); }
-        /* o Duo vai sem await: a caixa de notificações consulta App.duo
-           e, quando a resposta chega, o próximo render já a inclui. Não
-           vale segurar a abertura do app por causa de uma oferta. */
-        if (this.tela === 'inicio') this.carregarDuo();
+        /* o Duo fica pra depois do voo da logo, de propósito: chamar
+           carregarDuo() aqui (sem await) corria o risco de a resposta
+           chegar NO MEIO da animação de abertura. Quando chega, ele
+           chama App.render(), que reconstrói a tela inteira — inclusive
+           a marca do cabeçalho, criada do zero e sem a classe que a
+           mantém escondida até a logo terminar de voar. O resultado era
+           uma segunda logo, cheia, piscando um instante antes da que
+           está voando pousar no lugar dela.
+           precisaDuo guarda a decisão pra rodar só depois que a
+           animação (trocarDaAbertura) já tiver acabado. */
+        precisaDuo = this.tela === 'inicio';
       } else {
         /* sem sessão: se já usava o app localmente, respeita o modo local */
         this.tela = Store.temPerfil() ? 'inicio' : 'auth';
@@ -124,6 +132,9 @@ const App = {
     this.diaTreino = this.indiceHoje();
     await abertura;
     await this.trocarDaAbertura();
+    /* só agora, com a logo já no lugar e a capa removida, é seguro
+       deixar o Duo mandar um render() por conta própria */
+    if (precisaDuo) this.carregarDuo();
   },
 
   /* ---------- handoff do quiz via link (?quiz=TOKEN) ---------- */
@@ -174,6 +185,15 @@ const App = {
     if (!Backend.ativo()) return true;
     const a = this.assinaturaInfo;
     return !!(a && a.tem_videos);
+  },
+
+  /* ---------- RECEITAS + LISTA DE COMPRAS (order bump) ----------
+     Mesmo raciocínio do temVideos: bump na mesma assinatura, sem
+     validade própria. */
+  temReceitas() {
+    if (!Backend.ativo()) return true;
+    const a = this.assinaturaInfo;
+    return !!(a && a.tem_receitas);
   },
 
   /* A marca no cabeçalho, em dois arranjos:
@@ -281,11 +301,35 @@ const App = {
   cascata(app, lado) {
     app.style.setProperty('--lado', lado + 'px');
     app.style.setProperty('--sobe', lado ? '0px' : '14px');
-    this.elementosDaTela(app).forEach((el, i) => {
+    const entrando = this.elementosDaTela(app);
+    entrando.forEach((el, i) => {
       el.style.setProperty('--i', Math.min(i, 9));
       el.classList.add('entra-el');
     });
     this.letrear(app);
+    this.limparCascata(entrando);
+  },
+
+  /* Tira a classe da animacao quando ela termina.
+     Sem isto a regra `animation: ... both` fica valendo pra sempre e o
+     navegador mantem cada bloco como camada propria. Numa webview fraca
+     isso vira lixo na tela: faixas coloridas e pedacos de conteudo
+     desenhados fora do lugar.
+     O maior atraso da fila e 9 * 45ms, mais 420ms de animacao: 825ms.
+     Espero um pouco mais e limpo tudo de uma vez.
+     O `_cascataN` cancela a limpeza anterior quando a pessoa troca de
+     tela antes de a atual assentar. */
+  _cascataN: 0,
+
+  limparCascata(elementos) {
+    const meu = ++this._cascataN;
+    setTimeout(() => {
+      if (meu !== this._cascataN) return;      /* ja trocou de tela */
+      elementos.forEach(el => {
+        el.classList.remove('entra-el');
+        el.style.removeProperty('--i');
+      });
+    }, 950);
   },
 
   /* O título grande da tela aparece letra por letra, no lugar de entrar
@@ -399,6 +443,11 @@ const App = {
       if (tt) this.letrear(tela, 240 + Number(tt.style.getPropertyValue('--i') || 0) * 60);
     } else if (app) {
       this.cascata(app, 0);
+      /* o cabeçalho não desliza nesta troca específica: a logo pousando
+         nele já é o efeito de entrada da região, e deixá-lo animar junto
+         fazia o alvo se mexer depois de já medido (ver trocarDaAbertura). */
+      const topoAtual = app.querySelector('.topo');
+      if (topoAtual) { topoAtual.classList.remove('entra-el'); topoAtual.style.removeProperty('--i'); }
     }
     /* Pra onde a logo voa. A tela de login tem a dela; quem já tem perfil
        cai direto na Início, e aí o destino é a marca do cabeçalho.
@@ -465,8 +514,26 @@ const App = {
     this.tela = tela;
     if (tela === 'treinos') { this.diaTreino = this.indiceHoje(); this.carregarExtras(); }
     if (tela === 'perfil') this.carregarDuo();   // pinta agora, o cartão do Duo entra quando a resposta chegar
+    if (tela === 'perfil' || tela === 'treinos') this.pedirNotificacaoSeNecessario();
     this.render();
     window.scrollTo(0, 0);
+  },
+
+  /* ---------- permissão de notificação ----------
+     O lembrete já vem LIGADO por padrão (ver Lembretes.ligado), mas o
+     switch só acende de verdade depois que o navegador confirma a
+     permissão — e o navegador só mostra esse diálogo dentro de um
+     gesto de verdade da pessoa (um toque), nunca sozinho ao abrir o
+     app. É basicamente isto que fazia "não estou conseguindo ativar":
+     sem um toque pra pendurar o pedido, ele nunca aparecia.
+     onclick="App.ir(...)" É um toque, então chamar daqui vale.
+     Chamar de novo depois que ela já respondeu (concedida ou negada)
+     não faz nada: o navegador resolve na hora, sem abrir diálogo de
+     novo — por isso não custa nada chamar em toda entrada nessas abas. */
+  async pedirNotificacaoSeNecessario() {
+    if (!Lembretes.suportado() || Notification.permission !== 'default') return;
+    const r = await Notification.requestPermission();
+    if (r === 'granted') { Lembretes.agendar(); this.render(); }
   },
 
   /* ---------- VÍDEO DE EXECUÇÃO ----------
@@ -667,6 +734,64 @@ const App = {
         this.busca = ''; this.cat = 'Todos';
         this.ir('biblioteca');
         this.toast('Biblioteca liberada ✅', true);
+        return true;
+      }
+      await new Promise(ok => setTimeout(ok, 2500));
+    }
+
+    if (!silencioso) {
+      this.modal(`
+        <h3>Ainda não achamos o pagamento</h3>
+        <p class="m-sub">Pode levar alguns minutos pra cair. Se você já pagou, feche e abra o app daqui a pouco. Se não aparecer, chame o suporte que a gente libera na mão.</p>
+        <a class="btn sec" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">Falar com o suporte</a>
+        <div style="height:10px"></div>
+        <button class="btn sec" onclick="App.fecharModal()">Fechar</button>`);
+    }
+    return false;
+  },
+
+/* ---------- RECEITAS + LISTA DE COMPRAS (e-book, order bump) ----------
+     Mesmo esquema da Biblioteca: liberada abre o e-book (um link
+     externo, não uma tela do app); trancada abre a camada de venda.
+     O checkout avulso é pra quem já é cliente e não levou o bump. */
+  abrirReceitas() {
+    if (this.temReceitas()) return this.abrirEbookReceitas();
+    this.abrirCamada(Telas.receitasCamada());
+  },
+
+  /* o e-book é um PDF hospedado fora do app (Drive, Dropbox etc.), não
+     uma tela interna: só abre numa aba nova. Sem o link configurado,
+     avisa em vez de abrir uma aba em branco. */
+  abrirEbookReceitas() {
+    if (!CONFIG.RECEITAS_PDF_URL) {
+      return this.modal(`
+        <h3>Seu e-book está a caminho</h3>
+        <p class="m-sub">Seu acesso já está liberado, mas ainda não colocamos o arquivo no ar. Chame o suporte que a gente manda na hora.</p>
+        <a class="btn sec" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">Falar com o suporte</a>
+        <div style="height:10px"></div>
+        <button class="btn sec" onclick="App.fecharModal()">Fechar</button>`);
+    }
+    window.open(CONFIG.RECEITAS_PDF_URL, '_blank', 'noopener');
+  },
+
+  comprarReceitas() {
+    if (!CONFIG.CHECKOUT_URL_RECEITAS) return;
+    try { sessionStorage.setItem('ff_comprou_receitas', '1'); } catch (e) {}
+    const email = Backend.emailAtual();
+    const sep = CONFIG.CHECKOUT_URL_RECEITAS.includes('?') ? '&' : '?';
+    location.href = CONFIG.CHECKOUT_URL_RECEITAS + (email ? sep + 'email=' + encodeURIComponent(email) : '');
+  },
+
+  async verificarReceitas(silencioso) {
+    if (!Backend.ativo()) return false;
+    if (!silencioso) this.toast('Conferindo seu pagamento...');
+
+    for (let t = 0; t < 5; t++) {
+      this.assinaturaInfo = await Backend.assinatura();
+      if (this.temReceitas()) {
+        this.fecharCamada();
+        this.toast('Receitas liberadas ✅', true);
+        this.abrirEbookReceitas();
         return true;
       }
       await new Promise(ok => setTimeout(ok, 2500));
@@ -1196,6 +1321,79 @@ const App = {
   },
 
 
+  /* ---------- FOTO DE PERFIL ----------
+     Diferente das fotos de progresso (que ficam só no aparelho, em
+     IndexedDB): esta é UMA imagem pequena, salva como data URL dentro
+     do próprio perfil. Viaja pela mesma sincronização de sempre
+     (Store.db inteiro vai num campo só pro Supabase), sem tabela nem
+     rota nova. 240px e JPEG a 80% ficam por volta de 15-25 KB — pesa
+     menos que a maioria dos textos que já trafegam por ali. */
+  abrirEditarAvatar() {
+    const p = Store.db.perfil;
+    this.modal(`
+      <h3>Foto de perfil</h3>
+      <p class="m-sub">Aparece só pra você, no topo do seu Perfil.</p>
+      <label class="btn foto-label">
+        ${Ic.camera(18)} Tirar foto agora
+        <input type="file" accept="image/*" capture="user" onchange="App.salvarAvatar(this)" hidden>
+      </label>
+      <div style="height:10px"></div>
+      <label class="btn sec foto-label">
+        ${Ic.prancheta(18)} Escolher da galeria
+        <input type="file" accept="image/*" onchange="App.salvarAvatar(this)" hidden>
+      </label>
+      ${p.avatar ? `<div style="height:10px"></div><button class="btn sec" onclick="App.apagarAvatar()">Remover foto atual</button>` : ''}
+      <div style="height:10px"></div>
+      <button class="btn sec" onclick="App.fecharModal()">Cancelar</button>`);
+  },
+
+  async salvarAvatar(input) {
+    const arquivo = input.files && input.files[0];
+    input.value = '';
+    if (!arquivo) return;
+    try {
+      Store.db.perfil.avatar = await this._recortarAvatar(arquivo);
+      Store.save();
+      Backend.agendarSync();
+      this.fecharModal();
+      this.render();
+      this.toast('Foto de perfil atualizada. 📸', true);
+    } catch (e) {
+      this.toast('Não consegui usar essa foto.');
+    }
+  },
+
+  apagarAvatar() {
+    delete Store.db.perfil.avatar;
+    Store.save();
+    Backend.agendarSync();
+    this.fecharModal();
+    this.render();
+    this.toast('Foto de perfil removida.');
+  },
+
+  /* recorta pro quadrado central (o rosto raramente fica nas bordas) e
+     reduz pra 240px — pequena o bastante pra não pesar na sincronização,
+     grande o bastante pra não pixelizar no círculo de 82px da tela. */
+  _recortarAvatar(arquivo) {
+    return new Promise((ok, erro) => {
+      const url = URL.createObjectURL(arquivo);
+      const img = new Image();
+      img.onload = () => {
+        const lado = Math.min(img.width, img.height);
+        const c = document.createElement('canvas');
+        c.width = 240; c.height = 240;
+        c.getContext('2d').drawImage(
+          img, (img.width - lado) / 2, (img.height - lado) / 2, lado, lado, 0, 0, 240, 240
+        );
+        URL.revokeObjectURL(url);
+        ok(c.toDataURL('image/jpeg', 0.8));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); erro(new Error('arquivo não é imagem')); };
+      img.src = url;
+    });
+  },
+
   /* ---------- fotos de progresso ----------
      A tela é a única do app que depende de leitura assíncrona: o
      IndexedDB responde depois do render. Por isso ela pinta o esqueleto
@@ -1328,6 +1526,9 @@ const App = {
   fecharBoasVindas() {
     const bg = document.getElementById('bv-bg');
     Store.fecharBoasVindas();
+    /* o toque em "Continuar" é o primeiro gesto de verdade da pessoa no
+       app: aproveita pra já pedir a permissão de notificação aqui. */
+    this.pedirNotificacaoSeNecessario();
     Backend.agendarSync();
     document.body.classList.remove('travado');
     /* deixa a saída acontecer antes de tirar a camada do caminho */

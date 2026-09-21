@@ -38,9 +38,13 @@ const Lembretes = {
     return this.suportado() && Notification.permission === 'granted';
   },
 
+  /* Padrão é LIGADO. A pessoa não pede pra ativar: ela desativa se
+     quiser, pelo switch. Por isso o critério é "não tem um '0' salvo",
+     não "tem um '1' salvo" — chave ausente (ninguém nunca mexeu) conta
+     como ligado. Só '0' explícito desliga. */
   ligado(tipo) {
     const chave = this.CHAVES[tipo || 'refeicao'];
-    try { return localStorage.getItem(chave) === '1'; } catch (e) { return false; }
+    try { return localStorage.getItem(chave) !== '0'; } catch (e) { return true; }
   },
 
   /* algum dos quatro ligado? é o que decide se vale reagendar */

@@ -413,6 +413,7 @@ const Telas = {
           <h1 class="display">Alimentação</h1>
           <div class="topo-sub">Seu cardápio de hoje, montado para a sua meta</div>
         </div>
+        ${Telas._btnReceitas()}
       </div>
 
       <div class="tela stagger">
@@ -893,8 +894,15 @@ const Telas = {
   },
 
   /* o botão da biblioteca, no canto do cabeçalho de Treinos. Trancado,
-     ganha o cadeado e abre a camada de venda em vez da lista. */
+     ganha o cadeado e abre a camada de venda em vez da lista.
+
+     ⚠️ TIRADO DO AR POR ENQUANTO, a pedido do usuário: o botão some do
+     cabeçalho, mas o resto fica de pé — a rota 'biblioteca', a camada
+     de venda, os handlers de compra/verificação. Pra voltar, é só tirar
+     o "return '';" abaixo. */
   _btnBiblioteca() {
+    return '';
+
     const trancada = !App.temVideos();
     return `
       <button class="bib-link" onclick="App.abrirBiblioteca()">
@@ -934,6 +942,61 @@ const Telas = {
             ${naLoja
               ? 'A biblioteca não faz parte do seu plano atual. Fale com o suporte que a gente te explica.'
               : 'A biblioteca é oferecida na hora da assinatura. Se você não levou e quer agora, chame o suporte.'}
+          </p>
+          <a class="btn sec bv-sup" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">
+            ${Ic.chat(19)} Falar com o suporte
+          </a>
+        `}
+
+        <button class="bib-depois" onclick="App.fecharCamada()">Agora não</button>
+      </div>`;
+  },
+
+/* o botão das receitas, no canto do cabeçalho de Alimentação. Mesmo
+     padrão da Biblioteca em Treinos: trancado ganha o cadeado e abre a
+     camada de venda em vez do e-book. */
+  _btnReceitas() {
+    const trancada = !App.temReceitas();
+    return `
+      <button class="bib-link" onclick="App.abrirReceitas()">
+        ${trancada ? '🔒 ' : ''}Receitas
+      </button>`;
+  },
+
+  /* ============ RECEITAS + LISTA DE COMPRAS (e-book) ============
+     ⚠️ O nome é "Receitas", não "Lista de Compras": o app já tem uma
+     lista de compras GRÁTIS (Cardápio → aba Compras), automática a
+     partir do cardápio calculado. É outra coisa — aqui é a lista de
+     ingredientes de cada receita do e-book. O texto abaixo existe pra
+     deixar essa diferença óbvia e evitar "já tenho isso" no suporte. */
+  receitasCamada() {
+    const naLoja = window.NO_APP_DA_LOJA;
+    const temLink = !naLoja && CONFIG.CHECKOUT_URL_RECEITAS;
+
+    return `
+      <div class="bv-caixa" role="dialog" aria-modal="true" aria-labelledby="rec-tt">
+        <div class="bv-marca">${Ic.maca(26)}</div>
+        <h2 class="bv-tt display" id="rec-tt">Receitas</h2>
+        <p class="bv-txt" style="text-align:center">
+          Um e-book de receitas dentro das suas metas de hoje, com a lista de
+          ingredientes de cada uma pronta pra levar ao mercado.
+        </p>
+
+        <div class="bib-razoes">
+          <div><span>${Ic.talher(17)}</span><div><b>Acaba o "o que eu como?".</b> Receitas prontas, sem precisar inventar nem contar caloria na mão.</div></div>
+          <div><span>${Ic.prancheta(17)}</span><div><b>Lista de compras de cada receita.</b> Diferente da lista automática que o app já te dá: esta é o ingrediente de cada prato.</div></div>
+          <div><span>${Ic.check(17)}</span><div><b>Pagamento único.</b> Não é mensalidade. Paga uma vez e o e-book é seu.</div></div>
+        </div>
+
+        ${temLink ? `
+          <div class="bib-preco">${CONFIG.PRECO_RECEITAS || 'R$19,90'}<span>pagamento único</span></div>
+          <button class="btn" onclick="App.comprarReceitas()">Liberar as receitas</button>
+          <button class="corrida-japaguei" onclick="App.verificarReceitas()">Já paguei, liberar meu acesso</button>
+        ` : `
+          <p class="bv-txt" style="text-align:center">
+            ${naLoja
+              ? 'As receitas não fazem parte do seu plano atual. Fale com o suporte que a gente te explica.'
+              : 'As receitas são oferecidas na hora da assinatura. Se você não levou e quer agora, chame o suporte.'}
           </p>
           <a class="btn sec bv-sup" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">
             ${Ic.chat(19)} Falar com o suporte
@@ -1086,6 +1149,9 @@ const Telas = {
       <div class="tela stagger">
         ${Telas._abasTreino()}
 
+        <h3 class="secao-tt">Seu mês</h3>
+        ${Telas._calendarioTreino()}
+
         <div class="card plano-cab">
           <h3>${plano.nome}</h3>
           <p>${plano.desc}</p>
@@ -1132,12 +1198,9 @@ const Telas = {
             <div class="aviso">Este é o treino de ${dia.diaLongo}. Você só marca como concluído no dia.</div>`}
         `}
 
-        ${Telas._agendaTreino()}
-
-        <h3 class="secao-tt">Seu mês</h3>
-        ${Telas._calendarioTreino()}
-
         ${Telas._organizarSemana(plano, dias)}
+
+        ${Telas._agendaTreino()}
       </div>`;
   },
 
@@ -1758,7 +1821,10 @@ const Telas = {
     return `
       <div class="tela stagger" style="padding-top:26px">
         <div class="perfil-topo">
-          <div class="perfil-av">${p.nome[0].toUpperCase()}</div>
+          <div class="perfil-av-caixa">
+            <div class="perfil-av">${p.avatar ? `<img src="${p.avatar}" alt="Foto de perfil">` : p.nome[0].toUpperCase()}</div>
+            <button class="av-editar" onclick="App.abrirEditarAvatar()" aria-label="Trocar foto de perfil">📷</button>
+          </div>
           <div class="perfil-nome display">${p.nome}</div>
           <div class="perfil-mail">${email || 'Conta local neste aparelho'}</div>
           <div style="display:inline-flex;align-items:center;gap:7px;background:var(--verde-tint);color:var(--verde-esc);padding:7px 14px;border-radius:20px;font-size:12.5px;font-weight:800;margin-top:12px">

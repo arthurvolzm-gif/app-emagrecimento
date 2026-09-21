@@ -61,6 +61,11 @@ const MARCA_REAJUSTE = (Deno.env.get('ZUPTOS_MARCA_REAJUSTE') || 'reajuste').toL
 // aparece por acaso em lugar nenhum.
 const MARCA_VIDEOS = (Deno.env.get('ZUPTOS_MARCA_VIDEOS') || 'biblioteca').toLowerCase();
 
+// Palavra do order bump do e-book de receitas + lista de compras. Mesma
+// familia do MARCA_VIDEOS: entra na MESMA assinatura, so liga a coluna
+// `tem_receitas`.
+const MARCA_RECEITAS = (Deno.env.get('ZUPTOS_MARCA_RECEITAS') || 'receitas').toLowerCase();
+
 const sb = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
 // mapeia o texto do evento/status que a Zuptos manda pro nosso
@@ -152,6 +157,7 @@ function extrair(payload: any) {
   const cru = textoDoPayload(payload);
   if (cru.includes(MARCA_DUO)) vagas = 2;
   const temVideos = cru.includes(MARCA_VIDEOS);
+  const temReceitas = cru.includes(MARCA_RECEITAS);
 
   // ---------- MODO CORRIDA (compra avulsa) ----------
   // Produto separado da assinatura. Quando a compra e dele, esta
@@ -170,7 +176,31 @@ function extrair(payload: any) {
   // R$29,90 da pessoa. A diferenca e que este vence todo mes.
   const ehReajuste = /reajuste/i.test(plano || '') || cru.includes(MARCA_REAJUSTE);
 
-  return { email, plano, transacao, status, dataExpiracao, vagas, temVideos, ehCorrida, ehReajuste };
+  // ---------- BIBLIOTECA e RECEITAS compradas AVULSAS (checkout à parte) ----------
+  // Como bump, elas só ligam uma coluna na MESMA assinatura (tratado
+  // acima, em temVideos/temReceitas) — e isso é o certo, porque o
+  // `plano` do payload nesse caso já é o plano de verdade da pessoa.
+  //
+  // Mas os dois também têm um checkout AVULSO, pra quem já é cliente e
+  // não levou o bump (CONFIG.CHECKOUT_URL_BIBLIOTECA / _RECEITAS no
+  // app). Ali o produto vendido é SÓ isso: o `plano` do payload vem
+  // "Biblioteca de Exercícios" ou "Receitas", não o nome do plano real.
+  // Se essa compra caísse no upsert genérico lá embaixo, escreveria
+  // esse nome por cima do plano de verdade (e 30 dias de validade por
+  // cima da validade real) — ela continuaria com acesso, mas com o
+  // plano errado na tela, e podia até "vencer" antes da hora.
+  //
+  // Por isso os dois usam um UPDATE PRÓPRIO, só na coluna que importa,
+  // que nunca toca em plano/status/data_expiracao. O sinal é o nome do
+  // produto batendo direto com a palavra — o mesmo critério principal
+  // do Modo Corrida e do Reajuste acima, sem a rede de segurança do
+  // payload inteiro: aqui o falso positivo custa mais caro (apagaria
+  // dado de verdade), então é melhor um avulso raro passar batido do
+  // que um plano de assinante virar "Receitas" na tela por engano.
+  const ehBibliotecaAvulsa = /biblioteca/i.test(plano || '');
+  const ehReceitasAvulsa = /receitas/i.test(plano || '');
+
+  return { email, plano, transacao, status, dataExpiracao, vagas, temVideos, temReceitas, ehCorrida, ehReajuste, ehBibliotecaAvulsa, ehReceitasAvulsa };
 }
 
 function tokenValido(req: Request, payload: any): boolean {
@@ -206,7 +236,7 @@ Deno.serve(async (req) => {
   // grava o payload cru sempre, mesmo se o resto abaixo falhar
   await sb.from('zuptos_webhook_logs').insert({ payload });
 
-  const { email, plano, transacao, status, dataExpiracao, vagas, temVideos, ehCorrida, ehReajuste } = extrair(payload);
+  const { email, plano, transacao, status, dataExpiracao, vagas, temVideos, temReceitas, ehCorrida, ehReajuste, ehBibliotecaAvulsa, ehReceitasAvulsa } = extrair(payload);
 
   if (!email) {
     return new Response(JSON.stringify({ ok: true, aviso: 'sem e-mail no payload' }), { status: 200 });
@@ -251,6 +281,30 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ ok: true, produto: 'corrida' }), { status: 200 });
   }
 
+  // ---------- compra avulsa da Biblioteca: só liga a coluna, nunca mexe no plano ----------
+  if (ehBibliotecaAvulsa) {
+    const { error: erroBib } = await sb.from('assinaturas')
+      .update({ tem_videos: true, atualizado_em: new Date().toISOString() })
+      .eq('email', email.toLowerCase());
+    if (erroBib) {
+      console.error('erro ao liberar a biblioteca avulsa:', erroBib.message);
+      return new Response(JSON.stringify({ ok: false, erro: erroBib.message }), { status: 500 });
+    }
+    return new Response(JSON.stringify({ ok: true, produto: 'biblioteca-avulsa' }), { status: 200 });
+  }
+
+  // ---------- compra avulsa das Receitas: mesma regra da Biblioteca ----------
+  if (ehReceitasAvulsa) {
+    const { error: erroRec } = await sb.from('assinaturas')
+      .update({ tem_receitas: true, atualizado_em: new Date().toISOString() })
+      .eq('email', email.toLowerCase());
+    if (erroRec) {
+      console.error('erro ao liberar as receitas avulsas:', erroRec.message);
+      return new Response(JSON.stringify({ ok: false, erro: erroRec.message }), { status: 500 });
+    }
+    return new Response(JSON.stringify({ ok: true, produto: 'receitas-avulsa' }), { status: 200 });
+  }
+
   const { error } = await sb.from('assinaturas').upsert(
     {
       email: email.toLowerCase(),
@@ -268,6 +322,8 @@ Deno.serve(async (req) => {
       // upsert preserva o que ja estava la, e uma renovacao que nao
       // repete o nome do bump no payload nao apaga o acesso.
       ...(temVideos ? { tem_videos: true } : {}),
+      // mesma regra do `tem_videos`: so escreve quando detectou.
+      ...(temReceitas ? { tem_receitas: true } : {}),
       atualizado_em: new Date().toISOString(),
     },
     { onConflict: 'email' },

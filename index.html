@@ -109,19 +109,21 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || LOCAL)) {
    algumas vezes antes de desistir — sem barulho: se nao achar, a tela
    de venda continua como estava e a pessoa usa o "ja paguei". */
 window.addEventListener('pageshow', function () {
-  var corrida = false, reajuste = false, biblioteca = false, duo = false;
+  var corrida = false, reajuste = false, biblioteca = false, duo = false, receitas = false;
   try {
     corrida    = sessionStorage.getItem('ff_comprou_corrida')    === '1';
     reajuste   = sessionStorage.getItem('ff_comprou_reajuste')   === '1';
     biblioteca = sessionStorage.getItem('ff_comprou_biblioteca') === '1';
     duo        = sessionStorage.getItem('ff_comprou_duo')        === '1';
+    receitas   = sessionStorage.getItem('ff_comprou_receitas')   === '1';
   } catch (e) {}
-  if (!corrida && !reajuste && !biblioteca && !duo) return;
+  if (!corrida && !reajuste && !biblioteca && !duo && !receitas) return;
   try {
     sessionStorage.removeItem('ff_comprou_corrida');
     sessionStorage.removeItem('ff_comprou_reajuste');
     sessionStorage.removeItem('ff_comprou_biblioteca');
     sessionStorage.removeItem('ff_comprou_duo');
+    sessionStorage.removeItem('ff_comprou_receitas');
   } catch (e) {}
   setTimeout(function () {
     if (!window.App) return;
@@ -129,6 +131,7 @@ window.addEventListener('pageshow', function () {
     if (reajuste   && App.verificarReajuste)   App.verificarReajuste(true);
     if (biblioteca && App.verificarBiblioteca) App.verificarBiblioteca(true);
     if (duo        && App.verificarDuo)        App.verificarDuo(true);
+    if (receitas   && App.verificarReceitas)   App.verificarReceitas(true);
   }, 1200);
 });
 </script>

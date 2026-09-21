@@ -47,7 +47,10 @@
   --linha:rgba(63,190,124,.20);
   --fundo:#000000;
   --branco:#0B120F;
-  --nav-bg:rgba(0,0,0,.88);
+  /* a barra de baixo e opaca de proposito: com backdrop-filter ela
+     borrava a pagina a cada pixel de rolagem e corrompia o quadro em
+     webview fraca. Sobre fundo preto o borrao nem aparecia. */
+  --nav-fundo:#000000;
   --tracejado:rgba(63,190,124,.30);
   --brilho:rgba(47,191,116,.13);
   --r-sm:13px;
@@ -538,7 +541,7 @@ a{color:inherit;text-decoration:none;}
 .nav{
   position:fixed;bottom:0;left:0;right:0;z-index:50;
   max-width:520px;margin:0 auto;height:var(--nav-h);
-  background:var(--nav-bg);backdrop-filter:blur(16px);
+  background:var(--nav-fundo);
   border-top:1px solid var(--linha);
   display:flex;align-items:flex-start;padding:9px 6px env(safe-area-inset-bottom, 0px);
 }
@@ -634,7 +637,7 @@ a{color:inherit;text-decoration:none;}
 .capa-abertura{position:fixed;inset:0;z-index:60;}
 .capa-fundo{position:absolute;inset:0;background:#000;}
 .capa-abertura.saindo .capa-fundo{animation:capaSai 620ms ease both;}
-@keyframes capaSai{0%,14%{opacity:1;}100%{opacity:0;}}
+@keyframes capaSai{0%,78%{opacity:1;}100%{opacity:0;}}
 /* a logo da capa desliza e encolhe até cair em cima da logo da tela de
    baixo; --dx/--dy/--esc são medidos em App.trocarDaAbertura() */
 .capa-abertura.juntando .abertura-logo{
@@ -846,12 +849,22 @@ a{color:inherit;text-decoration:none;}
 
 /* ---------- perfil ---------- */
 .perfil-topo{text-align:center;padding:14px 0 22px;}
+.perfil-av-caixa{position:relative;width:82px;margin:0 auto 14px;}
 .perfil-av{
-  width:82px;height:82px;border-radius:26px;margin:0 auto 14px;
+  width:82px;height:82px;border-radius:26px;overflow:hidden;
   background:linear-gradient(140deg,var(--verde),var(--verde-claro));color:#fff;
   display:flex;align-items:center;justify-content:center;
   font-family:'Bricolage Grotesque',sans-serif;font-size:32px;font-weight:800;
   box-shadow:0 12px 30px rgba(21,154,85,.34);
+}
+.perfil-av img{width:100%;height:100%;object-fit:cover;display:block;}
+/* o emoji de câmera no canto, igual ao badge de "editar" que apps de
+   contato usam — some quando ela toca em qualquer lugar do círculo. */
+.av-editar{
+  position:absolute;right:-4px;bottom:-4px;width:30px;height:30px;border-radius:50%;
+  background:var(--branco);border:2px solid var(--fundo);
+  display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1;
+  cursor:pointer;box-shadow:var(--sombra-alta);
 }
 .perfil-nome{font-size:22px;}
 .perfil-mail{font-size:13px;color:var(--cinza);margin-top:3px;font-weight:600;}
@@ -862,9 +875,15 @@ a{color:inherit;text-decoration:none;}
 .lista-v{margin-left:auto;font-size:14px;font-weight:800;}
 
 /* ---------- toast ---------- */
+/* ⚠️ Achado ao investigar "aviso aparece em branco": o fundo padrão era
+   var(--tinta), que É BRANCO (#FFFFFF) — sobrando do tema claro que foi
+   removido. Com color:#fff por cima, todo toast SEM o verde (a maioria:
+   "Conferindo pagamento...", "Corrida apagada.", erros de permissão
+   etc.) tinha texto branco em fundo branco. Invisível sempre, não só
+   às vezes — só não pegava quem visse mais os toasts verdes de sucesso. */
 .toast{
   position:fixed;left:50%;bottom:calc(var(--nav-h) + 18px);transform:translate(-50%,20px);
-  background:var(--tinta);color:#fff;padding:13px 20px;border-radius:14px;
+  background:var(--branco);border:1px solid var(--linha);color:var(--tinta);padding:13px 20px;border-radius:14px;
   font-size:13.5px;font-weight:700;z-index:100;opacity:0;pointer-events:none;
   transition:all .3s cubic-bezier(.2,.7,.3,1);box-shadow:var(--sombra-alta);max-width:90%;text-align:center;
 }

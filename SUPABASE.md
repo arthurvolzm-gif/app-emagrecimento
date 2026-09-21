@@ -40,12 +40,15 @@ Abra o `schema.sql` deste repositório, copie **tudo**, cole e clique em
 Ele mudou bastante desde a última vez que você rodou. Agora cria:
 
 - `dados_usuario` — o progresso de cada pessoa
-- `assinaturas` — quem pagou, até quando, **e as colunas do Plano Duo**
-  (`vagas`, `titular_email`)
-- `acessos_extras` — as compras avulsas, hoje o Modo Corrida
+- `assinaturas` — quem pagou, até quando, as colunas do **Plano Duo**
+  (`vagas`, `titular_email`), a da **Biblioteca** (`tem_videos`) e a
+  das **Receitas** (`tem_receitas`)
+- `acessos_extras` — as compras que não são o plano: Modo Corrida e
+  Reajuste, com `data_expiracao` pro que é recorrente
 - `respostas_quiz` — a ponte do quiz pro cadastro
 - `zuptos_webhook_logs` e `ticto_webhook_logs` — o que a plataforma mandou, cru
-- o trigger que faz a vaga do Duo acompanhar o titular
+- o trigger que faz a vaga do Duo acompanhar o titular, inclusive a
+  Biblioteca e as Receitas dele
 - as funções `duo_convidar`, `duo_remover`, `duo_estado`
 - a limpeza automática das respostas do quiz, 1x por dia
 
@@ -55,7 +58,9 @@ ou `create or replace`.
 **Como saber que deu certo:** menu **Table Editor** → você vê
 `dados_usuario`, `assinaturas`, `acessos_extras`, `respostas_quiz` e os
 dois `..._webhook_logs`. Clique em `assinaturas` e confira que existem
-as colunas **`vagas`** e **`titular_email`**.
+as colunas **`vagas`**, **`titular_email`**, **`tem_videos`** e
+**`tem_receitas`**. Em
+`acessos_extras`, confira a coluna **`data_expiracao`**.
 
 > Se der erro em `create extension pg_cron`: vá em **Database →
 > Extensions**, procure `pg_cron`, ligue, e rode o arquivo de novo.
@@ -120,15 +125,29 @@ Anote a URL que aparece:
 
 | Nome | Valor | Pra quê |
 |---|---|---|
-| `ZUPTOS_WEBHOOK_TOKEN` | o token que a Zuptos te deu | sem ele, qualquer um na internet consegue se declarar pago chamando a sua URL |
+| `ZUPTOS_WEBHOOK_TOKEN` | uma senha que **você inventa** e repete no painel da Zuptos | sem ele, qualquer um na internet consegue se declarar pago chamando a sua URL |
 | `ZUPTOS_MARCA_DUO` | `duo` | a palavra que identifica o order bump |
 | `ZUPTOS_MARCA_CORRIDA` | `corrida` | a palavra que identifica o Modo Corrida |
 | `ZUPTOS_MARCA_REAJUSTE` | `reajuste` | a palavra que identifica o reajuste |
 | `ZUPTOS_MARCA_VIDEOS` | `biblioteca` | a palavra que identifica o bump da biblioteca |
+| `ZUPTOS_MARCA_RECEITAS` | `receitas` | a palavra que identifica o bump do e-book de receitas |
 
-> Os dois últimos só são necessários se você **não** usar essas palavras
-> nos nomes das ofertas. Usando, pode deixar em branco: o padrão já é
-> esse.
+> Os quatro `MARCA` só são necessários se você **não** usar essas
+> palavras nos nomes das ofertas. Usando, nem precisa criar: o padrão da
+> função já é exatamente esse.
+
+O token não pode ser uma senha sua de verdade. Se precisar de um, use
+este, que foi gerado pra isso e não vale nada fora daqui:
+
+```
+zpt_wh_9f3a2c7e1b4d6081a5c9e2f7034b8d6c
+```
+
+A mesma string vai nos dois lugares: no segredo aqui e no campo de token
+do webhook, no painel da Zuptos. A função aceita ele em qualquer um dos
+três formatos que as plataformas costumam usar (header `Authorization:
+Bearer`, header `X-Webhook-Token`, ou um campo `token` no corpo), então
+não importa qual a Zuptos escolher.
 
 ### 4.3 Apontar na Zuptos
 
@@ -148,13 +167,27 @@ Isto não é firula, é o que o webhook usa pra separar as compras:
 |---|---|
 | Assinatura mensal / trimestral / anual | nada de especial |
 | Order bump do Plano Duo (R$14,90/mês) | a palavra **duo** |
+| Plano Duo avulso (pra quem já é cliente) | a palavra **duo** |
 | Order bump da Biblioteca de exercícios (R$9,90 único) | a palavra **biblioteca** |
+| Order bump do e-book de Receitas + Lista de Compras (R$19,90 único) | a palavra **receitas** |
 | Modo Corrida (avulso) | a palavra **corrida** |
 | Reajuste Estratégico (mensal e anual) | a palavra **reajuste** |
 
 ⚠️ Se o Modo Corrida **não** tiver "corrida" no nome, o webhook trata
 como assinatura, sobrescreve o plano da pessoa e ela **perde o acesso
 ao app inteiro por ter comprado um extra**.
+
+O Plano Duo tem **dois** checkouts, o bump e o avulso, e os dois
+precisam da palavra "duo": o avulso é o que a notificação dentro do app
+abre pra quem já é cliente e não levou o bump.
+
+Biblioteca e Receitas também têm dois checkouts cada (bump e avulso).
+Para elas o cuidado é diferente do Duo: o avulso NUNCA passa pelo
+upsert normal de `assinaturas` — só atualiza `tem_videos`/`tem_receitas`
+na linha que já existe. Se passasse pelo caminho normal, o nome do
+produto avulso ("Biblioteca de Exercícios", "Receitas") viraria o
+`plano` da pessoa na tela, e a validade de 30 dias por cima da validade
+real do plano dela.
 
 **Por que "biblioteca" e não "video":** a busca varre o payload todo, e
 "video" é palavra que aparece sozinha em UTM de criativo em vídeo
@@ -173,6 +206,10 @@ Editor → `zuptos_webhook_logs`**, abra a linha e me mande o conteúdo de
 porque nunca vi a documentação da Zuptos. Sem o payload real tem chance
 boa de a pessoa comprar e não entrar. Me mande, se puder, **três**: uma
 assinatura normal, uma com o bump do Duo, e uma do Modo Corrida.
+
+Até esse ajuste, trate tudo o que está abaixo como não confirmado: a
+função grava o payload cru sempre, mas só libera acesso se conseguir
+ler o e-mail nos campos que eu chutei.
 
 ---
 
