@@ -460,6 +460,14 @@ body{
 .faq details[open] summary::after{transform:rotate(45deg);}
 .faq .a{padding:0 20px 18px;font-size:13.5px;color:#66756f;line-height:1.7;}
 
+/* faq da tela de projeção (fundo escuro do card-quiz, não o fundo claro do .faq acima) */
+.faq-escuro details{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;margin-bottom:10px;overflow:hidden;}
+.faq-escuro summary{padding:15px 18px;font-size:14px;font-weight:700;color:#eef5f0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;list-style:none;gap:12px;}
+.faq-escuro summary::-webkit-details-marker{display:none;}
+.faq-escuro summary::after{content:'+';font-size:20px;color:var(--verde-claro);font-weight:300;flex-shrink:0;transition:transform .3s;}
+.faq-escuro details[open] summary::after{transform:rotate(45deg);}
+.faq-escuro .a{padding:0 18px 16px;font-size:13px;color:#9aa8a2;line-height:1.65;}
+
 .res-footer{text-align:center;padding:30px 20px;font-size:12px;color:#8aa79a;line-height:1.7;}
 
 /* ===== DIAGNÓSTICO (IMC + sinais) ===== */
@@ -1097,6 +1105,16 @@ function confirmarEmailEtapa(){
   go(1);
 }
 
+/* perguntas frequentes da tela de projeção — só o que é verdade sobre o
+   próprio Focus Fit, nada de prazo ou número de resultado (compliance). */
+const FAQ_ITENS = [
+  ['O que eu recebo depois de assinar?', 'Acesso imediato ao app, com o seu cardápio, o seu treino e as suas metas de água e sono, todos montados a partir das respostas que você acabou de dar.'],
+  ['Funciona mesmo se eu for iniciante?', 'Sim. O plano de treino é ajustado pra quantidade de dias que você escolheu treinar, e o cardápio se adapta ao seu objetivo, seja emagrecer, ganhar massa ou manter o peso.'],
+  ['Preciso saber cozinhar ou seguir a dieta à risca?', 'Não. O cardápio vem com opções de troca simples, pensadas pro dia a dia, sem receita complicada.'],
+  ['Em quanto tempo eu vejo resultado?', 'Isso varia de pessoa pra pessoa e depende da constância. O app foi pensado pra te ajudar a manter a rotina, que é o que mais pesa no resultado a longo prazo.'],
+  ['Posso cancelar quando eu quiser?', 'Sim, o cancelamento é livre, a qualquer momento, direto pelo app.']
+];
+
 /* ---------- PROJEÇÃO FINAL (depois de outros_objetivos, antes do result) ---------- */
 function renderProjecao(){
   const a = state.answers;
@@ -1239,7 +1257,7 @@ function renderProjecao(){
           ${imgHoje ? `<img class="proj-compare-img" src="${imgHoje}" alt="Antes" onerror="this.remove()">` : ''}
           <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:10px 8px;text-align:center;">
             <div style="font-size:11px;color:#9fb0a7;font-weight:700;">Peso atual</div>
-            <div style="font-size:18px;font-weight:900;color:#eef5f0;">${numDe('peso') || '--'}kg</div>
+            <div style="font-size:18px;font-weight:900;color:#eef5f0;">${pesoKgDe('peso') || '--'}kg</div>
           </div>
         </div>
         <div class="proj-compare-col bom">
@@ -1247,7 +1265,7 @@ function renderProjecao(){
           ${imgSonho ? `<img class="proj-compare-img" src="${imgSonho}" alt="Depois" onerror="this.remove()">` : ''}
           <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:10px 8px;text-align:center;">
             <div style="font-size:11px;color:#9fb0a7;font-weight:700;">Meta de peso</div>
-            <div style="font-size:18px;font-weight:900;color:#eef5f0;">${numDe('meta_peso') || '--'}kg</div>
+            <div style="font-size:18px;font-weight:900;color:#eef5f0;">${pesoKgDe('meta_peso') || '--'}kg</div>
           </div>
         </div>
       </div>
@@ -1280,6 +1298,11 @@ function renderProjecao(){
       ${planosHTML}
 
       <img src="/garantia-escuro.jpg" alt="Garantia de 30 dias" style="width:100%;border-radius:16px;display:block;margin:22px 0 0;" onerror="this.remove()">
+
+      <h4 style="text-align:center;margin:28px 0 14px;font-size:20px;font-weight:900;color:var(--verde-claro);">Ainda tem alguma dúvida?</h4>
+      <div class="faq faq-escuro">
+        ${FAQ_ITENS.map(([q,a])=>`<details><summary>${q}</summary><div class="a">${a}</div></details>`).join('')}
+      </div>
     </div>
   </div>`;
 }
@@ -1292,9 +1315,9 @@ function dadosParaOApp(){
     nome: (state.answers.nome && state.answers.nome!=='você') ? state.answers.nome : '',
     sexo: state.answers.sexo==='Homem' ? 'masculino' : 'feminino',
     idade: idadeAprox(),
-    altura: numDe('altura') || '',
-    peso: numDe('peso') || '',
-    meta_peso: numDe('meta_peso') || '',
+    altura: alturaCmDe('altura') || '',
+    peso: pesoKgDe('peso') || '',
+    meta_peso: pesoKgDe('meta_peso') || '',
     objetivo: objetivoId(),
     /* quantos dias por semana ela quer treinar: vira perfil.dias_treino no
        app e define quantos dias da agenda semanal têm treino (ver
@@ -1363,6 +1386,11 @@ function irParaPlano(chave){
   salvarParaOApp();
   track('quiz_checkout', { indice: calcIndiceConstancia(), objetivo: objetivoId(), plano: chave });
   px('InitiateCheckout', true);
+  /* marca a ida ao checkout aqui, na hora certa: o clique no plano é um
+     onclick de div, não um <a href> para o checkout, então o listener
+     genérico de clique em link nunca via essa navegação e o pop-up de
+     saída nunca reabria quando a pessoa voltava do checkout. */
+  try { sessionStorage.setItem('cz_check', '1'); } catch(e){}
 
   const urls = { mensal: CHECKOUT_URL_MENSAL, trimestral: CHECKOUT_URL_TRIMESTRAL, anual: CHECKOUT_URL_ANUAL };
   enviarRespostasEIr(urls[chave] || APP_URL);
@@ -1467,6 +1495,22 @@ function renderAnalyzing(){
    fórmula lá, mude aqui também, senão o número do quiz não bate com o
    que a pessoa vai ver depois dentro do app. */
 
+/* peso/altura podem ter sido respondidos em lb/pol (toggle da régua) — essas
+   duas convertem sempre para kg/cm antes de qualquer cálculo ou envio pro
+   app, pra não gravar "154" achando que é kg quando na verdade é libra. */
+function pesoKgDe(id){
+  const s = state.answers[id] || '';
+  const v = parseFloat(String(s).replace(',','.'));
+  if(!v) return 0;
+  return Math.round(/lb/i.test(s) ? v/2.2046 : v);
+}
+function alturaCmDe(id){
+  const s = state.answers[id] || '';
+  const v = parseFloat(String(s).replace(',','.'));
+  if(!v) return 0;
+  return Math.round(/pol/i.test(s) ? v*2.54 : v);
+}
+
 function numDe(id){
   return parseFloat(String(state.answers[id]||'').replace(',','.')) || 0;
 }
@@ -1498,7 +1542,7 @@ function calcIMC(){
 }
 
 function metaKcal(){
-  const peso = numDe('peso'), altura = numDe('altura'), idade = idadeAprox();
+  const peso = pesoKgDe('peso'), altura = alturaCmDe('altura'), idade = idadeAprox();
   if(!peso || !altura) return 0;
   const base = 10*peso + 6.25*altura - 5*idade;
   const tmb  = state.answers.sexo === 'Homem' ? base + 5 : base - 161;
@@ -1506,14 +1550,14 @@ function metaKcal(){
   return Math.round(tmb * 1.45 * fator / 10) * 10;
 }
 function metaAgua(){
-  const bruto = numDe('peso') * 35;
+  const bruto = pesoKgDe('peso') * 35;
   return Math.max(1500, Math.min(4500, Math.round(bruto/500)*500));
 }
 function metaProt(){
   const gkg = objetivoId()==='emagrecimento' ? 2.0 : objetivoId()==='hipertrofia' ? 1.8 : 1.6;
-  return Math.round(numDe('peso') * gkg);
+  return Math.round(pesoKgDe('peso') * gkg);
 }
-function difPeso(){ return +(numDe('peso') - numDe('meta_peso')).toFixed(1); }
+function difPeso(){ return +(pesoKgDe('peso') - pesoKgDe('meta_peso')).toFixed(1); }
 
 /* ===== ÍNDICE DE CONSTÂNCIA (0 a 100) =====
    Não é exame nem promessa de resultado: é a soma do que a própria pessoa
@@ -1912,24 +1956,24 @@ render();
   <div class="saida-modal">
     <button class="saida-fechar" id="saida-fechar" aria-label="Fechar">&times;</button>
     <div class="saida-selo">Espere um segundo</div>
-    <h3 class="saida-titulo" id="saida-titulo">Você ganhou <span>33% de desconto</span></h3>
+    <h3 class="saida-titulo" id="saida-titulo">Você ganhou <span>90% de desconto</span></h3>
     <p class="saida-sub">É a única vez que esse valor aparece. Fechando esta janela, o preço volta ao normal.</p>
 
-    <div class="saida-de">De R$ 107,90</div>
+    <div class="saida-de">De R$ 29,90</div>
     <div class="saida-por">Por apenas</div>
-    <div class="saida-val">R$ 19,90</div>
-    <div class="saida-economia">Você economiza R$97,90 + R$10,00</div>
+    <div class="saida-val">R$ 2,90</div>
+    <div class="saida-economia">Você economiza R$27,00</div>
 
-    <a href="#" class="btn" id="saida-btn">Quero o método com desconto &rarr;</a>
+    <a href="#" class="btn" id="saida-btn">Quero o Focus Fit com desconto &rarr;</a>
     <button class="saida-recusa" id="saida-recusa">Não quero o desconto, prefiro pagar o valor cheio</button>
-    <p class="saida-rodape">Acesso imediato &bull; Compra segura pela Ticto &bull; Garantia de 7 dias</p>
+    <p class="saida-rodape">Acesso imediato &bull; Compra segura &bull; Garantia de 7 dias</p>
   </div>
 </div>
 
 <script>
 (function () {
-  /* Link do checkout da oferta com desconto (R$19,90). */
-  var CHECKOUT_DESCONTO = 'https://payment.ticto.app/O1376B6BC';
+  /* Link do checkout da oferta com desconto (R$2,90). */
+  var CHECKOUT_DESCONTO = 'https://app.zuptos.com.br/checkout/d8f47f9b763749c5';
 
   var overlay = document.getElementById('saida-overlay');
   var btn     = document.getElementById('saida-btn');
