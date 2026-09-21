@@ -309,8 +309,13 @@ const Telas = {
             repetição que faz a diferença aparecer.
           </p>
           <label class="btn foto-label">
-            Adicionar foto de hoje
+            ${Ic.camera(18)} Tirar foto agora
             <input type="file" accept="image/*" capture="environment"
+                   onchange="App.salvarFoto(this)" hidden>
+          </label>
+          <label class="btn sec foto-label foto-galeria">
+            ${Ic.prancheta(18)} Escolher da galeria
+            <input type="file" accept="image/*"
                    onchange="App.salvarFoto(this)" hidden>
           </label>
           <p class="foto-aviso">
@@ -358,8 +363,15 @@ const Telas = {
         ${lista.slice().reverse().map(f => `
           <figure class="foto-item">
             <img src="${urls[f.data]}" alt="Foto de ${App.dataBr(f.data)}">
-            <figcaption>${App.dataBr(f.data)}</figcaption>
             <button class="foto-x" onclick="App.apagarFoto('${f.data}')" aria-label="Apagar">✕</button>
+            <figcaption>
+              <span class="fi-data">${App.dataBr(f.data)}</span>
+              ${f.peso ? `<span class="fi-peso">${f.peso} kg</span>` : ''}
+            </figcaption>
+            <div class="foto-acoes">
+              <button onclick="App.baixarFoto('${f.data}')">${Ic.prancheta(16)} Salvar</button>
+              <button onclick="App.compartilharFoto('${f.data}')">${Ic.chat(16)} Compartilhar</button>
+            </div>
           </figure>`).join('')}
       </div>`;
   },
@@ -427,13 +439,6 @@ const Telas = {
         ${Telas._foraDaRotina()}
 
         ${plano.map(r => Telas._refeicao(r)).join('')}
-
-        <div class="card livre-card">
-          <div class="card-tt" style="margin-bottom:8px">${Ic.festa(20)} Refeição livre</div>
-          <p style="font-size:13.5px;color:var(--tinta-2);line-height:1.6;font-weight:600;margin:0">
-            ${Store.planoBase().livre}
-          </p>
-        </div>
 
         <p style="font-size:12px;color:var(--cinza-c);line-height:1.55;font-weight:600;text-align:center;margin-top:4px">
           As gramagens são calculadas a partir do seu peso, altura, idade e objetivo.
@@ -511,11 +516,6 @@ const Telas = {
                   </div>`).join('')}
               </div>`;
           }).join('')}
-
-          <div class="card livre-card">
-            <div class="card-tt" style="margin-bottom:8px">${Ic.festa(20)} Refeição livre</div>
-            <p style="font-size:13.5px;color:var(--tinta-2);line-height:1.6;font-weight:600;margin:0">${Store.planoBase().livre}</p>
-          </div>
         `}
       </div>`;
   },
@@ -1017,13 +1017,10 @@ const Telas = {
           <div class="corrida-val">${CONFIG.PRECO_CORRIDA || 'R$19,90'}<small>/ano</small></div>
           <div class="corrida-val-sub">Um ano de acesso, cobrado uma vez.</div>
           ${CONFIG.CHECKOUT_URL_CORRIDA
-            ? `<button class="btn" onclick="App.comprarCorrida()">Liberar o Modo Corrida</button>
-               <button class="corrida-japaguei" onclick="App.verificarCorrida()">Já paguei, liberar meu acesso</button>`
+            ? `<button class="btn" onclick="App.comprarCorrida()">Liberar o Modo Corrida</button>`
             : `<div class="aviso" style="margin:0">O link de pagamento do Modo Corrida ainda não foi configurado em config.js.</div>`}
         </div>
-      `}
-
-      <p class="corrida-rodape">A distância vem do GPS do celular e a tela fica acesa durante a corrida. Com o celular bloqueado, nenhum app de navegador consegue medir percurso.</p>`;
+      `}`;
   },
 
   _icCorrida(nome) {
@@ -1146,15 +1143,14 @@ const Telas = {
 
   /* uma linha de switch de lembrete. Os três do Perfil são iguais em
      tudo menos no texto, então vale uma função só. */
-  _switchLembrete(tipo, icone, titulo, ligadoTxt, oQue) {
+  _switchLembrete(tipo, icone, titulo, ligadoTxt) {
     const on = Lembretes.ligado(tipo) && Lembretes.permitido();
     return `
       <div class="tema-linha">
         <div class="tema-ic">${icone}</div>
         <div class="tema-txt">
           <div class="t">${titulo}</div>
-          <div class="s">${on ? 'Ligado. ' + ligadoTxt
-            : `Desligado. Ligue para ser ${App.gen('avisada', 'avisado')} ${oQue}.`}</div>
+          <div class="s">${on ? 'Ligado. ' + ligadoTxt : 'Desligado.'}</div>
         </div>
         <button class="switch ${on ? 'on' : ''}"
                 onclick="App.alternarLembrete('${tipo}')" aria-label="Alternar ${titulo}"><i></i></button>
@@ -1244,7 +1240,7 @@ const Telas = {
                 ? (hoje && hoje.descanso
                     ? 'Ligado. Hoje é descanso, então não vai tocar.'
                     : hora ? `Ligado. Hoje toca às ${hora}.` : 'Ligado. Hoje não tem horário marcado.')
-                : `Desligado. Ligue para ser ${App.gen('avisada', 'avisado')} na hora do treino.`}</div>
+                : 'Desligado.'}</div>
           </div>
           <button class="switch ${ligado ? 'on' : ''}"
                   onclick="App.alternarLembrete('treino')" aria-label="Alternar lembrete de treino"><i></i></button>
@@ -1790,14 +1786,11 @@ const Telas = {
         <h3 class="secao-tt">Lembretes</h3>
         <div class="card">
           ${Telas._switchLembrete('refeicao', Ic.talher(20), 'Lembrete de refeição',
-            'Avisa nos horários do seu cardápio.',
-            'nos horários do cardápio')}
+            'Avisa nos horários do seu cardápio.')}
           ${Telas._switchLembrete('agua', Ic.gota(20), 'Lembrete de água',
-            `Avisa ${AGUA_HORARIOS.length} vezes ao dia, de ${AGUA_HORARIOS[0]} às ${AGUA_HORARIOS[AGUA_HORARIOS.length - 1]}.`,
-            'de beber água durante o dia')}
+            `Avisa ${AGUA_HORARIOS.length} vezes ao dia, de ${AGUA_HORARIOS[0]} às ${AGUA_HORARIOS[AGUA_HORARIOS.length - 1]}.`)}
           ${Telas._switchLembrete('sono', Ic.lua(20), 'Lembrete de sono',
-            `Avisa às ${HORA_SONO} para começar a desacelerar.`,
-            `às ${HORA_SONO} de ir dormir`)}
+            `Avisa às ${HORA_SONO} para começar a desacelerar.`)}
         </div>
         <p class="agenda-nota" style="margin-top:-8px">O lembrete de treino fica na aba Treinos, junto com o horário que você escolhe.</p>
 

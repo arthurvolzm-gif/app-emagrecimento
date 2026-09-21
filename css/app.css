@@ -292,8 +292,6 @@ a{color:inherit;text-decoration:none;}
 .tag-opc{background:var(--ambar-tint);color:var(--ambar-tx);border-radius:6px;padding:2px 7px;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;margin-left:5px;vertical-align:middle;}
 .alim.opcional .check{border-style:dashed;}
 
-.livre-card{background:linear-gradient(140deg,var(--ambar-tint),var(--ambar-tint2));border-color:var(--ambar-borda);}
-.livre-card .card-tt{color:var(--ambar-tx);}
 
 .var-nome{
   font-size:12.5px;font-weight:800;color:var(--verde-esc);
@@ -1260,7 +1258,8 @@ body.travado{overflow:hidden;}
 
 /* ---------- fotos de progresso ---------- */
 .foto-txt{font-size:13px;line-height:1.6;color:var(--tinta-2);font-weight:500;margin-bottom:16px;}
-.foto-label{text-align:center;cursor:pointer;}
+.foto-label{display:flex;align-items:center;justify-content:center;gap:9px;text-align:center;cursor:pointer;}
+.foto-galeria{margin-top:10px;}
 .foto-aviso{
   font-size:11.5px;line-height:1.6;color:var(--cinza);font-weight:600;
   margin-top:14px;padding-top:14px;border-top:1px solid var(--linha);
@@ -1273,10 +1272,23 @@ body.travado{overflow:hidden;}
   text-align:center;font-size:14px;font-weight:800;color:var(--verde-esc);
   margin:-4px 0 4px;
 }
-.foto-grade{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;}
-.foto-item{position:relative;margin:0;}
-.foto-item img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--r-sm);display:block;}
-.foto-item figcaption{font-size:10px;color:var(--cinza);font-weight:700;text-align:center;margin-top:5px;}
+.foto-grade{display:flex;flex-direction:column;align-items:center;gap:26px;}
+.foto-item{position:relative;margin:0;width:66.6%;min-width:200px;}
+.foto-item img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--r);display:block;
+  border:1px solid var(--linha);}
+.foto-item figcaption{display:flex;align-items:center;justify-content:center;gap:8px;
+  font-size:12px;color:var(--tinta-2);font-weight:700;text-align:center;margin-top:10px;}
+.fi-peso{background:var(--verde-tint);color:var(--verde-esc);border-radius:20px;
+  padding:2px 9px;font-size:10.5px;font-weight:800;}
+
+/* salvar e compartilhar, embaixo de cada foto */
+.foto-acoes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+.foto-acoes button{display:flex;align-items:center;justify-content:center;gap:6px;
+  background:var(--verde-tint2);border:1px solid var(--linha);border-radius:11px;
+  padding:9px 6px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;
+  color:var(--tinta-2);}
+.foto-acoes button:hover{color:var(--verde-esc);border-color:var(--verde-borda);}
+.foto-acoes svg{flex-shrink:0;}
 .foto-x{
   position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;
   background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:800;
@@ -1288,7 +1300,17 @@ body.travado{overflow:hidden;}
   font-size:11.5px;line-height:1.6;color:var(--cinza);font-weight:600;
   margin-top:14px;padding-top:14px;border-top:1px solid var(--linha);
 }
-.perdidas{display:flex;align-items:center;gap:13px;width:100%;text-align:left;border-color:var(--ambar-borda);}
+/* Os cartões que são um botão de atalho: ícone, texto e seta numa
+   linha só. Sem isto o <button> encolhe no conteúdo e o texto vem
+   centralizado, com a seta caindo pra baixo. As regras viviam no bloco
+   do "dia fora da rotina" e foram junto quando ele foi reescrito. */
+.fora-btn,
+.perdidas{display:flex;align-items:center;gap:13px;width:100%;text-align:left;}
+.fora-btn:active,.perdidas:active{opacity:.7;}
+.fb-ic{flex-shrink:0;}
+.fb-t{font-size:14.5px;font-weight:800;color:var(--tinta);}
+.fb-s{font-size:12px;color:var(--cinza);font-weight:600;margin-top:2px;line-height:1.5;}
+.perdidas{border-color:var(--ambar-borda);}
 .perdidas{background:var(--ambar-tint2);}
 
 /* ---------- ícones de traço (js/icones.js) ----------

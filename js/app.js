@@ -1201,6 +1201,7 @@ const App = {
      IndexedDB responde depois do render. Por isso ela pinta o esqueleto
      e preenche a lista em seguida, em vez de segurar a navegação. */
   _fotoUrls: {},
+  _fotoBlobs: {},
 
   abrirFotos() {
     this.ir('fotos');
@@ -1220,7 +1221,11 @@ const App = {
       this._fotoUrls = {};
 
       const lista = await Fotos.listar();
-      lista.forEach(f => { this._fotoUrls[f.data] = URL.createObjectURL(f.blob); });
+      this._fotoBlobs = {};
+      lista.forEach(f => {
+        this._fotoUrls[f.data] = URL.createObjectURL(f.blob);
+        this._fotoBlobs[f.data] = f.blob;
+      });
       alvo.innerHTML = Telas._fotosConteudo(lista, this._fotoUrls);
     } catch (e) {
       alvo.innerHTML = `<div class="card"><div class="rev-vazio">Não consegui abrir suas fotos neste aparelho.</div></div>`;
@@ -1239,6 +1244,48 @@ const App = {
       this.toast('Foto guardada neste aparelho. 📸', true);
     } catch (e) {
       this.toast('Não consegui guardar essa foto.');
+    }
+  },
+
+  /* o nome do arquivo já diz o que é e de quando: quem salva na galeria
+     não fica com "download (3).jpg" */
+  _nomeFoto(data) {
+    return 'focusfit-' + data + '.jpg';
+  },
+
+  _arquivoFoto(data) {
+    const blob = this._fotoBlobs[data];
+    if (!blob) return null;
+    try { return new File([blob], this._nomeFoto(data), { type: blob.type || 'image/jpeg' }); }
+    catch (e) { return null; }    /* navegador sem construtor de File */
+  },
+
+  /* guarda na galeria/downloads do aparelho */
+  baixarFoto(data) {
+    const url = this._fotoUrls[data];
+    if (!url) return this.toast('Não achei essa foto.');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = this._nomeFoto(data);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    this.toast('Foto salva no seu aparelho.');
+  },
+
+  /* manda pro WhatsApp, Instagram, o que a pessoa escolher. Sem a API de
+     compartilhamento (desktop, navegador antigo), cai no download, que
+     resolve o mesmo problema por outro caminho. */
+  async compartilharFoto(data) {
+    const arquivo = this._arquivoFoto(data);
+    const podeArquivo = arquivo && navigator.canShare && navigator.canShare({ files: [arquivo] });
+    if (!navigator.share || !podeArquivo) return this.baixarFoto(data);
+    try {
+      await navigator.share({ files: [arquivo], title: 'Minha evolução', text: 'Foto de ' + this.dataBr(data) });
+    } catch (e) {
+      /* a pessoa cancelou: isso não é erro e não merece aviso */
+      if (e && e.name === 'AbortError') return;
+      this.baixarFoto(data);
     }
   },
 
