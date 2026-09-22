@@ -629,7 +629,12 @@ const Telas = {
     const nome = (p.nome || '').split(' ')[0];
     const perdeu = r.difPeso < 0;
 
-    if (!Store.reajusteLiberado()) return this._reajusteTrancado(r, nome, perdeu);
+    /* usa o `liberado` já decidido no fechamento deste mês (r.agora.liberado),
+       não uma nova chamada a Store.reajusteLiberado(): a essa altura o
+       retrato deste mês já foi empilhado em Store.reajustes(), e chamar de
+       novo mudaria a resposta bem no mês em que ela é grátis (o primeiro),
+       trancando a tela que deveria estar liberada. */
+    if (!r.agora.liberado) return this._reajusteTrancado(r, nome, perdeu);
 
     return `
       <div class="tela-login tela-reajuste">
@@ -637,8 +642,14 @@ const Telas = {
           <div class="reaj-selo">Plano de ${r.mesNome}</div>
           <h1 class="login-h1 esq">${nome ? nome + ', seu' : 'Seu'} plano foi reajustado</h1>
           <p class="login-sub esq">${r.primeiro
-            ? 'Todo mês o app refaz as suas contas com o que você registrou. Este é o primeiro.'
+            ? 'Todo mês o app refaz as suas contas com o que você registrou. Este primeiro reajuste é por nossa conta.'
             : 'Refizemos as contas com o que você registrou desde o mês passado.'}</p>
+
+          ${r.primeiro ? `
+            <div class="reaj-card" style="background:var(--ambar-tint);border-color:var(--ambar-borda)">
+              <div class="reaj-rot" style="color:var(--ambar-tx)">A partir do mês que vem</div>
+              <div class="reaj-nota">Esse reajuste saiu grátis só desta vez, pra você ver o que muda. Do próximo mês em diante, continuar reajustando o plano custa ${CONFIG.PRECO_REAJUSTE || 'R$9,90'}/mês.</div>
+            </div>` : ''}
 
           ${r.difPeso !== 0 ? `
             <div class="reaj-card destaque">
@@ -696,6 +707,11 @@ const Telas = {
           ${this._reajusteCargas()}
 
           <button class="login-btn" style="margin-top:22px" onclick="App.fecharReajuste()">Ver meu plano de ${r.mesNome}</button>
+          <div class="reaj-card" style="margin-top:14px">
+            <div class="reaj-rot">Quer mudar alguma coisa?</div>
+            <div class="reaj-nota">Se esse reajuste não fez sentido pra você, ou se quiser ajustar algo na mão, é só chamar o suporte.</div>
+            <a class="btn sec" style="margin-top:14px" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">Falar com o suporte</a>
+          </div>
         </div>
       </div>`;
   },

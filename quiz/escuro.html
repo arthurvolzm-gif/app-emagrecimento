@@ -535,12 +535,15 @@ body{
 .saida-fechar{position:absolute;top:12px;right:14px;background:none;border:none;font-size:26px;line-height:1;color:#5c6b63;cursor:pointer;padding:4px 8px;z-index:2;}
 .saida-fechar:hover{color:var(--verde-claro);}
 .saida-selo{text-transform:uppercase;color:var(--verde-claro);font-weight:700;letter-spacing:1px;font-size:13px;margin-bottom:10px;}
-.saida-titulo{font-family:'Open Sans',sans-serif;font-size:27px;font-weight:800;line-height:1.25;color:#eef5f0;margin-bottom:14px;}
-.saida-titulo span{color:var(--verde-claro);}
+.saida-titulo{font-family:'Open Sans',sans-serif;font-size:20px;font-weight:800;line-height:1.25;color:#eef5f0;margin-bottom:12px;}
+.saida-badge{display:inline-block;background:linear-gradient(135deg,#27ae60,var(--verde-claro));color:#fff;font-family:'Open Sans',sans-serif;font-size:30px;font-weight:900;letter-spacing:.3px;text-transform:uppercase;padding:10px 22px;border-radius:14px;margin-bottom:18px;transform:rotate(-2deg);animation:descontoPulse 1.6s ease-in-out infinite;}
+@keyframes descontoPulse{0%,100%{transform:rotate(-2deg) scale(1);box-shadow:0 8px 28px rgba(46,125,90,.5);}50%{transform:rotate(-2deg) scale(1.045);box-shadow:0 14px 40px rgba(46,125,90,.8);}}
 .saida-sub{color:#c3d4cb;font-weight:700;font-size:15px;line-height:1.7;letter-spacing:.3px;margin-bottom:24px;}
 .saida-de{font-size:16px;color:#6f8579;text-decoration:line-through;margin-bottom:4px;}
 .saida-por{font-size:13px;text-transform:uppercase;color:var(--verde-claro);font-weight:700;letter-spacing:1px;margin-bottom:4px;}
-.saida-val{font-family:'Open Sans',sans-serif;font-size:46px;font-weight:900;color:#eef5f0;line-height:1;margin-bottom:6px;}
+.saida-val{font-family:'Open Sans',sans-serif;font-size:46px;font-weight:900;color:var(--verde-claro);line-height:1;margin-bottom:6px;text-shadow:0 0 26px rgba(63,190,124,.45);}
+.saida-val small{font-size:16px;font-weight:700;color:#8aa79a;margin-left:4px;}
+.saida-depois{font-size:13px;color:#8aa79a;margin-bottom:10px;}
 .saida-economia{font-size:15px;font-weight:700;color:var(--verde-claro);margin-bottom:22px;}
 .saida-beneficios{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:6px 18px;margin:0 0 22px;text-align:left;}
 .saida-beneficios .sb-item{display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:700;color:#dfeae4;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07);}
@@ -552,7 +555,8 @@ body{
 .saida-rodape{font-size:12px;color:#6f8579;margin-top:12px;letter-spacing:.3px;}
 @media (max-width:768px){
   .saida-modal{padding:36px 20px 22px;border-radius:18px;}
-  .saida-titulo{font-size:22px;}
+  .saida-titulo{font-size:18px;}
+  .saida-badge{font-size:24px;padding:9px 18px;}
   .saida-sub{font-size:14px;}
   .saida-val{font-size:38px;}
 }
@@ -1960,13 +1964,15 @@ render();
   <div class="saida-modal">
     <button class="saida-fechar" id="saida-fechar" aria-label="Fechar">&times;</button>
     <div class="saida-selo">Espere um segundo</div>
-    <h3 class="saida-titulo" id="saida-titulo">Você ganhou <span>90% de desconto</span></h3>
-    <p class="saida-sub">É a única vez que esse valor aparece. Fechando esta janela, o preço volta ao normal.</p>
+    <h3 class="saida-titulo" id="saida-titulo">Você ganhou</h3>
+    <div class="saida-badge">90% off no 1º mês</div>
+    <p class="saida-sub">É a única vez que esse valor aparece. Vale só pro primeiro mês, depois o plano segue no preço normal.</p>
 
     <div class="saida-de">De R$ 29,90</div>
     <div class="saida-por">Por apenas</div>
-    <div class="saida-val">R$ 2,90</div>
-    <div class="saida-economia">Você economiza R$27,00</div>
+    <div class="saida-val">R$ 2,90<small>/1º mês</small></div>
+    <div class="saida-depois">Depois, R$ 29,90/mês</div>
+    <div class="saida-economia">Você economiza R$27,00 no primeiro mês</div>
 
     <div class="saida-beneficios">
       <div class="sb-item"><span class="sb-ic">✓</span>Treino para hipertrofia ou emagrecimento</div>

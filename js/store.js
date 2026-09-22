@@ -368,16 +368,18 @@ const Store = {
     return r.length ? r[r.length - 1] : null;
   },
 
-  /* O reajuste é um extra pago (R$9,90/mês). Quem não assina fica na
-     fase 1, que é o plano base — exatamente o que ela já tinha antes
-     de existir reajuste. Nada é tirado de ninguém: o que a assinatura
-     compra são as fases seguintes, as sugestões de carga e o relatório
-     de virada de mês.
+  /* O reajuste é um extra pago (R$9,90/mês), com a PRIMEIRA troca de
+     estratégia sempre grátis pra todo mundo — é o "vem ver o que você
+     ganha". Quem não assina depois disso fica na fase 1, que é o plano
+     base — exatamente o que ela já tinha antes de existir reajuste.
+     Nada é tirado de ninguém: o que a assinatura compra são as fases
+     seguintes, as sugestões de carga e o relatório de virada de mês.
 
      Fica aqui embaixo de App porque a tranca de verdade é do servidor
      (Backend.extras); isto é só a porta da tela. */
   reajusteLiberado() {
     if (typeof CONFIG !== 'undefined' && !CONFIG.CHECKOUT_URL_REAJUSTE) return true;  /* sem produto criado, liberado pra todos */
+    if (this.reajustes().length === 0) return true;  /* primeira troca de estratégia: sempre grátis */
     return typeof App !== 'undefined' && typeof App.temReajuste === 'function' && App.temReajuste();
   },
 

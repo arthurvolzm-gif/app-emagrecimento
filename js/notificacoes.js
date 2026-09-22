@@ -55,6 +55,10 @@ const Notif = {
     const mes = Store.mesAtual();
     const dias = Store.diasSemReajuste();
     const liberado = Store.reajusteLiberado();
+    /* o primeiro reajuste de todo mundo é grátis (ver Store.reajusteLiberado);
+       só nesse caso específico vale avisar que o próximo já vem cobrado —
+       quem já paga não precisa ler isso de novo todo mês. */
+    const primeiroGratis = liberado && Store.reajustes().length === 0;
 
     /* ---------- 1. virada de mês (a oferta) ---------- */
     if (Store.reajustePendente()) {
@@ -66,9 +70,11 @@ const Notif = {
         titulo: liberado
           ? `Seu plano de ${nomeMes} está pronto`
           : `Virou o mês: seu plano pode ser reajustado`,
-        texto: liberado
-          ? 'Refizemos as suas contas com o que você registrou. Toque para ver o que mudou.'
-          : `Você está há ${Store.frasedias(dias)} no mesmo plano. Libere o reajuste para o app recalcular as suas metas e evoluir o seu treino.`,
+        texto: primeiroGratis
+          ? 'Refizemos as suas contas com o que você registrou. Esse primeiro reajuste é grátis; do mês que vem em diante, ele passa a custar ' + (CONFIG.PRECO_REAJUSTE || 'R$9,90') + '/mês. Toque para ver o que mudou.'
+          : (liberado
+            ? 'Refizemos as suas contas com o que você registrou. Toque para ver o que mudou.'
+            : `Você está há ${Store.frasedias(dias)} no mesmo plano. Libere o reajuste para o app recalcular as suas metas e evoluir o seu treino.`),
         acao: 'App.irReajuste()',
         rotulo: liberado ? 'Ver o reajuste' : 'Ver como funciona'
       });
