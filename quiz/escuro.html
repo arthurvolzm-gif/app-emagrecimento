@@ -675,10 +675,18 @@ const QUESTIONS = [
       ? ['/corpo-hoje-homem-magro.jpg','/corpo-hoje-homem-gordinho.jpg','/corpo-hoje-homem-sobrepeso.jpg','/corpo-hoje-homem-definido.jpg']
       : ['/corpo-hoje-mulher-magra.jpg','/corpo-hoje-mulher-gordinha.jpg','/corpo-hoje-mulher-sobrepeso.jpg','/corpo-hoje-mulher-definida.jpg']
   },
+  {
+    /* só personalização/copy por enquanto — não influencia o gerador de
+       treino (ver conversa: nível de experiência já existe no cadastro
+       pós-quiz e também não é lido em lugar nenhum da lógica do plano) */
+    id:'nivel_treino', num:3,
+    question:'Há quanto tempo você treina?',
+    options:['Menos de 1 ano','De 1 a 2 anos','Mais de 3 anos','Nunca treinei']
+  },
 
   /* ===== P — PROBLEMA ===== */
   {
-    id:'frustracao', num:3,
+    id:'frustracao', num:4,
     question:'O que mais te impede de chegar no corpo que você quer?',
     options:[
       '⏰ Falta de tempo na rotina',
@@ -689,7 +697,7 @@ const QUESTIONS = [
     ]
   },
   {
-    id:'tentativas', num:4,
+    id:'tentativas', num:5,
     question:'Você já tentou mudar o corpo antes e não conseguiu manter o resultado?',
     options:[
       'Sim, perdi peso mas voltou tudo depois',
@@ -701,29 +709,44 @@ const QUESTIONS = [
   /* >>> DIAGNÓSTICO CURTO entra aqui, depois de 'tentativas' <<< */
 
   {
-    id:'peso', num:5, type:'ruler',
+    id:'peso', num:6, type:'ruler',
     question:'Qual é o seu peso atual?',
     units:[{u:'kg',min:40,max:160,def:70,step:1},{u:'lb',min:88,max:352,def:154,step:1}]
   },
   {
-    id:'altura', num:6, type:'ruler',
+    id:'altura', num:7, type:'ruler',
     question:'Qual é a sua altura?',
     units:[{u:'cm',min:140,max:210,def:165,step:1},{u:'pol',min:55,max:83,def:65,step:1}]
   },
   {
-    id:'meta_peso', num:7, type:'ruler',
+    id:'meta_peso', num:8, type:'ruler',
     question:'Qual peso você quer alcançar?',
     units:[{u:'kg',min:40,max:160,def:65,step:1},{u:'lb',min:88,max:352,def:143,step:1}]
   },
 
   /* ===== hábitos — alimentam o Índice de Constância ===== */
   {
-    id:'treino_frequencia', num:8,
-    question:'Quantos dias gostaria de treinar por semana?',
+    id:'treino_frequencia', num:9,
+    question:'Com que frequência você já treina (ou gostaria de treinar)?',
     options:['3 dias','4 dias','5 dias','6 dias']
   },
   {
-    id:'alimentacao', num:9,
+    /* mesma observação da pergunta 3: fica só como personalização/copy,
+       igual ao "tempo por sessão" que já existe no cadastro pós-quiz e
+       também não altera o treino gerado. */
+    id:'tempo_sessao', num:10,
+    question:'Quanto tempo você consegue dedicar ao treino por dia?',
+    options:['Menos de 30 minutos','Entre 30 e 50 minutos','Mais de 50 minutos']
+  },
+  {
+    /* idem: coleta pra personalização, sem ligação com o gerador de
+       treino (que hoje monta o foco muscular fixo por dia). */
+    id:'musculos_prioritarios', num:11, type:'multi',
+    question:'Quais músculos são mais importantes para você?',
+    options:['Peitoral','Ombros','Braços','Abdômen','Costas','Pernas','Glúteos']
+  },
+  {
+    id:'alimentacao', num:12,
     question:'Como está sua alimentação nos dias normais?',
     options:[
       '🌀 Cada dia é de um jeito, não tem rotina',
@@ -733,12 +756,12 @@ const QUESTIONS = [
     ]
   },
   {
-    id:'agua', num:10,
+    id:'agua', num:13,
     question:'Quanta água você bebe por dia?',
     options:['💧 Menos de 1 litro','🥤 Entre 1 e 2 litros','🚰 Mais de 2 litros']
   },
   {
-    id:'sono', num:11,
+    id:'sono', num:14,
     question:'Quantas horas você dorme por noite, em média?',
     options:['⚠️ Menos de 5 horas','😪 Entre 5 e 6 horas','😌 Entre 7 e 8 horas','😴 Mais de 8 horas']
   },
@@ -746,13 +769,13 @@ const QUESTIONS = [
   /* corpo_sonho e outros_objetivos fecham o quiz numa nota positiva,
      depois de todas as perguntas de hábito/dado */
   {
-    id:'corpo_sonho', num:12,
+    id:'corpo_sonho', num:15,
     question:'Qual é o seu corpo dos sonhos?',
     options: a => a.sexo==='Homem' ? ['Definido','Musculoso','Atlético e volumoso','Mantendo o shape atual'] : ['Magra','Definida','Com curvas','Média'],
     optionImages: a => a.sexo==='Homem' ? ['/corpo-homem-definido.jpg','/corpo-homem-musculoso.jpg','/corpo-homem-atletico.jpg','/corpo-homem-atual.jpg'] : ['/corpo-magra.jpg','/corpo-definida.jpg','/corpo-curvas.jpg','/corpo-media.jpg']
   },
   {
-    id:'outros_objetivos', num:13, type:'multi',
+    id:'outros_objetivos', num:16, type:'multi',
     question:'Além de mudar o corpo, o que mais você quer conquistar?',
     options:['⚡ Mais energia e disposição','😊 Me sentir bem em qualquer roupa','🪞 Me olhar no espelho e gostar do que vejo','💪 Mais força e resistência no dia a dia','🧘 Reduzir o estresse e dormir melhor']
   }
@@ -774,6 +797,8 @@ FLOW.push({type:'idade'});
 QUESTIONS.forEach(q=>{
   FLOW.push({type:'question', q});
   if(q.id==='outros_objetivos'){                             // analisando antes da projeção final
+    FLOW.push({type:'autoridade'});                            // "por que existe o app", antes do compromisso
+    FLOW.push({type:'compromisso'});                          // pergunta de compromisso, antes de "analisar"
     FLOW.push({type:'analyzing'});
     FLOW.push({type:'email'});                               // pede o e-mail logo depois de analisar, antes da projeção
   }
@@ -811,6 +836,7 @@ function render(){
   const map = {
     intro:renderIntro, idade:renderIdade, question:()=>renderQuestion(step.q), break1:renderBreak1,
     interstitial:()=>renderInterstitial(step.id),
+    autoridade:renderAutoridade, compromisso:renderCompromisso,
     analyzing:renderAnalyzing, prepitch:renderPrePitch, meta:renderMeta,
     email:renderEmailEtapa,
     projecao:renderProjecao,
@@ -1415,6 +1441,47 @@ function renderMeta(){
       <p style="font-family:'Lato',sans-serif;font-size:16.5px;font-weight:800;color:var(--cinza);line-height:1.5;margin:0 0 14px;">Mulheres que reativaram a produção natural de GLP-1 antes de reduzir a dose conseguiram sustentar o peso sem a canetinha.</p>
       <p style="font-family:'Lato',sans-serif;font-size:15px;font-weight:800;color:var(--verde);line-height:1.5;margin:0 0 22px;">Faltam só mais alguns passos para liberar o seu protocolo completo.</p>
       <button class="btn" style="text-transform:uppercase;letter-spacing:.5px;" onclick="go(1)">Continuar teste gratuito</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- AUTORIDADE (antes do compromisso) ----------
+   Preenche o bloco de "história/autoridade" que o quiz não tinha, sem
+   fabricar um expert que não existe: fala como equipe, com o que é
+   verdade sobre o app (calcula a partir das respostas, reajusta todo
+   mês, suporte de verdade por WhatsApp). */
+function renderAutoridade(){
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz" style="text-align:center;">
+      <div class="brand-sub" style="margin-bottom:14px;">Antes de continuar</div>
+      <h2 class="q-title" style="margin-bottom:20px;">Por que existe o ${APP_NOME}</h2>
+      <p style="font-size:15.5px;color:#c3d4cb;line-height:1.7;margin-bottom:14px;">A gente cansou de ver plano genérico, que não considera o seu sono, a sua rotina ou o que você já tentou antes, e trava assim que a vida real atravessa o caminho.</p>
+      <p style="font-size:15.5px;color:#c3d4cb;line-height:1.7;margin-bottom:14px;">Por isso o ${APP_NOME} não entrega um cardápio pronto: ele calcula tudo a partir das suas respostas, e reajusta todo mês com base no que você realmente fez, não no que um PDF assumiu no dia 1.</p>
+      <p style="font-size:15.5px;color:#c3d4cb;line-height:1.7;margin-bottom:14px;">Não somos donos de um método mágico. Somos a equipe que constrói e mantém o app, e que responde no WhatsApp quando alguma coisa não encaixa na sua rotina.</p>
+      <button class="btn" style="margin-top:14px" onclick="go(1)">Entendi, quero continuar →</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- COMPROMISSO (antes de "analisando") ----------
+   Pergunta de compromisso clássica de quiz funnel, adaptada pro Focus
+   Fit: sem citar nenhum médico/expert que não existe (o produto não
+   tem um rosto por trás), só o que é verdade — o cardápio do dia, o
+   treino da semana, as metas de hábito e o suporte por WhatsApp da
+   equipe de verdade que responde. */
+function renderCompromisso(){
+  const a = state.answers;
+  const disposto = a.sexo === 'Homem' ? 'disposto' : 'disposta';
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz" style="text-align:center;">
+      <div class="brand-sub" style="margin-bottom:14px;">Antes de continuar</div>
+      <h2 class="q-title" style="margin-bottom:20px;">Hoje faz sentido ter um plano personalizado, acompanhado de perto</h2>
+      <p style="font-size:15.5px;color:#c3d4cb;line-height:1.7;margin-bottom:14px;">Não é um cardápio genérico: é a sua alimentação do dia inteiro, o seu treino da semana e as suas metas de água e sono, tudo montado a partir do que você respondeu aqui.</p>
+      <p style="font-size:15.5px;color:#c3d4cb;line-height:1.7;margin-bottom:14px;">E se alguma coisa não encaixar na sua rotina, a equipe do ${APP_NOME} está a uma mensagem de distância no WhatsApp pra ajustar com você.</p>
+      <p style="font-size:16px;font-weight:800;color:var(--verde-claro);line-height:1.5;margin:18px 0 22px;">Você está ${disposto} a seguir o plano a partir de hoje?</p>
+      <button class="btn" onclick="go(1)">Sim, quero seguir →</button>
     </div>
   </div>`;
 }
