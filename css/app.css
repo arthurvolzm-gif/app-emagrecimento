@@ -998,7 +998,7 @@ a{color:inherit;text-decoration:none;}
 
 .nu-btn{
   margin-top:26px;padding:15px 44px;border-radius:16px;
-  background:#fff;color:var(--tinta);font-size:15px;font-weight:800;
+  background:#fff;color:#0B120F;font-size:15px;font-weight:800;
   box-shadow:0 12px 36px rgba(0,0,0,.3);
   animation:nuSobe .5s ease .95s both;transition:transform .14s;
 }

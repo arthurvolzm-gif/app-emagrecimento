@@ -700,7 +700,7 @@ const QUESTIONS = [
     id:'tentativas', num:5,
     question:'Você já tentou mudar o corpo antes e não conseguiu manter o resultado?',
     options:[
-      'Sim, perdi peso mas voltou tudo depois',
+      'Sim, consegui perder peso e estou mantendo',
       'Comecei, mas não consegui manter a rotina',
       'Essa é a minha primeira tentativa séria',
       'Já tentei várias formas, nada funcionou direito'
@@ -796,8 +796,10 @@ FLOW.push({type:'intro'});
 FLOW.push({type:'idade'});
 QUESTIONS.forEach(q=>{
   FLOW.push({type:'question', q});
+  if(q.id==='tentativas'){                                    // break motivacional, logo depois de 'tentativas'
+    FLOW.push({type:'direcaoCerta'});
+  }
   if(q.id==='outros_objetivos'){                             // analisando antes da projeção final
-    FLOW.push({type:'autoridade'});                            // "por que existe o app", antes do compromisso
     FLOW.push({type:'compromisso'});                          // pergunta de compromisso, antes de "analisar"
     FLOW.push({type:'analyzing'});
     FLOW.push({type:'email'});                               // pede o e-mail logo depois de analisar, antes da projeção
@@ -836,7 +838,7 @@ function render(){
   const map = {
     intro:renderIntro, idade:renderIdade, question:()=>renderQuestion(step.q), break1:renderBreak1,
     interstitial:()=>renderInterstitial(step.id),
-    autoridade:renderAutoridade, compromisso:renderCompromisso,
+    direcaoCerta:renderDirecaoCerta, compromisso:renderCompromisso,
     analyzing:renderAnalyzing, prepitch:renderPrePitch, meta:renderMeta,
     email:renderEmailEtapa,
     projecao:renderProjecao,
@@ -861,13 +863,21 @@ function renderIntro(){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz" style="text-align:center;padding-top:40px;padding-bottom:46px;">
-      <h1 class="hero-h1">Sua dieta e seu treino calculados pro seu corpo</h1>
+      <h1 class="hero-h1">Descubra como desenvolver um corpo estético, forte, atraente... e ter os resultados que você deseja de forma inteligente em menos de 30 dias.</h1>
+
+      <div class="saida-beneficios" style="margin-top:22px;">
+        <div style="padding:10px 0 4px;font-size:12.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;color:var(--verde-claro);">Ao final do quiz você recebe:</div>
+        <div class="sb-item"><span class="sb-ic">✓</span>Um treino estratégico ajustado para o seu nível e rotina</div>
+        <div class="sb-item"><span class="sb-ic">✓</span>Seu plano alimentar simples calculado para sua meta de calorias</div>
+        <div class="sb-item"><span class="sb-ic">✓</span>Uma rotina com mais clareza e organização</div>
+        <div class="sb-item"><span class="sb-ic">✓</span>Tudo para manter você focado pelos próximos dias mesmo com uma rotina corrida</div>
+      </div>
+
       <h2 class="intro-h1" style="margin-top:26px;">Qual seu gênero?</h2>
       <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#9aa8a2;margin:14px 0 22px;">Toque para escolher</p>
       <div class="opts grid2">
         ${SEXO_OPTS.map((o,i)=>`<div class="idade-card" onclick="selectSexo(${i})"><img src="${SEXO_IMGS[i]}" alt="${o}" class="idade-img" onerror="this.style.display='none'"><button class="opt${state.answers.sexo===o?' sel':''}" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button></div>`).join('')}
       </div>
-      <p class="hero-sub" style="margin-top:18px;">Responda o questionário e receba um plano de emagrecimento personalizado por meio do aplicativo "${APP_NOME}".</p>
       <p style="font-size:13px;color:#8aa79a;margin-top:16px;">✅ Tempo estimado: 2 minutos</p>
     </div>
   </div>`;
@@ -1445,11 +1455,12 @@ function renderMeta(){
   </div>`;
 }
 
-/* ---------- AUTORIDADE (antes do compromisso) ----------
-   Preenche o bloco de "história/autoridade" que o quiz não tinha, sem
-   fabricar um expert que não existe: fala como equipe, com o que é
-   verdade sobre o app (calcula a partir das respostas, reajusta todo
-   mês, suporte de verdade por WhatsApp). */
+/* ---------- AUTORIDADE ("Por que existe o Focus Fit") ----------
+   Removida do FLOW a pedido do usuário — não entra mais em nenhuma tela
+   do quiz. Função mantida aqui, pronta pra voltar se um dia fizer
+   sentido reativar (é só empilhar {type:'autoridade'} no FLOW nas
+   linhas do forEach e voltar 'autoridade:renderAutoridade' no map de
+   render()). */
 function renderAutoridade(){
   app.innerHTML = `
   <div class="wrap fade">
@@ -1464,26 +1475,49 @@ function renderAutoridade(){
   </div>`;
 }
 
-/* ---------- COMPROMISSO (antes de "analisando") ----------
-   Pergunta de compromisso clássica de quiz funnel, adaptada pro Focus
-   Fit: sem citar nenhum médico/expert que não existe (o produto não
-   tem um rosto por trás), só o que é verdade — o cardápio do dia, o
-   treino da semana, as metas de hábito e o suporte por WhatsApp da
-   equipe de verdade que responde. */
-function renderCompromisso(){
-  const a = state.answers;
-  const disposto = a.sexo === 'Homem' ? 'disposto' : 'disposta';
+/* ---------- DIREÇÃO CERTA (logo depois de 'tentativas') ---------- */
+function renderDirecaoCerta(){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz" style="text-align:center;">
       <div class="brand-sub" style="margin-bottom:14px;">Antes de continuar</div>
-      <h2 class="q-title" style="margin-bottom:20px;">Hoje faz sentido ter um plano personalizado, acompanhado de perto</h2>
-      <p style="font-size:15.5px;color:#c3d4cb;line-height:1.7;margin-bottom:14px;">Não é um cardápio genérico: é a sua alimentação do dia inteiro, o seu treino da semana e as suas metas de água e sono, tudo montado a partir do que você respondeu aqui.</p>
-      <p style="font-size:15.5px;color:#c3d4cb;line-height:1.7;margin-bottom:14px;">E se alguma coisa não encaixar na sua rotina, a equipe do ${APP_NOME} está a uma mensagem de distância no WhatsApp pra ajustar com você.</p>
-      <p style="font-size:16px;font-weight:800;color:var(--verde-claro);line-height:1.5;margin:18px 0 22px;">Você está ${disposto} a seguir o plano a partir de hoje?</p>
-      <button class="btn" onclick="go(1)">Sim, quero seguir →</button>
+      <p style="font-size:18px;font-weight:800;color:#eef5f0;line-height:1.45;margin-bottom:12px;">Se você se esforça, mas mesmo assim o shape não aparece…</p>
+      <p style="font-size:15.5px;color:#c3d4cb;line-height:1.7;margin-bottom:18px;">Não adianta repetir as mesmas coisas esperando um resultado diferente…</p>
+      <img src="/direcao-certa.jpg" alt="" style="width:100%;border-radius:14px;display:block;margin:0 0 18px;" onerror="this.style.display='none'">
+      <p style="font-size:15.5px;color:#c3d4cb;line-height:1.7;margin-bottom:14px;">Quando você aprende a comer e treinar da forma certa, consegue construir um corpo mais forte, mais seco e mais estético, sem precisar passar horas dentro da academia…</p>
+      <p style="font-size:15.5px;color:#c3d4cb;line-height:1.7;margin-bottom:14px;">Não é uma questão de idade, genética ou tempo...</p>
+      <p style="font-size:15.5px;color:#c3d4cb;line-height:1.7;margin-bottom:22px;">E sim de ter um plano para seguir na <strong style="color:var(--verde-claro);">DIREÇÃO CERTA</strong>… E é isso que o ${APP_NOME} vai fazer por você: direcionar seus esforços para eles realmente <strong style="color:var(--verde-claro);">VALEREM</strong> a pena.</p>
+      <button class="btn" onclick="go(1)">Continuar →</button>
     </div>
   </div>`;
+}
+
+/* ---------- COMPROMISSO (antes de "analisando") ----------
+   Pergunta de compromisso clássica de quiz funnel, adaptada pro Focus
+   Fit: sem citar nenhum médico/expert que não existe (o produto não
+   tem um rosto por trás). As duas opções levam pra frente — é um
+   compromisso de consistência, não uma bifurcação de fluxo. */
+function renderCompromisso(){
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz" style="text-align:center;">
+      <div class="brand-sub" style="margin-bottom:14px;">Antes de continuar</div>
+      <h2 class="q-title" style="margin-bottom:22px;">Hoje, ter um plano personalizado, montado a partir do que você respondeu aqui + um acompanhamento de perto para ajustar tudo da sua rotina quando quiser, faz sentido para você?</h2>
+      <div class="opts">
+        <button class="opt" data-i="0" onclick="selectCompromisso(0)"><span class="opt-radio"></span><span>Sim, quero seguir</span></button>
+        <button class="opt" data-i="1" onclick="selectCompromisso(1)"><span class="opt-radio"></span><span>Quero pelo menos tentar</span></button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function selectCompromisso(i){
+  const btns = app.querySelectorAll('.opt');
+  btns.forEach(b=>b.classList.remove('sel'));
+  const chosen = app.querySelector(`.opt[data-i="${i}"]`);
+  if(chosen) chosen.classList.add('sel');
+  btns.forEach(b=>b.style.pointerEvents='none');
+  setTimeout(()=>go(1),360);
 }
 
 /* ---------- ANALISANDO ---------- */
