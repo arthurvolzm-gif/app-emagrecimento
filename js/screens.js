@@ -1168,20 +1168,6 @@ const Telas = {
         <h3 class="secao-tt">Seu mês</h3>
         ${Telas._calendarioTreino()}
 
-        <div class="card plano-cab">
-          <h3>${plano.nome}</h3>
-          <p>${plano.desc}</p>
-          <div class="plano-tags">
-            <span class="tag">${App.rotuloObjetivo()}</span>
-            <span class="tag">${plano.frequencia}</span>
-            <span class="tag">Cardio: ${(CARDIO_POR_OBJETIVO[Store.db.perfil.objetivo] || CARDIO_POR_OBJETIVO.manutencao).frequencia.toLowerCase()}</span>
-          </div>
-        </div>
-
-        <p class="plano-porque">
-          ${(CARDIO_POR_OBJETIVO[Store.db.perfil.objetivo] || CARDIO_POR_OBJETIVO.manutencao).porque}
-        </p>
-
         ${Telas._lidaEsforco()}
 
         <div class="dias-fila">
@@ -1829,6 +1815,30 @@ const Telas = {
       </div>`;
   },
 
+  /* ---------- divulgação do Plano Duo ----------
+     Rendida acima de "Seus dados" só pra quem ainda NÃO tem a segunda
+     vaga (nem é convidada de ninguém): quem já tem Duo vê o cartão de
+     _duo() lá embaixo, não este. Some sozinha se CHECKOUT_URL_DUO
+     estiver vazio ou dentro do app da loja (Google não deixa vender
+     assinatura fora da Play Store por ali). */
+  _duoPromo() {
+    const d = App.duo;
+    if (window.NO_APP_DA_LOJA) return '';
+    if (!CONFIG.CHECKOUT_URL_DUO) return '';
+    if (!Backend.ativo() || !d || !d.ok) return '';
+    if (d.titular_email) return '';
+    if (Number(d.vagas || 1) >= 2) return '';
+
+    return `
+      <div class="card plano-cab" style="cursor:pointer" onclick="App.abrirDuo()">
+        <h3>${Ic.pessoa(20)} Plano Duo</h3>
+        <p>Chame alguém para dividir a sua assinatura. Cada um responde o próprio quiz e tem plano, metas e progresso separados.</p>
+        <div class="plano-tags">
+          <span class="tag">${CONFIG.PRECO_DUO || 'R$14,90'}/mês</span>
+        </div>
+      </div>`;
+  },
+
   perfil() {
     const p = Store.db.perfil;
     const nv = Store.nivel();
@@ -1847,6 +1857,8 @@ const Telas = {
             ${nv.icone} Nível ${nv.n} · ${nv.nome}
           </div>
         </div>
+
+        ${this._duoPromo()}
 
         <div class="card">
           <div class="card-tt">${Ic.pessoa(20)} Seus dados</div>
