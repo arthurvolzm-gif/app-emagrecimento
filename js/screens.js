@@ -1830,12 +1830,18 @@ const Telas = {
     if (Number(d.vagas || 1) >= 2) return '';
 
     return `
-      <div class="card plano-cab" style="cursor:pointer" onclick="App.abrirDuo()">
-        <h3>${Ic.pessoa(20)} Plano Duo</h3>
-        <p>Chame alguém para dividir a sua assinatura. Cada um responde o próprio quiz e tem plano, metas e progresso separados.</p>
-        <div class="plano-tags">
-          <span class="tag">${CONFIG.PRECO_DUO || 'R$14,90'}/mês</span>
+      <div class="card nivel-card duo-promo">
+        <div class="duo-promo-corpo">
+          <div class="nivel-topo">
+            <div>
+              <div class="nivel-n">Plano Duo</div>
+              <div class="nivel-nome">Divida sua assinatura</div>
+            </div>
+            <div class="duo-badge">50% de desconto</div>
+          </div>
+          <div class="nivel-falta">Chame alguém para dividir o plano. Cada um responde o próprio quiz e tem plano, metas e progresso separados.</div>
         </div>
+        <button class="duo-promo-btn" onclick="App.abrirDuo()">Assinar o Plano Duo · ${CONFIG.PRECO_DUO || 'R$14,90'}/mês</button>
       </div>`;
   },
 

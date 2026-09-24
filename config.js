@@ -35,7 +35,7 @@ const CONFIG = {
      webhook sabe que a compra é deste produto e grava em
      `acessos_extras` em vez de mexer na assinatura da pessoa.
      Vazio = o botão não aparece e o Modo Corrida some da aba. */
-  CHECKOUT_URL_CORRIDA: 'https://app.zuptos.com.br/checkout/93042bb4f9eaa131',
+  CHECKOUT_URL_CORRIDA: 'https://app.zuptos.com.br/checkout/1ad1f0c357f8f4d7',
   PRECO_CORRIDA: 'R$19,90',
 
   /* ---------- Biblioteca de exercícios ----------
