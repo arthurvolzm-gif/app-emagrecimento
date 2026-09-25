@@ -706,11 +706,26 @@ const QUESTIONS = [
       'Já tentei várias formas, nada funcionou direito'
     ]
   },
-  /* >>> DIAGNÓSTICO CURTO entra aqui, depois de 'tentativas' <<< */
+  {
+    id:'peso', num:6, type:'ruler',
+    question:'Qual é o seu peso atual?',
+    units:[{u:'kg',min:40,max:160,def:70,step:1},{u:'lb',min:88,max:352,def:154,step:1}]
+  },
+  {
+    id:'altura', num:7, type:'ruler',
+    question:'Qual é a sua altura?',
+    units:[{u:'cm',min:140,max:210,def:165,step:1},{u:'pol',min:55,max:83,def:65,step:1}]
+  },
+  {
+    id:'meta_peso', num:8, type:'ruler',
+    question:'Qual peso você quer alcançar?',
+    units:[{u:'kg',min:40,max:160,def:65,step:1},{u:'lb',min:88,max:352,def:143,step:1}]
+  },
+  /* >>> COMUNIDADE (fotos) entra aqui, depois de 'meta_peso' <<< */
 
   /* ===== hábitos — alimentam o Índice de Constância ===== */
   {
-    id:'treino_frequencia', num:6,
+    id:'treino_frequencia', num:9,
     question:'Com que frequência você já treina (ou gostaria de treinar)?',
     options:['3 dias','4 dias','5 dias','6 dias']
   },
@@ -718,63 +733,28 @@ const QUESTIONS = [
     /* mesma observação da pergunta 3: fica só como personalização/copy,
        igual ao "tempo por sessão" que já existe no cadastro pós-quiz e
        também não altera o treino gerado. */
-    id:'tempo_sessao', num:7,
+    id:'tempo_sessao', num:10,
     question:'Quanto tempo você consegue dedicar ao treino por dia?',
     options:['Menos de 30 minutos','Entre 30 e 50 minutos','Mais de 50 minutos']
   },
   {
     /* idem: coleta pra personalização, sem ligação com o gerador de
        treino (que hoje monta o foco muscular fixo por dia). */
-    id:'musculos_prioritarios', num:8, type:'multi',
+    id:'musculos_prioritarios', num:11, type:'multi',
     question:'Quais músculos são mais importantes para você?',
     options:['Peitoral','Ombros','Braços','Abdômen','Costas','Pernas','Glúteos']
-  },
-  {
-    id:'peso', num:9, type:'ruler',
-    question:'Qual é o seu peso atual?',
-    units:[{u:'kg',min:40,max:160,def:70,step:1},{u:'lb',min:88,max:352,def:154,step:1}]
-  },
-  {
-    id:'altura', num:10, type:'ruler',
-    question:'Qual é a sua altura?',
-    units:[{u:'cm',min:140,max:210,def:165,step:1},{u:'pol',min:55,max:83,def:65,step:1}]
-  },
-  {
-    id:'meta_peso', num:11, type:'ruler',
-    question:'Qual peso você quer alcançar?',
-    units:[{u:'kg',min:40,max:160,def:65,step:1},{u:'lb',min:88,max:352,def:143,step:1}]
-  },
-  {
-    id:'alimentacao', num:12,
-    question:'Como está sua alimentação nos dias normais?',
-    options:[
-      '🌀 Cada dia é de um jeito, não tem rotina',
-      '🍽️ Começo bem e desando à noite',
-      '📋 Sigo mais ou menos, com escorregadas',
-      '✅ É organizada quase todos os dias'
-    ]
-  },
-  {
-    id:'agua', num:13,
-    question:'Quanta água você bebe por dia?',
-    options:['💧 Menos de 1 litro','🥤 Entre 1 e 2 litros','🚰 Mais de 2 litros']
-  },
-  {
-    id:'sono', num:14,
-    question:'Quantas horas você dorme por noite, em média?',
-    options:['⚠️ Menos de 5 horas','😪 Entre 5 e 6 horas','😌 Entre 7 e 8 horas','😴 Mais de 8 horas']
   },
 
   /* corpo_sonho e outros_objetivos fecham o quiz numa nota positiva,
      depois de todas as perguntas de hábito/dado */
   {
-    id:'corpo_sonho', num:15,
+    id:'corpo_sonho', num:12,
     question:'Qual é o seu corpo dos sonhos?',
     options: a => a.sexo==='Homem' ? ['Definido','Musculoso','Atlético e volumoso','Mantendo o shape atual'] : ['Magra','Definida','Com curvas','Média'],
     optionImages: a => a.sexo==='Homem' ? ['/corpo-homem-definido.jpg','/corpo-homem-musculoso.jpg','/corpo-homem-atletico.jpg','/corpo-homem-atual.jpg'] : ['/corpo-magra.jpg','/corpo-definida.jpg','/corpo-curvas.jpg','/corpo-media.jpg']
   },
   {
-    id:'outros_objetivos', num:16, type:'multi',
+    id:'outros_objetivos', num:13, type:'multi',
     question:'Além de mudar o corpo, o que mais você quer conquistar?',
     options:['⚡ Mais energia e disposição','😊 Me sentir bem em qualquer roupa','🪞 Me olhar no espelho e gostar do que vejo','💪 Mais força e resistência no dia a dia','🧘 Reduzir o estresse e dormir melhor']
   }
@@ -792,12 +772,10 @@ const FLOW = [];
    cima) — o forEach só decide ONDE, entre uma pergunta e outra, entra uma
    tela de conteúdo (diagnóstico, análise, a tela do app). */
 FLOW.push({type:'intro'});
+FLOW.push({type:'genero'});
 FLOW.push({type:'idade'});
 QUESTIONS.forEach(q=>{
   FLOW.push({type:'question', q});
-  if(q.id==='tentativas'){                                    // break motivacional, logo depois de 'tentativas'
-    FLOW.push({type:'direcaoCerta'});
-  }
   if(q.id==='meta_peso'){                                     // prova social (comunidade), logo depois de 'meta_peso'
     FLOW.push({type:'comunidade'});
   }
@@ -838,9 +816,9 @@ function toastHTML(count){
 function render(){
   const step = FLOW[state.idx];
   const map = {
-    intro:renderIntro, idade:renderIdade, question:()=>renderQuestion(step.q), break1:renderBreak1,
+    intro:renderIntro, genero:renderGenero, idade:renderIdade, question:()=>renderQuestion(step.q), break1:renderBreak1,
     interstitial:()=>renderInterstitial(step.id),
-    direcaoCerta:renderDirecaoCerta, comunidade:renderComunidade, compromisso:renderCompromisso,
+    comunidade:renderComunidade, compromisso:renderCompromisso,
     analyzing:renderAnalyzing, prepitch:renderPrePitch, meta:renderMeta,
     email:renderEmailEtapa,
     projecao:renderProjecao,
@@ -858,9 +836,9 @@ function idadeImgsDe(){ return state.answers.sexo==='Homem' ? IDADE_IMGS_HOMEM :
 const SEXO_OPTS = ['Mulher','Homem'];
 const SEXO_IMGS = ['/sexo-mulher.jpg','/sexo-homem.jpg'];
 
-/* abertura: headline + a pergunta "Você é" já embutida (sem tela
-   solta antes, sem imagem de app) — clicar numa opção já inicia
-   o quiz e dispara QuizIniciado, via selectSexo. */
+/* abertura: só a headline + benefícios + CTA. A pergunta de gênero
+   virou etapa própria (renderGenero), logo em seguida — clicar em
+   "Começar agora" já dispara QuizIniciado. */
 function renderIntro(){
   app.innerHTML = `
   <div class="wrap fade">
@@ -868,10 +846,9 @@ function renderIntro(){
       <h1 class="hero-h1">Treina, se cuida, se esforça... e mesmo assim o resultado não aparece?</h1>
       <p class="hero-sub">Descubra como desenvolver um corpo estético, forte, atraente... e ter os resultados que você deseja de forma inteligente em menos de 30 dias.</p>
 
-      <h2 class="intro-h1" style="margin-top:26px;">Qual seu gênero?</h2>
-      <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#9aa8a2;margin:14px 0 22px;">Toque para escolher</p>
-      <div class="opts grid2">
-        ${SEXO_OPTS.map((o,i)=>`<div class="idade-card" onclick="selectSexo(${i})"><img src="${SEXO_IMGS[i]}" alt="${o}" class="idade-img" onerror="this.style.display='none'"><button class="opt${state.answers.sexo===o?' sel':''}" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button></div>`).join('')}
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:26px;">
+        <img src="/print-app-inicio.png" alt="Tela inicial do app" style="width:48%;border-radius:14px;display:block;box-shadow:0 10px 26px rgba(0,0,0,.4);" onerror="this.style.display='none'">
+        <img src="/print-app-treinos.png" alt="Tela de treinos do app" style="width:48%;border-radius:14px;display:block;box-shadow:0 10px 26px rgba(0,0,0,.4);" onerror="this.style.display='none'">
       </div>
 
       <div class="saida-beneficios" style="margin-top:22px;">
@@ -882,7 +859,28 @@ function renderIntro(){
         <div class="sb-item"><span class="sb-ic">✓</span>Tudo para manter você focado pelos próximos dias mesmo com uma rotina corrida</div>
       </div>
 
-      <p style="font-size:13px;color:#8aa79a;margin-top:16px;">✅ Tempo estimado: 2 minutos</p>
+      <p style="font-size:13px;color:#8aa79a;margin:16px 0 22px;">✅ Tempo estimado: 2 minutos</p>
+      <button class="btn" onclick="iniciarQuiz()">Começar agora →</button>
+    </div>
+  </div>`;
+}
+
+function iniciarQuiz(){
+  px('QuizIniciado');
+  go(1);
+}
+
+/* etapa própria, logo depois da abertura */
+function renderGenero(){
+  app.innerHTML = `
+  <div class="wrap fade">
+    <div class="card-quiz" style="text-align:center;">
+      ${backBtn()}
+      <h2 class="intro-h1" style="margin-top:20px;">Qual seu gênero?</h2>
+      <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#9aa8a2;margin:14px 0 22px;">Toque para escolher</p>
+      <div class="opts grid2">
+        ${SEXO_OPTS.map((o,i)=>`<div class="idade-card" onclick="selectSexo(${i})"><img src="${SEXO_IMGS[i]}" alt="${o}" class="idade-img" onerror="this.style.display='none'"><button class="opt${state.answers.sexo===o?' sel':''}" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button></div>`).join('')}
+      </div>
     </div>
   </div>`;
 }
@@ -895,7 +893,6 @@ function selectSexo(i){
   const chosen = app.querySelector(`.opt[data-i="${i}"]`);
   if(chosen) chosen.classList.add('sel');
   btns.forEach(b=>b.style.pointerEvents='none');
-  px('QuizIniciado');
   setTimeout(()=>go(1),360);
 }
 
@@ -1341,6 +1338,13 @@ function renderProjecao(){
         </div>`).join('')}
       </div>
 
+      <!-- VÍDEO DO APP: arquivo ainda não existe (será gravado depois).
+           onerror esconde o player graciosamente até o arquivo chegar. -->
+      <h4 style="text-align:center;margin:28px 0 14px;font-size:20px;font-weight:900;color:var(--verde-claro);">Veja o ${APP_NOME} por dentro</h4>
+      <video src="/video-app.mp4" controls playsinline preload="none" poster="/print-app-inicio.png"
+             style="width:100%;border-radius:16px;display:block;background:#000;"
+             onerror="this.previousElementSibling.remove();this.remove()"></video>
+
       <img src="/fit-day-promo-escuro.jpg" alt="${APP_NOME}" style="width:100%;border-radius:16px;display:block;margin:22px 0 0;" onerror="this.remove()">
 
       ${planosHTML}
@@ -1479,7 +1483,12 @@ function renderAutoridade(){
   </div>`;
 }
 
-/* ---------- DIREÇÃO CERTA (logo depois de 'tentativas') ---------- */
+/* ---------- DIREÇÃO CERTA ----------
+   Removida do FLOW a pedido do usuário — não entra mais em nenhuma tela
+   do quiz. Função mantida aqui, pronta pra voltar se um dia fizer
+   sentido reativar (é só empilhar {type:'direcaoCerta'} no FLOW, depois
+   de 'tentativas', e voltar 'direcaoCerta:renderDirecaoCerta' no map de
+   render()). */
 function renderDirecaoCerta(){
   app.innerHTML = `
   <div class="wrap fade">
