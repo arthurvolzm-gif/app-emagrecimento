@@ -80,14 +80,15 @@ const CONFIG = {
   /* ---------- Reajuste mensal (extra recorrente, R$9,90/mês) ----------
      Libera as fases do treino, as sugestões de carga e o relatório de
      virada de mês. Crie o produto na Zuptos como ASSINATURA mensal, com
-     a palavra "reajuste" no nome. Vazio = o reajuste fica liberado pra
-     todo mundo, sem cobrança.
-     Com o link preenchido (como agora): a PRIMEIRA troca de estratégia
-     de cada pessoa sai sempre grátis, de graça mesmo — é o "vem ver o
-     que você ganha". Da segunda em diante, precisa ter comprado um dos
-     planos abaixo. Essa regra do primeiro mês grátis é automática, em
-     Store.reajusteLiberado(); não depende de nada aqui. */
-  CHECKOUT_URL_REAJUSTE: 'https://app.zuptos.com.br/checkout/4b614ef4fe65668b',
+     a palavra "reajuste" no nome.
+
+     Por enquanto, DE PROPÓSITO, vazio: o reajuste fica liberado de
+     graça pra todo mundo, todo mês, sem cobrar nada (decisão do
+     usuário — "por enquanto vai ser de graça"). Store.reajusteLiberado()
+     já trata CHECKOUT_URL_REAJUSTE vazio como liberação total.
+     Pra voltar a cobrar (primeiro mês grátis, R$9,90/mês dali em
+     diante), é só preencher o link de novo aqui. */
+  CHECKOUT_URL_REAJUSTE: '',
   PRECO_REAJUSTE: 'R$9,90',
   /* o mesmo produto por ano: 9,8 meses de mensalidade, que é o desconto
      anual padrão. Vazio = a tela do reajuste mostra só a opção mensal. */

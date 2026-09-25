@@ -56,9 +56,12 @@ const Notif = {
     const dias = Store.diasSemReajuste();
     const liberado = Store.reajusteLiberado();
     /* o primeiro reajuste de todo mundo é grátis (ver Store.reajusteLiberado);
-       só nesse caso específico vale avisar que o próximo já vem cobrado —
-       quem já paga não precisa ler isso de novo todo mês. */
-    const primeiroGratis = liberado && Store.reajustes().length === 0;
+       só vale avisar que o próximo já vem cobrado quando a cobrança está
+       de fato ativa (CHECKOUT_URL_REAJUSTE preenchido). Por enquanto o
+       reajuste está de graça pra todo mundo, sem prazo — nada de avisar
+       cobrança futura que não existe. */
+    const cobrancaAtiva = typeof CONFIG !== 'undefined' && !!CONFIG.CHECKOUT_URL_REAJUSTE;
+    const primeiroGratis = cobrancaAtiva && liberado && Store.reajustes().length === 0;
 
     /* ---------- 1. virada de mês (a oferta) ---------- */
     if (Store.reajustePendente()) {

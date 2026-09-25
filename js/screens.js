@@ -21,7 +21,10 @@ const Telas = {
       <div class="topo">
         <div>
           <div class="topo-saud">${App.saudacao()}</div>
-          <div class="topo-nome display">${p.nome.split(' ')[0]}</div>
+          <div class="topo-nome display">
+            ${p.nome.split(' ')[0]}
+            ${streak > 0 ? `<span class="streak-badge" title="${streak} ${streak === 1 ? 'dia seguido' : 'dias seguidos'} ativo">🔥 ${streak}</span>` : ''}
+          </div>
         </div>
         <button class="sino-btn" onclick="App.ir('notificacoes')" aria-label="Notificações">
           ${Ic.sino(21)}
@@ -642,10 +645,12 @@ const Telas = {
           <div class="reaj-selo">Plano de ${r.mesNome}</div>
           <h1 class="login-h1 esq">${nome ? nome + ', seu' : 'Seu'} plano foi reajustado</h1>
           <p class="login-sub esq">${r.primeiro
-            ? 'Todo mês o app refaz as suas contas com o que você registrou. Este primeiro reajuste é por nossa conta.'
+            ? (CONFIG.CHECKOUT_URL_REAJUSTE
+                ? 'Todo mês o app refaz as suas contas com o que você registrou. Este primeiro reajuste é por nossa conta.'
+                : 'Todo mês o app refaz as suas contas com o que você registrou.')
             : 'Refizemos as contas com o que você registrou desde o mês passado.'}</p>
 
-          ${r.primeiro ? `
+          ${r.primeiro && CONFIG.CHECKOUT_URL_REAJUSTE ? `
             <div class="reaj-card" style="background:var(--ambar-tint);border-color:var(--ambar-borda)">
               <div class="reaj-rot" style="color:var(--ambar-tx)">A partir do mês que vem</div>
               <div class="reaj-nota">Esse reajuste saiu grátis só desta vez, pra você ver o que muda. Do próximo mês em diante, continuar reajustando o plano custa ${CONFIG.PRECO_REAJUSTE || 'R$9,90'}/mês.</div>

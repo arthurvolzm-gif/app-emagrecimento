@@ -1025,6 +1025,7 @@ const App = {
     this.tela = 'treinos'; this.abaTreinos = 'corrida';
     this.render();
     if (this.checarNivel()) return;
+    if (this.checarStreak()) return;
     this.toast(`${(reg.metros / 1000).toFixed(2)} km registrados. +${PONTOS.corrida} pontos 🏃`, true);
   },
 
@@ -1551,6 +1552,7 @@ const App = {
     const depois = Store.dia().agua;
     this.render();
     if (this.checarNivel()) return;
+    if (this.checarStreak()) return;
     if (antes < p.meta_agua && depois >= p.meta_agua) this.toast('Meta de água batida! +20 pontos 💧', true);
   },
 
@@ -1559,6 +1561,7 @@ const App = {
     Backend.agendarSync();
     this.render();
     if (this.checarNivel()) return;
+    if (this.checarStreak()) return;
     this.toast('Treino concluído! +40 pontos 🏋️', true);
     /* deixa o toast aparecer sozinho antes de puxar a pergunta */
     setTimeout(() => this.perguntarEsforco(), 900);
@@ -1608,6 +1611,7 @@ const App = {
     const [m, t] = Store.progressoRefeicao(ref);
     this.render();
     if (this.checarNivel()) return;
+    if (this.checarStreak()) return;
     if (m === t) this.toast(`${ref.nome} completa! +10 pontos ✅`, true);
   },
 
@@ -1616,6 +1620,7 @@ const App = {
     Backend.agendarSync();
     this.render();
     if (this.checarNivel()) return;
+    if (this.checarStreak()) return;
     if (marcar) this.toast('Refeição marcada como feita ✅', true);
   },
 
@@ -1748,12 +1753,16 @@ const App = {
 
   /* ---------- subida de nível ----------
      Chamado depois de toda ação que dá pontos. Se a pessoa cruzou
-     a faixa de um nível novo, a comemoração entra no lugar do toast. */
+     a faixa de um nível novo, a comemoração entra no lugar do toast.
+     Exceção: o Nível 1 (Iniciante) é o ponto de partida de todo mundo,
+     não uma conquista — só marca como visto e deixa o toast simples de
+     boas-vindas (já tratado em onboarding.js) fazer esse papel. */
   checarNivel() {
     const novo = Store.nivelPendente();
     if (!novo) return false;
     Store.marcarNivelVisto(novo.n);
     Backend.agendarSync();
+    if (novo.n === 1) return false;
     setTimeout(() => this.mostrarNivelUp(novo), 260);
     return true;
   },
@@ -1805,6 +1814,73 @@ const App = {
             Próximo: <b>${nv.proximo.nome}</b> ${nv.proximo.icone} em mais ${nv.faltam} pontos
           </div>` : `
           <div class="nu-prox">Você chegou ao último nível. 👑</div>`}
+
+        <button class="nu-btn" onclick="App.fecharNivelUp()">Continuar</button>
+      </div>`;
+
+    el.classList.add('on');
+  },
+
+  /* ---------- sequência (dias ativos seguidos) ----------
+     Mesmo mecanismo do nível, mas por marco de dias em vez de pontos.
+     Reaproveita a sobreposição #nivelup (confete + selo): visualmente
+     é a mesma linguagem, só muda a cor (laranja/fogo) e o conteúdo. */
+  checarStreak() {
+    const marco = Store.streakPendente();
+    if (!marco) return false;
+    Store.marcarStreakVisto(marco);
+    setTimeout(() => this.mostrarStreak(marco), 260);
+    return true;
+  },
+
+  mostrarStreak(dias) {
+    const el = document.getElementById('nivelup');
+    const cor1 = '#7A2E0E', cor2 = '#FF7A29';
+    const cores = [cor2, '#FFFFFF', cor1, '#FFD86B', cor2];
+
+    let confete = '';
+    for (let i = 0; i < 46; i++) {
+      const cor = cores[i % cores.length];
+      const esq = Math.random() * 100;
+      const atraso = Math.random() * 0.7;
+      const dur = 1.9 + Math.random() * 1.4;
+      const larg = 6 + Math.random() * 7;
+      const alt = larg * (0.5 + Math.random());
+      const giro = (Math.random() * 900 - 450).toFixed(0);
+      const desvio = (Math.random() * 120 - 60).toFixed(0);
+      const redondo = i % 4 === 0 ? '50%' : '2px';
+      confete += `<i style="left:${esq}%;background:${cor};width:${larg}px;height:${alt}px;
+                    border-radius:${redondo};animation-delay:${atraso}s;animation-duration:${dur}s;
+                    --giro:${giro}deg;--desvio:${desvio}px"></i>`;
+    }
+
+    const proximo = STREAK_MARCOS.find(m => m > dias);
+
+    el.innerHTML = `
+      <div class="nu-brilho" style="background:radial-gradient(circle at 50% 42%, ${cor2}55 0%, transparent 62%)"></div>
+      <div class="nu-confete">${confete}</div>
+
+      <div class="nu-caixa">
+        <div class="nu-selo-area">
+          <span class="nu-anel" style="border-color:${cor2}"></span>
+          <span class="nu-anel a2" style="border-color:${cor2}"></span>
+          <span class="nu-anel a3" style="border-color:${cor2}"></span>
+          <div class="nu-raios">${Array.from({length:12},(_, i)=>
+            `<b style="transform:rotate(${i*30}deg);background:linear-gradient(to top, transparent, ${cor2})"></b>`).join('')}</div>
+          <div class="nu-halo" style="background:radial-gradient(circle, ${cor2} 0%, transparent 70%)"></div>
+          <div class="nu-selo" style="--brilho:${cor2}90">🔥</div>
+        </div>
+
+        <div class="nu-tag">Sequência de</div>
+        <div class="nu-nome" style="background:linear-gradient(100deg, ${cor2}, #fff);
+             -webkit-background-clip:text;background-clip:text;color:transparent">${dias} dias</div>
+        <div class="nu-n">Ativo sem parar</div>
+        <p class="nu-frase">Cada dia que você aparece conta. Não quebre agora.</p>
+
+        ${proximo ? `
+          <div class="nu-prox">
+            Próximo marco: <b>${proximo} dias</b>
+          </div>` : ''}
 
         <button class="nu-btn" onclick="App.fecharNivelUp()">Continuar</button>
       </div>`;
@@ -1899,6 +1975,7 @@ const App = {
     this.fecharModal();
     this.render();
     if (this.checarNivel()) return;
+    if (this.checarStreak()) return;
     if (antes < p.meta_sono && v >= p.meta_sono) this.toast('Meta de sono batida! +20 pontos 😴', true);
   },
 
@@ -1925,6 +2002,7 @@ const App = {
     this.fecharModal();
     this.render();
     if (this.checarNivel()) return;
+    if (this.checarStreak()) return;
     this.toast('Pesagem registrada! +15 pontos ⚖️', true);
   },
 

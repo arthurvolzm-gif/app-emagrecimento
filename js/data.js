@@ -21,6 +21,11 @@ const NIVEIS = [
   { n:10, nome:'Lenda',        min:21000, icone:'👑', cor1:'#72400F', cor2:'#B37C1E', frase:'Outro corpo, outra pessoa.' }
 ];
 
+/* ---------- SEQUÊNCIA (dias ativos seguidos) ----------
+   Marcos que disparam a comemoração — concentrados na primeira
+   semana, que é onde a maioria desiste, e mais espaçados depois. */
+const STREAK_MARCOS = [1, 3, 7, 14, 30, 60, 100];
+
 /* pontos por ação concluída */
 const PONTOS = {
   alimento:   3,   // cada alimento marcado

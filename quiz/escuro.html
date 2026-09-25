@@ -843,12 +843,13 @@ function renderIntro(){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz" style="text-align:center;padding-top:40px;padding-bottom:46px;">
-      <h1 class="hero-h1">Treina, se cuida, se esforça... e mesmo assim o resultado não aparece?</h1>
-      <p class="hero-sub">Descubra como desenvolver um corpo estético, forte, atraente... e ter os resultados que você deseja de forma inteligente em menos de 30 dias.</p>
+      <p class="hero-sub">Descubra como desenvolver um corpo estético, atraente e forte, de forma inteligente em menos de 30 dias.</p>
 
-      <div style="display:flex;gap:10px;justify-content:center;margin-top:26px;">
-        <img src="/print-app-inicio.png" alt="Tela inicial do app" style="width:48%;border-radius:14px;display:block;box-shadow:0 10px 26px rgba(0,0,0,.4);" onerror="this.style.display='none'">
-        <img src="/print-app-treinos.png" alt="Tela de treinos do app" style="width:48%;border-radius:14px;display:block;box-shadow:0 10px 26px rgba(0,0,0,.4);" onerror="this.style.display='none'">
+      <div id="intro-print-wrap"
+           style="position:relative;width:62%;max-width:230px;margin:26px auto 0;aspect-ratio:717/1600;border-radius:16px;overflow:hidden;background:#000;box-shadow:0 10px 26px rgba(0,0,0,.4);"
+           onmousedown="pausarPrints()" onmouseup="retomarPrints()" onmouseleave="retomarPrints()"
+           ontouchstart="pausarPrints()" ontouchend="retomarPrints()" ontouchcancel="retomarPrints()">
+        <img id="intro-print-img" src="${INTRO_PRINTS[0]}" alt="Telas do app" style="width:100%;height:100%;object-fit:cover;display:block;transition:opacity .2s ease;" onerror="this.style.display='none'">
       </div>
 
       <div class="saida-beneficios" style="margin-top:22px;">
@@ -856,14 +857,36 @@ function renderIntro(){
         <div class="sb-item"><span class="sb-ic">✓</span>Um treino estratégico ajustado para o seu nível e rotina</div>
         <div class="sb-item"><span class="sb-ic">✓</span>Seu plano alimentar simples calculado para sua meta de calorias</div>
         <div class="sb-item"><span class="sb-ic">✓</span>Uma rotina com mais clareza e organização</div>
-        <div class="sb-item"><span class="sb-ic">✓</span>Tudo para manter você focado pelos próximos dias mesmo com uma rotina corrida</div>
+        <div class="sb-item"><span class="sb-ic">✓</span>Tudo para manter você focado pelos próximos dias mesmo com uma semana corrida</div>
       </div>
 
-      <p style="font-size:13px;color:#8aa79a;margin:16px 0 22px;">✅ Tempo estimado: 2 minutos</p>
-      <button class="btn" onclick="iniciarQuiz()">Começar agora →</button>
+      <button class="btn" style="margin-top:16px;" onclick="iniciarQuiz()">Começar agora →</button>
+      <p style="font-size:13px;color:#8aa79a;margin:16px 0 0;">✅ Tempo estimado: 2 minutos</p>
     </div>
   </div>`;
+  iniciarPrints();
 }
+
+/* carrossel dos prints reais do app: troca sozinho a cada 3s, e para
+   enquanto a pessoa segura a imagem (dedo ou mouse), retomando quando
+   solta. Mesmo padrão de auto-clear do carrossel da tela de comunidade
+   (o timer se desarma sozinho se a tela mudar no meio do caminho). */
+const INTRO_PRINTS = ['/print-app-inicio.jpg','/print-app-treinos-calendario.jpg','/print-app-treinos-dia.jpg','/print-app-alimentacao.jpg','/print-app-progresso.jpg'];
+let introPrintsIdx = 0;
+let introPrintsTimer = null;
+
+function iniciarPrints(){
+  clearInterval(introPrintsTimer);
+  introPrintsTimer = setInterval(() => {
+    const imgEl = document.getElementById('intro-print-img');
+    if (!imgEl || !document.body.contains(imgEl)) { clearInterval(introPrintsTimer); return; }
+    introPrintsIdx = (introPrintsIdx + 1) % INTRO_PRINTS.length;
+    imgEl.style.opacity = '0';
+    setTimeout(() => { imgEl.src = INTRO_PRINTS[introPrintsIdx]; imgEl.style.opacity = '1'; }, 200);
+  }, 3000);
+}
+function pausarPrints(){ clearInterval(introPrintsTimer); }
+function retomarPrints(){ iniciarPrints(); }
 
 function iniciarQuiz(){
   px('QuizIniciado');

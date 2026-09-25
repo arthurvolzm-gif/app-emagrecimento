@@ -173,6 +173,7 @@ const Store = {
       restricoes: dados.restricoes || '',              // lista separada por vírgula
       ordem_treino: [0, 1, 2, 3, 4, 5, 6],
       nivel_visto: 0,       // 0 para a comemoração do nível 1 disparar no primeiro acesso
+      streak_visto: 0,      // último marco de sequência já comemorado (ver STREAK_MARCOS)
       criado_em: this.hoje()
     };
     perfil.meta_kcal = this.calcMetaKcal(perfil);
@@ -1103,6 +1104,22 @@ const Store = {
       break;
     }
     return dias;
+  },
+
+  /* ---------- controle de "bateu marco de sequência" ----------
+     Mesmo padrão do nivelPendente/marcarNivelVisto: guarda o maior
+     marco já comemorado pra a animação disparar uma vez só por marco,
+     mesmo que a pessoa continue ativa depois dele. */
+  streakPendente() {
+    const dias = this.streak();
+    const visto = this.db.perfil.streak_visto || 0;
+    const marco = STREAK_MARCOS.filter(m => m <= dias && m > visto).pop();
+    return marco || null;
+  },
+
+  marcarStreakVisto(n) {
+    this.db.perfil.streak_visto = n;
+    this.save();
   },
 
   /* ---------- resumo da semana ----------
