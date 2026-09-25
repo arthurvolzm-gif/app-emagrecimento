@@ -248,17 +248,16 @@ const Onb = {
   },
 
   /* ---------- abertura ----------
-     A mira (o "O" de FOCUS) entra grande no meio da tela, encolhe até o
-     tamanho normal e o resto da logo aparece em volta dela. O quanto a
-     logo precisa andar pra mira ficar centralizada depende da largura
-     das letras, que muda com a fonte — por isso a medida é feita na
-     hora, em animarAbertura(), e não chutada aqui. */
+     A mira entra com um fade + leve zoom, parada no centro da tela.
+     Antes isso vinha do wordmark "FOCUS FIT" (a mira era só o "O", e um
+     recorte circular + filtro escondia o resto até o fim). Agora a
+     marca É a mira, sem texto, então a animação ficou só isso. */
   abertura() {
     return `
       <div class="tela-login tela-abertura">
         <div class="login-content">
           <div class="abertura-logo">
-            <img src="logo-focusfit.png" alt="Focus Fit">
+            <img src="mira-abertura.png" alt="Focus Fit">
           </div>
         </div>
       </div>`;

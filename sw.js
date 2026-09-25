@@ -25,7 +25,7 @@
    anterior no aparelho das pessoas.
    ========================================================= */
 
-const VERSAO = 'focusfit-v3';
+const VERSAO = 'focusfit-v4';
 const CACHE_APP   = VERSAO + '-app';
 const CACHE_MIDIA = VERSAO + '-midia';
 
@@ -48,6 +48,7 @@ const CASCA = [
   './js/onboarding.js',
   './js/app.js',
   './logo-focusfit.png',
+  './mira-abertura.png',
   './icone-192.png',
   './icone-512.png'
 ];

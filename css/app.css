@@ -704,59 +704,20 @@ a{color:inherit;text-decoration:none;}
 }
 
 /* ---------- abertura do app ----------
-   Usa o arquivo da logo (logo-focusfit.png). A mira é o "O" de FOCUS e
-   fica em 33,9% da largura / 30% da altura da imagem: esse ponto é o
-   pivô de tudo (--cx/--cy).
-
-   A logo inteira está na tela desde o primeiro quadro, escondida atrás
-   de um recorte circular em cima da mira. O recorte fica na PRÓPRIA
-   imagem, no mesmo sistema de coordenadas da escala — então o raio
-   acompanha a mira sozinho, sem desencontrar dela no meio do caminho.
-
-   O raio de 23px não é solto: medido no arquivo, as pontas da mira vão
-   até 111px do centro e a letra mais próxima (o C) começa em 123px —
-   numa largura de 280px isso vira 21,9px e 24,3px. 23px cabe no meio,
-   cobrindo a mira inteira sem encostar no C nem no F. Mexeu na largura
-   da logo ou trocou o arquivo? Refaça essa conta. */
+   A marca agora É a mira (Logo-Oficial-transparente.png), sem wordmark
+   por trás — não tem mais "O" pra isolar dentro de um texto, então a
+   abertura ficou só um fade + zoom leve, parada e centralizada. */
 /* a abertura é preta e só: nada de foto nem de degradê por cima */
 .tela-abertura{background:#000;}
 .tela-abertura::before{display:none;}
 
-.abertura-logo{--cx:33.9%;--cy:30%;--dur:2s;width:280px;}
+.abertura-logo{--dur:900ms;width:230px;}
 .abertura-logo img{width:100%;display:block;}
 
-/* wrapper: só o passeio que leva a mira até o meio da tela e volta */
-.abertura-logo.tocar{animation:aberturaAnda var(--dur) cubic-bezier(.45,.05,.2,1) both;}
-@keyframes aberturaAnda{
-  0%      {opacity:0;transform:translate(16.1%,20%);}
-  10%,26% {opacity:1;transform:translate(16.1%,20%);}
-  100%    {opacity:1;transform:translate(0,0);}
-}
-
-/* O rastro de luz verde do arquivo passa dentro do recorte: medido na
-   imagem, ele fica entre 81px e 111px do centro da mira e só abaixo
-   dela, então um recorte menor cortaria a ponta de baixo da mira.
-   Em vez disso, enquanto a mira está ampliada a imagem passa por um
-   filtro: tira a cor, escurece, estoura o contraste e devolve o brilho.
-   O rastro tem luminância ~164 e a mira ~251, então essa conta joga o
-   rastro pro preto (some no fundo escuro) e mantém a mira branca.
-   A cor volta no mesmo quadro em que FOCUS e FIT aparecem. Trocou o
-   arquivo da logo? Confira essas duas luminâncias antes. */
-/* imagem: escala e recorte na mesma curva e nas mesmas coordenadas */
-.abertura-logo.tocar img{
-  transform-origin:var(--cx) var(--cy);
-  animation:aberturaMira var(--dur) cubic-bezier(.45,.05,.2,1) both;
-}
-@keyframes aberturaMira{
-  /* mira grande e parada, só ela à vista */
-  0%,26% {transform:scale(6);clip-path:circle(23px at var(--cx) var(--cy));
-          filter:grayscale(1) brightness(.55) contrast(4) brightness(1.5);}
-  /* encolhe até o tamanho final com o recorte colado nela */
-  74%    {clip-path:circle(23px at var(--cx) var(--cy));
-          filter:grayscale(1) brightness(.55) contrast(4) brightness(1.5);}
-  /* o círculo abre: a cor volta junto com FOCUS e FIT */
-  100%   {transform:scale(1);clip-path:circle(260px at var(--cx) var(--cy));
-          filter:grayscale(0) brightness(1) contrast(1) brightness(1);}
+.abertura-logo.tocar{animation:aberturaEntra var(--dur) cubic-bezier(.2,.7,.3,1) both;}
+@keyframes aberturaEntra{
+  0%   {opacity:0;transform:scale(.72);}
+  100% {opacity:1;transform:scale(1);}
 }
 
 /* círculo girando das telas de carregamento */
