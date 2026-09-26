@@ -218,7 +218,7 @@ body{
 .intro-h1 span{color:var(--verde-claro);}
 .intro-sub{font-size:16px;color:#a9bcb2;text-align:center;line-height:1.65;margin-bottom:26px;}
 .hero-h1{font-family:'Baloo 2',sans-serif;font-size:30px;font-weight:800;color:var(--verde-claro);line-height:1.25;text-align:center;margin-bottom:18px;}
-.hero-sub{font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:600;color:#c3d4cb;line-height:1.55;text-align:center;margin:20px 0 22px;}
+.hero-sub{font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:600;color:var(--verde-claro);line-height:1.55;text-align:center;margin:20px 0 22px;}
 .intro-secure{text-align:center;font-size:12px;color:#98a89f;margin-top:12px;}
 
 /* ===== INTERSTICIAL ===== */
@@ -854,6 +854,8 @@ function renderIntro(){
         </div>
       </div>
 
+      <button class="btn" style="margin-top:22px;border-radius:8px;" onclick="iniciarQuiz()">Começar agora →</button>
+
       <div class="saida-beneficios" style="margin-top:22px;">
         <div style="padding:10px 0 4px;text-align:center;font-size:12.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;color:var(--verde-claro);">Ao final do quiz você recebe:</div>
         <div class="sb-item"><span class="sb-ic">✓</span>Um treino estratégico ajustado para o seu nível e rotina</div>
@@ -862,7 +864,6 @@ function renderIntro(){
         <div class="sb-item"><span class="sb-ic">✓</span>Tudo para manter você focado pelos próximos dias mesmo com uma semana corrida</div>
       </div>
 
-      <button class="btn" style="margin-top:16px;" onclick="iniciarQuiz()">Começar agora →</button>
       <p style="font-size:13px;color:#8aa79a;margin:16px 0 0;">✅ Tempo estimado: 2 minutos</p>
     </div>
   </div>`;
@@ -886,7 +887,7 @@ const INTRO_SLIDE_PCT = 100 / (INTRO_PRINTS.length + 1);
 
 function iniciarPrints(){
   clearInterval(introPrintsTimer);
-  introPrintsTimer = setInterval(avancarPrints, 3000);
+  introPrintsTimer = setInterval(avancarPrints, 1800);
 }
 function pausarPrints(){ clearInterval(introPrintsTimer); }
 function retomarPrints(){ iniciarPrints(); }
@@ -1383,18 +1384,16 @@ function renderProjecao(){
         </div>`).join('')}
       </div>
 
-      <!-- VÍDEO DO APP: arquivo ainda não existe (será gravado depois).
-           onerror esconde o player graciosamente até o arquivo chegar. -->
-      <h4 style="text-align:center;margin:28px 0 14px;font-size:20px;font-weight:900;color:var(--verde-claro);">Veja o ${APP_NOME} por dentro</h4>
-      <video src="/video-app.mp4" controls playsinline preload="none" poster="/print-app-inicio.png"
-             style="width:100%;border-radius:16px;display:block;background:#000;"
-             onerror="this.previousElementSibling.remove();this.remove()"></video>
-
       <img src="/fit-day-promo-escuro.jpg" alt="${APP_NOME}" style="width:100%;border-radius:16px;display:block;margin:22px 0 0;" onerror="this.remove()">
 
       ${planosHTML}
 
       <img src="/garantia-escuro.jpg" alt="Garantia de 30 dias" style="width:100%;border-radius:16px;display:block;margin:22px 0 0;" onerror="this.remove()">
+
+      <h4 style="text-align:center;margin:28px 0 14px;font-size:20px;font-weight:900;color:var(--verde-claro);">Quem já está usando</h4>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        ${CLIENTES_FOTOS.map(src => `<img src="${src}" alt="Depoimento de cliente" style="width:100%;border-radius:14px;display:block;box-shadow:0 8px 22px rgba(0,0,0,.35);" onerror="this.remove()">`).join('')}
+      </div>
 
       <h4 style="text-align:center;margin:28px 0 14px;font-size:20px;font-weight:900;color:var(--verde-claro);">Ainda tem alguma dúvida?</h4>
       <div class="faq faq-escuro">
