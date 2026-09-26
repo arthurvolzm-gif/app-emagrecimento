@@ -849,7 +849,9 @@ function renderIntro(){
            style="position:relative;width:62%;max-width:230px;margin:26px auto 0;aspect-ratio:717/1600;border-radius:16px;overflow:hidden;background:#000;box-shadow:0 10px 26px rgba(0,0,0,.4);"
            onmousedown="pausarPrints()" onmouseup="retomarPrints()" onmouseleave="retomarPrints()"
            ontouchstart="pausarPrints()" ontouchend="retomarPrints()" ontouchcancel="retomarPrints()">
-        <img id="intro-print-img" src="${INTRO_PRINTS[0]}" alt="Telas do app" style="width:100%;height:100%;object-fit:cover;display:block;transition:opacity .2s ease;" onerror="this.style.display='none'">
+        <div id="intro-print-track" style="display:flex;width:${(INTRO_PRINTS.length+1)*100}%;height:100%;">
+          ${INTRO_PRINTS.concat([INTRO_PRINTS[0]]).map(src => `<img src="${src}" alt="Telas do app" style="width:${100/(INTRO_PRINTS.length+1)}%;height:100%;object-fit:cover;display:block;flex:none;" onerror="this.style.display='none'">`).join('')}
+        </div>
       </div>
 
       <div class="saida-beneficios" style="margin-top:22px;">
@@ -867,26 +869,46 @@ function renderIntro(){
   iniciarPrints();
 }
 
-/* carrossel dos prints reais do app: troca sozinho a cada 3s, e para
-   enquanto a pessoa segura a imagem (dedo ou mouse), retomando quando
-   solta. Mesmo padrão de auto-clear do carrossel da tela de comunidade
-   (o timer se desarma sozinho se a tela mudar no meio do caminho). */
+/* carrossel dos prints reais do app: desliza pro lado sozinho a cada
+   3s, e para enquanto a pessoa segura a imagem (dedo ou mouse),
+   retomando quando solta. Mesmo padrão de auto-clear do carrossel da
+   tela de comunidade (o timer se desarma sozinho se a tela mudar no
+   meio do caminho).
+
+   Efeito infinito sem "salto": o trilho tem uma cópia extra da 1ª foto
+   colada no final. Ao deslizar até ela, espera a transição acabar e
+   pula de volta pro início SEM transição (imperceptível, porque a
+   cópia é idêntica à foto real que já estava ali). */
 const INTRO_PRINTS = ['/print-app-inicio.jpg','/print-app-treinos-calendario.jpg','/print-app-treinos-dia.jpg','/print-app-alimentacao.jpg','/print-app-progresso.jpg'];
 let introPrintsIdx = 0;
 let introPrintsTimer = null;
+const INTRO_SLIDE_PCT = 100 / (INTRO_PRINTS.length + 1);
 
 function iniciarPrints(){
   clearInterval(introPrintsTimer);
-  introPrintsTimer = setInterval(() => {
-    const imgEl = document.getElementById('intro-print-img');
-    if (!imgEl || !document.body.contains(imgEl)) { clearInterval(introPrintsTimer); return; }
-    introPrintsIdx = (introPrintsIdx + 1) % INTRO_PRINTS.length;
-    imgEl.style.opacity = '0';
-    setTimeout(() => { imgEl.src = INTRO_PRINTS[introPrintsIdx]; imgEl.style.opacity = '1'; }, 200);
-  }, 3000);
+  introPrintsTimer = setInterval(avancarPrints, 3000);
 }
 function pausarPrints(){ clearInterval(introPrintsTimer); }
 function retomarPrints(){ iniciarPrints(); }
+
+function avancarPrints(){
+  const track = document.getElementById('intro-print-track');
+  if (!track || !document.body.contains(track)) { clearInterval(introPrintsTimer); return; }
+
+  introPrintsIdx++;
+  track.style.transition = 'transform .5s cubic-bezier(.4,0,.2,1)';
+  track.style.transform = `translateX(-${introPrintsIdx * INTRO_SLIDE_PCT}%)`;
+
+  if (introPrintsIdx === INTRO_PRINTS.length) {
+    setTimeout(() => {
+      if (!track || !document.body.contains(track)) return;
+      track.style.transition = 'none';
+      introPrintsIdx = 0;
+      track.style.transform = 'translateX(0%)';
+      track.offsetHeight; /* força o navegador a aplicar o reset antes do próximo slide animado */
+    }, 520);
+  }
+}
 
 function iniciarQuiz(){
   px('QuizIniciado');
@@ -1544,6 +1566,13 @@ function renderComunidade(){
       <button class="btn" onclick="go(1)">Continuar →</button>
     </div>
   </div>`;
+
+  /* pré-carrega as 8 fotos assim que a tela abre: sem isso, o troca-troca
+     a cada 700ms chegava mais rápido que o download da foto seguinte
+     (fotos de ~2MB numa rede de celular), e o resultado era a tela
+     piscando (frame em branco enquanto carrega) e "empacando" na mesma
+     pessoa até a imagem terminar de baixar. */
+  COMUNIDADE_FOTOS.forEach(src => { const im = new Image(); im.src = src; });
 
   let i = 0;
   const imgEl = document.getElementById('comunidade-img');
