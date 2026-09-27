@@ -232,7 +232,7 @@ const Notif = {
       ic: 'corrida',
       tom: 'oferta',
       titulo: 'Seu app também conta corrida',
-      texto: `O Run Tracker mede distância, tempo, ritmo e calorias de cada corrida sua, na mesma tela do seu plano. São ${CONFIG.PRECO_CORRIDA || 'R$19,90'} por um ano.`,
+      texto: `O Run Tracker mede distância, tempo, ritmo e calorias de cada corrida sua, na mesma tela do seu plano. São ${CONFIG.PRECO_CORRIDA_PARCELA || '12x de R$4,87'}.`,
       acao: "App.irCorrida()",
       rotulo: 'Ver o Run Tracker'
     }];

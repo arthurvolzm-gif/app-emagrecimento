@@ -29,14 +29,21 @@ const CONFIG = {
   CHECKOUT_URL_TRIMESTRAL: 'https://app.zuptos.com.br/checkout/b8b35e1625ad65b7',
   CHECKOUT_URL_ANUAL: 'https://app.zuptos.com.br/checkout/4c18c052c5030bd6',
 
-  /* ---------- Run Tracker (produto extra, R$19,90/ano) ----------
-     Compra avulsa feita DENTRO do app, na aba Treinos. Crie o produto
-     na Zuptos com a palavra "corrida" no nome — é por ela que o
-     webhook sabe que a compra é deste produto e grava em
-     `acessos_extras` em vez de mexer na assinatura da pessoa.
+  /* ---------- Run Tracker (produto extra, R$47,90 pagamento único) ----------
+     Compra avulsa feita DENTRO do app, na aba Treinos, e também vendida
+     como order bump do checkout do plano principal (pagamento único: a
+     Zuptos não aceita assinatura em bump). O produto está cadastrado na
+     Zuptos como "Run Tracker - Modo Corrida" — é a palavra "corrida"
+     nesse nome que o webhook usa pra saber que a compra é deste produto
+     e gravar em `acessos_extras` em vez de mexer na assinatura da
+     pessoa (nos dois casos, avulso ou bump — ver zuptos-webhook).
      Vazio = o botão não aparece e o Run Tracker some da aba. */
   CHECKOUT_URL_CORRIDA: 'https://app.zuptos.com.br/checkout/1ad1f0c357f8f4d7',
-  PRECO_CORRIDA: 'R$19,90',
+  PRECO_CORRIDA: 'R$47,90',
+  /* como o parcelamento aparece pra quem só vê o preço passar rápido,
+     tipo na notificação de oferta. Ajuste aqui se a Zuptos mudar as
+     parcelas — não recalcula sozinho. */
+  PRECO_CORRIDA_PARCELA: '12x de R$4,87',
 
   /* ---------- Biblioteca de exercícios ----------
      Vendida como order bump do checkout do plano, com "biblioteca" no

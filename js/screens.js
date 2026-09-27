@@ -1100,8 +1100,8 @@ const Telas = {
         </div>
       ` : `
         <div class="card corrida-preco">
-          <div class="corrida-val">${CONFIG.PRECO_CORRIDA || 'R$19,90'}<small>/ano</small></div>
-          <div class="corrida-val-sub">Um ano de acesso, cobrado uma vez.</div>
+          <div class="corrida-val">${CONFIG.PRECO_CORRIDA || 'R$47,90'}</div>
+          <div class="corrida-val-sub">Pagamento único, ou ${CONFIG.PRECO_CORRIDA_PARCELA || '12x de R$4,87'}.</div>
           ${CONFIG.CHECKOUT_URL_CORRIDA
             ? `<button class="btn" onclick="App.comprarCorrida()">Liberar o Run Tracker</button>`
             : `<div class="aviso" style="margin:0">O link de pagamento do Run Tracker ainda não foi configurado em config.js.</div>`}

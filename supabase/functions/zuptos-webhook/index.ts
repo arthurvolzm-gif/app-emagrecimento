@@ -159,16 +159,25 @@ function extrair(payload: any) {
   const temVideos = cru.includes(MARCA_VIDEOS);
   const temReceitas = cru.includes(MARCA_RECEITAS);
 
-  // ---------- MODO CORRIDA (compra avulsa) ----------
-  // Produto separado da assinatura. Quando a compra e dele, esta
-  // function NAO pode encostar em `assinaturas`: seria sobrescrever o
-  // plano da pessoa (plano viraria "Modo Corrida", validade viraria a
-  // da compra avulsa) e derrubar o acesso dela ao app inteiro por ter
-  // comprado um extra.
+  // ---------- RUN TRACKER (Modo Corrida): avulso OU order bump ----------
+  // Duas formas de comprar, que pedem tratamento diferente:
+  //  1. AVULSA, sozinha, dentro do app (CHECKOUT_URL_CORRIDA): o `plano`
+  //     do payload E o proprio Run Tracker. Nao existe assinatura real
+  //     neste payload, entao a function NAO pode encostar em
+  //     `assinaturas` (sobrescreveria o plano da pessoa e derrubaria o
+  //     acesso dela ao app inteiro por ter comprado um extra).
+  //  2. ORDER BUMP, junto do plano principal no mesmo checkout (a Zuptos
+  //     nao aceita assinatura em bump, entao este e sempre pagamento
+  //     unico): aqui o `plano` do payload E o plano de verdade da
+  //     pessoa. Precisa liberar o Run Tracker E deixar o plano principal
+  //     ser processado normalmente la embaixo — se so gravasse o extra e
+  //     saisse, quem comprou os dois juntos ficaria sem a assinatura.
   //
-  // O nome do produto e o criterio principal; o payload inteiro e a
-  // rede de seguranca, pro caso de o nome do produto vir vazio.
-  const ehCorrida = /corrida/i.test(plano || '') || cru.includes(MARCA_CORRIDA);
+  // ehCorridaAvulsa (o nome do produto bate direto) decide qual dos dois
+  // caminhos e este; temCorrida (nome OU payload inteiro, a rede de
+  // seguranca) decide SE libera o Run Tracker, nos dois casos.
+  const ehCorridaAvulsa = /corrida/i.test(plano || '');
+  const temCorrida = ehCorridaAvulsa || cru.includes(MARCA_CORRIDA);
 
   // ---------- REAJUSTE MENSAL (extra recorrente) ----------
   // Mesma separacao do Modo Corrida: nao pode encostar em `assinaturas`,
@@ -200,7 +209,7 @@ function extrair(payload: any) {
   const ehBibliotecaAvulsa = /biblioteca/i.test(plano || '');
   const ehReceitasAvulsa = /receitas/i.test(plano || '');
 
-  return { email, plano, transacao, status, dataExpiracao, vagas, temVideos, temReceitas, ehCorrida, ehReajuste, ehBibliotecaAvulsa, ehReceitasAvulsa };
+  return { email, plano, transacao, status, dataExpiracao, vagas, temVideos, temReceitas, ehCorridaAvulsa, temCorrida, ehReajuste, ehBibliotecaAvulsa, ehReceitasAvulsa };
 }
 
 function tokenValido(req: Request, payload: any): boolean {
@@ -236,7 +245,7 @@ Deno.serve(async (req) => {
   // grava o payload cru sempre, mesmo se o resto abaixo falhar
   await sb.from('zuptos_webhook_logs').insert({ payload });
 
-  const { email, plano, transacao, status, dataExpiracao, vagas, temVideos, temReceitas, ehCorrida, ehReajuste, ehBibliotecaAvulsa, ehReceitasAvulsa } = extrair(payload);
+  const { email, plano, transacao, status, dataExpiracao, vagas, temVideos, temReceitas, ehCorridaAvulsa, temCorrida, ehReajuste, ehBibliotecaAvulsa, ehReceitasAvulsa } = extrair(payload);
 
   if (!email) {
     return new Response(JSON.stringify({ ok: true, aviso: 'sem e-mail no payload' }), { status: 200 });
@@ -262,8 +271,8 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ ok: true, produto: 'reajuste' }), { status: 200 });
   }
 
-  // ---------- compra avulsa: grava no lugar dela e sai ----------
-  if (ehCorrida) {
+  // ---------- Run Tracker: grava o extra sempre; só sai se for avulsa ----------
+  if (temCorrida) {
     const { error: erroExtra } = await sb.from('acessos_extras').upsert(
       {
         email: email.toLowerCase(),
@@ -278,7 +287,12 @@ Deno.serve(async (req) => {
       console.error('erro ao gravar acesso extra:', erroExtra.message);
       return new Response(JSON.stringify({ ok: false, erro: erroExtra.message }), { status: 500 });
     }
-    return new Response(JSON.stringify({ ok: true, produto: 'corrida' }), { status: 200 });
+    // avulsa de verdade: não há plano neste payload, para por aqui.
+    // bump: não há return — segue pro upsert de `assinaturas` lá embaixo,
+    // que ativa o plano principal com o `plano` real deste payload.
+    if (ehCorridaAvulsa) {
+      return new Response(JSON.stringify({ ok: true, produto: 'corrida' }), { status: 200 });
+    }
   }
 
   // ---------- compra avulsa da Biblioteca: só liga a coluna, nunca mexe no plano ----------
