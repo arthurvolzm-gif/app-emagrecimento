@@ -349,11 +349,11 @@ const Telas = {
         <h3 class="secao-tt">Primeira e mais recente</h3>
         <div class="card foto-par">
           <figure>
-            <img src="${urls[primeira.data]}" alt="Primeira foto">
+            <img src="${urls[primeira.id]}" alt="Primeira foto">
             <figcaption>${App.dataBr(primeira.data)}${primeira.peso ? ` · ${primeira.peso} kg` : ''}</figcaption>
           </figure>
           <figure>
-            <img src="${urls[ultima.data]}" alt="Foto mais recente">
+            <img src="${urls[ultima.id]}" alt="Foto mais recente">
             <figcaption>${App.dataBr(ultima.data)}${ultima.peso ? ` · ${ultima.peso} kg` : ''}</figcaption>
           </figure>
         </div>
@@ -365,15 +365,17 @@ const Telas = {
       <div class="foto-grade">
         ${lista.slice().reverse().map(f => `
           <figure class="foto-item">
-            <img src="${urls[f.data]}" alt="Foto de ${App.dataBr(f.data)}">
-            <button class="foto-x" onclick="App.apagarFoto('${f.data}')" aria-label="Apagar">✕</button>
             <figcaption>
               <span class="fi-data">${App.dataBr(f.data)}</span>
               ${f.peso ? `<span class="fi-peso">${f.peso} kg</span>` : ''}
             </figcaption>
+            <div class="fi-img">
+              <img src="${urls[f.id]}" alt="Foto de ${App.dataBr(f.data)}">
+              <button class="foto-x" onclick="App.apagarFoto(${f.id})" aria-label="Apagar">✕</button>
+            </div>
             <div class="foto-acoes">
-              <button onclick="App.baixarFoto('${f.data}')">${Ic.prancheta(16)} Salvar</button>
-              <button onclick="App.compartilharFoto('${f.data}')">${Ic.chat(16)} Compartilhar</button>
+              <button onclick="App.baixarFoto(${f.id})">${Ic.prancheta(16)} Salvar</button>
+              <button onclick="App.compartilharFoto(${f.id})">${Ic.chat(16)} Compartilhar</button>
             </div>
           </figure>`).join('')}
       </div>`;
@@ -843,8 +845,8 @@ const Telas = {
         <div>
           <h1 class="display">Treinos</h1>
           <div class="topo-sub">${liberado
-            ? (r.total ? r.total + (r.total === 1 ? ' corrida registrada' : ' corridas registradas') : 'Modo Corrida')
-            : 'Modo Corrida'}</div>
+            ? (r.total ? r.total + (r.total === 1 ? ' corrida registrada' : ' corridas registradas') : 'Run Tracker')
+            : 'Run Tracker'}</div>
         </div>
         ${Telas._btnBiblioteca()}
       </div>
@@ -910,7 +912,7 @@ const Telas = {
     return `
       <div class="toggle duas">
         <button class="${App.abaTreinos === 'treino' ? 'on' : ''}" onclick="App.setAbaTreinos('treino')">Treino</button>
-        <button class="${App.abaTreinos === 'corrida' ? 'on' : ''}" onclick="App.setAbaTreinos('corrida')">Corrida</button>
+        <button class="${App.abaTreinos === 'corrida' ? 'on' : ''}" onclick="App.setAbaTreinos('corrida')">Run Tracker</button>
       </div>`;
   },
 
@@ -1075,12 +1077,12 @@ const Telas = {
     return `
       <div class="card corrida-capa">
         <div class="corrida-cad">${Ic.corrida(30)}</div>
-        <h3>Modo Corrida</h3>
+        <h3>Run Tracker</h3>
         <p>Cronômetro, distância, ritmo e calorias de cada corrida sua, dentro do mesmo app do seu plano.</p>
         <span class="corrida-selo">${Ic.cadeado(13)} Ainda não liberado</span>
       </div>
 
-      <h3 class="secao-tt">O que vem no Modo Corrida</h3>
+      <h3 class="secao-tt">O que vem no Run Tracker</h3>
       <div class="card" style="padding:6px 18px">
         ${CORRIDA_BENEFICIOS.map(([ic, tt, txt]) => `
           <div class="lista-item" style="align-items:flex-start">
@@ -1092,7 +1094,7 @@ const Telas = {
       ${naLoja ? `
         <div class="card">
           <div class="card-tt">${Ic.chat(20)} Como liberar</div>
-          <p class="corrida-nota" style="margin:0">O Modo Corrida não faz parte do seu plano atual. Fale com o suporte que a gente te explica como funciona.</p>
+          <p class="corrida-nota" style="margin:0">O Run Tracker não faz parte do seu plano atual. Fale com o suporte que a gente te explica como funciona.</p>
           <div style="height:12px"></div>
           <a class="btn sec" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">Falar com o suporte</a>
         </div>
@@ -1101,8 +1103,8 @@ const Telas = {
           <div class="corrida-val">${CONFIG.PRECO_CORRIDA || 'R$19,90'}<small>/ano</small></div>
           <div class="corrida-val-sub">Um ano de acesso, cobrado uma vez.</div>
           ${CONFIG.CHECKOUT_URL_CORRIDA
-            ? `<button class="btn" onclick="App.comprarCorrida()">Liberar o Modo Corrida</button>`
-            : `<div class="aviso" style="margin:0">O link de pagamento do Modo Corrida ainda não foi configurado em config.js.</div>`}
+            ? `<button class="btn" onclick="App.comprarCorrida()">Liberar o Run Tracker</button>`
+            : `<div class="aviso" style="margin:0">O link de pagamento do Run Tracker ainda não foi configurado em config.js.</div>`}
         </div>
       `}`;
   },
@@ -1824,11 +1826,15 @@ const Telas = {
      Rendida acima de "Seus dados" só pra quem ainda NÃO tem a segunda
      vaga (nem é convidada de ninguém): quem já tem Duo vê o cartão de
      _duo() lá embaixo, não este. Some sozinha se CHECKOUT_URL_DUO
-     estiver vazio ou dentro do app da loja (Google não deixa vender
-     assinatura fora da Play Store por ali). */
+     estiver vazio. Dentro do app da loja (Google não deixa vender
+     assinatura fora da Play Store por ali) o cartão continua
+     aparecendo do mesmo jeito, só que o botão leva pro WhatsApp do
+     suporte em vez de abrir o checkout — mesmo padrão do cartão de
+     reajuste travado (_reajusteTrancado), pra não infringir a
+     política da Play Store e ainda assim divulgar a oferta. */
   _duoPromo() {
     const d = App.duo;
-    if (window.NO_APP_DA_LOJA) return '';
+    const naLoja = window.NO_APP_DA_LOJA;
     if (!CONFIG.CHECKOUT_URL_DUO) return '';
     if (!Backend.ativo() || !d || !d.ok) return '';
     if (d.titular_email) return '';
@@ -1846,7 +1852,9 @@ const Telas = {
           </div>
           <div class="nivel-falta">Chame alguém para dividir o plano. Cada um responde o próprio quiz e tem plano, metas e progresso separados.</div>
         </div>
-        <button class="duo-promo-btn" onclick="App.abrirDuo()">Assinar o Plano Duo · ${CONFIG.PRECO_DUO || 'R$14,90'}/mês</button>
+        ${naLoja
+          ? `<a class="duo-promo-btn" style="text-align:center" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">Falar com o suporte</a>`
+          : `<button class="duo-promo-btn" onclick="App.abrirDuo()">Assinar o Plano Duo · ${CONFIG.PRECO_DUO || 'R$14,90'}/mês</button>`}
       </div>`;
   },
 

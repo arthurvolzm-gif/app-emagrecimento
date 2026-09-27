@@ -232,9 +232,9 @@ const Notif = {
       ic: 'corrida',
       tom: 'oferta',
       titulo: 'Seu app também conta corrida',
-      texto: `O Modo Corrida mede distância, tempo, ritmo e calorias de cada corrida sua, na mesma tela do seu plano. São ${CONFIG.PRECO_CORRIDA || 'R$19,90'} por um ano.`,
+      texto: `O Run Tracker mede distância, tempo, ritmo e calorias de cada corrida sua, na mesma tela do seu plano. São ${CONFIG.PRECO_CORRIDA || 'R$19,90'} por um ano.`,
       acao: "App.irCorrida()",
-      rotulo: 'Ver o Modo Corrida'
+      rotulo: 'Ver o Run Tracker'
     }];
   }
 };

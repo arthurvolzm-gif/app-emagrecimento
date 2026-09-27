@@ -8,7 +8,11 @@
    ========================================================= */
 const Fotos = {
   BANCO: 'focusfit_fotos',
-  LOJA: 'fotos',
+  /* v1 guardava na loja 'fotos' com a data como chave, então a segunda
+     foto do dia apagava a primeira. v2 dá um id próprio a cada foto e
+     copia as antigas pra cá na primeira abertura. */
+  LOJA: 'fotos_v2',
+  LOJA_V1: 'fotos',
   LARGURA_MAX: 900,          /* redimensiona antes de guardar */
   _db: null,
 
@@ -19,11 +23,20 @@ const Fotos = {
   abrir() {
     if (this._db) return Promise.resolve(this._db);
     return new Promise((ok, erro) => {
-      const req = indexedDB.open(this.BANCO, 1);
+      const req = indexedDB.open(this.BANCO, 2);
       req.onupgradeneeded = () => {
         const db = req.result;
-        if (!db.objectStoreNames.contains(this.LOJA)) {
-          db.createObjectStore(this.LOJA, { keyPath: 'data' });   /* uma por dia */
+        const nova = db.objectStoreNames.contains(this.LOJA)
+          ? req.transaction.objectStore(this.LOJA)
+          : db.createObjectStore(this.LOJA, { keyPath: 'id', autoIncrement: true });
+        if (db.objectStoreNames.contains(this.LOJA_V1)) {
+          const velhas = req.transaction.objectStore(this.LOJA_V1).getAll();
+          velhas.onsuccess = () => {
+            (velhas.result || []).forEach(f => {
+              nova.add({ data: f.data, blob: f.blob, peso: f.peso || null, em: f.em || Store.deIso(f.data).getTime() });
+            });
+            db.deleteObjectStore(this.LOJA_V1);
+          };
         }
       };
       req.onsuccess = () => { this._db = req.result; ok(this._db); };
@@ -59,25 +72,26 @@ const Fotos = {
     const blob = await this.encolher(arquivo);
     const loja = await this._tx('readwrite');
     return new Promise((ok, erro) => {
-      const req = loja.put({ data: Store.hoje(), blob, peso: peso || null, em: Date.now() });
+      const req = loja.add({ data: Store.hoje(), blob, peso: peso || null, em: Date.now() });
       req.onsuccess = () => ok(true);
       req.onerror = () => erro(req.error);
     });
   },
 
+  /* da mais antiga pra mais recente, pela hora em que foi tirada */
   async listar() {
     const loja = await this._tx('readonly');
     return new Promise((ok, erro) => {
       const req = loja.getAll();
-      req.onsuccess = () => ok((req.result || []).sort((a, b) => a.data < b.data ? -1 : 1));
+      req.onsuccess = () => ok((req.result || []).sort((a, b) => (a.em || 0) - (b.em || 0)));
       req.onerror = () => erro(req.error);
     });
   },
 
-  async apagar(data) {
+  async apagar(id) {
     const loja = await this._tx('readwrite');
     return new Promise((ok, erro) => {
-      const req = loja.delete(data);
+      const req = loja.delete(id);
       req.onsuccess = () => ok(true);
       req.onerror = () => erro(req.error);
     });

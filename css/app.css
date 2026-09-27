@@ -1322,20 +1322,22 @@ body.travado{overflow:hidden;}
   text-align:center;font-size:14px;font-weight:800;color:var(--verde-esc);
   margin:-4px 0 4px;
 }
-.foto-grade{display:flex;flex-direction:column;align-items:center;gap:26px;}
-.foto-item{position:relative;margin:0;width:66.6%;min-width:200px;}
+.foto-grade{display:grid;grid-template-columns:1fr 1fr;gap:22px 10px;}
+.foto-item{margin:0;min-width:0;}
+.fi-img{position:relative;}
 .foto-item img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--r);display:block;
   border:1px solid var(--linha);}
-.foto-item figcaption{display:flex;align-items:center;justify-content:center;gap:8px;
-  font-size:12px;color:var(--tinta-2);font-weight:700;text-align:center;margin-top:10px;}
+.foto-item figcaption{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;
+  font-size:12px;color:var(--tinta-2);font-weight:700;text-align:center;margin-bottom:8px;}
 .fi-peso{background:var(--verde-tint);color:var(--verde-esc);border-radius:20px;
-  padding:2px 9px;font-size:10.5px;font-weight:800;}
+  padding:2px 8px;font-size:10.5px;font-weight:800;}
 
-/* salvar e compartilhar, embaixo de cada foto */
-.foto-acoes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+/* salvar e compartilhar, embaixo de cada foto: um em cima do outro,
+   porque com duas fotos por linha não cabem lado a lado */
+.foto-acoes{display:grid;grid-template-columns:1fr;gap:6px;margin-top:8px;}
 .foto-acoes button{display:flex;align-items:center;justify-content:center;gap:6px;
   background:var(--verde-tint2);border:1px solid var(--linha);border-radius:11px;
-  padding:9px 6px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;
+  padding:8px 6px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;
   color:var(--tinta-2);}
 .foto-acoes button:hover{color:var(--verde-esc);border-color:var(--verde-borda);}
 .foto-acoes svg{flex-shrink:0;}

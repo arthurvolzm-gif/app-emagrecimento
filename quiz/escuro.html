@@ -1643,9 +1643,9 @@ function renderAnalyzing(){
     ci = (ci + 1) % CLIENTES_FOTOS.length;
     clienteImg.style.opacity = '0';
     setTimeout(() => { clienteImg.src = CLIENTES_FOTOS[ci]; clienteImg.style.opacity = '1'; }, 180);
-  }, 2000);
+  }, 1250);
 
-  const DUR = 8000;                                    // total da animação
+  const DUR = 5000;                                    // total da animação
   const topoFill = document.getElementById('topoFill');
   const topoPct = document.getElementById('topoPct');
   const smootherstep = x => x*x*x*(x*(x*6-15)+10);

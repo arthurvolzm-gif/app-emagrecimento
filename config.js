@@ -29,12 +29,12 @@ const CONFIG = {
   CHECKOUT_URL_TRIMESTRAL: 'https://app.zuptos.com.br/checkout/b8b35e1625ad65b7',
   CHECKOUT_URL_ANUAL: 'https://app.zuptos.com.br/checkout/4c18c052c5030bd6',
 
-  /* ---------- Modo Corrida (produto extra, R$19,90/ano) ----------
+  /* ---------- Run Tracker (produto extra, R$19,90/ano) ----------
      Compra avulsa feita DENTRO do app, na aba Treinos. Crie o produto
      na Zuptos com a palavra "corrida" no nome — é por ela que o
      webhook sabe que a compra é deste produto e grava em
      `acessos_extras` em vez de mexer na assinatura da pessoa.
-     Vazio = o botão não aparece e o Modo Corrida some da aba. */
+     Vazio = o botão não aparece e o Run Tracker some da aba. */
   CHECKOUT_URL_CORRIDA: 'https://app.zuptos.com.br/checkout/1ad1f0c357f8f4d7',
   PRECO_CORRIDA: 'R$19,90',
 

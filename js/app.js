@@ -34,7 +34,7 @@ const App = {
   duo: null,
   duoErro: '',
 
-  /* Modo Corrida: qual botão da aba Treinos está ativo, e a lista de
+  /* Run Tracker: qual botão da aba Treinos está ativo, e a lista de
      produtos extras que a pessoa comprou (vem do banco, não do
      aparelho — ver App.carregarExtras). null = ainda não consultado. */
   abaTreinos: 'treino',
@@ -1079,7 +1079,7 @@ const App = {
       if (this.temCorrida()) {
         this.abaTreinos = 'corrida';
         this.render();
-        this.toast('Modo Corrida liberado 🏃 Bom treino!', true);
+        this.toast('Run Tracker liberado 🏃 Bom treino!', true);
         return true;
       }
       await new Promise(ok => setTimeout(ok, 2500));
@@ -1401,6 +1401,7 @@ const App = {
      e preenche a lista em seguida, em vez de segurar a navegação. */
   _fotoUrls: {},
   _fotoBlobs: {},
+  _fotoDatas: {},
 
   abrirFotos() {
     this.ir('fotos');
@@ -1421,9 +1422,11 @@ const App = {
 
       const lista = await Fotos.listar();
       this._fotoBlobs = {};
+      this._fotoDatas = {};
       lista.forEach(f => {
-        this._fotoUrls[f.data] = URL.createObjectURL(f.blob);
-        this._fotoBlobs[f.data] = f.blob;
+        this._fotoUrls[f.id] = URL.createObjectURL(f.blob);
+        this._fotoBlobs[f.id] = f.blob;
+        this._fotoDatas[f.id] = f.data;
       });
       alvo.innerHTML = Telas._fotosConteudo(lista, this._fotoUrls);
     } catch (e) {
@@ -1448,24 +1451,24 @@ const App = {
 
   /* o nome do arquivo já diz o que é e de quando: quem salva na galeria
      não fica com "download (3).jpg" */
-  _nomeFoto(data) {
-    return 'focusfit-' + data + '.jpg';
+  _nomeFoto(id) {
+    return 'focusfit-' + this._fotoDatas[id] + '-' + id + '.jpg';
   },
 
-  _arquivoFoto(data) {
-    const blob = this._fotoBlobs[data];
+  _arquivoFoto(id) {
+    const blob = this._fotoBlobs[id];
     if (!blob) return null;
-    try { return new File([blob], this._nomeFoto(data), { type: blob.type || 'image/jpeg' }); }
+    try { return new File([blob], this._nomeFoto(id), { type: blob.type || 'image/jpeg' }); }
     catch (e) { return null; }    /* navegador sem construtor de File */
   },
 
   /* guarda na galeria/downloads do aparelho */
-  baixarFoto(data) {
-    const url = this._fotoUrls[data];
+  baixarFoto(id) {
+    const url = this._fotoUrls[id];
     if (!url) return this.toast('Não achei essa foto.');
     const a = document.createElement('a');
     a.href = url;
-    a.download = this._nomeFoto(data);
+    a.download = this._nomeFoto(id);
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -1475,23 +1478,23 @@ const App = {
   /* manda pro WhatsApp, Instagram, o que a pessoa escolher. Sem a API de
      compartilhamento (desktop, navegador antigo), cai no download, que
      resolve o mesmo problema por outro caminho. */
-  async compartilharFoto(data) {
-    const arquivo = this._arquivoFoto(data);
+  async compartilharFoto(id) {
+    const arquivo = this._arquivoFoto(id);
     const podeArquivo = arquivo && navigator.canShare && navigator.canShare({ files: [arquivo] });
-    if (!navigator.share || !podeArquivo) return this.baixarFoto(data);
+    if (!navigator.share || !podeArquivo) return this.baixarFoto(id);
     try {
-      await navigator.share({ files: [arquivo], title: 'Minha evolução', text: 'Foto de ' + this.dataBr(data) });
+      await navigator.share({ files: [arquivo], title: 'Minha evolução', text: 'Foto de ' + this.dataBr(this._fotoDatas[id]) });
     } catch (e) {
       /* a pessoa cancelou: isso não é erro e não merece aviso */
       if (e && e.name === 'AbortError') return;
-      this.baixarFoto(data);
+      this.baixarFoto(id);
     }
   },
 
-  async apagarFoto(data) {
+  async apagarFoto(id) {
     if (!confirm('Apagar esta foto? Não dá pra desfazer.')) return;
     try {
-      await Fotos.apagar(data);
+      await Fotos.apagar(id);
       await this.pintarFotos();
       this.toast('Foto apagada.');
     } catch (e) { this.toast('Não consegui apagar.'); }
