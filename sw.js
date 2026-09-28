@@ -25,7 +25,7 @@
    anterior no aparelho das pessoas.
    ========================================================= */
 
-const VERSAO = 'focusfit-v6';
+const VERSAO = 'focusfit-v7';
 const CACHE_APP   = VERSAO + '-app';
 const CACHE_MIDIA = VERSAO + '-midia';
 
@@ -44,6 +44,7 @@ const CASCA = [
   './js/fotos.js',
   './js/lembretes.js',
   './js/notificacoes.js',
+  './js/story.js',
   './js/screens.js',
   './js/onboarding.js',
   './js/app.js',

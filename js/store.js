@@ -791,8 +791,153 @@ const Store = {
     const d = this.dia();
     if (d.treino) return false;
     d.treino = true;
+    d.treino_fim = Date.now();
     this.save();
     return true;
+  },
+
+  /* ---------- a sessão de treino de hoje ----------
+     A hora da primeira coisa que ela faz no treino (abrir um exercício,
+     anotar carga, ajustar série, registrar cardio). É dela que sai a
+     duração do resumo. */
+  iniciarTreinoHoje() {
+    const d = this.dia();
+    if (d.treino || d.treino_inicio) return;
+    d.treino_inicio = Date.now();
+    this.save();
+  },
+
+  /* ---------- séries por exercício ----------
+     Ela pode tirar ou pôr séries. Guardado por NOME do exercício, no
+     perfil (viaja pra nuvem junto), e vale pra todo treino que tiver ele. */
+  seriesEx(nome, padrao) {
+    const o = this.db.perfil && this.db.perfil.series_ex;
+    return (o && o[nome]) || Number(padrao) || 1;
+  },
+
+  ajustarSeries(nome, padrao, delta) {
+    const p = this.db.perfil;
+    if (!p.series_ex || typeof p.series_ex !== 'object') p.series_ex = {};
+    const n = Math.max(1, Math.min(10, this.seriesEx(nome, padrao) + delta));
+    if (n === Number(padrao)) delete p.series_ex[nome]; else p.series_ex[nome] = n;
+    this.save();
+    return n;
+  },
+
+  /* ---------- cardio do treino ---------- */
+  caloriasCardio(tipo, minutos, km) {
+    const peso = (this.db.perfil && this.db.perfil.peso_atual) || 70;
+    const min = Math.max(0, Number(minutos) || 0);
+    const kmh = km > 0 && min > 0 ? km / (min / 60) : 0;
+    const t = CARDIO_TIPOS.find(x => x.id === tipo) || CARDIO_TIPOS[0];
+    let met;
+    if (t.id === 'corrida') {
+      if (!kmh) met = CAMINHADA_MET_SEM_DISTANCIA;
+      else { met = CORRIDA_MET[0][1]; for (const [v, m] of CORRIDA_MET) if (kmh >= v) met = m; }
+    } else if (t.id === 'bike') {
+      if (!kmh) met = BIKE_MET_SEM_DISTANCIA;
+      else { met = BIKE_MET[0][1]; for (const [v, m] of BIKE_MET) if (kmh >= v) met = m; }
+    } else {
+      met = t.met;
+    }
+    return Math.round(met * 3.5 * peso / 200 * min);
+  },
+
+  salvarCardio(tipo, minutos, km) {
+    const d = this.dia();
+    const t = CARDIO_TIPOS.find(x => x.id === tipo) || CARDIO_TIPOS[0];
+    const dist = t.distancia && km > 0 ? Math.round(km * 100) / 100 : 0;
+    d.cardio = { tipo: t.id, minutos: Math.round(minutos), km: dist, kcal: this.caloriasCardio(t.id, minutos, dist) };
+    this.iniciarTreinoHoje();
+    this.save();
+    return d.cardio;
+  },
+
+  removerCardio() {
+    delete this.dia().cardio;
+    this.save();
+  },
+
+  /* ---------- dias ativos ----------
+     O mesmo critério da sequência: registrou peso, comida, treino, água
+     ou sono naquele dia. */
+  diaAtivo(data) {
+    const d = this.db.dias[data];
+    const pesou = this.db.pesagens.some(p => p.data === data);
+    return !!(pesou || (d && (d.alimentos.length > 0 || d.treino || d.agua > 0 || d.sono > 0)));
+  },
+
+  diasAtivosTotal() {
+    const datas = new Set(Object.keys(this.db.dias || {}));
+    (this.db.pesagens || []).forEach(p => datas.add(p.data));
+    let n = 0;
+    datas.forEach(data => { if (this.diaAtivo(data)) n++; });
+    return n;
+  },
+
+  /* ---------- o resumo do treino concluído ----------
+     Montado uma vez, na hora em que ela conclui, e guardado no dia: é o
+     que aparece na tela de parabéns e vira a imagem pros stories. Tudo
+     sai do que ela registrou; o que é estimativa (calorias, duração sem
+     hora de início) vem marcado como tal. */
+  montarResumoTreino(treino) {
+    const d = this.dia();
+    const hoje = this.hoje();
+    const exercicios = (treino.exercicios || []).map(e => ({
+      nome: e.ex, series: this.seriesEx(e.ex, e.series), desc: e.desc
+    }));
+    const series = exercicios.reduce((s, e) => s + e.series, 0);
+
+    /* duração: da primeira ação até o "concluir". Fora de 5 min a 4 h é
+       sinal de que ela abriu o treino de manhã e treinou à noite: aí
+       estima pelas séries e descansos do plano */
+    let minutos = d.treino_inicio && d.treino_fim ? Math.round((d.treino_fim - d.treino_inicio) / 60000) : 0;
+    let estimada = false;
+    if (minutos < 5 || minutos > 240) {
+      const seg = exercicios.reduce((s, e) => s + e.series * (SEGUNDOS_POR_SERIE + (parseInt(e.desc, 10) || 60)), 0);
+      minutos = Math.max(10, Math.round(seg / 60));
+      estimada = true;
+    }
+    const cardio = d.cardio || null;
+    /* o tempo de cardio não conta de novo como musculação */
+    const minMusculacao = Math.max(0, minutos - (cardio && !estimada ? cardio.minutos : 0));
+    const peso = (this.db.perfil && this.db.perfil.peso_atual) || 70;
+    const kcalTreino = Math.round(MUSCULACAO_MET * 3.5 * peso / 200 * minMusculacao);
+
+    /* recorde: a série mais pesada de hoje passou a mais pesada de antes */
+    const prs = [];
+    exercicios.forEach(e => {
+      const hist = this.cargas(e.nome);
+      const deHoje = hist.find(r => r.data === hoje);
+      if (!deHoje) return;
+      const antes = hist.filter(r => r.data < hoje).reduce((m, r) => Math.max(m, Number(r.peso) || 0), 0);
+      if (antes > 0 && deHoje.peso > antes) prs.push({ nome: e.nome, peso: deHoje.peso, antes });
+    });
+
+    const musculos = [];
+    exercicios.forEach(e => {
+      const b = BIBLIOTECA.find(x => x.nome === e.nome);
+      (b ? b.musc : []).forEach(m => { if (!musculos.includes(m)) musculos.push(m); });
+    });
+
+    const r = {
+      data: hoje,
+      foco: treino.foco,
+      exercicios: exercicios.map(e => e.nome),
+      series,
+      minutos: minutos + (cardio && estimada ? cardio.minutos : 0),
+      duracaoEstimada: estimada,
+      kcalTreino,
+      cardio,
+      kcal: kcalTreino + (cardio ? cardio.kcal : 0),
+      prs,
+      musculos,
+      sequencia: this.streak(),
+      diasAtivos: this.diasAtivosTotal()
+    };
+    d.resumo_treino = r;
+    this.save();
+    return r;
   },
 
   /* ---------- como foi o treino ----------
@@ -1094,11 +1239,7 @@ const Store = {
   streak() {
     let dias = 0;
     for (let i = 0; i < 400; i++) {
-      const data = this.diasAtras(i);
-      const d = this.db.dias[data];
-      const pesou = this.db.pesagens.some(p => p.data === data);
-      const ativo = pesou || (d && (d.alimentos.length > 0 || d.treino || d.agua > 0 || d.sono > 0));
-      if (ativo) { dias++; continue; }
+      if (this.diaAtivo(this.diasAtras(i))) { dias++; continue; }
       /* o dia de hoje ainda pode estar zerado sem quebrar a sequência */
       if (i === 0) continue;
       break;

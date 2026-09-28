@@ -478,6 +478,45 @@ a{color:inherit;text-decoration:none;}
 .cardio-dica{font-size:12.5px;color:var(--azul-tx2);line-height:1.55;font-weight:600;margin:9px 0 0;font-style:italic;}
 .cardio-card.off .cardio-dica{color:var(--cinza);}
 
+/* ---------- cardio registrado dentro do treino ---------- */
+.cardio-rec{font-size:12.5px;color:var(--cinza);line-height:1.55;font-weight:600;margin:0 0 12px;}
+.cardio-tipos{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.cardio-tipo{padding:9px 13px;border-radius:20px;border:1px solid var(--linha);background:var(--branco);
+  font-size:12.5px;font-weight:800;color:var(--tinta-2);font-family:inherit;cursor:pointer;}
+.cardio-tipo.on{border-color:var(--verde-esc);background:var(--verde-tint);color:var(--verde-esc);}
+.cardio-campos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.cardio-campos.um{grid-template-columns:1fr;}
+.cardio-campos label{display:flex;flex-direction:column;gap:6px;font-size:10.5px;font-weight:800;
+  color:var(--cinza);text-transform:uppercase;letter-spacing:.04em;}
+.cardio-campos input{width:100%;padding:11px 12px;border-radius:11px;border:1px solid var(--linha);
+  background:var(--branco);font-size:15px;font-weight:700;color:var(--tinta);font-family:inherit;}
+.cardio-campos input:focus{outline:none;border-color:var(--verde);box-shadow:0 0 0 3px var(--verde-tint);}
+.cardio-feito{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.cardio-feito > div:first-child{flex:1;min-width:0;}
+.cf-tipo{font-size:15px;font-weight:800;color:var(--tinta);}
+.cf-det{font-size:13px;font-weight:700;color:var(--cinza);margin-top:2px;}
+.cf-kcal{font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:800;color:var(--verde-esc);line-height:1;}
+.cf-kcal span{font-family:inherit;font-size:12px;margin-left:3px;color:var(--cinza);}
+.cardio-acoes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.cardio-acoes .btn{padding:11px;font-size:13.5px;}
+
+/* − / + séries, no topo do exercício aberto */
+.series-ajuste{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.series-ajuste span{flex:1;font-size:10.5px;font-weight:800;color:var(--cinza);text-transform:uppercase;letter-spacing:.04em;}
+.series-ajuste b{min-width:22px;text-align:center;font-size:16px;font-weight:800;color:var(--tinta);}
+.series-ajuste .btn-mini{width:34px;height:34px;font-size:18px;}
+
+/* ---------- treino concluído (a tela dos stories) ---------- */
+.rt-tela{padding:18px 18px calc(28px + env(safe-area-inset-bottom, 0px));max-width:460px;margin:0 auto;}
+.rt-topo{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.rt-selo{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:20px;
+  background:var(--verde-tint);border:1px solid var(--verde-borda);color:var(--verde-esc);font-size:12.5px;font-weight:800;}
+.rt-selo svg{color:var(--verde-esc);}
+.rt-previa{aspect-ratio:9/16;width:100%;border-radius:22px;overflow:hidden;border:1px solid var(--verde-borda);
+  background:#030605;margin-bottom:16px;box-shadow:0 18px 50px rgba(0,0,0,.6),0 0 40px rgba(0,215,162,.10);}
+.rt-previa img{width:100%;height:100%;display:block;}
+.rt-carregando{height:100%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--cinza);}
+
 /* estado final do treino: não é botão, não volta atrás */
 .treino-feito{
   text-align:center;padding:16px;border-radius:16px;
@@ -1391,6 +1430,11 @@ body.travado{overflow:hidden;}
 }
 .btn-mini.cheio svg{color:#fff;}
 .btn-mini.cheio{box-shadow:0 0 18px rgba(0,215,162,.35);}
+/* o "concluir" apagado enquanto o treino está pendente: acende só
+   depois do toque, pra aceso significar feito */
+.btn-mini.apagado{border-color:var(--linha);background:transparent;}
+.btn-mini.apagado svg{color:var(--cinza-c);}
+.btn-mini.feito{pointer-events:none;}
 
 /* a razão do cardio sai do cartão verde e vira nota embaixo dele */
 .plano-porque{

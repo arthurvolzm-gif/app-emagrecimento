@@ -104,7 +104,9 @@ const Telas = {
               </div>
               <div class="barra"><i style="width:${t.treino ? 100 : 0}%"></i></div>
             </div>
-            ${treinoHoje.descanso || t.treino ? '' : `<button class="btn-mini cheio" onclick="App.marcarTreino()">${Ic.visto(17)}</button>`}
+            ${treinoHoje.descanso ? '' : t.treino
+              ? `<span class="btn-mini cheio feito" aria-label="Treino concluído">${Ic.visto(17)}</span>`
+              : `<button class="btn-mini apagado" onclick="App.marcarTreino()" aria-label="Marcar treino como concluído">${Ic.visto(17)}</button>`}
           </div>
         </div>
 
@@ -1199,10 +1201,11 @@ const Telas = {
             ${dia.exercicios.map((e, i) => Telas._exercicio(e, i)).join('')}
           </div>
 
-          ${Telas._cardio(false)}
+          ${Telas._cardioTreino(ehHoje)}
 
           ${ehHoje ? (feito
-            ? `<div class="treino-feito">✓ Treino concluído hoje</div>`
+            ? `<div class="treino-feito">✓ Treino concluído hoje</div>
+               ${Store.dia().resumo_treino ? `<button class="btn sec" onclick="App.abrirResumoTreino()">Ver o resumo do treino</button>` : ''}`
             : `<button class="btn" onclick="App.marcarTreino()">Marcar treino como concluído</button>`) : `
             <div class="aviso">Este é o treino de ${dia.diaLongo}. Você só marca como concluído no dia.</div>`}
         `}
@@ -1210,6 +1213,31 @@ const Telas = {
         ${Telas._organizarSemana(plano, dias)}
 
         ${Telas._agendaTreino()}
+      </div>`;
+  },
+
+  /* ---------- treino concluído ----------
+     A imagem dos stories é a própria tela: o que ela vê é exatamente o
+     que vai ser postado. Enquanto o canvas monta, fica um espaço do
+     mesmo tamanho, pra nada pular. */
+  resumoTreino() {
+    const r = App.resumoAtual;
+    if (!r) return '';
+    const url = App.resumoUrl;
+    return `
+      <div class="rt-tela">
+        <div class="rt-topo">
+          <div class="rt-selo">${Ic.visto(16)} Treino concluído</div>
+          <button class="btn-mini" style="width:40px;height:40px" onclick="App.fecharResumo()" aria-label="Fechar">✕</button>
+        </div>
+        <div class="rt-previa">
+          ${url ? `<img src="${url}" alt="Resumo do treino: ${r.foco}, ${r.minutos} minutos, ${r.kcal} kcal">`
+                : `<div class="rt-carregando">Montando o seu resumo…</div>`}
+        </div>
+        <button class="btn" onclick="App.compartilharResumo()">Compartilhar nos stories</button>
+        <div style="height:10px"></div>
+        <button class="btn sec" onclick="App.baixarResumo()">Salvar imagem</button>
+        <button class="bib-depois" onclick="App.fecharResumo()">Continuar</button>
       </div>`;
   },
 
@@ -1427,6 +1455,63 @@ const Telas = {
       </div>`;
   },
 
+  /* ---------- cardio dentro do treino ----------
+     No lugar do cartão que só dava a receita: ela registra o que fez
+     (tipo, tempo, distância) e o app calcula as calorias. A receita do
+     objetivo continua, numa linha, como referência. */
+  _cardioTreino(ehHoje) {
+    const c = CARDIO_POR_OBJETIVO[Store.db.perfil.objetivo] || CARDIO_POR_OBJETIVO.manutencao;
+    const rec = `<p class="cardio-rec">Pro seu objetivo: ${c.frequencia}, depois da musculação.</p>`;
+    const topo = `<div class="card-tt" style="margin-bottom:8px">${Ic.corrida(20)} Cardio</div>`;
+
+    if (!ehHoje) return `
+      <div class="card">${topo}${rec}
+        <p class="cardio-rec" style="margin-top:6px">O cardio é registrado no dia do treino.</p>
+      </div>`;
+
+    const reg = Store.dia().cardio;
+    if (reg && !App.cardioEditando) {
+      const t = CARDIO_TIPOS.find(x => x.id === reg.tipo) || CARDIO_TIPOS[0];
+      return `
+        <div class="card">${topo}
+          <div class="cardio-feito">
+            <div>
+              <div class="cf-tipo">${t.nome}</div>
+              <div class="cf-det">${reg.minutos} min${reg.km ? ' · ' + String(reg.km).replace('.', ',') + ' km' : ''}</div>
+            </div>
+            <div class="cf-kcal">${reg.kcal}<span>kcal</span></div>
+          </div>
+          <div class="cardio-acoes">
+            <button class="btn sec" onclick="App.editarCardio()">Editar</button>
+            <button class="btn sec" onclick="App.removerCardio()">Remover</button>
+          </div>
+          <p class="cardio-rec">Estimativa pelo seu peso, pelo tempo e pela velocidade.</p>
+        </div>`;
+    }
+
+    const tipo = App.cardioTipo || (reg && reg.tipo) || 'corrida';
+    const t = CARDIO_TIPOS.find(x => x.id === tipo) || CARDIO_TIPOS[0];
+    return `
+      <div class="card">${topo}${rec}
+        <div class="cardio-tipos">
+          ${CARDIO_TIPOS.map(x => `
+            <button class="cardio-tipo ${x.id === t.id ? 'on' : ''}" onclick="App.escolherCardio('${x.id}')">${x.nome}</button>`).join('')}
+        </div>
+        <div class="cardio-campos ${t.distancia ? '' : 'um'}">
+          <label>Tempo (min)
+            <input id="cardio-min" type="number" inputmode="numeric" min="1" max="300"
+                   placeholder="20" value="${reg ? reg.minutos : ''}">
+          </label>
+          ${t.distancia ? `
+          <label>Distância (km)
+            <input id="cardio-km" type="number" inputmode="decimal" step="0.1" min="0"
+                   placeholder="2,5" value="${reg && reg.km ? reg.km : ''}">
+          </label>` : ''}
+        </div>
+        <button class="btn" onclick="App.salvarCardio()">Salvar cardio</button>
+      </div>`;
+  },
+
   /* linha do exercício, com seta que abre o registro de carga */
   /* Uma linha por SÉRIE do exercício: 3x12 vira três pares de carga e
      repetições. Antes era um par só pro exercício inteiro, o que obrigava
@@ -1437,7 +1522,7 @@ const Telas = {
      vez; registro antigo, que tinha um valor só, sugere esse valor em
      todas. As repetições do plano ficam de placeholder. */
   _cargaForm(e, i, ultima) {
-    const series = Math.max(1, Math.min(10, Number(e.series) || 1));
+    const series = Store.seriesEx(e.ex, e.series);
     const anteriores = Store.seriesDe(ultima);
     const repsPlano = String(e.reps).replace(/\D/g, '') || '12';
 
@@ -1451,10 +1536,10 @@ const Telas = {
           return `
           <div class="carga-serie">
             <span class="cs-n">${k + 1}</span>
-            <input id="carga-peso-${k}" type="number" inputmode="decimal" step="0.5"
+            <input id="carga-peso-${i}-${k}" type="number" inputmode="decimal" step="0.5"
                    placeholder="0" value="${ant && ant.peso ? ant.peso : ''}"
                    onclick="event.stopPropagation()">
-            <input id="carga-reps-${k}" type="number" inputmode="numeric"
+            <input id="carga-reps-${i}-${k}" type="number" inputmode="numeric"
                    placeholder="${repsPlano}" value="${ant && ant.reps ? ant.reps : ''}"
                    onclick="event.stopPropagation()">
           </div>`;
@@ -1482,11 +1567,18 @@ const Telas = {
               ${ultima ? ` · <b style="color:var(--verde-esc)">${ultima.peso}kg${ultima.reps ? ' × ' + ultima.reps : ''}</b>${subiu ? ' ↑' : ''}` : ''}
             </div>
           </div>
-          <div class="ex-serie">${e.series}×${e.reps}</div>
+          <div class="ex-serie">${Store.seriesEx(nome, e.series)}×${e.reps}</div>
           <div class="ex-seta">▾</div>
         </div>
 
         <div class="ex-corpo">
+          <div class="series-ajuste" onclick="event.stopPropagation()">
+            <span>Séries</span>
+            <button class="btn-mini" onclick="App.alterarSeries(${i}, -1)" aria-label="Tirar uma série">−</button>
+            <b>${Store.seriesEx(nome, e.series)}</b>
+            <button class="btn-mini" onclick="App.alterarSeries(${i}, 1)" aria-label="Pôr uma série">+</button>
+          </div>
+
           ${hist.length ? `
             <div class="carga-hist">
               ${hist.slice(-6).map(r => `

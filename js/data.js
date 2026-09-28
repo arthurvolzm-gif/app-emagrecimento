@@ -26,6 +26,19 @@ const NIVEIS = [
    semana, que é onde a maioria desiste, e mais espaçados depois. */
 const STREAK_MARCOS = [1, 3, 7, 14, 30, 60, 100];
 
+/* a cor do fogo da sequência, uma por marco: esquenta com o tempo e,
+   nos 100 dias, vira o verde da marca. [a partir de, cor do fogo, cor
+   do miolo] */
+const STREAK_CORES = [
+  [1,   '#FFB547', '#FFE3A6'],   // começando: amarelo-laranja
+  [3,   '#FF7A29', '#FFC08A'],   // laranja (o do selo da sequência)
+  [7,   '#FF4B3E', '#FFA38F'],   // vermelho
+  [14,  '#FF3D8B', '#FF9CC6'],   // rosa
+  [30,  '#A45CFF', '#D2B0FF'],   // roxo
+  [60,  '#3D8BFF', '#A9CBFF'],   // azul
+  [100, '#00D7A2', '#9DF5DE']    // verde da marca
+];
+
 /* pontos por ação concluída */
 const PONTOS = {
   alimento:   3,   // cada alimento marcado
@@ -903,6 +916,37 @@ const CORRIDA_MET = [
   [12.9, 11.8], // corrida rápida
   [14.5, 12.8]  // muito rápida
 ];
+
+/* ---------- cardio registrado dentro do treino ----------
+   Mesma conta do Run Tracker (MET × 3,5 × peso / 200 × minutos, do
+   Compêndio de Atividades Físicas). Caminhada/corrida usa a tabela
+   CORRIDA_MET pela velocidade; bicicleta tem a dela; elíptico e escada
+   não dependem de distância, então é MET fixo. */
+const CARDIO_TIPOS = [
+  { id: 'corrida',  nome: 'Caminhada ou corrida', distancia: true },
+  { id: 'bike',     nome: 'Bicicleta',            distancia: true },
+  { id: 'eliptico', nome: 'Elíptico',             distancia: false, met: 5.0 },
+  { id: 'escada',   nome: 'Escada',               distancia: false, met: 9.0 }
+];
+
+const BIKE_MET = [
+  [0,    4.0],  // passeio
+  [16,   6.8],  // moderado
+  [19.3, 8.0],  // firme
+  [22.5, 10.0], // forte
+  [25.7, 12.0]  // muito forte
+];
+/* bicicleta sem distância (a da academia nem sempre mostra): moderado */
+const BIKE_MET_SEM_DISTANCIA = 6.8;
+/* caminhada sem distância: ritmo moderado */
+const CAMINHADA_MET_SEM_DISTANCIA = 3.5;
+
+/* musculação: entre "moderado" (3,5) e "vigoroso" (6,0) do Compêndio,
+   que é onde um treino de academia com descanso entre séries fica */
+const MUSCULACAO_MET = 5.0;
+/* tempo de uma série sem contar o descanso, pra estimar a duração
+   quando o app não sabe a hora em que ela começou */
+const SEGUNDOS_POR_SERIE = 40;
 
 /* como o app chama cada faixa de ritmo, pra não mostrar só número */
 const CORRIDA_FAIXAS = [

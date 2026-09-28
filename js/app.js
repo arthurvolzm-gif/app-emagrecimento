@@ -534,7 +534,7 @@ const App = {
     app.innerHTML = fn.call(Telas);
 
     /* telas internas ocupam a tela inteira, sem a barra de navegação */
-    const internas = ['biblioteca', 'cardapio', 'resumo', 'fotos', 'notificacoes', 'niveis', 'corridaAtiva'];
+    const internas = ['biblioteca', 'cardapio', 'resumo', 'fotos', 'notificacoes', 'niveis', 'corridaAtiva', 'resumoTreino'];
     nav.style.display = internas.includes(this.tela) ? 'none' : 'flex';
     document.querySelectorAll('.nav button').forEach(b => {
       b.classList.toggle('on', b.dataset.tela === this.tela);
@@ -1592,13 +1592,83 @@ const App = {
 
   marcarTreino() {
     if (!Store.concluirTreino()) return;      // já estava concluído, ignora
+    const treino = Store.diasTreino()[this.indiceHoje()];
+    Store.montarResumoTreino(treino);
     Backend.agendarSync();
+    this.toast('Treino concluído! +40 pontos 🏋️', true);
+    /* o resumo vem primeiro; nível, sequência e "como foi o treino"
+       ficam pra quando ela fechar (ver fecharResumo) */
+    this.abrirResumoTreino(true);
+  },
+
+  /* ---------- resumo do treino (a tela dos stories) ---------- */
+  resumoAtual: null,
+  resumoBlob: null,
+  resumoUrl: null,
+
+  abrirResumoTreino(recemConcluido) {
+    const r = Store.dia().resumo_treino;
+    if (!r) return;
+    this.resumoAtual = r;
+    this.resumoRecem = !!recemConcluido;
+    this.telaAntesResumo = this.tela === 'resumoTreino' ? 'inicio' : this.tela;
+    if (this.resumoUrl) URL.revokeObjectURL(this.resumoUrl);
+    this.resumoUrl = null;
+    this.resumoBlob = null;
+    this.tela = 'resumoTreino';
     this.render();
+    window.scrollTo(0, 0);
+    Story.gerar(r).then(blob => {
+      if (this.resumoAtual !== r) return;
+      this.resumoBlob = blob;
+      this.resumoUrl = URL.createObjectURL(blob);
+      if (this.tela === 'resumoTreino') this.render();
+    }).catch(e => {
+      console.warn('Não consegui montar a imagem do resumo:', e);
+      this.toast('Não consegui montar a imagem agora.');
+    });
+  },
+
+  _arquivoResumo() {
+    if (!this.resumoBlob) return null;
+    const nome = 'focusfit-treino-' + (this.resumoAtual ? this.resumoAtual.data : Store.hoje()) + '.png';
+    try { return new File([this.resumoBlob], nome, { type: 'image/png' }); } catch (e) { return null; }
+  },
+
+  /* O navegador não abre o Instagram direto: o que dá é o menu de
+     compartilhar do celular, onde aparece "Stories" do Instagram. Sem
+     esse menu (computador, navegador antigo), salva a imagem. */
+  async compartilharResumo() {
+    const arquivo = this._arquivoResumo();
+    if (!arquivo) return this.toast('A imagem ainda está sendo montada.');
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [arquivo] })) {
+      try { await navigator.share({ files: [arquivo] }); return; }
+      catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    this.baixarResumo();
+    this.toast('Imagem salva. Abra o Instagram e poste nos stories.', true);
+  },
+
+  baixarResumo() {
+    if (!this.resumoUrl) return this.toast('A imagem ainda está sendo montada.');
+    const a = document.createElement('a');
+    a.href = this.resumoUrl;
+    a.download = 'focusfit-treino-' + (this.resumoAtual ? this.resumoAtual.data : Store.hoje()) + '.png';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  },
+
+  fecharResumo() {
+    const recem = this.resumoRecem;
+    this.resumoRecem = false;
+    this.tela = this.telaAntesResumo || 'inicio';
+    this.render();
+    window.scrollTo(0, 0);
+    if (!recem) return;
     if (this.checarNivel()) return;
     if (this.checarStreak()) return;
-    this.toast('Treino concluído! +40 pontos 🏋️', true);
-    /* deixa o toast aparecer sozinho antes de puxar a pergunta */
-    setTimeout(() => this.perguntarEsforco(), 900);
+    setTimeout(() => this.perguntarEsforco(), 400);
   },
 
   /* ---------- como foi o treino ----------
@@ -1740,7 +1810,80 @@ const App = {
     const nome = this.nomeExercicio(i);
     if (!nome) return;
     this.exAberto = this.exAberto === nome ? null : nome;
+    if (this.exAberto && this.diaTreino === this.indiceHoje()) Store.iniciarTreinoHoje();
     this.render();
+  },
+
+  /* − / + séries. Guarda o que ela já digitou nas linhas de carga antes
+     de redesenhar, senão mexer na série apagaria as cargas não salvas. */
+  alterarSeries(i, delta) {
+    const dia = Store.diasTreino()[this.diaTreino];
+    const e = dia && dia.exercicios && dia.exercicios[i];
+    if (!e) return;
+    const digitado = [];
+    for (let k = 0; k < 10; k++) {
+      const p = document.getElementById(`carga-peso-${i}-${k}`);
+      if (!p) break;
+      const r = document.getElementById(`carga-reps-${i}-${k}`);
+      digitado.push([p.value, r ? r.value : '']);
+    }
+    const n = Store.ajustarSeries(e.ex, e.series, delta);
+    if (this.diaTreino === this.indiceHoje()) Store.iniciarTreinoHoje();
+    Backend.agendarSync();
+    this.render();
+    digitado.slice(0, n).forEach(([peso, reps], k) => {
+      const p = document.getElementById(`carga-peso-${i}-${k}`);
+      const r = document.getElementById(`carga-reps-${i}-${k}`);
+      if (p) p.value = peso;
+      if (r) r.value = reps;
+    });
+  },
+
+  /* ---------- cardio do treino ---------- */
+  cardioTipo: null,
+  cardioEditando: false,
+
+  escolherCardio(tipo) {
+    const min = document.getElementById('cardio-min');
+    const km = document.getElementById('cardio-km');
+    const guardado = [min ? min.value : '', km ? km.value : ''];
+    this.cardioTipo = tipo;
+    this.render();
+    const m2 = document.getElementById('cardio-min');
+    const k2 = document.getElementById('cardio-km');
+    if (m2) m2.value = guardado[0];
+    if (k2) k2.value = guardado[1];
+  },
+
+  salvarCardio() {
+    const tipo = this.cardioTipo || (Store.dia().cardio && Store.dia().cardio.tipo) || 'corrida';
+    const min = parseFloat((document.getElementById('cardio-min') || {}).value);
+    const kmEl = document.getElementById('cardio-km');
+    const km = kmEl ? parseFloat(String(kmEl.value).replace(',', '.')) : 0;
+    if (!min || min < 1 || min > 300) return this.toast('Digite o tempo em minutos.');
+    if (kmEl && kmEl.value !== '' && (isNaN(km) || km < 0 || km > 100)) return this.toast('Digite uma distância válida.');
+    const reg = Store.salvarCardio(tipo, min, km || 0);
+    this.cardioEditando = false;
+    this.cardioTipo = null;
+    Backend.agendarSync();
+    this.render();
+    this.toast(`Cardio registrado: ${reg.kcal} kcal 🔥`, true);
+  },
+
+  editarCardio() {
+    const reg = Store.dia().cardio;
+    this.cardioEditando = true;
+    this.cardioTipo = reg ? reg.tipo : null;
+    this.render();
+  },
+
+  removerCardio() {
+    Store.removerCardio();
+    this.cardioEditando = false;
+    this.cardioTipo = null;
+    Backend.agendarSync();
+    this.render();
+    this.toast('Cardio removido.');
   },
 
   salvarCarga(i, series) {
@@ -1751,8 +1894,11 @@ const App = {
        registro, pra quem parou antes do fim não gravar zero */
     const lidas = [];
     for (let k = 0; k < (Number(series) || 1); k++) {
-      const elP = document.getElementById('carga-peso-' + k);
-      const elR = document.getElementById('carga-reps-' + k);
+      /* o id leva o índice do exercício: todos os exercícios têm o
+         formulário na página, e com id repetido a leitura pegava as
+         séries do primeiro, não as do que está aberto */
+      const elP = document.getElementById(`carga-peso-${i}-${k}`);
+      const elR = document.getElementById(`carga-reps-${i}-${k}`);
       if (!elP) continue;
       const peso = parseFloat(elP.value);
       if (isNaN(peso)) continue;
@@ -1762,6 +1908,7 @@ const App = {
     if (!lidas.length) return this.toast('Preencha a carga de pelo menos uma série.');
 
     const anterior = Store.ultimaCarga(nome);
+    Store.iniciarTreinoHoje();
     const topo = Store.registrarCarga(nome, lidas);
     const peso = topo ? topo.peso : 0;
     Backend.agendarSync();
