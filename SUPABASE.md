@@ -94,9 +94,9 @@ diante ninguém recebe o código, ninguém entra, e você descobre pelo
 WhatsApp lotado.
 
 1. Crie conta no **Resend** (3.000/mês grátis) ou **Brevo** (300/dia)
-2. Verifique um domínio seu (o mesmo do app, se possível)
+2. Verifique um domínio seu (o mesmo do app: `focusapp.com.br`)
 3. Copie host, porta, usuário e senha pro painel do Supabase
-4. Remetente: algo como `acesso@seudominio.com.br`
+4. Remetente: algo como `acesso@focusapp.com.br`
 
 **Não mande de `@gmail.com`:** limite baixo, cai em spam, e o Google
 pode suspender a conta por uso fora dos termos.

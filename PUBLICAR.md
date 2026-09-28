@@ -70,7 +70,7 @@ enquanto o app estava sendo montado.
 
 Depois disso todo push publica sozinho.
 
-A URL é **https://app-emagrecimento-three.vercel.app** — a raiz já serve
+A URL é **https://focusapp.com.br** — a raiz já serve
 o app (`index.html`). O `vercel.json` também responde em `/app` e
 `/teste`, que levam pro mesmo lugar.
 
@@ -417,10 +417,10 @@ recomenda pra PWA, e é como o app fica editável pelo push.
 
 ### 8.2 Um domínio próprio, antes de tudo
 
-Dá pra fazer TWA apontando pra `app-emagrecimento-three.vercel.app`,
+Dá pra fazer TWA apontando pro endereço da Vercel (`*.vercel.app`),
 mas não faça. O endereço vira a identidade do app: trocar depois
-significa app novo. Registre algo como `focusfit.com.br`, aponte na
-Vercel (Settings → Domains) e use esse endereço em tudo daqui pra frente.
+significa app novo. O domínio do app é `focusapp.com.br`, já apontado na
+Vercel (Settings → Domains). Use esse endereço em tudo.
 
 ### 8.3 Gerar o `.aab`
 
@@ -567,7 +567,7 @@ trabalho. Nada do que a gente fez fecha essa porta depois.
 ## O que dizer pra quem comprou
 
 > Seu acesso está liberado. Abra este link no celular:
-> **https://app-emagrecimento-three.vercel.app**
+> **https://focusapp.com.br**
 >
 > Entre com o mesmo e-mail que você usou na compra. Vai chegar um código
 > de 6 números nele.
