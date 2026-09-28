@@ -9,8 +9,8 @@
       isto deixou de ser enfeite e virou requisito.
    2. Abrir rápido na segunda vez: o CSS, o JS e as imagens saem do
       aparelho, não da rede.
-   3. Ser a base pra notificação com o app fechado no Android, que
-      hoje não existe (ver o bloco PUSH lá embaixo).
+   3. Receber a notificação com o app fechado (ver o bloco PUSH lá
+      embaixo e a function enviar-lembretes).
 
    ESTRATÉGIA: rede primeiro, cache como rede reserva.
    É de propósito. Com "cache primeiro" o app editado na Vercel
@@ -25,7 +25,7 @@
    anterior no aparelho das pessoas.
    ========================================================= */
 
-const VERSAO = 'focusfit-v4';
+const VERSAO = 'focusfit-v5';
 const CACHE_APP   = VERSAO + '-app';
 const CACHE_MIDIA = VERSAO + '-midia';
 
@@ -131,23 +131,22 @@ self.addEventListener('fetch', evento => {
   );
 });
 
-/* ---------- PUSH (ainda não ligado) ----------
-   O aparelho só recebe aviso com o app fechado se existir um servidor
-   mandando push com chave VAPID. Enquanto esse servidor não existir,
-   js/lembretes.js continua avisando só com o app aberto. O listener
-   fica aqui pronto: no dia que o servidor subir, é só ele começar a
-   mandar e o aviso aparece, sem mexer em mais nada.                */
+/* ---------- PUSH ----------
+   Quem manda é a function enviar-lembretes (Supabase), a cada 5
+   minutos, com { titulo, texto, tag }. A mesma tag substitui o aviso
+   anterior do mesmo tipo em vez de empilhar (três lembretes de água
+   não lidos viram um). Ver js/lembretes.js.                         */
 self.addEventListener('push', evento => {
   let dados = { titulo: 'Focus Fit', texto: 'Você tem algo pra registrar hoje.' };
   try { if (evento.data) dados = Object.assign(dados, evento.data.json()); } catch (e) {}
-  evento.waitUntil(
-    self.registration.showNotification(dados.titulo, {
-      body: dados.texto,
-      icon: './icone-192.png',
-      badge: './icone-192.png',
-      lang: 'pt-BR'
-    })
-  );
+  const opcoes = {
+    body: dados.texto,
+    icon: './icone-192.png',
+    badge: './icone-192.png',
+    lang: 'pt-BR'
+  };
+  if (dados.tag) opcoes.tag = dados.tag;
+  evento.waitUntil(self.registration.showNotification(dados.titulo, opcoes));
 });
 
 self.addEventListener('notificationclick', evento => {

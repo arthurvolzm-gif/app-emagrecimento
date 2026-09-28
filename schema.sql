@@ -531,3 +531,110 @@ select cron.schedule(
   '0 3 * * *',  -- todo dia às 3h
   $$ delete from public.respostas_quiz where criado_em < now() - interval '30 days'; $$
 );
+
+-- =========================================================
+-- NOTIFICAÇÕES PUSH (lembrete com o app fechado)
+--
+-- Cada celular que aceitou notificação ganha uma linha aqui, com a
+-- "inscrição" que o navegador devolve (endpoint + duas chaves) e a
+-- agenda da semana daquela pessoa (refeições, água, sono, treino). A
+-- function `enviar-lembretes` roda a cada 5 minutos (pg_cron, abaixo),
+-- vê o que venceu no fuso de cada um e manda.
+--
+-- O navegador nunca escreve direto nesta tabela: passa pelas funções
+-- salvar_push / remover_push, que pegam o dono pelo token da sessão.
+-- Sem política de RLS = só o service role (a function) lê e escreve.
+-- =========================================================
+create table if not exists public.push_inscricoes (
+  endpoint      text primary key,
+  user_id       uuid not null references auth.users(id) on delete cascade,
+  p256dh        text not null,
+  auth          text not null,
+  fuso          text not null default 'America/Sao_Paulo',
+  agenda        jsonb not null default '[]'::jsonb,
+  atualizado_em timestamptz not null default now()
+);
+alter table public.push_inscricoes enable row level security;
+create index if not exists push_inscricoes_user_idx on public.push_inscricoes (user_id);
+
+-- o que já foi mandado, pra nunca mandar o mesmo lembrete duas vezes
+-- (duas execuções do cron na mesma janela, ou uma que atrasou)
+create table if not exists public.push_enviados (
+  endpoint   text not null,
+  chave      text not null,          -- 'AAAA-MM-DD HH:MM tag'
+  enviado_em timestamptz not null default now(),
+  primary key (endpoint, chave)
+);
+alter table public.push_enviados enable row level security;
+
+-- grava/atualiza a inscrição deste aparelho. Se o aparelho já era de
+-- outra conta (trocou de login no mesmo celular), passa a ser desta:
+-- o lembrete tem que ser de quem está usando agora.
+create or replace function public.salvar_push(
+  p_endpoint text, p_p256dh text, p_auth text, p_fuso text, p_agenda jsonb
+)
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if auth.uid() is null then return false; end if;
+  insert into public.push_inscricoes (endpoint, user_id, p256dh, auth, fuso, agenda, atualizado_em)
+  values (p_endpoint, auth.uid(), p_p256dh, p_auth,
+          coalesce(nullif(p_fuso, ''), 'America/Sao_Paulo'),
+          coalesce(p_agenda, '[]'::jsonb), now())
+  on conflict (endpoint) do update
+    set user_id = excluded.user_id,
+        p256dh = excluded.p256dh,
+        auth = excluded.auth,
+        fuso = excluded.fuso,
+        agenda = excluded.agenda,
+        atualizado_em = now();
+  return true;
+end;
+$$;
+
+-- ao sair da conta: este aparelho para de receber os lembretes dela
+create or replace function public.remover_push(p_endpoint text)
+returns void
+language sql
+security definer
+set search_path = public
+as $$
+  delete from public.push_inscricoes
+   where endpoint = p_endpoint and user_id = auth.uid();
+$$;
+
+revoke all on function public.salvar_push(text, text, text, text, jsonb) from public;
+revoke all on function public.remover_push(text) from public;
+grant execute on function public.salvar_push(text, text, text, text, jsonb) to authenticated;
+grant execute on function public.remover_push(text) to authenticated;
+
+-- o disparo: a cada 5 minutos o banco chama a function. O token sai do
+-- Vault (Project Settings → Vault), não fica escrito aqui. Ver
+-- SUPABASE.md, passo "Notificações push".
+create extension if not exists pg_net with schema extensions;
+
+select cron.schedule(
+  'enviar_lembretes_push',
+  '*/5 * * * *',
+  $$
+  select net.http_post(
+    url := 'https://ddtxvijlmjqtaxdystph.supabase.co/functions/v1/enviar-lembretes',
+    headers := jsonb_build_object(
+      'Content-Type', 'application/json',
+      'x-cron-token', coalesce(
+        (select decrypted_secret from vault.decrypted_secrets where name = 'push_cron_token'), '')
+    ),
+    body := '{}'::jsonb
+  );
+  $$
+);
+
+-- o registro de enviados só serve pro dia: apaga o que tem mais de 2 dias
+select cron.schedule(
+  'limpar_push_enviados',
+  '30 3 * * *',
+  $$ delete from public.push_enviados where enviado_em < now() - interval '2 days'; $$
+);

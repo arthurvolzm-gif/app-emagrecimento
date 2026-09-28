@@ -105,8 +105,30 @@ const Backend = {
   },
 
   async sair() {
+    /* antes do signOut: tirar a inscrição de push precisa da sessão */
+    if (typeof Lembretes !== 'undefined') await Lembretes.pararPush();
     if (this.sb) await this.sb.auth.signOut();
     this.usuario = null;
+  },
+
+  /* ---------- PUSH ----------
+     O celular manda a inscrição e a agenda da semana; quem dispara é a
+     function enviar-lembretes. Passa por função no banco (security
+     definer), que pega o dono pelo token da sessão. Ver schema.sql. */
+  async salvarPush(d) {
+    if (!this.ativo()) return false;
+    const { data, error } = await this.sb.rpc('salvar_push', {
+      p_endpoint: d.endpoint, p_p256dh: d.p256dh, p_auth: d.auth,
+      p_fuso: d.fuso, p_agenda: d.agenda
+    });
+    if (error) { console.warn('Erro ao salvar o push:', error.message); return false; }
+    return data === true;
+  },
+
+  async removerPush(endpoint) {
+    if (!this.ativo()) return;
+    const { error } = await this.sb.rpc('remover_push', { p_endpoint: endpoint });
+    if (error) console.warn('Erro ao remover o push:', error.message);
   },
 
   traduzErro(msg) {

@@ -1,19 +1,21 @@
 /* =========================================================
    LEMBRETES NO CELULAR
 
-   ⚠️ LEIA ANTES DE MEXER — o limite aqui é do navegador, não do código.
-   Site não agenda notificação para disparar com ele FECHADO. A API que
-   faria isso (Notification Triggers) não é suportada de forma confiável,
-   e push de verdade exige servidor com chave VAPID e um service worker
-   registrado. Então o que dá pra fazer hoje, honestamente, é:
+   Dois caminhos, e o app escolhe sozinho:
 
-     • app aberto (inclusive em segundo plano, aba minimizada): dispara
-       na hora certa — é o caso de quem deixa o app aberto no celular;
-     • app fechado: NÃO dispara. Ao reabrir, mostra o que perdeu.
+     • PUSH (o principal): com login e navegador que suporta, o celular
+       se inscreve e manda a agenda da semana pro Supabase
+       (salvar_push). A function `enviar-lembretes` roda a cada 5
+       minutos e avisa MESMO COM O APP FECHADO. Vale no Android (Chrome e
+       o app da Play Store) e no iPhone instalado na tela de início
+       (iOS 16.4+). Aqui só se decide QUANDO lembrar; quem manda é o
+       servidor.
+     • LOCAL (reserva): sem login (acesso de teste), sem internet ou
+       navegador sem push, volta ao setTimeout de antes, que só dispara
+       com o app aberto (mesmo minimizado).
 
-   Quando existir o APK, o lembrete com app fechado vira código nativo do
-   wrapper lendo os mesmos horários daqui. A parte de decidir QUANDO
-   lembrar já está pronta e é o que se aproveita.
+   Os dois nunca rodam juntos: com o push confirmado, os timers locais
+   ficam desligados, senão cada aviso chegaria duas vezes.
 
    ── QUATRO LEMBRETES, QUATRO CHAVES ──────────────────────
    Cada um liga e desliga sozinho, porque são pedidos diferentes: quem
@@ -116,20 +118,24 @@ const Lembretes = {
   },
 
   /* treino: só nos dias que TÊM treino, no horário que ela escolheu.
-     Dia de descanso não cobra ninguém. */
+     Dia de descanso não cobra ninguém. `pos` é 0=Seg ... 6=Dom. */
+  _itemTreino(pos) {
+    const dia = Store.diasTreino()[pos];
+    if (!dia || dia.descanso) return null;
+    const hora = Store.horaTreino(pos);
+    if (!hora) return null;
+    return {
+      hora,
+      titulo: `Treino de ${dia.foco} · Focus Fit`,
+      corpo: 'Seu horário de treino chegou. Abra o app e veja os exercícios de hoje.',
+      tag: 'treino'
+    };
+  },
+
   _horasTreino() {
     try {
-      const pos = App.indiceHoje();
-      const dia = Store.diasTreino()[pos];
-      if (!dia || dia.descanso) return [];
-      const hora = Store.horaTreino(pos);
-      if (!hora) return [];
-      return [{
-        hora,
-        titulo: `Treino de ${dia.foco} · Focus Fit`,
-        corpo: 'Seu horário de treino chegou. Abra o app e veja os exercícios de hoje.',
-        tag: 'treino'
-      }];
+      const item = this._itemTreino(App.indiceHoje());
+      return item ? [item] : [];
     } catch (e) { return []; }
   },
 
@@ -143,12 +149,35 @@ const Lembretes = {
     return lista;
   },
 
-  /* um setTimeout por aviso que ainda não passou hoje */
+  /* a semana inteira, pro servidor de push: o mesmo de agenda(), mas o
+     treino vai com o dia da semana dele (dias: [pos]), porque o
+     servidor avisa em qualquer dia, não só hoje */
+  agendaSemana() {
+    let lista = [];
+    if (this.ligado('refeicao')) lista = lista.concat(this._horasRefeicao());
+    if (this.ligado('agua'))     lista = lista.concat(this._horasAgua());
+    if (this.ligado('sono'))     lista = lista.concat(this._horasSono());
+    if (this.ligado('treino')) {
+      for (let pos = 0; pos < 7; pos++) {
+        try {
+          const item = this._itemTreino(pos);
+          if (item) lista.push(Object.assign(item, { dias: [pos] }));
+        } catch (e) {}
+      }
+    }
+    return lista;
+  },
+
+  /* Conta quantos avisos ainda faltam hoje (é o número do toast) e, se
+     o push não estiver confirmado, arma um setTimeout pra cada um. Em
+     todo caso manda a agenda nova pro servidor. */
   agendar() {
     this.limpar();
+    this._pedirSync();
     if (!this.permitido() || !this.algumLigado()) return 0;
 
     const agora = new Date();
+    const local = !this.pushAtivo();
     let n = 0;
     this.agenda().forEach(av => {
       const [h, m] = String(av.hora).split(':').map(Number);
@@ -158,9 +187,90 @@ const Lembretes = {
       const falta = quando - agora;
       if (falta <= 0) return;                      /* já passou hoje */
       n++;
-      this._timers.push(setTimeout(() => this.disparar(av), falta));
+      if (local) this._timers.push(setTimeout(() => this.disparar(av), falta));
     });
     return n;
+  },
+
+  /* ---------- PUSH ---------- */
+  CHAVE_PUSH: 'focusfit_push',
+  _timerPush: null,
+
+  pushSuportado() {
+    return this.suportado() && 'serviceWorker' in navigator && 'PushManager' in window &&
+           typeof CONFIG !== 'undefined' && !!CONFIG.PUSH_VAPID_PUBLICA;
+  },
+
+  /* o servidor confirmou a inscrição deste aparelho */
+  pushAtivo() {
+    try { return !!localStorage.getItem(this.CHAVE_PUSH); } catch (e) { return false; }
+  },
+
+  /* agendar() é chamado em rajada (abrir o app, trocar três horários):
+     junta tudo num envio só */
+  _pedirSync() {
+    clearTimeout(this._timerPush);
+    this._timerPush = setTimeout(() => this.sincronizarPush(), 1500);
+  },
+
+  /* a chave pública VAPID vem em base64url; o navegador quer bytes */
+  _bytes(b64) {
+    const pad = '='.repeat((4 - b64.length % 4) % 4);
+    const bin = atob((b64 + pad).replace(/-/g, '+').replace(/_/g, '/'));
+    return Uint8Array.from(bin, c => c.charCodeAt(0));
+  },
+
+  async _registro() {
+    return Promise.race([
+      navigator.serviceWorker.ready,
+      new Promise((_, falha) => setTimeout(() => falha(new Error('service worker não respondeu')), 8000))
+    ]);
+  },
+
+  /* Inscreve (se ainda não estiver) e manda a agenda. Sem login, sem
+     permissão ou sem suporte, não faz nada e o aviso local segue. */
+  async sincronizarPush() {
+    if (!this.pushSuportado() || !this.permitido() || !Backend.ativo()) return false;
+    try {
+      const reg = await this._registro();
+      let sub = await reg.pushManager.getSubscription();
+      if (!sub) {
+        sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: this._bytes(CONFIG.PUSH_VAPID_PUBLICA)
+        });
+      }
+      const j = sub.toJSON();
+      let fuso = 'America/Sao_Paulo';
+      try { fuso = Intl.DateTimeFormat().resolvedOptions().timeZone || fuso; } catch (e) {}
+      const ok = await Backend.salvarPush({
+        endpoint: j.endpoint, p256dh: j.keys.p256dh, auth: j.keys.auth,
+        fuso, agenda: this.algumLigado() ? this.agendaSemana() : []
+      });
+      if (!ok) return false;
+      const antes = this.pushAtivo();
+      try { localStorage.setItem(this.CHAVE_PUSH, j.endpoint); } catch (e) {}
+      if (!antes) this.limpar();                   /* dali pra frente quem avisa é o servidor */
+      return true;
+    } catch (e) {
+      console.warn('Push indisponível, seguindo com o aviso local:', e && e.message);
+      return false;
+    }
+  },
+
+  /* ao sair da conta: este aparelho para de receber os avisos dela.
+     Precisa rodar ANTES do signOut, enquanto ainda há sessão. */
+  async pararPush() {
+    try { localStorage.removeItem(this.CHAVE_PUSH); } catch (e) {}
+    clearTimeout(this._timerPush);
+    if (!this.pushSuportado()) return;
+    try {
+      const reg = await this._registro();
+      const sub = await reg.pushManager.getSubscription();
+      if (!sub) return;
+      await Backend.removerPush(sub.endpoint);
+      await sub.unsubscribe();
+    } catch (e) { /* sem service worker ou sem rede: o servidor limpa quando der 410 */ }
   },
 
   disparar(av) {

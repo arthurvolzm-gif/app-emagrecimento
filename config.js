@@ -119,6 +119,13 @@ const CONFIG = {
      esconder segredo. */
   ACESSO_TESTE: ['arthur.volz.m@gmail.com'],
 
+  /* ---------- notificação com o app fechado (push) ----------
+     A chave PÚBLICA do par VAPID. Pode ficar aqui, é feita pra ser
+     vista. A PRIVADA mora só no segredo VAPID_PRIVATE_KEY da function
+     enviar-lembretes, no Supabase, e nunca entra neste arquivo.
+     Vazio = o app não se inscreve e fica só no aviso com o app aberto. */
+  PUSH_VAPID_PUBLICA: 'BKy9QREKYUs8n_jZnoCcnKBzNOW74B4MvuY5ptHa0MbwyTGWQjakM2LOAg3K2RMGgRdMOHZzFZ5Aj0j1nyepyJI',
+
   /* suporte: abre a conversa no WhatsApp direto, sem mensagem pronta.
      Um lugar só — a tela de login, as boas-vindas e a aba de Perfil
      leem daqui. Trocou o número? Troca aqui e pronto. */

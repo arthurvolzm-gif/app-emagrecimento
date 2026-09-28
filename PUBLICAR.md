@@ -431,6 +431,9 @@ O jeito sem instalar nada: **https://www.pwabuilder.com**
 3. Em Options confira:
    - **Package ID**: `br.com.focusfit.app` (é o que está no
      `assetlinks.json`; se mudar aqui, mude lá também)
+   - **Notification delegation / Enable notifications**: ligado. É o
+     que faz o push dos lembretes aparecer como notificação do app
+     Focus Fit, e não do Chrome (ver SUPABASE.md, passo 4.5)
    - **Signing key**: "Create new" — o PWABuilder devolve a chave junto
      com o pacote
 4. Baixe o `.zip`: dentro vem o `.aab` e a pasta `signing`
@@ -550,9 +553,9 @@ trabalho. Nada do que a gente fez fecha essa porta depois.
 ### 9.4 Duas limitações honestas do iPhone
 
 - **Aviso com o app fechado** só funciona se a pessoa instalou na tela
-  de início (iOS 16.4+), e mesmo assim precisa de um servidor de push,
-  que ainda não existe. Hoje o app avisa com ele aberto e mostra o que
-  passou quando a pessoa volta.
+  de início (iOS 16.4+) e abriu o app por lá pelo menos uma vez depois
+  de aceitar a notificação. Pelo Safari comum, sem instalar, o iPhone
+  não recebe push de site nenhum.
 - **As fotos de progresso ficam no aparelho.** No iPhone, o Safari pode
   limpar o armazenamento de um site que passa semanas sem ser aberto.
   Instalado na tela de início o risco cai bastante, mas não é zero. Se
@@ -578,12 +581,6 @@ trabalho. Nada do que a gente fez fecha essa porta depois.
 
 Ficou de fora de propósito, pra não atrasar o lançamento:
 
-- **Lembrete com o app fechado.** Hoje o app avisa só com ele aberto e
-  mostra o que passou quando a pessoa volta. O `sw.js` já tem o
-  `push`/`notificationclick` escritos e prontos; o que falta é um
-  servidor mandando o push com chave VAPID. Publicado na Play Store
-  isso passa a valer pro Android instalado, e no iPhone vale pra quem
-  adicionou à tela de início (iOS 16.4+).
 - **Ícones de traço na barra de navegação já estão feitos**, mas os
   emojis coloridos continuam nos níveis e nos quadros de estatística,
   como nas telas de referência.

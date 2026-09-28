@@ -213,6 +213,51 @@ ler o e-mail nos campos que eu chutei.
 
 ---
 
+## 4.5 Notificações com o app fechado (push)
+
+Os lembretes de refeição, água, sono e treino chegam no celular mesmo
+com o app fechado. Quem manda é a function `enviar-lembretes`, que o
+banco chama a cada 5 minutos. São quatro passos, uma vez só:
+
+1. **Rodar o `schema.sql` de novo** (passo 1). Ele ganhou as tabelas
+   `push_inscricoes` e `push_enviados`, as funções `salvar_push` e
+   `remover_push` e o agendamento `enviar_lembretes_push`.
+2. **Publicar a função.** **Edge Functions → Deploy a new function**,
+   nome `enviar-lembretes`, cole
+   `supabase/functions/enviar-lembretes/index.ts`. Depois, nos detalhes
+   da função, **desligue "Verify JWT"** (quem chama é o banco, que se
+   identifica pelo token do passo 4, não por login).
+3. **Criar os segredos** em **Project Settings → Edge Functions →
+   Secrets**:
+
+   | Nome | Valor |
+   |---|---|
+   | `VAPID_PUBLIC_KEY` | a mesma de `PUSH_VAPID_PUBLICA` em `config.js` |
+   | `VAPID_PRIVATE_KEY` | a chave privada do par (passada à parte, **nunca** no repositório) |
+   | `VAPID_SUBJECT` | `mailto:` + um e-mail de contato seu |
+   | `PUSH_CRON_TOKEN` | uma senha que você inventa |
+
+4. **Guardar o mesmo token no Vault**, pro agendamento conseguir
+   chamar a função. No **SQL Editor**:
+
+   ```sql
+   select vault.create_secret('A_MESMA_SENHA_DO_PUSH_CRON_TOKEN', 'push_cron_token');
+   ```
+
+**Como saber que deu certo:** entre no app com login de verdade (não o
+acesso de teste), toque em ligar um lembrete e aceite a notificação.
+Em `push_inscricoes` aparece uma linha com a sua agenda. Marque um
+horário de treino para daqui a 6 minutos, feche o app e espere.
+
+Se não chegar: **Edge Functions → enviar-lembretes → Logs**. `401` é o
+token do Vault diferente do segredo; `faltam os segredos VAPID` é o
+passo 3.
+
+⚠️ **O par VAPID não se troca.** Trocar a chave invalida a inscrição de
+todo mundo, e cada pessoa só se inscreve de novo quando abrir o app.
+
+---
+
 ## 5. A compra de verdade, antes de divulgar
 
 Compre você mesmo, do começo ao fim, como cliente:
