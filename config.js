@@ -38,7 +38,7 @@ const CONFIG = {
      e gravar em `acessos_extras` em vez de mexer na assinatura da
      pessoa (nos dois casos, avulso ou bump — ver zuptos-webhook).
      Vazio = o botão não aparece e o Run Tracker some da aba. */
-  CHECKOUT_URL_CORRIDA: 'https://app.zuptos.com.br/checkout/1ad1f0c357f8f4d7',
+  CHECKOUT_URL_CORRIDA: 'https://app.zuptos.com.br/checkout/bb063a1e47620e78',
   PRECO_CORRIDA: 'R$47,90',
   /* como o parcelamento aparece pra quem só vê o preço passar rápido,
      tipo na notificação de oferta. Ajuste aqui se a Zuptos mudar as

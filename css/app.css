@@ -135,9 +135,11 @@ a{color:inherit;text-decoration:none;}
 .topo h1{font-size:21px;}
 .topo-sub{font-size:13.5px;color:var(--cinza);margin-top:4px;font-weight:500;}
 
-/* ---------- cards ---------- */
+/* ---------- cards ----------
+   Contorno no menta da marca, mas apagado: o contorno cheio fica só nos
+   cartões de destaque (nível, promoção do Duo), senão nada se destaca. */
 .card{
-  background:var(--branco);border:1px solid var(--verde-logo);border-radius:var(--r);
+  background:var(--branco);border:1px solid var(--verde-borda);border-radius:var(--r);
   padding:18px;box-shadow:var(--sombra);margin-bottom:14px;
 }
 .card-tt{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--cinza);margin-bottom:14px;display:flex;align-items:center;gap:7px;}
