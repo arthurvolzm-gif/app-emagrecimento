@@ -273,14 +273,22 @@ const Lembretes = {
     } catch (e) { /* sem service worker ou sem rede: o servidor limpa quando der 410 */ }
   },
 
+  /* a tela que cada lembrete abre no toque (o mesmo mapa do sw.js) */
+  TELA: { treino: 'treinos', refeicao: 'alimentacao', agua: 'inicio', sono: 'inicio' },
+
   disparar(av) {
     if (!this.permitido()) return;
     try {
-      new Notification(av.titulo, {
+      const n = new Notification(av.titulo, {
         body: av.corpo,
         icon: 'logo-focusfit.png',
         tag: av.tag                                /* não empilha lembrete repetido */
       });
+      n.onclick = () => {
+        try { window.focus(); } catch (e) {}
+        App.abrirDoAviso(this.TELA[av.tag] || 'inicio');
+        n.close();
+      };
     } catch (e) {}
   },
 

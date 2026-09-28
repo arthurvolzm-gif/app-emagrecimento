@@ -14,6 +14,12 @@
 // 'dia hora tag' em `push_enviados`. Se a gravação não entrou (já
 // existia), é porque outra execução já mandou.
 //
+// AVISO PRA TODOS: chamada com { "aviso": { titulo, texto, tela } } no
+// corpo, em vez de conferir a agenda, manda essa mensagem pra todos os
+// celulares inscritos (ver SUPABASE.md, "Mandar um aviso pra todos").
+// A mesma mensagem no mesmo dia não sai duas vezes, então rodar o SQL
+// de novo sem querer não repete.
+//
 // Segredos (Project Settings → Edge Functions → Secrets):
 //   VAPID_PUBLIC_KEY   a mesma de CONFIG.PUSH_VAPID_PUBLICA no app
 //   VAPID_PRIVATE_KEY  a privada do par (NUNCA no código nem no app)
@@ -21,7 +27,9 @@
 //   PUSH_CRON_TOKEN    o mesmo valor guardado no Vault como push_cron_token
 //
 // Publicar com a verificação de JWT DESLIGADA: quem chama é o banco,
-// que se identifica pelo PUSH_CRON_TOKEN, não por login.
+// que se identifica pelo PUSH_CRON_TOKEN, não por login. Sem esse
+// segredo a função recusa tudo: aberta, qualquer um mandaria
+// notificação pros clientes.
 // =========================================================
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
@@ -83,18 +91,58 @@ export function vencidos(agenda: ItemAgenda[], local: { minutos: number; pos: nu
 }
 
 function tokenValido(req: Request): boolean {
-  if (!PUSH_CRON_TOKEN) return true; // sem segredo ainda: não bloqueia
+  if (!PUSH_CRON_TOKEN) return false;
   return req.headers.get('x-cron-token') === PUSH_CRON_TOKEN;
 }
 
-async function executar(): Promise<{ inscricoes: number; enviados: number; removidos: number; erros: number }> {
-  const sb = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
-  webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+// as telas que um aviso pode abrir no toque (as abas de baixo do app)
+export const TELAS = ['inicio', 'treinos', 'alimentacao', 'progresso', 'perfil'];
 
-  const agora = new Date();
-  let inscricoes = 0, enviados = 0, removidos = 0, erros = 0;
+type Inscricao = { endpoint: string; p256dh: string; auth: string; fuso: string; agenda: unknown };
+type Resultado = 'enviado' | 'repetido' | 'removido' | 'erro';
+type Contagem = { inscricoes: number; enviados: number; removidos: number; erros: number };
 
-  // de mil em mil, pra não depender de caber tudo numa resposta só
+// Marca, manda e trata a resposta. A marca vem antes de mandar: se duas
+// execuções chegarem juntas, só a que conseguiu gravar manda.
+async function mandar(sb: any, ins: Inscricao, chave: string, payload: object): Promise<Resultado> {
+  const { data: novo, error: erroMarca } = await sb
+    .from('push_enviados')
+    .upsert({ endpoint: ins.endpoint, chave }, { onConflict: 'endpoint,chave', ignoreDuplicates: true })
+    .select('chave');
+  if (erroMarca) return 'erro';
+  if (!novo || !novo.length) return 'repetido';
+
+  try {
+    await webpush.sendNotification(
+      { endpoint: ins.endpoint, keys: { p256dh: ins.p256dh, auth: ins.auth } },
+      JSON.stringify(payload),
+      { TTL: 60 * 30, urgency: 'high' },
+    );
+    return 'enviado';
+  } catch (e: any) {
+    // 404/410: o celular desinstalou, limpou o navegador ou revogou a
+    // permissão. A inscrição morreu e não volta: apaga.
+    if (e?.statusCode === 404 || e?.statusCode === 410) {
+      await sb.from('push_inscricoes').delete().eq('endpoint', ins.endpoint);
+      return 'removido';
+    }
+    // falha passageira (rede, serviço de push fora): desfaz a marca
+    // pra próxima tentativa conseguir mandar
+    await sb.from('push_enviados').delete().eq('endpoint', ins.endpoint).eq('chave', chave);
+    console.error('falha ao mandar push:', e?.statusCode, e?.body || e?.message);
+    return 'erro';
+  }
+}
+
+function contar(c: Contagem, r: Resultado) {
+  if (r === 'enviado') c.enviados++;
+  else if (r === 'removido') c.removidos++;
+  else if (r === 'erro') c.erros++;
+}
+
+// todas as inscrições, de mil em mil, pra não depender de caber tudo
+// numa resposta só
+async function* inscricoes(sb: any): AsyncGenerator<Inscricao[]> {
   for (let de = 0; ; de += 1000) {
     const { data: linhas, error } = await sb
       .from('push_inscricoes')
@@ -102,48 +150,73 @@ async function executar(): Promise<{ inscricoes: number; enviados: number; remov
       .order('endpoint')
       .range(de, de + 999);
     if (error) throw new Error(error.message);
-    if (!linhas || !linhas.length) break;
+    if (!linhas || !linhas.length) return;
+    yield linhas as Inscricao[];
+    if (linhas.length < 1000) return;
+  }
+}
 
-    for (const ins of linhas) {
-      inscricoes++;
+function cliente() {
+  webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+  return createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+}
+
+async function executar(): Promise<Contagem> {
+  const sb = cliente();
+  const agora = new Date();
+  const c: Contagem = { inscricoes: 0, enviados: 0, removidos: 0, erros: 0 };
+
+  for await (const lote of inscricoes(sb)) {
+    for (const ins of lote) {
+      c.inscricoes++;
       let local;
       try { local = agoraNoFuso(ins.fuso, agora); } catch { continue; }
 
       for (const item of vencidos(ins.agenda as ItemAgenda[], local)) {
-        const chave = `${local.data} ${item.hora} ${item.tag}`;
-        const { data: novo, error: erroMarca } = await sb
-          .from('push_enviados')
-          .upsert({ endpoint: ins.endpoint, chave }, { onConflict: 'endpoint,chave', ignoreDuplicates: true })
-          .select('chave');
-        if (erroMarca) { erros++; continue; }
-        if (!novo || !novo.length) continue;   // já mandado por outra execução
-
-        try {
-          await webpush.sendNotification(
-            { endpoint: ins.endpoint, keys: { p256dh: ins.p256dh, auth: ins.auth } },
-            JSON.stringify({ titulo: item.titulo, texto: item.corpo, tag: item.tag }),
-            { TTL: 60 * 30, urgency: 'high' },
-          );
-          enviados++;
-        } catch (e: any) {
-          // 404/410: o celular desinstalou, limpou o navegador ou revogou a
-          // permissão. A inscrição morreu e não volta: apaga.
-          if (e?.statusCode === 404 || e?.statusCode === 410) {
-            await sb.from('push_inscricoes').delete().eq('endpoint', ins.endpoint);
-            removidos++;
-            break;
-          }
-          // falha passageira (rede, serviço de push fora): desfaz a marca
-          // pra próxima execução, 5 minutos depois, tentar de novo
-          await sb.from('push_enviados').delete().eq('endpoint', ins.endpoint).eq('chave', chave);
-          erros++;
-          console.error('falha ao mandar push:', e?.statusCode, e?.body || e?.message);
-        }
+        const r = await mandar(sb, ins, `${local.data} ${item.hora} ${item.tag}`,
+          { titulo: item.titulo, texto: item.corpo, tag: item.tag });
+        contar(c, r);
+        if (r === 'removido') break;
       }
     }
-    if (linhas.length < 1000) break;
   }
-  return { inscricoes, enviados, removidos, erros };
+  return c;
+}
+
+export type Aviso = { titulo: string; texto: string; tela: string; chave: string };
+
+// confere o aviso que veio no corpo e devolve pronto pra mandar, ou o erro
+export async function lerAviso(bruto: any): Promise<Aviso | { erro: string }> {
+  const titulo = String(bruto?.titulo ?? '').trim();
+  const texto = String(bruto?.texto ?? '').trim();
+  const tela = String(bruto?.tela ?? 'inicio').trim();
+  if (!titulo || !texto) return { erro: 'o aviso precisa de titulo e texto' };
+  if (titulo.length > 80) return { erro: 'titulo com mais de 80 caracteres' };
+  if (texto.length > 240) return { erro: 'texto com mais de 240 caracteres' };
+  if (!TELAS.includes(tela)) return { erro: 'tela precisa ser uma de: ' + TELAS.join(', ') };
+
+  // mesma mensagem no mesmo dia = mesma chave = não sai duas vezes
+  const dia = new Date().toISOString().slice(0, 10);
+  const bytes = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(titulo + '\n' + texto)));
+  const resumo = Array.from(bytes.slice(0, 8), b => b.toString(16).padStart(2, '0')).join('');
+  return { titulo, texto, tela, chave: `aviso ${dia} ${resumo}` };
+}
+
+async function mandarAviso(aviso: Aviso): Promise<Contagem> {
+  const sb = cliente();
+  const c: Contagem = { inscricoes: 0, enviados: 0, removidos: 0, erros: 0 };
+  const payload = { titulo: aviso.titulo, texto: aviso.texto, tag: 'aviso', tela: aviso.tela };
+
+  for await (const lote of inscricoes(sb)) {
+    c.inscricoes += lote.length;
+    // de 50 em 50 ao mesmo tempo: um por um, mil celulares estourariam
+    // o tempo da função
+    for (let i = 0; i < lote.length; i += 50) {
+      const rs = await Promise.all(lote.slice(i, i + 50).map(ins => mandar(sb, ins, aviso.chave, payload)));
+      rs.forEach(r => contar(c, r));
+    }
+  }
+  return c;
 }
 
 Deno.serve(async (req) => {
@@ -152,11 +225,21 @@ Deno.serve(async (req) => {
   if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) {
     return new Response(JSON.stringify({ ok: false, erro: 'faltam os segredos VAPID' }), { status: 500 });
   }
+
+  let corpo: any = {};
+  try { corpo = await req.json(); } catch { /* o cron manda {} */ }
+
   try {
+    if (corpo && corpo.aviso) {
+      const aviso = await lerAviso(corpo.aviso);
+      if ('erro' in aviso) return new Response(JSON.stringify({ ok: false, erro: aviso.erro }), { status: 400 });
+      const r = await mandarAviso(aviso);
+      return new Response(JSON.stringify({ ok: true, aviso: aviso.titulo, ...r }), { status: 200 });
+    }
     const r = await executar();
     return new Response(JSON.stringify({ ok: true, ...r }), { status: 200 });
   } catch (e: any) {
-    console.error('erro ao enviar lembretes:', e?.message);
+    console.error('erro ao enviar:', e?.message);
     return new Response(JSON.stringify({ ok: false, erro: e?.message }), { status: 500 });
   }
 });

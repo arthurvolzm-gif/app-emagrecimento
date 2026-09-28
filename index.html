@@ -96,8 +96,16 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || LOCAL)) {
      referrer, que navegador nenhum consegue forjar */
   var androidApp = document.referrer.indexOf('android-app://') === 0
                 || new URLSearchParams(location.search).get('origem') === 'twa';
-  if (androidApp) { try { sessionStorage.setItem('ff_twa', '1'); } catch (e) {} }
-  try { androidApp = androidApp || sessionStorage.getItem('ff_twa') === '1'; } catch (e) {}
+  /* localStorage, e não sessionStorage: o toque numa notificação abre o
+     app sem o referrer da loja, numa sessão nova. Guardado, o celular
+     continua sabendo que é o app da Play Store. O efeito colateral (no
+     Chrome desse mesmo celular também somem preço e checkout) é o lado
+     seguro: quem instalou pela loja já é cliente. */
+  if (androidApp) {
+    try { localStorage.setItem('ff_twa', '1'); } catch (e) {}
+    try { sessionStorage.setItem('ff_twa', '1'); } catch (e) {}
+  }
+  try { androidApp = androidApp || localStorage.getItem('ff_twa') === '1' || sessionStorage.getItem('ff_twa') === '1'; } catch (e) {}
 
   doc.dataset.instalado = instalado ? 'sim' : 'nao';
   doc.dataset.loja = androidApp ? 'play' : 'nao';

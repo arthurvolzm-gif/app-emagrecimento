@@ -54,6 +54,12 @@ const App = {
   async iniciar() {
     Store.load();
     this.pintarNav();
+    const telaDoAviso = this.lerTelaDoAviso();
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', e => {
+        if (e.data && e.data.tipo === 'abrir') this.abrirDoAviso(e.data.tela);
+      });
+    }
 
     /* abertura: a mira cresce, encolhe e o resto da logo aparece em volta.
        O carregamento continua por baixo, então a animação não atrasa a
@@ -135,6 +141,31 @@ const App = {
     /* só agora, com a logo já no lugar e a capa removida, é seguro
        deixar o Duo mandar um render() por conta própria */
     if (precisaDuo) this.carregarDuo();
+    if (telaDoAviso) this.abrirDoAviso(telaDoAviso);
+  },
+
+  /* ---------- toque na notificação ----------
+     O sw.js abre o app com ?abrir=treinos (app fechado) ou manda uma
+     mensagem (app aberto). Só troca de tela quem já está dentro do app
+     numa das abas: no meio do login, do cadastro ou da tela do reajuste,
+     a notificação não interrompe. */
+  TELAS_DO_AVISO: ['inicio', 'treinos', 'alimentacao', 'progresso', 'perfil'],
+
+  lerTelaDoAviso() {
+    try {
+      const params = new URLSearchParams(location.search);
+      const tela = params.get('abrir');
+      if (!tela) return null;
+      params.delete('abrir');
+      history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params.toString() : ''));
+      return tela;
+    } catch (e) { return null; }
+  },
+
+  abrirDoAviso(tela) {
+    if (!this.TELAS_DO_AVISO.includes(tela) || !Store.temPerfil()) return;
+    if (!this.TELAS_DO_AVISO.includes(this.tela) || this.camada) return;
+    if (tela !== this.tela) this.ir(tela);
   },
 
   /* ---------- handoff do quiz via link (?quiz=TOKEN) ---------- */

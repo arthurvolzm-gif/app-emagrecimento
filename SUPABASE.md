@@ -256,6 +256,41 @@ passo 3.
 ⚠️ **O par VAPID não se troca.** Trocar a chave invalida a inscrição de
 todo mundo, e cada pessoa só se inscreve de novo quando abrir o app.
 
+### Mandar um aviso pra todos
+
+No **SQL Editor**, troque título, texto e tela e rode:
+
+```sql
+select net.http_post(
+  url := 'https://ddtxvijlmjqtaxdystph.supabase.co/functions/v1/enviar-lembretes',
+  headers := jsonb_build_object(
+    'Content-Type', 'application/json',
+    'x-cron-token', (select decrypted_secret from vault.decrypted_secrets where name = 'push_cron_token')
+  ),
+  body := jsonb_build_object('aviso', jsonb_build_object(
+    'titulo', 'Novo cardápio de verão',
+    'texto',  'Abra o app e veja as receitas novas.',
+    'tela',   'alimentacao'
+  )),
+  timeout_milliseconds := 120000
+);
+```
+
+- **titulo**: até 80 caracteres. **texto**: até 240.
+- **tela**: onde o toque leva. Uma de `inicio`, `treinos`,
+  `alimentacao`, `progresso`, `perfil`.
+- A **mesma mensagem no mesmo dia não sai duas vezes**: rodar de novo
+  sem querer não repete. Pra mandar de novo, mude uma letra do texto.
+
+**Pra conferir:** alguns segundos depois,
+
+```sql
+select status_code, content::text from net._http_response order by created desc limit 1;
+```
+
+`"enviados": N` é quantos celulares receberam. `400` com uma
+explicação é título, texto ou tela fora da regra.
+
 ---
 
 ## 5. A compra de verdade, antes de divulgar

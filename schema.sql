@@ -627,7 +627,8 @@ select cron.schedule(
       'x-cron-token', coalesce(
         (select decrypted_secret from vault.decrypted_secrets where name = 'push_cron_token'), '')
     ),
-    body := '{}'::jsonb
+    body := '{}'::jsonb,
+    timeout_milliseconds := 60000
   );
   $$
 );

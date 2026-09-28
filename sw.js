@@ -25,7 +25,7 @@
    anterior no aparelho das pessoas.
    ========================================================= */
 
-const VERSAO = 'focusfit-v5';
+const VERSAO = 'focusfit-v6';
 const CACHE_APP   = VERSAO + '-app';
 const CACHE_MIDIA = VERSAO + '-midia';
 
@@ -146,17 +146,31 @@ self.addEventListener('push', evento => {
     lang: 'pt-BR'
   };
   if (dados.tag) opcoes.tag = dados.tag;
+  opcoes.data = { tela: dados.tela || TELA_DO_AVISO[dados.tag] || 'inicio' };
   evento.waitUntil(self.registration.showNotification(dados.titulo, opcoes));
 });
 
+/* o toque leva pra tela do assunto: o lembrete de treino abre a aba
+   Treinos, o de refeição o cardápio. O mesmo mapa está em
+   Lembretes.TELA (js/lembretes.js), pro aviso local. */
+const TELA_DO_AVISO = { treino: 'treinos', refeicao: 'alimentacao', agua: 'inicio', sono: 'inicio' };
+
 self.addEventListener('notificationclick', evento => {
   evento.notification.close();
+  const d = evento.notification.data || {};
+  const tela = d.tela || TELA_DO_AVISO[evento.notification.tag] || 'inicio';
   evento.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(abertas => {
+      /* app já aberto (mesmo em segundo plano): traz pra frente e pede
+         a troca de tela, sem recarregar nada */
       for (const janela of abertas) {
-        if ('focus' in janela) return janela.focus();
+        if ('focus' in janela) {
+          janela.postMessage({ tipo: 'abrir', tela });
+          return janela.focus();
+        }
       }
-      return clients.openWindow('./');
+      /* app fechado: abre já pedindo a tela (App.init lê o ?abrir=) */
+      return clients.openWindow('./?abrir=' + encodeURIComponent(tela));
     })
   );
 });

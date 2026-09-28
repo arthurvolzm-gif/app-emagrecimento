@@ -134,7 +134,7 @@ const Onb = {
           ${this.erro ? `<div class="erro">${this.erro}</div>` : ''}
 
           <div class="login-campo">
-            <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 6h18v12H3z" stroke="#3FBE7C" stroke-width="1.8"/><path d="M3 7l9 6 9-6" stroke="#3FBE7C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 6h18v12H3z" stroke="#00D7A2" stroke-width="1.8"/><path d="M3 7l9 6 9-6" stroke="#00D7A2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
             <input type="email" id="in-email" placeholder="E-mail" autocomplete="email"
                    value="${this.emailPendente}" onkeydown="if(event.key==='Enter')Onb.pedirCodigo()">
           </div>
@@ -357,7 +357,7 @@ const Onb = {
       <div class="rev-linha${aberto ? ' aberta' : ''}">
         <button class="rev-topo" onclick="Onb.abrirCampo('${c.id}')">
           <span class="rev-ic">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#3FBE7C" stroke-width="1.7"
+            <svg viewBox="0 0 24 24" fill="none" stroke="#00D7A2" stroke-width="1.7"
                  stroke-linecap="round" stroke-linejoin="round">${PERFIL_ICONES[c.ic]}</svg>
           </span>
           <span class="rev-txt">
@@ -365,7 +365,7 @@ const Onb = {
             <span class="rev-val${vazio ? ' rev-vazio' : ''}">${valor || (c.tipo === 'texto' || c.tipo === 'numero' ? 'Toque para preencher' : 'Toque para escolher')}</span>
           </span>
           <span class="rev-seta">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#3FBE7C" stroke-width="2.2"
+            <svg viewBox="0 0 24 24" fill="none" stroke="#00D7A2" stroke-width="2.2"
                  stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 5l7 7-7 7"/>
             </svg>
@@ -502,7 +502,7 @@ const Onb = {
             <div class="rev-linha${aberto ? ' aberta' : ''}">
               <button class="rev-topo" onclick="Onb.abrirBloco('${b.id}')">
                 <span class="rev-ic">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#3FBE7C" stroke-width="1.7"
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#00D7A2" stroke-width="1.7"
                        stroke-linecap="round" stroke-linejoin="round">${PERFIL_ICONES[b.ic]}</svg>
                 </span>
                 <span class="rev-txt">
@@ -510,7 +510,7 @@ const Onb = {
                   <span class="rev-val">${b.rot}</span>
                 </span>
                 <span class="rev-seta">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#3FBE7C" stroke-width="2.2"
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#00D7A2" stroke-width="2.2"
                        stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
                 </span>
               </button>
