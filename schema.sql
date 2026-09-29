@@ -639,3 +639,58 @@ select cron.schedule(
   '30 3 * * *',
   $$ delete from public.push_enviados where enviado_em < now() - interval '2 days'; $$
 );
+
+-- =========================================================
+-- EXCLUIR A PRÓPRIA CONTA (exigência da Play Store e direito da LGPD)
+--
+-- O app chama esta função pelo botão "Excluir minha conta" no Perfil.
+-- Ela pega o dono pelo token da sessão (auth.uid()), então ninguém
+-- consegue apagar a conta de outra pessoa.
+--
+-- O que sai:
+--   auth.users            a conta em si
+--   dados_usuario         perfil, cardápio, treinos, pesagens, pontos
+--                         (cai junto: on delete cascade)
+--   push_inscricoes       os celulares inscritos pras notificações (cascade)
+--   push_enviados         o registro de avisos enviados pra esses celulares
+--   respostas_quiz        as respostas do quiz ligadas ao e-mail
+--   assinaturas (convidada do Duo)  a vaga que ela ocupava fica livre
+--                         pro titular convidar outra pessoa
+--
+-- O que fica, de propósito (registro da compra, que a lei manda guardar):
+--   assinaturas (quem pagou), acessos_extras e os logs dos webhooks.
+--   Por isso, se a pessoa voltar com o mesmo e-mail e a assinatura
+--   ainda estiver ativa, ela entra de novo, com o app zerado.
+--
+-- Excluir a conta NÃO cancela a cobrança: a assinatura é da Zuptos, e
+-- o app avisa isso antes de a pessoa confirmar.
+-- =========================================================
+create or replace function public.excluir_minha_conta()
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_uid   uuid := auth.uid();
+  v_email text := lower(coalesce(auth.jwt() ->> 'email', ''));
+begin
+  if v_uid is null then
+    raise exception 'sem sessão';
+  end if;
+
+  delete from public.push_enviados
+   where endpoint in (select endpoint from public.push_inscricoes where user_id = v_uid);
+
+  if v_email <> '' then
+    delete from public.respostas_quiz where lower(email) = v_email;
+    delete from public.assinaturas where lower(email) = v_email and titular_email is not null;
+  end if;
+
+  delete from auth.users where id = v_uid;
+  return true;
+end;
+$$;
+
+revoke all on function public.excluir_minha_conta() from public, anon;
+grant execute on function public.excluir_minha_conta() to authenticated;

@@ -104,6 +104,18 @@ const Backend = {
     return data;
   },
 
+  /* Apaga a conta e os dados dela no servidor (função excluir_minha_conta,
+     ver schema.sql). Depois disso a sessão já não vale mais nada: o
+     signOut é só pra limpar o que o supabase-js guardou no aparelho. */
+  async excluirConta() {
+    this.exigirConexao();
+    if (typeof Lembretes !== 'undefined') await Lembretes.pararPush();
+    const { data, error } = await this.sb.rpc('excluir_minha_conta');
+    if (error || data !== true) throw new Error('Não consegui excluir a conta agora. Confira a internet e tente de novo.');
+    try { await this.sb.auth.signOut({ scope: 'local' }); } catch (e) {}
+    this.usuario = null;
+  },
+
   async sair() {
     /* antes do signOut: tirar a inscrição de push precisa da sessão */
     if (typeof Lembretes !== 'undefined') await Lembretes.pararPush();

@@ -2018,7 +2018,8 @@ const Telas = {
 
         <div style="height:10px"></div>
         ${Backend.ativo()
-          ? `<button class="btn perigo" onclick="App.sair()">Sair da conta</button>`
+          ? `<button class="btn perigo" onclick="App.sair()">Sair da conta</button>
+             <button class="link-excluir" onclick="App.excluirConta()">Excluir minha conta</button>`
           : `<button class="btn perigo" onclick="App.resetar()">Apagar meus dados</button>`}
 
         <div style="text-align:center;font-size:11.5px;color:var(--cinza-c);margin-top:22px;line-height:1.6;font-weight:600">

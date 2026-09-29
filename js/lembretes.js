@@ -281,7 +281,7 @@ const Lembretes = {
     try {
       const n = new Notification(av.titulo, {
         body: av.corpo,
-        icon: 'logo-focusfit.png',
+        badge: 'icone-badge.png',                  /* sem icon: ver o push no sw.js */
         tag: av.tag                                /* não empilha lembrete repetido */
       });
       n.onclick = () => {

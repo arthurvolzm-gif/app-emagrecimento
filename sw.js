@@ -25,7 +25,7 @@
    anterior no aparelho das pessoas.
    ========================================================= */
 
-const VERSAO = 'focusfit-v8';
+const VERSAO = 'focusfit-v9';
 const CACHE_APP   = VERSAO + '-app';
 const CACHE_MIDIA = VERSAO + '-midia';
 
@@ -50,7 +50,8 @@ const CASCA = [
   './js/app.js',
   './logo-focusfit.png',
   './icone-192.png',
-  './icone-512.png'
+  './icone-512.png',
+  './icone-badge.png'
 ];
 
 self.addEventListener('install', evento => {
@@ -140,10 +141,13 @@ self.addEventListener('fetch', evento => {
 self.addEventListener('push', evento => {
   let dados = { titulo: 'Focus Fit', texto: 'Você tem algo pra registrar hoje.' };
   try { if (evento.data) dados = Object.assign(dados, evento.data.json()); } catch (e) {}
+  /* sem `icon` de propósito: no Android ele vira a logo grande à
+     direita do aviso. O `badge` é o ícone pequeno da barra de status,
+     que precisa ser branco com fundo transparente (o Android usa só o
+     desenho, não a cor). */
   const opcoes = {
     body: dados.texto,
-    icon: './icone-192.png',
-    badge: './icone-192.png',
+    badge: './icone-badge.png',
     lang: 'pt-BR'
   };
   if (dados.tag) opcoes.tag = dados.tag;

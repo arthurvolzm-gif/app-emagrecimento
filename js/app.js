@@ -2450,6 +2450,54 @@ const App = {
     this.render();
   },
 
+  /* ---------- excluir a conta ----------
+     Exigência da Play Store: quem cria conta tem que conseguir apagá-la
+     de dentro do app. Pede pra digitar EXCLUIR porque não tem volta. */
+  excluirConta() {
+    this.modal(`
+      <h3 class="display">Excluir sua conta?</h3>
+      <p class="m-sub">Apagamos a sua conta e tudo o que está nela: perfil, cardápio, treinos, pesagens, pontos e fotos deste aparelho. <b>Não tem como desfazer.</b></p>
+      <div class="aviso" style="margin-bottom:14px">Excluir a conta <b>não cancela a sua assinatura</b>. Para parar a cobrança, fale com o suporte no WhatsApp ${CONFIG.SUPORTE_NUMERO}.</div>
+      <div class="campo">
+        <label>Para confirmar, digite EXCLUIR</label>
+        <input id="excluir-conf" type="text" autocomplete="off" autocapitalize="characters" placeholder="EXCLUIR">
+      </div>
+      <button class="btn perigo" id="btn-excluir" onclick="App.excluirContaConfirmado()">Excluir minha conta</button>
+      <div style="height:10px"></div>
+      <button class="btn sec" onclick="App.fecharModal()">Cancelar</button>`);
+  },
+
+  async excluirContaConfirmado() {
+    const campo = document.getElementById('excluir-conf');
+    if (!campo || campo.value.trim().toUpperCase() !== 'EXCLUIR') {
+      return this.toast('Digite EXCLUIR para confirmar.');
+    }
+    const btn = document.getElementById('btn-excluir');
+    if (btn) { btn.disabled = true; btn.textContent = 'Excluindo...'; }
+    try {
+      await Backend.excluirConta();
+    } catch (e) {
+      if (btn) { btn.disabled = false; btn.textContent = 'Excluir minha conta'; }
+      return this.toast(e.message);
+    }
+    /* o que ficou no aparelho: dados do app, fotos e preferências.
+       Só a marca de "app da Play Store" fica, porque é do aparelho. */
+    Store.resetar();
+    try { if (typeof Fotos !== 'undefined') { if (Fotos._db) Fotos._db.close(); Fotos._db = null; indexedDB.deleteDatabase(Fotos.BANCO); } } catch (e) {}
+    try {
+      Object.keys(localStorage).forEach(k => { if (k !== 'ff_twa') localStorage.removeItem(k); });
+    } catch (e) {}
+    this.extras = null;
+    this.duo = null;
+    this.abaTreinos = 'treino';
+    this.fecharModal();
+    this.tela = 'auth';
+    Onb.emailPendente = '';
+    Onb.erro = '';
+    this.render();
+    this.toast('Sua conta foi excluída.');
+  },
+
   resetar() {
     if (!confirm('Apagar todos os seus dados deste aparelho? Isso não tem volta.')) return;
     Store.resetar();

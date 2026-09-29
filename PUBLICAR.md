@@ -465,7 +465,11 @@ Separe antes, porque o formulário trava sem:
 - **Prints**: no mínimo 2, em 16:9 ou 9:16 — eu já sei tirar as telas
 - **Descrição curta**: até 80 caracteres
 - **Descrição completa**: até 4000
-- **Link da privacidade**: `https://seudominio.com.br/privacidade`
+- **Link da privacidade**: `https://focusapp.com.br/privacidade`
+- **Exclusão de dados** (seção Segurança dos dados): o app tem o botão
+  "Excluir minha conta" no fim do Perfil, e o link na web é
+  `https://focusapp.com.br/excluir-conta`. Antes de mandar pra revisão,
+  rode no Supabase o bloco `excluir_minha_conta` do `schema.sql`
 - **Classificação indicativa**, **Público-alvo** e **Segurança dos
   dados**: questionários. No de segurança, declare e-mail, nome, dados
   de saúde e peso; **as fotos de progresso não entram**, porque nunca
