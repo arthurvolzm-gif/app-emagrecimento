@@ -1204,8 +1204,7 @@ const Telas = {
           ${Telas._cardioTreino(ehHoje)}
 
           ${ehHoje ? (feito
-            ? `<div class="treino-feito">✓ Treino concluído hoje</div>
-               ${Store.dia().resumo_treino ? `<button class="btn sec" onclick="App.abrirResumoTreino()">Ver o resumo do treino</button>` : ''}`
+            ? `<div class="treino-feito">✓ Treino concluído hoje</div>`
             : `<button class="btn" onclick="App.marcarTreino()">Marcar treino como concluído</button>`) : `
             <div class="aviso">Este é o treino de ${dia.diaLongo}. Você só marca como concluído no dia.</div>`}
         `}

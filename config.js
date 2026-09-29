@@ -117,7 +117,7 @@ const CONFIG = {
      políticas RLS do Supabase, onde cada pessoa só enxerga a própria
      linha. A lista serve pra segurar o acesso durante o teste, não pra
      esconder segredo. */
-  ACESSO_TESTE: ['arthur.volz.m@gmail.com'],
+  ACESSO_TESTE: [],
 
   /* ---------- notificação com o app fechado (push) ----------
      A chave PÚBLICA do par VAPID. Pode ficar aqui, é feita pra ser

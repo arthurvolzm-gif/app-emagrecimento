@@ -1592,13 +1592,17 @@ const App = {
 
   marcarTreino() {
     if (!Store.concluirTreino()) return;      // já estava concluído, ignora
-    const treino = Store.diasTreino()[this.indiceHoje()];
-    Store.montarResumoTreino(treino);
+    /* o resumo é montado e guardado, mas a tela dele está desligada por
+       enquanto: pra religar, troque o bloco abaixo por
+       this.abrirResumoTreino(true) (ver fecharResumo, que segue o fluxo) */
+    Store.montarResumoTreino(Store.diasTreino()[this.indiceHoje()]);
     Backend.agendarSync();
+    this.render();
+    if (this.checarNivel()) return;
+    if (this.checarStreak()) return;
     this.toast('Treino concluído! +40 pontos 🏋️', true);
-    /* o resumo vem primeiro; nível, sequência e "como foi o treino"
-       ficam pra quando ela fechar (ver fecharResumo) */
-    this.abrirResumoTreino(true);
+    /* deixa o toast aparecer sozinho antes de puxar a pergunta */
+    setTimeout(() => this.perguntarEsforco(), 900);
   },
 
   /* ---------- resumo do treino (a tela dos stories) ---------- */
