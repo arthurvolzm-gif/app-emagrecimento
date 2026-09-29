@@ -25,7 +25,7 @@
    anterior no aparelho das pessoas.
    ========================================================= */
 
-const VERSAO = 'focusfit-v7';
+const VERSAO = 'focusfit-v8';
 const CACHE_APP   = VERSAO + '-app';
 const CACHE_MIDIA = VERSAO + '-midia';
 

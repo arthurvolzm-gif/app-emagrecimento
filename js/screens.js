@@ -1132,7 +1132,7 @@ const Telas = {
 
     return `
       <div class="corrida-tela">
-        <div id="cr-gps" class="corrida-gps ${c.gpsOk ? 'on' : ''}">${c.gpsOk ? 'GPS ativo' : (c.gpsErro || 'Procurando GPS...')}</div>
+        <div id="cr-gps" class="corrida-gps ${c.gpsOk && !c.gpsFraco ? 'on' : ''}">${App.gpsTexto(c)}</div>
 
         <div id="cr-tempo" class="corrida-crono">${App.duracaoLonga(c.segundos)}</div>
         <div class="corrida-crono-l">${c.pausado ? 'Pausado' : 'Tempo em movimento'}</div>

@@ -880,7 +880,7 @@ const App = {
     if (!this.temCorrida()) return;
     this.corridaEstado = {
       contagem: 3, segundos: 0, metros: 0, pausado: false, acumulado: 0, inicio: 0,
-      gpsOk: false, gpsErro: '', ultimo: null, watch: null, wake: null, timer: null
+      gpsOk: false, gpsFraco: false, gpsErro: '', ultimo: null, filtro: null, watch: null, wake: null, timer: null
     };
     this.tela = 'corridaAtiva';
     this.render();
@@ -933,8 +933,8 @@ const App = {
 
     const gps = document.getElementById('cr-gps');
     if (gps) {
-      gps.textContent = c.gpsOk ? 'GPS ativo' : (c.gpsErro || 'Procurando GPS...');
-      gps.classList.toggle('on', c.gpsOk);
+      gps.textContent = this.gpsTexto(c);
+      gps.classList.toggle('on', c.gpsOk && !c.gpsFraco);
     }
   },
 
@@ -942,10 +942,21 @@ const App = {
      segue sem ela (o aviso na tela já explica o risco) */
   async segurarTela() {
     try {
-      if ('wakeLock' in navigator) {
+      if ('wakeLock' in navigator && this.corridaEstado) {
         this.corridaEstado.wake = await navigator.wakeLock.request('screen');
       }
     } catch (e) { /* negado ou indisponível: não trava a corrida */ }
+    /* o navegador solta a trava sozinho quando o app sai da frente (outra
+       notificação, troca de app). Sem pegar de novo na volta, a tela
+       apaga no meio da corrida e o GPS para junto. */
+    if (!this._voltaCorrida) {
+      this._voltaCorrida = () => {
+        if (document.visibilityState === 'visible' && this.corridaEstado && this.tela === 'corridaAtiva') {
+          this.segurarTela();
+        }
+      };
+      document.addEventListener('visibilitychange', this._voltaCorrida);
+    }
   },
 
   ligarGPS() {
@@ -953,28 +964,84 @@ const App = {
     if (!navigator.geolocation) { c.gpsErro = 'Sem GPS neste aparelho'; return this.atualizarCorrida(); }
 
     c.watch = navigator.geolocation.watchPosition(
-      pos => {
-        const e = this.corridaEstado;
-        if (!e || e.pausado || e.contagem > 0) return;
-        /* leitura ruim atrapalha mais que ajuda: acima de 25m de erro,
-           o ponto é ruído e inflaria a distância */
-        if (pos.coords.accuracy > 25) return;
-        e.gpsOk = true; e.gpsErro = '';
-        if (e.ultimo) {
-          const d = this.distanciaEntre(e.ultimo, pos.coords);
-          if (d > 1 && d < 60) e.metros += d;   /* passo mínimo e salto máximo */
-        }
-        e.ultimo = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
-      },
+      pos => this.pontoGPS(pos),
       err => {
         const e = this.corridaEstado;
         if (!e) return;
-        e.gpsErro = err.code === 1 ? 'GPS negado' : 'GPS indisponível';
+        /* tempo esgotado (código 3) é só uma leitura que demorou: o GPS
+           continua ligado e a próxima chega. Só negar derruba o status. */
+        if (err.code === 3 && e.gpsOk) return;
+        e.gpsErro = err.code === 1 ? 'GPS negado' : 'Procurando GPS...';
         e.gpsOk = false;
         this.atualizarCorrida();
       },
-      { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
     );
+  },
+
+  /* Uma leitura do GPS. Como a distância é contada:
+
+     - Leitura com erro acima de 40 m é descartada: é sinal fraco (dentro
+       de prédio, começo da corrida) e somaria zigue-zague falso.
+     - Cada leitura passa por um filtro (Kalman simples) que pesa o ponto
+       novo pelo erro dele: leitura boa puxa muito, leitura ruim puxa
+       pouco. Sem isso o ponto "treme" alguns metros a cada segundo e,
+       parada no lugar, a distância subia sozinha.
+     - O ponto de referência só anda quando a pessoa se afastou dele mais
+       que a margem de erro. Passos curtos de quem caminha vão se
+       acumulando até passar da margem e aí entram inteiros. (Antes a
+       referência andava a cada leitura e passo curto era jogado fora um
+       por um: caminhando, a distância não saía do zero.)
+     - Salto mais rápido que 12 m/s (43 km/h) é erro do GPS e é ignorado.
+       A conta é por velocidade, não por metros: depois de um buraco de
+       sinal (tela apagou, túnel), a linha reta até o ponto novo conta. */
+  pontoGPS(pos) {
+    const e = this.corridaEstado;
+    if (!e) return;
+    const { latitude, longitude, accuracy } = pos.coords;
+
+    if (accuracy > 40) {
+      e.gpsFraco = true;
+      return this.atualizarCorrida();
+    }
+    e.gpsOk = true; e.gpsFraco = false; e.gpsErro = '';
+    if (e.pausado || e.contagem > 0) { e.filtro = null; return; }
+
+    const t = pos.timestamp || Date.now();
+    const f = e.filtro;
+    if (!f) {
+      e.filtro = { latitude, longitude, v: accuracy * accuracy, t };
+    } else {
+      /* a incerteza cresce com o tempo (até 3 m/s de deslocamento) e
+         encolhe a cada leitura, na proporção do erro dela */
+      const dt = Math.max((t - f.t) / 1000, 0);
+      f.v += dt * 9;
+      const k = f.v / (f.v + accuracy * accuracy);
+      f.latitude += k * (latitude - f.latitude);
+      f.longitude += k * (longitude - f.longitude);
+      f.v *= (1 - k);
+      f.t = t;
+    }
+
+    const ponto = { latitude: e.filtro.latitude, longitude: e.filtro.longitude, t };
+    if (!e.ultimo) { e.ultimo = ponto; return; }
+
+    const d = this.distanciaEntre(e.ultimo, ponto);
+    const margem = Math.min(Math.max(Math.sqrt(e.filtro.v) * 1.5, 5), 25);
+    if (d < margem) return;
+
+    const seg = Math.max((t - e.ultimo.t) / 1000, 1);
+    if (d / seg > 12) return;
+
+    e.metros += d;
+    e.ultimo = ponto;
+  },
+
+  gpsTexto(c) {
+    if (c.gpsErro === 'GPS negado') return 'GPS negado';
+    if (c.gpsFraco) return 'Sinal de GPS fraco';
+    if (c.gpsOk) return 'GPS ativo';
+    return c.gpsErro || 'Procurando GPS...';
   },
 
   /* haversine: distância em metros entre dois pontos do globo */
@@ -998,6 +1065,7 @@ const App = {
       c.pausado = true;
     }
     c.ultimo = null;          /* retomar não pode contar o trecho parado */
+    c.filtro = null;
     this.render();
   },
 
