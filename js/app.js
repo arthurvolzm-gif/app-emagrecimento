@@ -3,7 +3,7 @@
    ========================================================= */
 
 /* Interruptor do login.
-   false = fluxo real: e-mail → código de 6 números → assinatura conferida.
+   false = fluxo real: e-mail → código → assinatura conferida.
    true  = modo de teste, abre direto no cadastro sem pedir nada.
    ⚠️ NUNCA publicar com true: o app fica liberado pra qualquer um que
    souber o link, sem passar pela compra. */

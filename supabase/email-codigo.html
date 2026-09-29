@@ -5,7 +5,7 @@
   template "Magic link or OTP" → cole isto no corpo e salve.
 
   ⚠️ O que NÃO pode sumir daqui: {{ .Token }}. É ele que vira o código de
-  6 números. O template que vem de fábrica usa {{ .ConfirmationURL }}, que
+  o código. O template que vem de fábrica usa {{ .ConfirmationURL }}, que
   é um link — e o app pede o código digitado, não o link. Com o template
   de fábrica a pessoa recebe algo que não serve e fica travada na porta.
 
@@ -44,7 +44,7 @@
               Seu código de acesso
             </h1>
             <p style="margin:12px 0 0;font-size:15px;line-height:1.6;color:#C3D6CB;">
-              Digite estes 6 números no app para entrar.
+              Digite este código no app para entrar.
             </p>
           </td>
         </tr>

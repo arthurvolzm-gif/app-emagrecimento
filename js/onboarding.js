@@ -129,7 +129,7 @@ const Onb = {
         <div class="login-content">
           ${this.logoHTML()}
           <h1 class="login-h1">Entrar</h1>
-          <p class="login-sub">Digite o e-mail que você usou na compra. Mandamos um código de 6 números pra ele.</p>
+          <p class="login-sub">Digite o e-mail que você usou na compra. Mandamos um código pra ele.</p>
 
           ${this.erro ? `<div class="erro">${this.erro}</div>` : ''}
 
@@ -160,14 +160,14 @@ const Onb = {
         <div class="login-content">
           ${this.logoHTML()}
           <h1 class="login-h1">Digite o código</h1>
-          <p class="login-sub">Enviamos 6 números para <strong>${this.emailPendente}</strong>. Se não achar, olhe no spam.</p>
+          <p class="login-sub">Enviamos o código para <strong>${this.emailPendente}</strong>. Se não achar, olhe no spam.</p>
 
           ${this.erro ? `<div class="erro">${this.erro}</div>` : ''}
 
           <div class="login-campo sem-icone">
-            <input type="text" id="in-codigo" placeholder="000000" inputmode="numeric"
-                   maxlength="6" autocomplete="one-time-code"
-                   style="letter-spacing:8px;text-align:center;font-size:22px;font-weight:800"
+            <input type="text" id="in-codigo" placeholder="Código" inputmode="numeric"
+                   maxlength="10" autocomplete="one-time-code"
+                   style="letter-spacing:6px;text-align:center;font-size:22px;font-weight:800"
                    onkeydown="if(event.key==='Enter')Onb.confirmarCodigo()">
           </div>
 
@@ -224,10 +224,10 @@ const Onb = {
 
   async confirmarCodigo() {
     const campo = document.getElementById('in-codigo');
-    const codigo = (campo ? campo.value : '').trim();
+    const codigo = (campo ? campo.value : '').replace(/\D/g, '');
     const btn = document.getElementById('btn-codigo');
 
-    if (codigo.length < 6) { this.erro = 'O código tem 6 números.'; App.render(); return; }
+    if (codigo.length < 6) { this.erro = 'Digite o código completo que chegou no e-mail.'; App.render(); return; }
 
     if (btn) { btn.disabled = true; btn.textContent = 'Entrando...'; }
     this.erro = '';
