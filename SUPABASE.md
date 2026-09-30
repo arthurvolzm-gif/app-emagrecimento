@@ -412,6 +412,30 @@ select a.email, a.plano, a.status, a.data_expiracao, a.vagas, a.titular_email,
 
 ---
 
+## 9. Avaliação do app e o painel das respostas
+
+**Onde:** SQL Editor. Rode o bloco `AVALIAÇÃO DO APP` do `schema.sql`
+(do comentário até o `insert into public.painel_admins`) e, de novo, o
+bloco `excluir_minha_conta`, que agora deixa a avaliação anônima quando
+a pessoa exclui a conta.
+
+- A pesquisa aparece sozinha a partir do 3º dia de uso, na Início, e fica
+  em **Perfil → Avaliar o app**.
+- As respostas ficam em `avaliacoes`, fechada: o app só grava pela
+  função `salvar_avaliacao`, e só lê pela `painel_avaliacoes`.
+- **O painel:** `https://focusapp.com.br/painel-avaliacoes`. Só abre para
+  e-mail que estiver em `painel_admins`. Se você já entrou no app nesse
+  navegador, cai direto; senão, entra ali mesmo com o código do e-mail.
+
+**Dar acesso ao painel pra outro e-mail:**
+
+```sql
+insert into public.painel_admins (email) values (lower('outro@exemplo.com'))
+on conflict do nothing;
+```
+
+---
+
 ## O que NUNCA vai em `config.js`
 
 O `config.js` vai pro navegador de todo mundo. A chave que está lá é a

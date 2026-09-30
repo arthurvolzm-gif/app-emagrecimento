@@ -142,6 +142,9 @@ const App = {
        deixar o Duo mandar um render() por conta própria */
     if (precisaDuo) this.carregarDuo();
     if (telaDoAviso) this.abrirDoAviso(telaDoAviso);
+    /* o convite da avaliação espera a pessoa ver a Início primeiro (e o
+       Duo carregar, que decide a oferta do fim) */
+    else setTimeout(() => Avaliacao.talvezPerguntar(), 4000);
   },
 
   /* ---------- toque na notificação ----------
@@ -241,8 +244,9 @@ const App = {
     const topo = app && app.querySelector('.topo');
     if (!topo || app.querySelector('.topo-marca, .marca-linha')) return;
 
+    /* só a mira (o "O" de FOCUS), recortada da logo de verdade */
     const img = document.createElement('img');
-    img.src = 'logo-focusfit.png';
+    img.src = 'logo-mira.png';
     img.alt = 'Focus Fit';
 
     if (this.tela === 'inicio') {
@@ -492,10 +496,18 @@ const App = {
                 || document.querySelector('#app .topo-marca, #app .marca-linha img');
 
       if (alvo) {
+        /* O destino agora é só a mira, não a logo inteira: a logo grande
+           encolhe até a mira DELA (o "O", a 33,9% × 29,7% da imagem e
+           16% da largura, medido no PNG) cair em cima da mira do destino.
+           A escala é em torno do centro do elemento, daí a conta:
+           deslocamento = destino − centro − escala × (mira − centro). */
         const a = alvo.getBoundingClientRect(), m = marca.getBoundingClientRect();
-        marca.style.setProperty('--dx',  (a.left + a.width  / 2 - (m.left + m.width  / 2)) + 'px');
-        marca.style.setProperty('--dy',  (a.top  + a.height / 2 - (m.top  + m.height / 2)) + 'px');
-        marca.style.setProperty('--esc', a.width / m.width);
+        const esc = a.width / (m.width * 0.1606);
+        const cx = m.left + m.width / 2, cy = m.top + m.height / 2;
+        const px = m.left + m.width * 0.339, py = m.top + m.height * 0.297;
+        marca.style.setProperty('--dx',  (a.left + a.width  / 2 - cx - esc * (px - cx)) + 'px');
+        marca.style.setProperty('--dy',  (a.top  + a.height / 2 - cy - esc * (py - cy)) + 'px');
+        marca.style.setProperty('--esc', esc);
         capa.classList.add('juntando');
         /* a de baixo só acende quando a de cima encaixou nela, senão a
            marca aparece duas vezes durante o voo. Na tela de login isso
@@ -529,6 +541,13 @@ const App = {
     if (this.tela === 'assinatura') { app.innerHTML = Onb.assinatura(); nav.style.display = 'none'; return; }
 
     if (!Store.temPerfil()) { this.tela = 'cadastro'; return this.pintar(); }
+
+    /* o editor do plano: no cadastro e dentro do app, sempre sem a barra */
+    if (this.tela === 'escolhaTreino' || this.tela === 'montarPlano') {
+      app.innerHTML = Editor[this.tela]();
+      nav.style.display = 'none';
+      return;
+    }
 
     const fn = Telas[this.tela] || Telas.inicio;
     app.innerHTML = fn.call(Telas);
@@ -700,7 +719,7 @@ const App = {
   },
 
   setAbaTreinos(aba) {
-    this.abaTreinos = aba;
+    this.abaTreinos = CONFIG.RUN_TRACKER_ATIVO ? aba : 'treino';
     if (aba === 'corrida') this.carregarExtras();
     this.render();
     window.scrollTo(0, 0);
@@ -877,7 +896,7 @@ const App = {
   },
 
   async iniciarCorrida() {
-    if (!this.temCorrida()) return;
+    if (!this.temCorrida() || !CONFIG.RUN_TRACKER_ATIVO) return;
     this.corridaEstado = {
       contagem: 3, segundos: 0, metros: 0, pausado: false, acumulado: 0, inicio: 0,
       gpsOk: false, gpsFraco: false, gpsErro: '', ultimo: null, filtro: null, watch: null, wake: null, timer: null
@@ -1340,7 +1359,7 @@ const App = {
     const feito = Store.treinoFeitoEm(iso);
     const hoje = Store.hoje();
     const quando = iso === hoje ? 'Hoje' : this.dataBr(iso);
-    const hora = Store.horaTreino(t.pos);
+    const hora = Store.horaTreinoEfetiva(t.pos);
 
     if (t.descanso) {
       return this.modal(`
@@ -1416,7 +1435,7 @@ const App = {
 
   /* atalho da notificação: leva direto pra aba Corrida */
   irCorrida() {
-    this.abaTreinos = 'corrida';
+    this.abaTreinos = CONFIG.RUN_TRACKER_ATIVO ? 'corrida' : 'treino';
     this.ir('treinos');
   },
 
@@ -1927,14 +1946,24 @@ const App = {
     if (k2) k2.value = guardado[1];
   },
 
+  /* a data do dia da semana aberto na aba Treinos (0=Seg ... 6=Dom),
+     nesta semana */
+  dataDoDiaTreino(i) {
+    const hoje = this.indiceHoje();
+    return Store.diasAtras(hoje - (i === undefined ? this.diaTreino : i));
+  },
+
   salvarCardio() {
-    const tipo = this.cardioTipo || (Store.dia().cardio && Store.dia().cardio.tipo) || 'corrida';
+    const data = this.dataDoDiaTreino();
+    if (data > Store.hoje()) return this.toast('Você registra o cardio no dia em que fizer.');
+    const reg0 = Store.dia(data).cardio;
+    const tipo = this.cardioTipo || (reg0 && reg0.tipo) || 'corrida';
     const min = parseFloat((document.getElementById('cardio-min') || {}).value);
     const kmEl = document.getElementById('cardio-km');
     const km = kmEl ? parseFloat(String(kmEl.value).replace(',', '.')) : 0;
     if (!min || min < 1 || min > 300) return this.toast('Digite o tempo em minutos.');
     if (kmEl && kmEl.value !== '' && (isNaN(km) || km < 0 || km > 100)) return this.toast('Digite uma distância válida.');
-    const reg = Store.salvarCardio(tipo, min, km || 0);
+    const reg = Store.salvarCardio(tipo, min, km || 0, data);
     this.cardioEditando = false;
     this.cardioTipo = null;
     Backend.agendarSync();
@@ -1943,14 +1972,14 @@ const App = {
   },
 
   editarCardio() {
-    const reg = Store.dia().cardio;
+    const reg = Store.dia(this.dataDoDiaTreino()).cardio;
     this.cardioEditando = true;
     this.cardioTipo = reg ? reg.tipo : null;
     this.render();
   },
 
   removerCardio() {
-    Store.removerCardio();
+    Store.removerCardio(this.dataDoDiaTreino());
     this.cardioEditando = false;
     this.cardioTipo = null;
     Backend.agendarSync();
@@ -2126,7 +2155,7 @@ const App = {
 
         <div class="nu-tag">Sequência de</div>
         <div class="nu-nome" style="background:linear-gradient(100deg, ${cor2}, #fff);
-             -webkit-background-clip:text;background-clip:text;color:transparent">${dias} dias</div>
+             -webkit-background-clip:text;background-clip:text;color:transparent">${dias} ${dias === 1 ? 'dia' : 'dias'}</div>
         <div class="nu-n">Ativo sem parar</div>
         <p class="nu-frase">Cada dia que você aparece conta. Não quebre agora.</p>
 

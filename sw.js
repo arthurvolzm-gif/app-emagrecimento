@@ -25,7 +25,7 @@
    anterior no aparelho das pessoas.
    ========================================================= */
 
-const VERSAO = 'focusfit-v9';
+const VERSAO = 'focusfit-v10';
 const CACHE_APP   = VERSAO + '-app';
 const CACHE_MIDIA = VERSAO + '-midia';
 
@@ -45,13 +45,16 @@ const CASCA = [
   './js/lembretes.js',
   './js/notificacoes.js',
   './js/story.js',
+  './js/editor.js',
+  './js/avaliacao.js',
   './js/screens.js',
   './js/onboarding.js',
   './js/app.js',
   './logo-focusfit.png',
   './icone-192.png',
   './icone-512.png',
-  './icone-badge.png'
+  './icone-badge.png',
+  './icone-vazio.png'
 ];
 
 self.addEventListener('install', evento => {
@@ -141,16 +144,22 @@ self.addEventListener('fetch', evento => {
 self.addEventListener('push', evento => {
   let dados = { titulo: 'Focus Fit', texto: 'Você tem algo pra registrar hoje.' };
   try { if (evento.data) dados = Object.assign(dados, evento.data.json()); } catch (e) {}
-  /* sem `icon` de propósito: no Android ele vira a logo grande à
-     direita do aviso. O `badge` é o ícone pequeno da barra de status,
-     que precisa ser branco com fundo transparente (o Android usa só o
-     desenho, não a cor). */
+  /* `icon` é a imagem grande à direita do aviso no Android. Sem ele, o
+     Chrome desenha uma letra no lugar (o "W" de www); com a logo, fica
+     a logo. Uma imagem transparente é o que deixa o espaço vazio.
+     O `badge` é o ícone pequeno da barra de status, que precisa ser
+     branco com fundo transparente (o Android usa só o desenho). */
   const opcoes = {
     body: dados.texto,
+    icon: './icone-vazio.png',
     badge: './icone-badge.png',
     lang: 'pt-BR'
   };
-  if (dados.tag) opcoes.tag = dados.tag;
+  /* a mesma tag troca o aviso anterior do mesmo tipo em vez de empilhar,
+     e `renotify` faz a troca tocar e vibrar de novo. Sem ele, o lembrete
+     de água das 11h entrava calado por cima do das 9h que ainda estava
+     na bandeja, e parecia que não tinha chegado. */
+  if (dados.tag) { opcoes.tag = dados.tag; opcoes.renotify = true; }
   opcoes.data = { tela: dados.tela || TELA_DO_AVISO[dados.tag] || 'inicio' };
   evento.waitUntil(self.registration.showNotification(dados.titulo, opcoes));
 });

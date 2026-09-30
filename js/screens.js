@@ -8,13 +8,8 @@ const Telas = {
   inicio() {
     const p = Store.db.perfil;
     const t = Store.totaisDoDia();
-    const nv = Store.nivel();
     const ms = Store.metasSemana();
     const streak = Store.streak();
-
-    const pctKcal = Math.min(100, Math.round((t.kcal / p.meta_kcal) * 100));
-    const pctAgua = Math.min(100, Math.round((t.agua / p.meta_agua) * 100));
-    const pctSono = Math.min(100, Math.round((t.sono / p.meta_sono) * 100));
     const treinoHoje = App.treinoDeHoje();
 
     return `
@@ -37,78 +32,9 @@ const Telas = {
         ${Store.resumoPendente() ? Telas._chamadaResumo() : ''}
         ${Telas._perdidas()}
 
-        <div class="card nivel-card">
-          <div class="nivel-topo">
-            <div>
-              <div class="nivel-n">Nível ${nv.n}</div>
-              <div class="nivel-nome">${nv.nome}</div>
-            </div>
-            <div class="nivel-pts">
-              <b>${nv.pontos}</b>
-              <span>pontos</span>
-            </div>
-          </div>
-          <div class="nivel-barra"><i style="width:${nv.pct}%"></i></div>
-          <div class="nivel-falta">${nv.proximo
-            ? `Faltam <b>${nv.faltam} pontos</b> para ${nv.proximo.nome}`
-            : 'Nível máximo alcançado. Você chegou lá.'}</div>
-        </div>
+        ${Telas._progressoMeta()}
 
-        <div class="card">
-          <div class="card-tt">${Ic.alvo(20)} Meta de hoje</div>
-          <div class="anel-wrap">
-            ${Comp.anel(pctKcal, t.kcal, 'kcal')}
-            <div class="anel-info">
-              <div class="meta-grande">Meta diária</div>
-              <div class="meta-val">${p.meta_kcal} kcal</div>
-              <div class="mini-stat"><span class="k">Proteína</span><span class="v">${t.prot}g <small style="color:var(--cinza-c)">/ ${p.meta_prot}g</small></span></div>
-              <div class="mini-stat"><span class="k">Refeições</span><span class="v">${t.refeicoes}/${t.refeicoesTotal}</span></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-tt">${Ic.barras(20)} Metas do dia</div>
-
-          <div class="meta-linha">
-            <div class="meta-ic agua">${Ic.gota(21)}</div>
-            <div class="meta-corpo">
-              <div class="meta-topo">
-                <span class="meta-nome">Água</span>
-                <span class="meta-num ${t.agua >= p.meta_agua ? '' : 'pendente'}">${(t.agua/1000).toFixed(1)}L / ${(p.meta_agua/1000).toFixed(1)}L</span>
-              </div>
-              <div class="barra azul"><i style="width:${pctAgua}%"></i></div>
-            </div>
-            <button class="btn-mini" onclick="App.agua(-250)">−</button>
-            <button class="btn-mini" onclick="App.agua(250)">+</button>
-          </div>
-
-          <div class="meta-linha">
-            <div class="meta-ic sono">${Ic.lua(21)}</div>
-            <div class="meta-corpo">
-              <div class="meta-topo">
-                <span class="meta-nome">Sono</span>
-                <span class="meta-num ${t.sono >= p.meta_sono ? '' : 'pendente'}">${t.sono ? t.sono + 'h' : '—'} / ${p.meta_sono}h</span>
-              </div>
-              <div class="barra roxo"><i style="width:${pctSono}%"></i></div>
-            </div>
-            <button class="btn-mini" onclick="App.abrirSono()">${Ic.lapis(17)}</button>
-          </div>
-
-          <div class="meta-linha">
-            <div class="meta-ic treino">${Ic.halter(21)}</div>
-            <div class="meta-corpo">
-              <div class="meta-topo">
-                <span class="meta-nome">${treinoHoje.descanso ? 'Dia de descanso' : 'Treino: ' + treinoHoje.foco}</span>
-                <span class="meta-num ${t.treino ? '' : 'pendente'}">${t.treino ? 'Concluído' : (treinoHoje.descanso ? 'Livre' : 'Pendente')}</span>
-              </div>
-              <div class="barra"><i style="width:${t.treino ? 100 : 0}%"></i></div>
-            </div>
-            ${treinoHoje.descanso ? '' : t.treino
-              ? `<span class="btn-mini cheio feito" aria-label="Treino concluído">${Ic.visto(17)}</span>`
-              : `<button class="btn-mini apagado" onclick="App.marcarTreino()" aria-label="Marcar treino como concluído">${Ic.visto(17)}</button>`}
-          </div>
-        </div>
+        ${Telas._metasHoje(p, t)}
 
         ${Telas._semana(ms)}
 
@@ -117,6 +43,79 @@ const Telas = {
           ${Comp.atalho(Ic.talher(19), 'Alimentação de hoje', `${t.marcados} de ${t.total} alimentos marcados`, 'alimentacao')}
           ${Comp.atalho(Ic.halter(19), treinoHoje.descanso ? 'Dia de descanso' : treinoHoje.foco, treinoHoje.descanso ? 'Aproveite para recuperar' : `${treinoHoje.exercicios.length} exercícios hoje`, 'treinos')}
           ${Comp.atalho(Ic.barras(19), 'Seu progresso', 'Resumo da semana e do mês', 'progresso', true)}
+        </div>
+      </div>`;
+  },
+
+  /* ---------- progresso até a meta de peso ----------
+     Na Início, no lugar do cartão de nível (que foi pro Progresso): é o
+     número que ela veio buscar no app. Toque leva pro Progresso. */
+  _progressoMeta() {
+    const p = Store.db.perfil;
+    const dif = p.meta_peso - p.peso_inicial;
+    const ganhar = dif > 0;
+    const manter = Math.abs(dif) < 0.05;
+    const variacao = Math.round((p.peso_atual - p.peso_inicial) * 10) / 10;
+    const andado = ganhar ? variacao : -variacao;
+    const pct = manter ? 100 : Math.max(0, Math.min(100, Math.round((andado / Math.abs(dif)) * 100)));
+    const atingiu = manter || (ganhar ? p.peso_atual >= p.meta_peso : p.peso_atual <= p.meta_peso);
+    const faltam = Math.round(Math.abs(p.peso_atual - p.meta_peso) * 10) / 10;
+    return `
+      <button class="card nivel-card prog-meta" onclick="App.ir('progresso')">
+        <div class="nivel-topo">
+          <div>
+            <div class="nivel-n">Progresso até a meta</div>
+            <div class="nivel-nome">${String(p.peso_atual).replace('.', ',')} kg <small>de ${String(p.meta_peso).replace('.', ',')} kg</small></div>
+          </div>
+          <div class="nivel-pts"><b>${pct}%</b><span>da meta</span></div>
+        </div>
+        <div class="nivel-barra"><i style="width:${pct}%"></i></div>
+        <div class="nivel-falta">${atingiu ? 'Meta atingida. Agora é sustentar.' : `Faltam <b>${String(faltam).replace('.', ',')} kg</b> para ${ganhar ? 'chegar no peso que você quer' : 'chegar na sua meta'}`}</div>
+      </button>`;
+  },
+
+  /* ---------- as metas do dia num cartão só ----------
+     Calorias, água e sono no mesmo desenho: o anel à esquerda e os
+     números à direita, um embaixo do outro. */
+  _metasHoje(p, t) {
+    const pct = (v, m) => m ? Math.min(100, Math.round((v / m) * 100)) : 0;
+    const litros = v => (v / 1000).toFixed(1).replace('.', ',');
+    return `
+      <div class="card metas-hoje">
+        <div class="card-tt">${Ic.alvo(20)} Meta de hoje
+          <button class="mh-editar" onclick="Editor.abrir('metas')">Editar metas</button>
+        </div>
+
+        <div class="mh-linha">
+          ${Comp.anel(pct(t.kcal, p.meta_kcal), t.kcal, 'kcal', 'medio')}
+          <div class="anel-info">
+            <div class="meta-grande">Calorias</div>
+            <div class="meta-val">${p.meta_kcal} kcal</div>
+            <div class="mini-stat"><span class="k">Proteína</span><span class="v">${t.prot}g <small>/ ${p.meta_prot}g</small></span></div>
+            <div class="mini-stat"><span class="k">Carboidratos</span><span class="v">${t.carb}g <small>/ ${p.meta_carb}g</small></span></div>
+          </div>
+        </div>
+
+        <div class="mh-linha">
+          ${Comp.anel(pct(t.agua, p.meta_agua), litros(t.agua), 'litros', 'medio')}
+          <div class="anel-info">
+            <div class="meta-grande">Água</div>
+            <div class="meta-val">${litros(p.meta_agua)} L</div>
+            <div class="mh-botoes">
+              <button class="btn-mini" onclick="App.agua(-250)" aria-label="Tirar um copo">−</button>
+              <span>250 ml</span>
+              <button class="btn-mini" onclick="App.agua(250)" aria-label="Pôr um copo">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mh-linha">
+          ${Comp.anel(pct(t.sono, p.meta_sono), t.sono ? String(t.sono).replace('.', ',') : 0, 'horas', 'medio')}
+          <div class="anel-info">
+            <div class="meta-grande">Sono</div>
+            <div class="meta-val">${String(p.meta_sono).replace('.', ',')} h</div>
+            <button class="mh-sono" onclick="App.abrirSono()">${Ic.lapis(15)} ${t.sono ? 'Alterar o sono de hoje' : 'Registrar o sono de hoje'}</button>
+          </div>
         </div>
       </div>`;
   },
@@ -435,13 +434,16 @@ const Telas = {
               <div style="font-family:'Bricolage Grotesque';font-size:19px;font-weight:800;margin-top:3px">${t.prot}<small style="font-size:12px;color:var(--cinza)">g</small></div></div>
             <div><div style="font-size:11px;color:var(--cinza);font-weight:800;text-transform:uppercase;letter-spacing:.05em">Restam</div>
               <div style="font-family:'Bricolage Grotesque';font-size:19px;font-weight:800;margin-top:3px">${Math.max(0, p.meta_kcal - t.kcal)}<small style="font-size:12px;color:var(--cinza)">kcal</small></div></div>
-            <div><div style="font-size:11px;color:var(--cinza);font-weight:800;text-transform:uppercase;letter-spacing:.05em">Alimentos</div>
-              <div style="font-family:'Bricolage Grotesque';font-size:19px;font-weight:800;margin-top:3px">${t.marcados}<small style="font-size:12px;color:var(--cinza)">/${t.total}</small></div></div>
+            <div><div style="font-size:11px;color:var(--cinza);font-weight:800;text-transform:uppercase;letter-spacing:.05em">Carboidratos</div>
+              <div style="font-family:'Bricolage Grotesque';font-size:19px;font-weight:800;margin-top:3px">${t.carb}<small style="font-size:12px;color:var(--cinza)">/${p.meta_carb}g</small></div></div>
           </div>
         </div>
 
-        <button class="btn sec" style="margin-bottom:14px" onclick="App.ir('cardapio')">
+        <button class="btn sec" style="margin-bottom:10px" onclick="App.ir('cardapio')">
           ${Ic.prancheta(19)} Ver cardápio completo e lista de compras
+        </button>
+        <button class="btn sec" style="margin-bottom:14px" onclick="Editor.abrir('alimentacao')">
+          ${Ic.lapis(18)} ${Store.dietaPropriaAtiva() ? 'Editar minha dieta' : 'Montar minha própria dieta'}
         </button>
 
         ${Telas._foraDaRotina()}
@@ -449,7 +451,9 @@ const Telas = {
         ${plano.map(r => Telas._refeicao(r)).join('')}
 
         <p style="font-size:12px;color:var(--cinza-c);line-height:1.55;font-weight:600;text-align:center;margin-top:4px">
-          As gramagens são calculadas a partir do seu peso, altura, idade e objetivo.
+          ${Store.dietaPropriaAtiva()
+            ? 'Calorias, proteína e carboidrato calculados pelas gramas que você colocou, com valores médios da tabela TACO.'
+            : 'As gramagens são calculadas a partir do seu peso, altura, idade e objetivo.'}
         </p>
       </div>`;
   },
@@ -532,7 +536,8 @@ const Telas = {
     const [m, total] = Store.progressoRefeicao(r);
     const kcalRef = r.alimentos.reduce((s, a) => s + a.kcal, 0);
     const aberta = App.refAberta === r.id;
-    const completa = m === total;
+    const vazia = total === 0;
+    const completa = !vazia && m === total;
 
     return `
       <div class="ref ${aberta ? 'aberta' : ''}">
@@ -540,11 +545,11 @@ const Telas = {
           <div class="ref-ic">${Ic.refeicao(r.id, 21)}</div>
           <div style="flex:1;min-width:0">
             <div class="ref-nome">${r.nome}</div>
-            <div class="ref-meta">${r.variacao ? r.variacao : r.horario + ' · ' + total + ' alimentos'}</div>
+            <div class="ref-meta">${r.variacao ? r.variacao : r.horario + ' · ' + (vazia ? 'sem alimentos' : total + (total === 1 ? ' alimento' : ' alimentos'))}</div>
           </div>
           <div class="ref-dir">
             <div class="ref-kcal">${kcalRef}<span> kcal</span></div>
-            <div class="ref-prog ${m === 0 ? 'zero' : ''}">${completa ? '✓ Completa' : m + '/' + total}</div>
+            <div class="ref-prog ${m === 0 ? 'zero' : ''}">${vazia ? 'Vazia' : completa ? '✓ Completa' : m + '/' + total}</div>
           </div>
           <div class="ref-seta">▾</div>
         </div>
@@ -566,11 +571,12 @@ const Telas = {
                   </div>
                   ${trocas.length ? Comp.botaoTroca(a) : ''}
                 </div>
-                <div class="alim-kcal">${a.kcal}<span>${a.prot}g prot</span></div>
+                <div class="alim-kcal">${a.kcal}<span>${a.prot}g P · ${a.carb || 0}g C</span></div>
               </div>`;
           }).join('')}
 
-          <div class="ref-acoes">
+          ${vazia ? `<p class="carga-vazio" style="margin:4px 0 10px">Sem alimentos nesta refeição. Adicione em <b>Editar minha dieta</b>.</p>` : ''}
+          <div class="ref-acoes" ${vazia ? 'style="display:none"' : ''}>
             <button class="btn-ref p" onclick="event.stopPropagation();App.refeicaoToda('${r.id}',true)">Marcar tudo</button>
             <button class="btn-ref" onclick="event.stopPropagation();App.refeicaoToda('${r.id}',false)">Limpar</button>
           </div>
@@ -911,6 +917,7 @@ const Telas = {
   },
 
   _abasTreino() {
+    if (!CONFIG.RUN_TRACKER_ATIVO) return '';
     return `
       <div class="toggle duas">
         <button class="${App.abaTreinos === 'treino' ? 'on' : ''}" onclick="App.setAbaTreinos('treino')">Treino</button>
@@ -1154,7 +1161,7 @@ const Telas = {
 
   /* ============ TREINOS ============ */
   treinos() {
-    if (App.abaTreinos === 'corrida') return Telas.corrida();
+    if (App.abaTreinos === 'corrida' && CONFIG.RUN_TRACKER_ATIVO) return Telas.corrida();
     const plano = Store.planoTreino();
     const dias = Store.diasTreino();
     const dia = dias[App.diaTreino];
@@ -1195,18 +1202,19 @@ const Telas = {
               <p>${dia.sugestao}</p>
             </div>
           </div>
-          ${Telas._cardio(true)}` : `
+          ${Telas._cardioTreino(App.diaTreino)}` : `
           <div class="card">
-            <div class="card-tt">${Ic.halter(20)} ${dia.foco}<span class="n">${dia.exercicios.length} exercícios</span></div>
-            ${dia.exercicios.map((e, i) => Telas._exercicio(e, i)).join('')}
+            <div class="card-tt">${Ic.halter(20)} ${dia.foco}<span class="n">${dia.exercicios.length} ${dia.exercicios.length === 1 ? 'exercício' : 'exercícios'}</span></div>
+            ${dia.exercicios.length ? dia.exercicios.map((e, i) => Telas._exercicio(e, i)).join('') : `
+              <p class="carga-vazio">Este treino ainda não tem exercícios. Escolha os músculos dele e o app monta a lista.</p>`}
+            <button class="btn sec" style="margin-top:12px" onclick="Editor.abrir('treino')">${Ic.lapis(17)} Editar meu treino</button>
           </div>
 
-          ${Telas._cardioTreino(ehHoje)}
+          ${Telas._cardioTreino(App.diaTreino)}
 
           ${ehHoje ? (feito
             ? `<div class="treino-feito">✓ Treino concluído hoje</div>`
-            : `<button class="btn" onclick="App.marcarTreino()">Marcar treino como concluído</button>`) : `
-            <div class="aviso">Este é o treino de ${dia.diaLongo}. Você só marca como concluído no dia.</div>`}
+            : `<button class="btn" onclick="App.marcarTreino()">Marcar treino como concluído</button>`) : ''}
         `}
 
         ${Telas._organizarSemana(plano, dias)}
@@ -1319,10 +1327,9 @@ const Telas = {
   _agendaTreino() {
     const pos = App.indiceHoje();
     const hoje = Store.diasTreino()[pos];
-    const hora = Store.horaTreino(pos);
+    const hora = Store.horaTreinoEfetiva(pos);
     const ligado = Lembretes.ligado('treino') && Lembretes.permitido();
     const salvas = Object.values(Store.horasTreino());
-    const marcados = salvas.length;
     /* o campo mostra o horário de hoje; num dia de descanso mostra o que
        ela já usa nos outros dias, senão pareceria que nada foi salvo */
     const noCampo = hora || salvas[0] || HORA_TREINO_PADRAO;
@@ -1333,9 +1340,7 @@ const Telas = {
           <div class="tema-ic">${Ic.sino(20)}</div>
           <div class="tema-txt">
             <div class="t">Lembrete de treino</div>
-            <div class="s">${!marcados
-              ? 'Escolha o seu horário abaixo e o app avisa na hora do treino.'
-              : ligado
+            <div class="s">${ligado
                 ? (hoje && hoje.descanso
                     ? 'Ligado. Hoje é descanso, então não vai tocar.'
                     : hora ? `Ligado. Hoje toca às ${hora}.` : 'Ligado. Hoje não tem horário marcado.')
@@ -1377,7 +1382,7 @@ const Telas = {
       const t = Store.treinoDaData(iso);
       const descanso = !t || t.descanso;
       const feito = Store.treinoFeitoEm(iso);
-      const hora = descanso ? '' : Store.horaTreino(t.pos);
+      const hora = descanso ? '' : Store.horaTreinoEfetiva(t.pos);
       const ehHoje = iso === hojeIso;
       const passou = iso < hojeIso;
       /* antes de ela existir no app não há treino perdido: marcar de
@@ -1458,17 +1463,15 @@ const Telas = {
      No lugar do cartão que só dava a receita: ela registra o que fez
      (tipo, tempo, distância) e o app calcula as calorias. A receita do
      objetivo continua, numa linha, como referência. */
-  _cardioTreino(ehHoje) {
+  _cardioTreino(idx) {
     const c = CARDIO_POR_OBJETIVO[Store.db.perfil.objetivo] || CARDIO_POR_OBJETIVO.manutencao;
-    const rec = `<p class="cardio-rec">Pro seu objetivo: ${c.frequencia}, depois da musculação.</p>`;
+    const descanso = !!(Store.diasTreino()[idx] || {}).descanso;
+    const rec = `<p class="cardio-rec">Pro seu objetivo: ${c.frequencia}${descanso ? '. No dia de descanso, algo leve já conta.' : ', depois da musculação.'}</p>`;
     const topo = `<div class="card-tt" style="margin-bottom:8px">${Ic.corrida(20)} Cardio</div>`;
+    const data = App.dataDoDiaTreino(idx);
+    const futuro = data > Store.hoje();
 
-    if (!ehHoje) return `
-      <div class="card">${topo}${rec}
-        <p class="cardio-rec" style="margin-top:6px">O cardio é registrado no dia do treino.</p>
-      </div>`;
-
-    const reg = Store.dia().cardio;
+    const reg = futuro ? null : Store.dia(data).cardio;
     if (reg && !App.cardioEditando) {
       const t = CARDIO_TIPOS.find(x => x.id === reg.tipo) || CARDIO_TIPOS[0];
       return `
@@ -1488,26 +1491,30 @@ const Telas = {
         </div>`;
     }
 
+    /* O mesmo cartão em qualquer dia, com treino ou de descanso. Num dia
+       que ainda não chegou, os campos aparecem mas ficam travados: o
+       cardio é registrado no dia em que ela faz. */
     const tipo = App.cardioTipo || (reg && reg.tipo) || 'corrida';
     const t = CARDIO_TIPOS.find(x => x.id === tipo) || CARDIO_TIPOS[0];
+    const trava = futuro ? 'disabled' : '';
     return `
-      <div class="card">${topo}${rec}
+      <div class="card ${futuro ? 'cardio-futuro' : ''}">${topo}${rec}
         <div class="cardio-tipos">
           ${CARDIO_TIPOS.map(x => `
-            <button class="cardio-tipo ${x.id === t.id ? 'on' : ''}" onclick="App.escolherCardio('${x.id}')">${x.nome}</button>`).join('')}
+            <button class="cardio-tipo ${x.id === t.id ? 'on' : ''}" ${trava} onclick="App.escolherCardio('${x.id}')">${x.nome}</button>`).join('')}
         </div>
         <div class="cardio-campos ${t.distancia ? '' : 'um'}">
           <label>Tempo (min)
-            <input id="cardio-min" type="number" inputmode="numeric" min="1" max="300"
+            <input id="cardio-min" type="number" inputmode="numeric" min="1" max="300" ${trava}
                    placeholder="20" value="${reg ? reg.minutos : ''}">
           </label>
           ${t.distancia ? `
           <label>Distância (km)
-            <input id="cardio-km" type="number" inputmode="decimal" step="0.1" min="0"
+            <input id="cardio-km" type="number" inputmode="decimal" step="0.1" min="0" ${trava}
                    placeholder="2,5" value="${reg && reg.km ? reg.km : ''}">
           </label>` : ''}
         </div>
-        <button class="btn" onclick="App.salvarCardio()">Salvar cardio</button>
+        <button class="btn" ${trava} onclick="App.salvarCardio()">${futuro ? 'Registre no dia' : 'Salvar cardio'}</button>
       </div>`;
   },
 
@@ -1523,7 +1530,9 @@ const Telas = {
   _cargaForm(e, i, ultima) {
     const series = Store.seriesEx(e.ex, e.series);
     const anteriores = Store.seriesDe(ultima);
-    const repsPlano = String(e.reps).replace(/\D/g, '') || '12';
+    /* treino com as séries dela: as repetições ficam em branco pra ela
+       anotar o que fez, sem número fixo sugerido */
+    const repsPlano = e.livre ? '' : (String(e.reps).replace(/\D/g, '') || '12');
 
     return `
       <div class="carga-form">
@@ -1547,6 +1556,14 @@ const Telas = {
       </div>`;
   },
 
+  /* "4×12" com a sugestão do app; "4 Séries" quando as séries e
+     repetições são dela e não tem repetição fixa */
+  _seriesTexto(e) {
+    const n = Store.seriesEx(e.ex, e.series);
+    if (e.livre && !String(e.reps || '').trim()) return `${n} ${n === 1 ? 'Série' : 'Séries'}`;
+    return `${n}×${e.reps}`;
+  },
+
   _exercicio(e, i) {
     const nome = e.ex;
     const aberto = App.exAberto === nome;
@@ -1562,11 +1579,11 @@ const Telas = {
           <div style="flex:1;min-width:0">
             <div class="ex-nome">${nome}</div>
             <div class="ex-det">
-              Descanso: ${e.desc}
-              ${ultima ? ` · <b style="color:var(--verde-esc)">${ultima.peso}kg${ultima.reps ? ' × ' + ultima.reps : ''}</b>${subiu ? ' ↑' : ''}` : ''}
+              ${e.desc ? 'Descanso: ' + e.desc : ''}
+              ${ultima ? `${e.desc ? ' · ' : ''}<b style="color:var(--verde-esc)">${ultima.peso}kg${ultima.reps ? ' × ' + ultima.reps : ''}</b>${subiu ? ' ↑' : ''}` : ''}
             </div>
           </div>
-          <div class="ex-serie">${Store.seriesEx(nome, e.series)}×${e.reps}</div>
+          <div class="ex-serie">${Telas._seriesTexto(e)}</div>
           <div class="ex-seta">▾</div>
         </div>
 
@@ -1690,24 +1707,36 @@ const Telas = {
           </div>
         </div>
 
-        <div class="card">
-          <div class="meta-topo" style="margin-bottom:10px">
-            <span class="meta-nome" style="font-size:14.5px">Progresso até a meta</span>
-            <span class="meta-num">${pct}%</span>
-          </div>
-          <div class="barra" style="height:10px"><i style="width:${pct}%"></i></div>
-          <div style="font-size:12.5px;color:var(--cinza);margin-top:10px;font-weight:600">
-            ${atingiu
-              ? 'Meta atingida. Agora é sustentar. 🎉'
-              : `Faltam <b style="color:var(--tinta)">${faltam} kg</b> para ${ganhar ? 'chegar no peso que você quer' : 'chegar na sua meta'}.`}
-          </div>
-        </div>
+        ${Telas._nivelCard()}
 
         <div class="card">
           <div class="card-tt">${Ic.balanca(20)} Evolução do peso<span class="n">${Store.db.pesagens.length} pesagens</span></div>
           ${Comp.grafico(Store.seriePeso())}
           <button class="btn" style="margin-top:14px" onclick="App.abrirPeso()">Registrar pesagem de hoje</button>
         </div>`;
+  },
+
+  /* o cartão de nível, que era o primeiro da Início e agora mora no
+     Progresso, no lugar do progresso até a meta (que foi pra Início) */
+  _nivelCard() {
+    const nv = Store.nivel();
+    return `
+      <div class="card nivel-card" onclick="App.ir('niveis')" style="cursor:pointer">
+        <div class="nivel-topo">
+          <div>
+            <div class="nivel-n">Nível ${nv.n}</div>
+            <div class="nivel-nome">${nv.nome}</div>
+          </div>
+          <div class="nivel-pts">
+            <b>${nv.pontos}</b>
+            <span>pontos</span>
+          </div>
+        </div>
+        <div class="nivel-barra"><i style="width:${nv.pct}%"></i></div>
+        <div class="nivel-falta">${nv.proximo
+          ? `Faltam <b>${nv.faltam} pontos</b> para ${nv.proximo.nome}`
+          : 'Nível máximo alcançado. Você chegou lá.'}</div>
+      </div>`;
   },
 
   /* ============ PROGRESSO ============ */
@@ -1800,7 +1829,7 @@ const Telas = {
           <div class="lista-item"><span class="lista-k">Bater a meta de sono</span><span class="lista-v">+${PONTOS.sono}</span></div>
           <div class="lista-item"><span class="lista-k">Concluir o treino do dia</span><span class="lista-v">+${PONTOS.treino}</span></div>
           <div class="lista-item"><span class="lista-k">Registrar uma pesagem</span><span class="lista-v">+${PONTOS.pesagem}</span></div>
-          ${App.temCorrida() ? `<div class="lista-item"><span class="lista-k">Concluir uma sessão de corrida</span><span class="lista-v">+${PONTOS.corrida}</span></div>` : ''}
+          ${App.temCorrida() && CONFIG.RUN_TRACKER_ATIVO ? `<div class="lista-item"><span class="lista-k">Concluir uma sessão de corrida</span><span class="lista-v">+${PONTOS.corrida}</span></div>` : ''}
         </div>
       </div>`;
   },
@@ -1983,6 +2012,8 @@ const Telas = {
 
         <button class="btn sec" onclick="App.abrirEditar()">Editar meus dados</button>
         <div style="height:10px"></div>
+        <button class="btn sec" onclick="Editor.abrir('treino')">Editar treino, alimentação e metas</button>
+        <div style="height:10px"></div>
         <button class="btn sec" onclick="App.abrirPeso()">Registrar pesagem</button>
 
         ${this._duo()}
@@ -1994,12 +2025,20 @@ const Telas = {
           ${Telas._switchLembrete('agua', Ic.gota(20), 'Lembrete de água',
             `Avisa ${AGUA_HORARIOS.length} vezes ao dia, de ${AGUA_HORARIOS[0]} às ${AGUA_HORARIOS[AGUA_HORARIOS.length - 1]}.`)}
           ${Telas._switchLembrete('sono', Ic.lua(20), 'Lembrete de sono',
-            `Avisa às ${HORA_SONO} para começar a desacelerar.`)}
+            `Avisa às ${Store.horaSono()} para começar a desacelerar.`)}
         </div>
         <p class="agenda-nota" style="margin-top:-8px">O lembrete de treino fica na aba Treinos, junto com o horário que você escolhe.</p>
 
         <h3 class="secao-tt">Ajuda e suporte</h3>
         <div class="card" style="padding:6px 18px">
+          <button class="lista-item lista-link" onclick="Avaliacao.abrirDireto()">
+            <span class="lista-ic">${Ic.festa(19)}</span>
+            <div>
+              <div class="lista-t">Avaliar o app</div>
+              <div class="lista-s">5 perguntas rápidas pra gente melhorar</div>
+            </div>
+            <span class="lista-seta">›</span>
+          </button>
           <a class="lista-item lista-link" href="${CONFIG.SUPORTE_WHATS}" target="_blank" rel="noopener">
             <span class="lista-ic">${Ic.chat(19)}</span>
             <div>
@@ -2045,11 +2084,11 @@ const Comp = {
       </button>`;
   },
 
-  anel(pct, valor, unidade) {
+  anel(pct, valor, unidade, tamanho) {
     const r = 54, c = 2 * Math.PI * r;
     const off = c * (1 - Math.min(100, pct) / 100);
     return `
-      <div class="anel">
+      <div class="anel ${tamanho || ''}">
         <svg viewBox="0 0 132 132">
           <defs>
             <linearGradient id="gradAnel" x1="0" y1="0" x2="1" y2="1">

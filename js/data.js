@@ -1014,3 +1014,249 @@ const CARGA_MIN_SESSOES = 2;        // só sugere com pelo menos 2 registros
 
 const MESES_PT = ['janeiro','fevereiro','março','abril','maio','junho',
                   'julho','agosto','setembro','outubro','novembro','dezembro'];
+
+/* ---------- CARBOIDRATO DOS CARDÁPIOS ----------
+   Os cardápios foram escritos com calorias e proteína por item. Para o
+   app mostrar carboidrato também, cada alimento ganha aqui quantos gramas
+   de carboidrato tem em 100 g, pelo nome. Valores médios de tabela (TACO
+   e USDA), ajustados ao jeito que o item aparece no cardápio (cozido,
+   em porção). O app multiplica pela gramagem já reescalada.
+   Nome que não estiver aqui conta 0: é o caso das carnes e dos ovos. */
+const CARB_100G = {
+  'Amêndoas': 21, 'Arroz branco ou integral': 28, 'Arroz integral': 26, 'Arroz integral cozido': 26,
+  'Aveia em flocos': 67, 'Banana': 26, 'Banana com aveia': 30, 'Batata-doce cozida': 18,
+  'Batata-doce ou mandioca': 22, 'Café sem açúcar': 0, 'Carboidrato': 20, 'Castanha-do-pará': 12,
+  'Castanhas': 20, 'Castanhas variadas': 20, 'Crepioca (2 ovos + goma)': 12, 'Cuscuz de milho': 78,
+  'Feijão cozido': 14, 'Fruta': 14, 'Fruta da estação': 12, 'Granola sem açúcar': 60,
+  'Grão-de-bico': 16, 'Iogurte natural': 5, 'Iogurte natural desnatado': 6, 'Iogurte natural integral': 5,
+  'Iogurte proteico': 5, 'Legumes cozidos': 7, 'Legumes e salada': 5, 'Legumes refogados': 5,
+  'Legumes salteados': 7, 'Lentilha cozida': 16, 'Macarrão integral cozido': 26, 'Mamão papaia': 11,
+  'Mandioca cozida': 30, 'Maçã': 14, 'Mel': 84, 'Morangos': 7,
+  'Omelete (2 ovos + legumes)': 3, 'Omelete (3 ovos + legumes)': 2, 'Omelete (4 ovos + queijo)': 2,
+  'Ovos cozidos': 1, 'Ovos inteiros': 1, 'Ovos mexidos': 1, 'Panqueca de aveia (aveia + ovos + banana)': 24,
+  'Pasta de amendoim': 20, 'Peito de peru e queijo': 2, 'Pão integral': 50, 'Pão integral com mel': 55,
+  'Queijo branco': 3, 'Queijo cottage': 3, 'Salada crua': 3, 'Salada crua com azeite': 3,
+  'Salada e legumes': 5, 'Salada verde': 3, 'Sobremesa': 15, 'Sopa de legumes com frango': 6,
+  'Tapioca': 83, 'Torradas integrais': 48, 'Vitamina de banana com leite': 12, 'Whey com leite': 5,
+  'Whey ou ovos': 10, 'Whey protein': 10
+};
+
+/* ---------- TABELA DE ALIMENTOS (para montar a própria dieta) ----------
+   Por 100 g (ou 100 ml), já no jeito em que se come: arroz e feijão
+   cozidos, carnes grelhadas. Valores médios da TACO (Tabela Brasileira
+   de Composição de Alimentos, Unicamp) e, onde ela não tem o item, da
+   USDA. Industrializados variam por marca: a tela avisa que é média.
+   [id, nome, kcal, proteína, carboidrato, gordura, grupo] */
+const ALIMENTOS = [
+  ['arroz_branco',   'Arroz branco cozido',          128, 2.5, 28.1, 0.2, 'Carboidratos'],
+  ['arroz_integral', 'Arroz integral cozido',        124, 2.6, 25.8, 1.0, 'Carboidratos'],
+  ['feijao_carioca', 'Feijão carioca cozido',         76, 4.8, 13.6, 0.5, 'Carboidratos'],
+  ['feijao_preto',   'Feijão preto cozido',           77, 4.5, 14.0, 0.5, 'Carboidratos'],
+  ['lentilha',       'Lentilha cozida',               93, 6.3, 16.3, 0.5, 'Carboidratos'],
+  ['grao_bico',      'Grão-de-bico cozido',          164, 8.9, 27.4, 2.6, 'Carboidratos'],
+  ['macarrao',       'Macarrão cozido',              157, 5.8, 30.6, 0.9, 'Carboidratos'],
+  ['macarrao_int',   'Macarrão integral cozido',     124, 5.3, 26.5, 0.5, 'Carboidratos'],
+  ['batata_doce',    'Batata-doce cozida',            77, 0.6, 18.4, 0.1, 'Carboidratos'],
+  ['batata',         'Batata inglesa cozida',         52, 1.2, 11.9, 0.0, 'Carboidratos'],
+  ['mandioca',       'Mandioca cozida',              125, 0.6, 30.1, 0.3, 'Carboidratos'],
+  ['cuscuz',         'Cuscuz de milho cozido',       113, 2.2, 25.3, 0.7, 'Carboidratos'],
+  ['milho',          'Milho verde cozido',            96, 3.4, 21.0, 1.5, 'Carboidratos'],
+  ['pao_frances',    'Pão francês',                  300, 8.0, 58.6, 3.1, 'Carboidratos'],
+  ['pao_integral',   'Pão integral de forma',        253, 9.4, 49.9, 3.7, 'Carboidratos'],
+  ['tapioca',        'Tapioca (goma hidratada)',     240, 0.0, 59.5, 0.0, 'Carboidratos'],
+  ['aveia',          'Aveia em flocos',              394, 13.9, 66.6, 8.5, 'Carboidratos'],
+  ['granola',        'Granola',                      420, 10.0, 66.0, 13.0, 'Carboidratos'],
+  ['biscoito_arroz', 'Biscoito de arroz',            387, 8.0, 81.0, 3.0, 'Carboidratos'],
+
+  ['frango',         'Peito de frango grelhado',     159, 32.0, 0.0, 2.5, 'Proteínas'],
+  ['frango_desf',    'Frango desfiado cozido',       163, 31.5, 0.0, 3.2, 'Proteínas'],
+  ['patinho',        'Patinho moído grelhado',       219, 35.9, 0.0, 7.3, 'Proteínas'],
+  ['alcatra',        'Alcatra grelhada',             241, 31.9, 0.0, 11.6, 'Proteínas'],
+  ['contrafile',     'Contrafilé grelhado',          278, 32.4, 0.0, 15.5, 'Proteínas'],
+  ['carne_moida',    'Carne moída refogada',         212, 26.7, 0.0, 10.9, 'Proteínas'],
+  ['tilapia',        'Tilápia grelhada',             128, 26.2, 0.0, 2.7, 'Proteínas'],
+  ['salmao',         'Salmão grelhado',              206, 22.1, 0.0, 12.4, 'Proteínas'],
+  ['atum',           'Atum em conserva (em água)',   116, 25.5, 0.0, 0.8, 'Proteínas'],
+  ['ovo',            'Ovo inteiro cozido',           146, 13.3, 0.6, 9.5, 'Proteínas'],
+  ['clara',          'Clara de ovo cozida',           52, 10.9, 0.7, 0.2, 'Proteínas'],
+  ['peito_peru',     'Peito de peru fatiado',        100, 17.0, 2.5, 2.5, 'Proteínas'],
+  ['whey',           'Whey protein (concentrado)',   400, 78.0, 8.0, 6.0, 'Proteínas'],
+  ['tofu',           'Tofu',                          76, 8.1, 1.9, 4.8, 'Proteínas'],
+
+  ['queijo_minas',   'Queijo minas frescal',         264, 17.4, 3.2, 20.2, 'Laticínios'],
+  ['cottage',        'Queijo cottage',                98, 11.1, 3.4, 4.3, 'Laticínios'],
+  ['mucarela',       'Queijo muçarela',              330, 22.6, 3.0, 25.2, 'Laticínios'],
+  ['iogurte_nat',    'Iogurte natural integral',      51, 4.1, 1.9, 3.0, 'Laticínios'],
+  ['iogurte_desn',   'Iogurte natural desnatado',     41, 3.8, 5.8, 0.3, 'Laticínios'],
+  ['leite_int',      'Leite integral',                61, 2.9, 4.3, 3.2, 'Laticínios'],
+  ['leite_desn',     'Leite desnatado',               35, 3.4, 4.9, 0.1, 'Laticínios'],
+
+  ['banana',         'Banana prata',                  98, 1.3, 26.0, 0.1, 'Frutas'],
+  ['maca',           'Maçã',                          56, 0.3, 15.2, 0.0, 'Frutas'],
+  ['mamao',          'Mamão papaia',                  40, 0.5, 10.4, 0.1, 'Frutas'],
+  ['morango',        'Morango',                       30, 0.9, 6.8, 0.3, 'Frutas'],
+  ['laranja',        'Laranja pera',                  37, 1.0, 8.9, 0.1, 'Frutas'],
+  ['abacaxi',        'Abacaxi',                       48, 0.9, 12.3, 0.1, 'Frutas'],
+  ['melancia',       'Melancia',                      33, 0.9, 8.1, 0.0, 'Frutas'],
+  ['melao',          'Melão',                         29, 0.7, 7.5, 0.0, 'Frutas'],
+  ['uva',            'Uva',                           53, 0.7, 13.6, 0.2, 'Frutas'],
+  ['manga',          'Manga',                         72, 0.4, 19.4, 0.2, 'Frutas'],
+  ['abacate',        'Abacate',                       96, 1.2, 6.0, 8.4, 'Frutas'],
+  ['kiwi',           'Kiwi',                          51, 1.3, 11.5, 0.6, 'Frutas'],
+  ['pera',           'Pera',                          53, 0.6, 14.0, 0.1, 'Frutas'],
+  ['acai',           'Açaí (polpa sem açúcar)',       58, 0.8, 6.2, 3.9, 'Frutas'],
+
+  ['alface',         'Alface',                        11, 1.3, 1.7, 0.2, 'Legumes e verduras'],
+  ['tomate',         'Tomate',                        15, 1.1, 3.1, 0.2, 'Legumes e verduras'],
+  ['brocolis',       'Brócolis cozido',               25, 2.1, 4.4, 0.5, 'Legumes e verduras'],
+  ['cenoura',        'Cenoura crua',                  34, 1.3, 7.7, 0.2, 'Legumes e verduras'],
+  ['abobrinha',      'Abobrinha cozida',              15, 1.1, 3.0, 0.2, 'Legumes e verduras'],
+  ['chuchu',         'Chuchu cozido',                 19, 0.4, 4.8, 0.0, 'Legumes e verduras'],
+  ['couve',          'Couve manteiga crua',           27, 2.9, 4.3, 0.5, 'Legumes e verduras'],
+  ['pepino',         'Pepino',                        10, 0.9, 2.0, 0.0, 'Legumes e verduras'],
+
+  ['azeite',         'Azeite de oliva',              884, 0.0, 0.0, 100.0, 'Gorduras e castanhas'],
+  ['manteiga',       'Manteiga',                     726, 0.4, 0.1, 82.4, 'Gorduras e castanhas'],
+  ['pasta_amend',    'Pasta de amendoim integral',   588, 25.0, 20.0, 50.0, 'Gorduras e castanhas'],
+  ['castanha_para',  'Castanha-do-pará',             643, 14.5, 15.1, 63.5, 'Gorduras e castanhas'],
+  ['amendoa',        'Amêndoas',                     581, 18.6, 29.5, 47.3, 'Gorduras e castanhas'],
+  ['caju',           'Castanha de caju torrada',     570, 18.5, 29.1, 46.3, 'Gorduras e castanhas'],
+  ['nozes',          'Nozes',                        620, 14.0, 18.4, 59.4, 'Gorduras e castanhas'],
+  ['chia',           'Chia',                         486, 16.5, 42.1, 30.7, 'Gorduras e castanhas'],
+
+  ['mel',            'Mel',                          309, 0.0, 84.0, 0.0, 'Outros'],
+  ['chocolate70',    'Chocolate 70% cacau',          598, 7.8, 45.9, 42.6, 'Outros'],
+  ['acucar',         'Açúcar',                       387, 0.0, 99.5, 0.0, 'Outros'],
+  ['cafe',           'Café sem açúcar',                1, 0.1, 0.0, 0.0, 'Outros']
+].map(([id, nome, kcal, prot, carb, gord, grupo]) => ({ id, nome, kcal, prot, carb, gord, grupo }));
+
+/* ---------- MÚSCULOS E EXERCÍCIOS (para montar o próprio treino) ----------
+   Cada músculo tem a lista de exercícios que o app sabe prescrever, na
+   academia e em casa. O primeiro de cada lista é o principal (composto),
+   e é por ele que o app começa quando monta um dia sozinho. */
+const GRUPOS_MUSCULARES = ['Peito', 'Costas', 'Ombro', 'Bíceps', 'Tríceps', 'Quadríceps', 'Posterior', 'Glúteos', 'Panturrilha', 'Abdômen', 'Cardio'];
+
+/* músculo grande pede mais exercício no dia que músculo pequeno */
+const GRUPOS_GRANDES = ['Peito', 'Costas', 'Quadríceps', 'Posterior', 'Glúteos'];
+
+const EXERCICIOS_POR_GRUPO = {
+  'Peito': {
+    academia: ['Supino reto', 'Supino inclinado com halteres', 'Crucifixo na máquina', 'Crossover na polia', 'Supino declinado', 'Peck deck'],
+    casa: ['Flexão de braço', 'Flexão inclinada (pés elevados)', 'Flexão com mãos afastadas', 'Flexão de joelhos']
+  },
+  'Costas': {
+    academia: ['Puxada frontal', 'Remada baixa', 'Remada curvada', 'Remada unilateral', 'Barra fixa', 'Pulldown com corda'],
+    casa: ['Remada com elástico', 'Remada com mochila', 'Puxada com elástico', 'Superman']
+  },
+  'Ombro': {
+    academia: ['Desenvolvimento com halteres', 'Desenvolvimento militar', 'Elevação lateral', 'Elevação frontal', 'Crucifixo inverso'],
+    casa: ['Desenvolvimento com elástico', 'Elevação lateral com elástico', 'Flexão pike']
+  },
+  'Bíceps': {
+    academia: ['Rosca direta', 'Rosca martelo', 'Rosca alternada', 'Rosca Scott'],
+    casa: ['Rosca com elástico', 'Rosca com mochila', 'Rosca martelo com garrafas']
+  },
+  'Tríceps': {
+    academia: ['Tríceps na polia', 'Tríceps testa', 'Tríceps francês', 'Mergulho no banco'],
+    casa: ['Mergulho na cadeira', 'Flexão diamante', 'Tríceps com elástico']
+  },
+  'Quadríceps': {
+    academia: ['Agachamento livre', 'Leg press 45°', 'Cadeira extensora', 'Afundo com halteres', 'Agachamento búlgaro', 'Hack machine'],
+    casa: ['Agachamento livre', 'Afundo alternado', 'Agachamento búlgaro', 'Agachamento com salto']
+  },
+  'Posterior': {
+    academia: ['Levantamento terra romeno', 'Mesa flexora', 'Cadeira flexora', 'Stiff'],
+    casa: ['Stiff com elástico', 'Ponte unilateral', 'Levantamento terra romeno com mochila']
+  },
+  'Glúteos': {
+    academia: ['Elevação pélvica', 'Agachamento sumô', 'Coice na polia', 'Abdução na máquina', 'Elevação pélvica com barra'],
+    casa: ['Elevação pélvica no chão', 'Agachamento sumô', 'Coice de quatro apoios', 'Abdução deitada']
+  },
+  'Panturrilha': {
+    academia: ['Panturrilha em pé', 'Panturrilha sentada'],
+    casa: ['Panturrilha em pé', 'Panturrilha unilateral no degrau']
+  },
+  'Abdômen': {
+    academia: ['Prancha abdominal', 'Abdominal infra', 'Abdominal remador', 'Prancha lateral', 'Abdominal na polia'],
+    casa: ['Prancha abdominal', 'Abdominal infra', 'Abdominal remador', 'Prancha lateral']
+  },
+  'Cardio': {
+    academia: ['Esteira intervalada', 'Bicicleta intervalada', 'Burpee'],
+    casa: ['Polichinelo', 'Burpee', 'Mountain climber', 'Corrida estacionária']
+  }
+};
+
+/* ---------- TIPOS DE TREINO (divisões conhecidas) ----------
+   `sexo`: para quem a divisão aparece ('ambos' aparece pra todo mundo).
+   `dias`: os treinos da divisão, na ordem (A, B, C...), cada um com os
+   músculos do dia. A semana é montada girando esses treinos pelos dias
+   de treino dela (Store.montarSemana), então o ABC de 6 dias vira
+   ABC ABC. Quem tem MAIS treinos na divisão do que dias na semana ganha
+   dias de treino suficientes pra fazer todos (ver Store.escolherDivisao). */
+const DIVISOES = [
+  { id: 'fullbody', nome: 'Full Body', sexo: 'ambos', freq: '3x por semana',
+    desc: 'O corpo todo em cada treino. Ótimo pra quem está começando ou treina poucos dias.',
+    dias: [
+      { foco: 'Corpo todo A', grupos: ['Quadríceps', 'Peito', 'Costas', 'Abdômen'] },
+      { foco: 'Corpo todo B', grupos: ['Posterior', 'Glúteos', 'Ombro', 'Bíceps', 'Tríceps'] },
+      { foco: 'Corpo todo C', grupos: ['Quadríceps', 'Costas', 'Peito', 'Panturrilha'] }
+    ] },
+  { id: 'ab', nome: 'Superior e Inferior (AB)', sexo: 'ambos', freq: '4x por semana',
+    desc: 'Um dia a parte de cima, no outro a de baixo. Cada músculo treina duas vezes na semana.',
+    dias: [
+      { foco: 'Superior', grupos: ['Peito', 'Costas', 'Ombro', 'Bíceps', 'Tríceps'] },
+      { foco: 'Inferior', grupos: ['Quadríceps', 'Posterior', 'Glúteos', 'Panturrilha', 'Abdômen'] }
+    ] },
+  { id: 'ppl', nome: 'Push, Pull e Legs', sexo: 'ambos', freq: '3x ou 6x por semana',
+    desc: 'Empurrar, puxar e pernas. Uma das divisões mais usadas pra ganhar massa.',
+    dias: [
+      { foco: 'Empurrar', grupos: ['Peito', 'Ombro', 'Tríceps'] },
+      { foco: 'Puxar', grupos: ['Costas', 'Bíceps', 'Abdômen'] },
+      { foco: 'Pernas', grupos: ['Quadríceps', 'Posterior', 'Glúteos', 'Panturrilha'] }
+    ] },
+  { id: 'abc', nome: 'ABC clássico', sexo: 'masculino', freq: '3x ou 6x por semana',
+    desc: 'Peito e tríceps, costas e bíceps, pernas e ombro. A divisão mais conhecida da academia.',
+    dias: [
+      { foco: 'Peito e Tríceps', grupos: ['Peito', 'Tríceps'] },
+      { foco: 'Costas e Bíceps', grupos: ['Costas', 'Bíceps'] },
+      { foco: 'Pernas e Ombro', grupos: ['Quadríceps', 'Posterior', 'Ombro', 'Panturrilha'] }
+    ] },
+  { id: 'abcd', nome: 'ABCD', sexo: 'masculino', freq: '4x por semana',
+    desc: 'Um dia a mais que o ABC: ombro ganha o treino dele e as pernas ficam sozinhas.',
+    dias: [
+      { foco: 'Peito e Tríceps', grupos: ['Peito', 'Tríceps'] },
+      { foco: 'Costas e Bíceps', grupos: ['Costas', 'Bíceps'] },
+      { foco: 'Pernas', grupos: ['Quadríceps', 'Posterior', 'Glúteos', 'Panturrilha'] },
+      { foco: 'Ombro e Abdômen', grupos: ['Ombro', 'Abdômen'] }
+    ] },
+  { id: 'abcde', nome: 'ABCDE', sexo: 'masculino', freq: '5x por semana',
+    desc: 'Um músculo por dia, com volume alto. Pra quem já treina há um tempo e quer hipertrofia.',
+    dias: [
+      { foco: 'Peito', grupos: ['Peito'] },
+      { foco: 'Costas', grupos: ['Costas'] },
+      { foco: 'Pernas', grupos: ['Quadríceps', 'Posterior', 'Panturrilha'] },
+      { foco: 'Ombro', grupos: ['Ombro', 'Abdômen'] },
+      { foco: 'Braços', grupos: ['Bíceps', 'Tríceps'] }
+    ] },
+  { id: 'abc_gluteo', nome: 'ABC com foco em glúteos', sexo: 'feminino', freq: '3x ou 6x por semana',
+    desc: 'Glúteos e posterior, superior, quadríceps. Inferior duas vezes a cada três treinos.',
+    dias: [
+      { foco: 'Glúteos e Posterior', grupos: ['Glúteos', 'Posterior'] },
+      { foco: 'Superior', grupos: ['Costas', 'Ombro', 'Bíceps', 'Tríceps'] },
+      { foco: 'Quadríceps e Panturrilha', grupos: ['Quadríceps', 'Panturrilha', 'Abdômen'] }
+    ] },
+  { id: 'abcd_gluteo', nome: 'ABCD com foco em glúteos', sexo: 'feminino', freq: '4x por semana',
+    desc: 'Dois treinos de glúteo na semana, um de quadríceps e um de superior.',
+    dias: [
+      { foco: 'Glúteos e Posterior', grupos: ['Glúteos', 'Posterior'] },
+      { foco: 'Superior', grupos: ['Costas', 'Peito', 'Ombro', 'Tríceps'] },
+      { foco: 'Quadríceps', grupos: ['Quadríceps', 'Panturrilha'] },
+      { foco: 'Glúteos e Abdômen', grupos: ['Glúteos', 'Abdômen'] }
+    ] },
+  { id: 'circuito', nome: 'Circuito em casa', sexo: 'ambos', freq: '3x ou 4x por semana',
+    desc: 'Exercícios em sequência, com pouco descanso. Gasta mais energia em menos tempo, sem aparelho.',
+    dias: [
+      { foco: 'Circuito inferior', grupos: ['Quadríceps', 'Glúteos', 'Cardio', 'Abdômen'] },
+      { foco: 'Circuito superior', grupos: ['Peito', 'Costas', 'Ombro', 'Cardio'] }
+    ] }
+];

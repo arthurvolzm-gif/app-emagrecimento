@@ -176,11 +176,7 @@ const Store = {
       streak_visto: 0,      // último marco de sequência já comemorado (ver STREAK_MARCOS)
       criado_em: this.hoje()
     };
-    perfil.meta_kcal = this.calcMetaKcal(perfil);
-    perfil.meta_agua = this.calcMetaAgua(perfil);   // ml
-    perfil.meta_sono = 8;                            // horas
-    perfil.meta_prot = this.calcMetaProt(perfil);    // g
-    perfil.meta_carb = this.calcMetaCarb(perfil);    // g
+    this.recalcularMetas(perfil);   // meta_kcal, meta_prot, meta_carb (g), meta_agua (ml), meta_sono (h)
 
     this.db.perfil = perfil;
     this.db.pesagens = [{ data: this.hoje(), peso: perfil.peso_inicial }];
@@ -190,12 +186,62 @@ const Store = {
 
   atualizarPerfil(campos) {
     Object.assign(this.db.perfil, campos);
-    const p = this.db.perfil;
-    p.meta_kcal = this.calcMetaKcal(p);
-    p.meta_agua = this.calcMetaAgua(p);
-    p.meta_prot = this.calcMetaProt(p);
-    p.meta_carb = this.calcMetaCarb(p);
+    this.recalcularMetas(this.db.perfil);
     this.save();
+  },
+
+  /* ---------- metas: sugestão do app ou a que ela escolheu ----------
+     Cada meta tem a conta do app (abaixo) e, se ela preferir, um número
+     dela em `metas_manuais`. O que ela escolheu vence; o que ela não
+     mexeu continua acompanhando o peso a cada pesagem.
+     O carboidrato é calculado DEPOIS de calorias e proteína, já com os
+     números finais: se ela subir a proteína, a sugestão de carboidrato
+     desce junto pra fechar a mesma caloria. */
+  recalcularMetas(p) {
+    const m = (p && p.metas_manuais) || {};
+    p.meta_kcal = Number(m.kcal) || this.calcMetaKcal(p);
+    p.meta_prot = Number(m.prot) || this.calcMetaProt(p);
+    p.meta_carb = Number(m.carb) || this.calcMetaCarb(p);
+    p.meta_agua = Number(m.agua) || this.calcMetaAgua(p);
+    p.meta_sono = Number(m.sono) || 8;
+  },
+
+  /* o que o app sugere pra cada meta, com os números de agora */
+  sugestaoMetas() {
+    const p = this.db.perfil;
+    const base = { ...p, metas_manuais: {} };
+    const kcal = this.calcMetaKcal(base);
+    const prot = this.calcMetaProt(base);
+    return {
+      kcal, prot,
+      /* carboidrato sugerido em cima das calorias e da proteína que valem
+         pra ela (as dela, se escolheu) */
+      carb: this.calcMetaCarb({ ...base, meta_kcal: p.meta_kcal, meta_prot: p.meta_prot }),
+      agua: this.calcMetaAgua(base),
+      sono: 8
+    };
+  },
+
+  /* grava as metas dela. Valor vazio ou igual à sugestão volta pro
+     automático, pra ninguém ficar preso num número que parou de mudar. */
+  definirMetas(campos) {
+    const p = this.db.perfil;
+    if (!p.metas_manuais || typeof p.metas_manuais !== 'object') p.metas_manuais = {};
+    for (const k in campos) {
+      const v = Number(campos[k]);
+      if (!v || v <= 0) delete p.metas_manuais[k];
+      else p.metas_manuais[k] = v;
+    }
+    this.recalcularMetas(p);
+    const sug = this.sugestaoMetas();
+    for (const k in p.metas_manuais) if (Number(p.metas_manuais[k]) === Number(sug[k])) delete p.metas_manuais[k];
+    this.recalcularMetas(p);
+    this.save();
+  },
+
+  metaManual(k) {
+    const m = this.db.perfil && this.db.perfil.metas_manuais;
+    return !!(m && m[k]);
   },
 
   temPerfil() { return !!(this.db && this.db.perfil); },
@@ -264,12 +310,14 @@ const Store = {
 
   _planoDaVariacao(v) {
     const p = this.db.perfil;
+    if (this.dietaPropriaAtiva()) return this._planoProprio();
     const plano = this.planoBase();
+    const horas = (p && p.horarios_refeicao) || {};
 
     const refeicoes = plano.refeicoes.map(r => {
       const varia = r.variacoes[v % r.variacoes.length];
       return {
-        id: r.id, nome: r.nome, horario: r.horario, icone: r.icone,
+        id: r.id, nome: r.nome, horario: horas[r.id] || r.horario, icone: r.icone,
         variacao: varia.nome,
         alimentos: varia.alimentos
       };
@@ -286,11 +334,13 @@ const Store = {
     return refeicoes.map(r => ({
       ...r,
       alimentos: r.alimentos.map(a => {
+        const g = Math.round(a.g * fator);
         const item = {
           ...a,
-          g: Math.round(a.g * fator),
+          g,
           kcal: Math.round(a.kcal * fator),
-          prot: Math.round(a.prot * fator)
+          prot: Math.round(a.prot * fator),
+          carb: Math.round((CARB_100G[a.nome] || 0) * g / 100)
         };
 
         /* se a pessoa escolheu uma troca para este alimento, ela passa a
@@ -322,6 +372,148 @@ const Store = {
     this.save();
   },
 
+  /* ---------- horário de cada refeição ----------
+     Vale pros dois cardápios: no do app fica em `horarios_refeicao`, por
+     id da refeição; na dieta própria, dentro da própria refeição. É o
+     mesmo horário que o lembrete de refeição usa. */
+  definirHoraRefeicao(id, hora) {
+    const p = this.db.perfil;
+    if (this.dietaPropriaAtiva()) {
+      const r = p.dieta_propria.refeicoes.find(x => x.id === id);
+      if (r && hora) r.horario = hora;
+    } else {
+      if (!p.horarios_refeicao || typeof p.horarios_refeicao !== 'object') p.horarios_refeicao = {};
+      if (hora) p.horarios_refeicao[id] = hora; else delete p.horarios_refeicao[id];
+    }
+    this.save();
+  },
+
+  /* ---------- DIETA PRÓPRIA ----------
+     Quem já tem a rotina alimentar dela monta aqui: as refeições, os
+     alimentos de cada uma e a quantidade em gramas. Calorias, proteína e
+     carboidrato saem da tabela ALIMENTOS (por 100 g) vezes a gramagem.
+     Com ela ligada, o cardápio do app sai de cena inteiro: não reescala
+     pela meta, não gira variação e não oferece troca. É o prato dela.
+
+     Guardado no perfil pra viajar junto na nuvem:
+       dieta_propria = { ativa, refeicoes: [{ id, nome, horario,
+         alimentos: [{ id, ref, nome, g, kcal100, prot100, carb100 }] }] } */
+  dietaPropriaAtiva() {
+    const d = this.db.perfil && this.db.perfil.dieta_propria;
+    return !!(d && d.ativa && Array.isArray(d.refeicoes) && d.refeicoes.length);
+  },
+
+  dietaPropria() {
+    const p = this.db.perfil;
+    if (!p.dieta_propria || !Array.isArray(p.dieta_propria.refeicoes)) {
+      /* começa com as refeições e horários do cardápio do app, vazias:
+         é mais fácil apagar uma que sobrou do que lembrar de criar */
+      p.dieta_propria = {
+        ativa: false,
+        refeicoes: this.planoBase().refeicoes.map(r => ({
+          id: 'p' + r.id, nome: r.nome, horario: (p.horarios_refeicao || {})[r.id] || r.horario, alimentos: []
+        }))
+      };
+    }
+    return p.dieta_propria;
+  },
+
+  _itemProprio(a) {
+    const g = Math.max(0, Number(a.g) || 0);
+    return {
+      id: a.id, nome: a.nome, g, un: g + ' g',
+      kcal: Math.round((a.kcal100 || 0) * g / 100),
+      prot: Math.round((a.prot100 || 0) * g / 100),
+      carb: Math.round((a.carb100 || 0) * g / 100)
+    };
+  },
+
+  _planoProprio() {
+    return this.dietaPropria().refeicoes.map(r => ({
+      id: r.id, nome: r.nome, horario: r.horario, icone: '',
+      variacao: '',
+      alimentos: r.alimentos.map(a => this._itemProprio(a))
+    }));
+  },
+
+  /* a soma do dia da dieta dela, pra comparar com as metas */
+  totaisDietaPropria() {
+    const t = { kcal: 0, prot: 0, carb: 0 };
+    this._planoProprio().forEach(r => r.alimentos.forEach(a => { t.kcal += a.kcal; t.prot += a.prot; t.carb += a.carb; }));
+    return t;
+  },
+
+  ativarDietaPropria(ligar) {
+    this.dietaPropria().ativa = !!ligar;
+    this.save();
+  },
+
+  _novoId(prefixo) {
+    return prefixo + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  },
+
+  addRefeicaoPropria(nome, horario) {
+    const d = this.dietaPropria();
+    const r = { id: this._novoId('p'), nome: nome || 'Refeição', horario: horario || '12:00', alimentos: [] };
+    d.refeicoes.push(r);
+    d.refeicoes.sort((a, b) => a.horario.localeCompare(b.horario));
+    this.save();
+    return r;
+  },
+
+  editarRefeicaoPropria(id, campos) {
+    const r = this.dietaPropria().refeicoes.find(x => x.id === id);
+    if (!r) return;
+    if (campos.nome !== undefined) r.nome = String(campos.nome).trim() || r.nome;
+    if (campos.horario) r.horario = campos.horario;
+    this.dietaPropria().refeicoes.sort((a, b) => a.horario.localeCompare(b.horario));
+    this.save();
+  },
+
+  removerRefeicaoPropria(id) {
+    const d = this.dietaPropria();
+    d.refeicoes = d.refeicoes.filter(x => x.id !== id);
+    this.save();
+  },
+
+  /* alimento que não está na tabela: ela digita o nome e os valores
+     por 100 g (os do rótulo) */
+  addAlimentoLivre(refId, gramas, livre) {
+    const r = this.dietaPropria().refeicoes.find(x => x.id === refId);
+    if (!r || !livre || !livre.nome) return null;
+    const a = { id: this._novoId('a'), ref: null, nome: String(livre.nome).trim(), g: Math.round(Number(gramas) || 0),
+                kcal100: Number(livre.kcal) || 0, prot100: Number(livre.prot) || 0, carb100: Number(livre.carb) || 0 };
+    r.alimentos.push(a);
+    this.save();
+    return a;
+  },
+
+  addAlimentoTabela(refId, alimentoId, gramas) {
+    const r = this.dietaPropria().refeicoes.find(x => x.id === refId);
+    const t = ALIMENTOS.find(x => x.id === alimentoId);
+    if (!r || !t) return null;
+    const a = { id: this._novoId('a'), ref: t.id, nome: t.nome, g: Math.round(Number(gramas) || 0),
+                kcal100: t.kcal, prot100: t.prot, carb100: t.carb };
+    r.alimentos.push(a);
+    this.save();
+    return a;
+  },
+
+  editarGramasProprio(refId, alimId, gramas) {
+    const r = this.dietaPropria().refeicoes.find(x => x.id === refId);
+    const a = r && r.alimentos.find(x => x.id === alimId);
+    if (!a) return;
+    a.g = Math.max(0, Math.round(Number(gramas) || 0));
+    this.save();
+  },
+
+  removerAlimentoProprio(refId, alimId) {
+    const r = this.dietaPropria().refeicoes.find(x => x.id === refId);
+    if (!r) return;
+    r.alimentos = r.alimentos.filter(x => x.id !== alimId);
+    this.save();
+  },
+
   /* lista única de alimentos que aceitam troca, para as telas
      referenciarem por índice (evita escapar aspas no onclick) */
   alimentosTrocaveis() {
@@ -341,8 +533,273 @@ const Store = {
 
   planoTreino() {
     const p = this.db.perfil;
+    const tp = p.treino_plano;
+    if (tp && Array.isArray(tp.dias) && tp.dias.length) {
+      const base = {
+        nome: tp.nome,
+        desc: tp.livre ? 'Montado por você, com as suas séries.' : 'Divisão escolhida por você, com as séries e repetições sugeridas pelo app.',
+        dias: tp.dias.map(d => ({
+          foco: d.foco || this.nomeDoDia(d.grupos),
+          grupos: d.grupos || [],
+          exercicios: (d.exercicios || []).map(e => ({ ...e, livre: !!tp.livre }))
+        })).concat([{ descanso: true, sugestao: 'Descanso. Recuperação é parte do treino.' }])
+      };
+      const semana = this.montarSemana(base, p.dias_treino);
+      return tp.livre ? semana : this.aplicarFase(semana);
+    }
     const base = PLANOS_TREINO[`${p.sexo}_${p.local}`] || PLANOS_TREINO.feminino_academia;
     return this.aplicarFase(this.montarSemana(base, p.dias_treino));
+  },
+
+  /* ---------- TIPO DE TREINO E TREINO PRÓPRIO ----------
+     `treino_plano` no perfil é o treino que ela escolheu ou montou:
+       { divisao, nome, livre, dias: [{ foco, grupos, exercicios:
+         [{ ex, grupo, series, reps, desc }] }] }
+     `livre` = as séries e repetições são dela (o treino mostra "4 Séries"
+     e ela anota as repetições que fez), em vez da sugestão do app.
+     Sem `treino_plano` vale o plano padrão por sexo e local, que é o que
+     todo mundo tinha antes. */
+  treinoPlano() {
+    return this.db.perfil && this.db.perfil.treino_plano || null;
+  },
+
+  /* 'Peito e Tríceps', 'Costas, Bíceps e Abdômen' */
+  nomeDoDia(grupos) {
+    const g = (grupos || []).filter(Boolean);
+    if (!g.length) return 'Treino sem músculos';
+    if (g.length === 1) return g[0];
+    return g.slice(0, -1).join(', ') + ' e ' + g[g.length - 1];
+  },
+
+  /* as divisões que aparecem pra ela, com a recomendada primeiro */
+  divisoesPara() {
+    const p = this.db.perfil;
+    const rec = this.divisaoRecomendada();
+    return DIVISOES
+      .filter(d => d.sexo === 'ambos' || d.sexo === p.sexo)
+      .filter(d => d.id !== 'circuito' || p.local === 'casa')
+      .map(d => ({ ...d, recomendada: d.id === rec }))
+      .sort((a, b) => (b.recomendada ? 1 : 0) - (a.recomendada ? 1 : 0));
+  },
+
+  /* A recomendação sai de três respostas dela: onde treina, quantos dias
+     e o objetivo. É a leitura mais comum entre treinadores:
+     - poucos dias ou em casa: corpo todo em cada treino;
+     - 4 dias: superior e inferior (ou ABCD com glúteo, pra ela);
+     - 5 ou 6 dias com foco em massa: divisões com mais volume por músculo. */
+  divisaoRecomendada() {
+    const p = this.db.perfil;
+    const n = Number(p.dias_treino) || 5;
+    const fem = p.sexo === 'feminino';
+    if (p.local === 'casa') return n >= 4 ? 'circuito' : 'fullbody';
+    if (n <= 3) return p.objetivo === 'hipertrofia' ? (fem ? 'abc_gluteo' : 'abc') : 'fullbody';
+    if (n === 4) return fem ? 'abcd_gluteo' : (p.objetivo === 'hipertrofia' ? 'abcd' : 'ab');
+    if (n === 5) return fem ? 'abc_gluteo' : (p.objetivo === 'hipertrofia' ? 'abcde' : 'ppl');
+    return fem ? 'abc_gluteo' : 'ppl';
+  },
+
+  /* séries, repetições e descanso que o app sugere pra um exercício, pelo
+     objetivo e pelo tamanho do músculo. O primeiro exercício de músculo
+     grande é o composto e leva uma série a mais e descanso maior. */
+  _prescricao(grupo, principal) {
+    const p = this.db.perfil;
+    const grande = GRUPOS_GRANDES.includes(grupo);
+    if (grupo === 'Cardio') return { series: 4, reps: '40s', desc: '20s' };
+    if (grupo === 'Abdômen') return { series: 3, reps: '15', desc: '30s' };
+    const reps = p.objetivo === 'hipertrofia' ? (grande ? 10 : 12)
+               : p.objetivo === 'emagrecimento' ? (grande ? 12 : 15)
+               : (grande ? 12 : 12);
+    return {
+      series: grande && principal ? 4 : 3,
+      reps: String(grupo === 'Panturrilha' ? 20 : reps),
+      desc: grande && principal ? '90s' : '60s'
+    };
+  },
+
+  exerciciosDoGrupo(grupo) {
+    const p = this.db.perfil;
+    const lista = EXERCICIOS_POR_GRUPO[grupo];
+    if (!lista) return [];
+    return lista[p.local === 'casa' ? 'casa' : 'academia'] || [];
+  },
+
+  /* quantos exercícios cabem no treino: sai do tempo por sessão que ela
+     respondeu (30 min, 45, 1 h, mais de 1 h) */
+  _exerciciosPorTreino() {
+    const t = Number(this.db.perfil.tempo_treino) || 60;
+    return t <= 30 ? 4 : t <= 45 ? 5 : t <= 60 ? 6 : 7;
+  },
+
+  /* Monta os exercícios de um dia a partir dos músculos. Músculo grande
+     vale dois pesos, pequeno um; o total de exercícios é dividido nessa
+     proporção, com pelo menos um por músculo. O que já existia no dia
+     (e continua num músculo que ficou) é mantido, pra ela não perder uma
+     troca que fez. */
+  montarExercicios(grupos, existentes) {
+    const g = (grupos || []).filter(x => EXERCICIOS_POR_GRUPO[x]);
+    if (!g.length) return [];
+    const total = Math.max(g.length, this._exerciciosPorTreino());
+    const pesos = g.map(x => GRUPOS_GRANDES.includes(x) ? 2 : 1);
+    const soma = pesos.reduce((s, x) => s + x, 0);
+    const cotas = pesos.map(w => Math.max(1, Math.floor(total * w / soma)));
+    let sobra = total - cotas.reduce((s, x) => s + x, 0);
+    for (let i = 0; sobra > 0 && i < cotas.length * 3; i++) {
+      const k = i % cotas.length;
+      if (cotas[k] < this.exerciciosDoGrupo(g[k]).length) { cotas[k]++; sobra--; }
+    }
+    const velhos = (existentes || []).filter(e => g.includes(e.grupo));
+    const saida = [];
+    g.forEach((grupo, k) => {
+      const meus = velhos.filter(e => e.grupo === grupo).slice(0, cotas[k]);
+      const usados = meus.map(e => e.ex);
+      const novos = this.exerciciosDoGrupo(grupo).filter(n => !usados.includes(n));
+      while (meus.length < cotas[k] && novos.length) {
+        const ex = novos.shift();
+        meus.push({ ex, grupo, ...this._prescricao(grupo, meus.length === 0) });
+      }
+      saida.push(...meus);
+    });
+    return saida;
+  },
+
+  /* escolhe uma divisão (ou 'proprio', que começa com os dias vazios pra
+     ela preencher). Treino com mais dias que a frequência dela ganha a
+     frequência que precisa, senão o D e o E nunca apareceriam. */
+  escolherDivisao(id) {
+    const p = this.db.perfil;
+    const livre = id === 'proprio';
+    let dias;
+    if (livre) {
+      const n = Math.max(3, Math.min(6, Number(p.dias_treino) || 3));
+      dias = Array.from({ length: n }, () => ({ foco: '', grupos: [], exercicios: [] }));
+    } else {
+      const d = DIVISOES.find(x => x.id === id);
+      if (!d) return false;
+      dias = d.dias.map(x => ({ foco: x.foco, grupos: x.grupos.slice(), exercicios: this.montarExercicios(x.grupos) }));
+      if ((Number(p.dias_treino) || 0) < d.dias.length) p.dias_treino = Math.min(6, d.dias.length);
+    }
+    const nome = livre ? 'Meu treino' : DIVISOES.find(x => x.id === id).nome;
+    p.treino_plano = { divisao: id, nome, livre, dias };
+    p.ordem_treino = [0, 1, 2, 3, 4, 5, 6];      /* a semana nova começa na ordem dela */
+    this.save();
+    return true;
+  },
+
+  /* quem já usa o app e abre o editor: o plano padrão vira editável, com
+     os mesmos treinos e exercícios que ela já fazia */
+  garantirTreinoPlano() {
+    const p = this.db.perfil;
+    if (this.treinoPlano()) return p.treino_plano;
+    const base = PLANOS_TREINO[`${p.sexo}_${p.local}`] || PLANOS_TREINO.feminino_academia;
+    const grupoDe = nome => {
+      for (const g in EXERCICIOS_POR_GRUPO) {
+        const l = EXERCICIOS_POR_GRUPO[g];
+        if (l.academia.includes(nome) || l.casa.includes(nome)) return g;
+      }
+      const b = BIBLIOTECA.find(x => x.nome === nome);
+      const mapa = { Pernas: 'Quadríceps', 'Glúteos': 'Glúteos', Costas: 'Costas', Peito: 'Peito', Ombro: 'Ombro', 'Braço': 'Bíceps', 'Abdômen': 'Abdômen', Cardio: 'Cardio' };
+      return b ? (mapa[b.cat] || 'Abdômen') : 'Abdômen';
+    };
+    const dias = base.dias.filter(d => !d.descanso).map(d => {
+      const exercicios = d.exercicios.map(e => ({ ...e, grupo: grupoDe(e.ex) }));
+      const grupos = [];
+      exercicios.forEach(e => { if (!grupos.includes(e.grupo)) grupos.push(e.grupo); });
+      return { foco: d.foco, grupos, exercicios };
+    });
+    p.treino_plano = { divisao: 'app', nome: base.nome, livre: false, dias };
+    this.save();
+    return p.treino_plano;
+  },
+
+  _diaPlano(i) {
+    const tp = this.garantirTreinoPlano();
+    return tp.dias[i] || null;
+  },
+
+  definirGruposDia(i, grupos) {
+    const d = this._diaPlano(i);
+    if (!d) return;
+    const tp = this.treinoPlano();
+    d.grupos = grupos.filter(g => GRUPOS_MUSCULARES.includes(g));
+    const antes = d.exercicios.map(e => e.ex);
+    d.exercicios = this.montarExercicios(d.grupos, d.exercicios);
+    /* com as séries dela, exercício que entrou agora vem sem repetição
+       fixa: ela anota no dia */
+    if (tp && tp.livre) d.exercicios.forEach(e => { if (!antes.includes(e.ex)) e.reps = ''; });
+    /* o nome do dia acompanha os músculos, a não ser que ela tenha
+       escolhido uma divisão com nome próprio e não mexido nos músculos */
+    d.foco = this.nomeDoDia(d.grupos);
+    if (tp) tp.divisao = tp.divisao === 'proprio' ? 'proprio' : 'editado';
+    this.save();
+  },
+
+  trocarExercicio(i, k, nome) {
+    const d = this._diaPlano(i);
+    if (!d || !d.exercicios[k]) return;
+    d.exercicios[k] = { ...d.exercicios[k], ex: nome };
+    this.save();
+  },
+
+  addExercicio(i, grupo, nome) {
+    const d = this._diaPlano(i);
+    if (!d) return;
+    if (!d.grupos.includes(grupo)) d.grupos.push(grupo);
+    const pr = this._prescricao(grupo, false);
+    const tp = this.treinoPlano();
+    if (tp && tp.livre) pr.reps = '';
+    d.exercicios.push({ ex: nome, grupo, ...pr });
+    d.foco = this.nomeDoDia(d.grupos);
+    this.save();
+  },
+
+  removerExercicio(i, k) {
+    const d = this._diaPlano(i);
+    if (!d) return;
+    d.exercicios.splice(k, 1);
+    this.save();
+  },
+
+  /* séries e repetições dela num exercício do plano. Mexer aqui tira o
+     ajuste feito pelo "+/−" dentro do treino, senão os dois brigariam. */
+  definirSeriesReps(i, k, series, reps) {
+    const d = this._diaPlano(i);
+    const e = d && d.exercicios[k];
+    if (!e) return;
+    if (series !== undefined && series !== null) {
+      e.series = Math.max(1, Math.min(10, Number(series) || 1));
+      const p = this.db.perfil;
+      if (p.series_ex) delete p.series_ex[e.ex];
+    }
+    if (reps !== undefined && reps !== null) e.reps = String(reps).trim();
+    this.save();
+  },
+
+  /* liga as séries e repetições dela no plano todo (ou volta pra sugestão
+     do app, que recalcula cada exercício pelo músculo e objetivo) */
+  definirLivre(livre) {
+    const tp = this.garantirTreinoPlano();
+    tp.livre = !!livre;
+    /* as minhas: fica a quantidade de séries, e a repetição sai (ela
+       anota o que fez no dia, ou escreve a dela no editor) */
+    if (livre) tp.dias.forEach(d => d.exercicios.forEach(e => { e.reps = ''; }));
+    if (!livre) tp.dias.forEach(d => d.exercicios.forEach((e, k) => {
+      const pr = this._prescricao(e.grupo, d.exercicios.findIndex(x => x.grupo === e.grupo) === k);
+      e.series = pr.series; e.reps = pr.reps; e.desc = pr.desc;
+    }));
+    this.save();
+  },
+
+  definirDiasTreino(n) {
+    const p = this.db.perfil;
+    p.dias_treino = Math.max(3, Math.min(6, Number(n) || 3));
+    const tp = this.treinoPlano();
+    /* treino próprio tem um dia por dia de treino; a divisão pronta gira */
+    if (tp && tp.divisao === 'proprio') {
+      while (tp.dias.length < p.dias_treino) tp.dias.push({ foco: '', grupos: [], exercicios: [] });
+      while (tp.dias.length > p.dias_treino) tp.dias.pop();
+    }
+    p.ordem_treino = [0, 1, 2, 3, 4, 5, 6];
+    this.save();
   },
 
   /* ---------- REAJUSTE MENSAL ----------
@@ -610,6 +1067,23 @@ const Store = {
     return this.horasTreino()[pos] || '';
   },
 
+  /* O horário que o lembrete usa. Enquanto ela não escolheu nenhum, vale
+     o padrão que o campo já mostra (HORA_TREINO_PADRAO): antes, o campo
+     exibia 18:30 mas nada era salvo, e o lembrete de treino nunca tocava
+     pra quem não mexeu no horário. Escolhido algum dia, vale só o que ela
+     salvou. */
+  horaTreinoEfetiva(pos) {
+    const h = this.horasTreino();
+    if (h[pos]) return h[pos];
+    return Object.keys(h).length ? '' : HORA_TREINO_PADRAO;
+  },
+
+  /* horário do lembrete de sono: o que ela escolheu nas metas, ou o padrão */
+  horaSono() {
+    const p = this.db.perfil;
+    return (p && p.hora_sono) || HORA_SONO;
+  },
+
   /* hora vazia apaga o horário daquele dia */
   definirHoraTreino(pos, hora) {
     const h = this.horasTreino();
@@ -843,18 +1317,20 @@ const Store = {
     return Math.round(met * 3.5 * peso / 200 * min);
   },
 
-  salvarCardio(tipo, minutos, km) {
-    const d = this.dia();
+  /* `data` deixa registrar o cardio de outro dia da semana (o que já
+     passou): sem ela, é hoje */
+  salvarCardio(tipo, minutos, km, data) {
+    const d = this.dia(data);
     const t = CARDIO_TIPOS.find(x => x.id === tipo) || CARDIO_TIPOS[0];
     const dist = t.distancia && km > 0 ? Math.round(km * 100) / 100 : 0;
     d.cardio = { tipo: t.id, minutos: Math.round(minutos), km: dist, kcal: this.caloriasCardio(t.id, minutos, dist) };
-    this.iniciarTreinoHoje();
+    if (!data || data === this.hoje()) this.iniciarTreinoHoje();
     this.save();
     return d.cardio;
   },
 
-  removerCardio() {
-    delete this.dia().cardio;
+  removerCardio(data) {
+    delete this.dia(data).cardio;
     this.save();
   },
 
@@ -1061,7 +1537,7 @@ const Store = {
     const dia = data || this.hoje();
     const d = this.db.dias[dia];
     const plano = this.planoAlimentar(dia);
-    let kcal = 0, prot = 0, marcados = 0, total = 0;
+    let kcal = 0, prot = 0, carb = 0, marcados = 0, total = 0;
     /* duas contagens diferentes, e as telas usam cada uma no lugar dela:
        `marcados/total` são ALIMENTOS; `refeicoes/refeicoesTotal` são as
        refeições fechadas. Uma refeição só conta quando todos os itens
@@ -1076,13 +1552,13 @@ const Store = {
         /* opcionais (sobremesa) não entram na conta do "completou tudo",
            mas somam calorias se a pessoa marcar */
         if (!a.opcional) { total++; obrig++; if (feito) { marcados++; feitos++; } }
-        if (feito) { kcal += a.kcal; prot += a.prot; }
+        if (feito) { kcal += a.kcal; prot += a.prot; carb += a.carb || 0; }
       });
       if (obrig > 0) { refeicoesTotal++; if (feitos === obrig) refeicoes++; }
     });
 
     return {
-      kcal, prot, marcados, total, refeicoes, refeicoesTotal,
+      kcal, prot, carb, marcados, total, refeicoes, refeicoesTotal,
       agua: d ? d.agua : 0,
       sono: d ? d.sono : 0,
       treino: d ? d.treino : false

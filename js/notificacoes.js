@@ -190,6 +190,7 @@ const Notif = {
   },
 
   _podeCorrida() {
+    if (!CONFIG.RUN_TRACKER_ATIVO) return false;
     if (window.NO_APP_DA_LOJA) return false;
     if (!CONFIG.CHECKOUT_URL_CORRIDA) return false;
     if (this._diasDeApp() < this.DIAS_ATE_OFERTA.corrida) return false;

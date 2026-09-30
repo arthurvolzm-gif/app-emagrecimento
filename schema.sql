@@ -682,6 +682,11 @@ begin
   delete from public.push_enviados
    where endpoint in (select endpoint from public.push_inscricoes where user_id = v_uid);
 
+  /* a avaliação que ela respondeu continua, mas sem nada que a identifique */
+  if to_regclass('public.avaliacoes') is not null then
+    update public.avaliacoes set email = null, user_id = null where user_id = v_uid;
+  end if;
+
   if v_email <> '' then
     delete from public.respostas_quiz where lower(email) = v_email;
     delete from public.assinaturas where lower(email) = v_email and titular_email is not null;
@@ -694,3 +699,83 @@ $$;
 
 revoke all on function public.excluir_minha_conta() from public, anon;
 grant execute on function public.excluir_minha_conta() to authenticated;
+
+-- =========================================================
+-- AVALIAÇÃO DO APP (a pesquisa de dentro do app)
+--
+-- A pessoa aceita participar, responde como conheceu o app, por quem,
+-- o que a fez baixar, uma sugestão e a nota de 0 a 10 de indicação.
+-- Quem dá mais de 7 vê a oferta do Plano Duo em seguida.
+--
+-- A tabela é fechada: ninguém lê nem grava direto nela. Grava pela
+-- função salvar_avaliacao (a pessoa só grava a própria, pelo token da
+-- sessão) e lê pela painel_avaliacoes, que só responde pra e-mail que
+-- estiver em painel_admins. É o que a página painel-avaliacoes.html usa.
+-- =========================================================
+create table if not exists public.avaliacoes (
+  id            bigint generated always as identity primary key,
+  user_id       uuid references auth.users(id) on delete set null,
+  email         text,
+  origem        text,
+  origem_outro  text,
+  indicado_por  text,
+  indicado_nome text,
+  motivos       text[],
+  motivo_outro  text,
+  sugestao      text,
+  nps           int check (nps between 0 and 10),
+  criado_em     timestamptz not null default now()
+);
+alter table public.avaliacoes enable row level security;
+
+create table if not exists public.painel_admins (
+  email text primary key
+);
+alter table public.painel_admins enable row level security;
+
+create or replace function public.salvar_avaliacao(
+  p_origem text, p_origem_outro text, p_indicado_por text, p_indicado_nome text,
+  p_motivos text[], p_motivo_outro text, p_sugestao text, p_nps int)
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_uid uuid := auth.uid();
+begin
+  if v_uid is null then raise exception 'sem sessão'; end if;
+  if p_nps is not null and (p_nps < 0 or p_nps > 10) then raise exception 'nota inválida'; end if;
+  insert into public.avaliacoes
+    (user_id, email, origem, origem_outro, indicado_por, indicado_nome, motivos, motivo_outro, sugestao, nps)
+  values
+    (v_uid, lower(coalesce(auth.jwt() ->> 'email', '')),
+     left(p_origem, 60), left(p_origem_outro, 120), left(p_indicado_por, 60), left(p_indicado_nome, 120),
+     p_motivos[1:12], left(p_motivo_outro, 200), left(p_sugestao, 2000), p_nps);
+  return true;
+end;
+$$;
+revoke all on function public.salvar_avaliacao(text, text, text, text, text[], text, text, int) from public, anon;
+grant execute on function public.salvar_avaliacao(text, text, text, text, text[], text, text, int) to authenticated;
+
+create or replace function public.painel_avaliacoes()
+returns setof public.avaliacoes
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not exists (
+    select 1 from public.painel_admins
+     where lower(email) = lower(coalesce(auth.jwt() ->> 'email', ''))
+  ) then
+    raise exception 'sem permissão';
+  end if;
+  return query select * from public.avaliacoes order by criado_em desc limit 5000;
+end;
+$$;
+revoke all on function public.painel_avaliacoes() from public, anon;
+grant execute on function public.painel_avaliacoes() to authenticated;
+
+-- o dono do app (troque se o e-mail de administrador for outro)
+insert into public.painel_admins (email) values ('arthur.volz.m@gmail.com') on conflict do nothing;

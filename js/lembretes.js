@@ -86,7 +86,7 @@ const Lembretes = {
         .filter(r => r.horario)
         .map(r => ({
           hora: r.horario,
-          titulo: `${r.nome} · Focus Fit`,
+          titulo: r.nome,
           corpo: 'Hora da sua refeição. Abra o app e marque o que comeu.',
           tag: 'refeicao'
         }));
@@ -101,7 +101,7 @@ const Lembretes = {
     const alvo = meta ? (meta / 1000).toFixed(1).replace('.', ',') + ' L' : 'a sua meta';
     return AGUA_HORARIOS.map(hora => ({
       hora,
-      titulo: 'Hora de beber água · Focus Fit',
+      titulo: 'Hora de beber água',
       corpo: `Um copo agora e você segue no ritmo de ${alvo} hoje.`,
       tag: 'agua'                                  /* um só na bandeja, sem empilhar */
     }));
@@ -110,8 +110,8 @@ const Lembretes = {
   /* sono: um por noite, no horário do HORA_SONO */
   _horasSono() {
     return [{
-      hora: HORA_SONO,
-      titulo: 'Hora de desacelerar · Focus Fit',
+      hora: Store.horaSono(),
+      titulo: 'Hora de desacelerar',
       corpo: 'Comece a se preparar para dormir. O sono é parte do plano, igual ao treino.',
       tag: 'sono'
     }];
@@ -122,11 +122,11 @@ const Lembretes = {
   _itemTreino(pos) {
     const dia = Store.diasTreino()[pos];
     if (!dia || dia.descanso) return null;
-    const hora = Store.horaTreino(pos);
+    const hora = Store.horaTreinoEfetiva(pos);
     if (!hora) return null;
     return {
       hora,
-      titulo: `Treino de ${dia.foco} · Focus Fit`,
+      titulo: `Treino de ${dia.foco}`,
       corpo: 'Seu horário de treino chegou. Abra o app e veja os exercícios de hoje.',
       tag: 'treino'
     };
@@ -281,8 +281,10 @@ const Lembretes = {
     try {
       const n = new Notification(av.titulo, {
         body: av.corpo,
-        badge: 'icone-badge.png',                  /* sem icon: ver o push no sw.js */
-        tag: av.tag                                /* não empilha lembrete repetido */
+        icon: 'icone-vazio.png',                   /* ver o push no sw.js */
+        badge: 'icone-badge.png',
+        tag: av.tag,                               /* não empilha lembrete repetido */
+        renotify: true                             /* mas toca de novo a cada um */
       });
       n.onclick = () => {
         try { window.focus(); } catch (e) {}

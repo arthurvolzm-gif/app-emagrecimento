@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#000000">
+<meta name="robots" content="noindex, nofollow">
+<title>Avaliações · Focus Fit</title>
+<link rel="icon" href="icone-512.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<!--
+  PAINEL DAS AVALIAÇÕES (a pesquisa de dentro do app, js/avaliacao.js)
+
+  Só abre para e-mail cadastrado em `painel_admins` no Supabase. Quem já
+  entrou no app neste navegador cai direto; senão, entra aqui mesmo com
+  o código do e-mail. As respostas vêm da função painel_avaliacoes
+  (schema.sql), que confere o e-mail no servidor: esconder a página não
+  é a tranca, a tranca é a função.
+
+  Cores: a barra usa #00A87E, o passo do verde da marca que passa nas
+  checagens de gráfico sobre o fundo preto (o #00D7A2 fica claro demais
+  pra área cheia). Números e rótulos ficam em branco e cinza, nunca na
+  cor da barra.
+-->
+<style>
+  :root{
+    --fundo:#000;--cartao:#000;--linha:rgba(0,215,162,.18);--borda:rgba(0,215,162,.34);
+    --verde:#00D7A2;--barra:#00A87E;--trilho:#10201A;
+    --tinta:#fff;--tinta2:#C3D6CB;--cinza:#9DB2A7;--cinza2:#7E9389;--erro:#FF9E91;
+    color-scheme:dark;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--fundo);color:var(--tinta);font-family:'Manrope',system-ui,sans-serif;font-size:15px;line-height:1.5;
+       padding:28px 16px 70px;}
+  .folha{max-width:1100px;margin:0 auto;}
+  .topo{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px;}
+  .topo img{width:42px;height:42px;}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1.15;}
+  .sub{font-size:13px;color:var(--cinza);font-weight:600;}
+  .filtros{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto;}
+  .filtros button,.acao{padding:8px 14px;border-radius:20px;border:1px solid var(--linha);background:#000;color:var(--tinta2);
+    font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;}
+  .filtros button.on{border-color:var(--verde);color:var(--verde);}
+  .acao:hover,.filtros button:hover{border-color:var(--borda);}
+  .cartao{background:var(--cartao);border:1px solid var(--borda);border-radius:20px;padding:18px;}
+  .tt{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--cinza);margin-bottom:14px;
+      display:flex;align-items:center;gap:8px;}
+  .tt .n{margin-left:auto;letter-spacing:0;text-transform:none;color:var(--cinza2);font-size:12.5px;}
+  .grade{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin-bottom:14px;}
+  .tiles{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:14px;}
+  .tile .v{font-family:'Bricolage Grotesque',sans-serif;font-size:40px;font-weight:800;line-height:1;letter-spacing:-.03em;}
+  .tile .v small{font-size:16px;color:var(--cinza);font-weight:700;}
+  .tile .l{font-size:12.5px;color:var(--cinza);font-weight:700;margin-top:8px;line-height:1.45;}
+
+  /* barras horizontais: rótulo, barra fina com ponta arredondada, valor em texto */
+  .hb{display:grid;grid-template-columns:minmax(90px,38%) 1fr auto;align-items:center;gap:10px;padding:5px 0;}
+  .hb .r{font-size:13px;font-weight:700;color:var(--tinta2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .hb .t{height:14px;border-radius:4px;background:var(--trilho);position:relative;}
+  .hb .t i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--barra);min-width:3px;}
+  .hb .q{font-size:12.5px;font-weight:800;color:var(--tinta);min-width:66px;text-align:right;}
+  .hb .q small{color:var(--cinza2);font-weight:700;}
+  .hb:hover .t i{background:var(--verde);}
+
+  /* notas 0 a 10: colunas */
+  .nps{display:grid;grid-template-columns:repeat(11,1fr);gap:2px;align-items:end;height:170px;padding-top:18px;}
+  .nps .c{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;cursor:default;}
+  .nps .c i{width:70%;max-width:34px;border-radius:4px 4px 0 0;background:var(--barra);min-height:2px;}
+  .nps .c:hover i{background:var(--verde);}
+  .nps .c b{font-size:11px;color:var(--tinta2);font-weight:800;margin-bottom:4px;}
+  .nps-x{display:grid;grid-template-columns:repeat(11,1fr);gap:2px;border-top:1px solid var(--linha);padding-top:6px;}
+  .nps-x span{text-align:center;font-size:11.5px;color:var(--cinza);font-weight:700;}
+  .nps-faixas{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:12.5px;color:var(--cinza);font-weight:700;}
+  .nps-faixas b{color:var(--tinta);}
+
+  .msg{padding:14px 0;border-top:1px solid var(--linha);}
+  .msg:first-of-type{border-top:none;}
+  .msg p{font-size:14.5px;line-height:1.6;color:var(--tinta);white-space:pre-wrap;}
+  .msg .meta{font-size:12px;color:var(--cinza);font-weight:700;margin-top:6px;}
+  .busca{width:100%;padding:11px 14px;border-radius:12px;border:1px solid var(--linha);background:#000;color:var(--tinta);
+    font-family:inherit;font-size:14px;font-weight:600;margin-bottom:6px;}
+  .vazio{color:var(--cinza);font-size:13.5px;font-weight:600;padding:8px 0;}
+
+  table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  th,td{text-align:left;padding:8px 10px;border-top:1px solid var(--linha);vertical-align:top;}
+  th{color:var(--cinza);font-weight:800;text-transform:uppercase;letter-spacing:.05em;font-size:11px;border-top:none;}
+  .tabela-wrap{overflow-x:auto;}
+
+  .porta{max-width:420px;margin:40px auto;text-align:center;}
+  .porta h1{margin:14px 0 8px;}
+  .porta p{color:var(--cinza);font-weight:600;font-size:14px;margin-bottom:18px;}
+  .porta input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--borda);background:#000;color:var(--tinta);
+    font-family:inherit;font-size:15px;font-weight:600;margin-bottom:10px;text-align:center;}
+  .btn{width:100%;padding:14px;border-radius:14px;border:none;background:linear-gradient(135deg,#008F6B,#00B386);color:#fff;
+    font-family:inherit;font-size:15px;font-weight:800;cursor:pointer;}
+  .btn[disabled]{opacity:.5;}
+  .erro{color:var(--erro);font-size:13px;font-weight:700;margin-bottom:10px;}
+
+  #dica{position:fixed;pointer-events:none;z-index:9;background:#0B120F;border:1px solid var(--borda);border-radius:10px;
+    padding:7px 10px;font-size:12.5px;font-weight:700;color:var(--tinta);opacity:0;transition:opacity .1s;white-space:nowrap;}
+  @media (max-width:560px){ h1{font-size:23px;} .filtros{margin-left:0;} .tile .v{font-size:34px;} }
+</style>
+</head>
+<body>
+<div class="folha" id="raiz"><p class="sub">Carregando…</p></div>
+<div id="dica" role="tooltip"></div>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const Painel = {
+  sb: null, dados: [], periodo: 'todos', busca: '', verTabela: false, todasMsgs: false, emailPendente: '', erro: '',
+
+  async iniciar() {
+    if (!window.supabase || !CONFIG.SUPABASE_URL) return this.porta('Não consegui carregar a conexão. Confira a internet e recarregue.');
+    this.sb = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+    const { data } = await this.sb.auth.getSession();
+    if (!data || !data.session) return this.porta();
+    await this.carregar();
+  },
+
+  async carregar() {
+    document.getElementById('raiz').innerHTML = '<p class="sub">Buscando as respostas…</p>';
+    const { data, error } = await this.sb.rpc('painel_avaliacoes');
+    if (error) {
+      const semPermissao = /permiss/i.test(error.message);
+      return this.porta(semPermissao
+        ? 'Este e-mail não tem acesso ao painel. Entre com o e-mail de administrador.'
+        : 'Não consegui buscar as respostas: ' + error.message, true);
+    }
+    this.dados = data || [];
+    this.pintar();
+  },
+
+  /* ---------- entrada: e-mail e código, como no app ---------- */
+  porta(msg, sair) {
+    const codigo = !!this.emailPendente;
+    document.getElementById('raiz').innerHTML = `
+      <div class="porta">
+        <img src="logo-mira.png" alt="Focus Fit" width="56" height="56">
+        <h1>Painel das avaliações</h1>
+        <p>${msg || (codigo ? `Enviamos um código para <b>${this.esc(this.emailPendente)}</b>.` : 'Entre com o e-mail de administrador. Vai chegar um código nele.')}</p>
+        ${this.erro ? `<div class="erro">${this.esc(this.erro)}</div>` : ''}
+        ${sair ? `<button class="btn" onclick="Painel.sair()">Entrar com outro e-mail</button>` : codigo ? `
+          <input id="p-cod" inputmode="numeric" maxlength="10" placeholder="Código" autocomplete="one-time-code">
+          <button class="btn" id="p-btn" onclick="Painel.confirmar()">Entrar</button>` : `
+          <input id="p-mail" type="email" placeholder="seu@email.com" autocomplete="email">
+          <button class="btn" id="p-btn" onclick="Painel.pedirCodigo()">Receber código</button>`}
+      </div>`;
+  },
+
+  async pedirCodigo() {
+    const email = (document.getElementById('p-mail').value || '').trim().toLowerCase();
+    if (!email.includes('@')) { this.erro = 'Digite um e-mail válido.'; return this.porta(); }
+    document.getElementById('p-btn').disabled = true;
+    const { error } = await this.sb.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
+    this.erro = error ? 'Não consegui enviar o código: ' + error.message : '';
+    if (!error) this.emailPendente = email;
+    this.porta();
+  },
+
+  async confirmar() {
+    const token = (document.getElementById('p-cod').value || '').replace(/\D/g, '');
+    if (token.length < 6) { this.erro = 'Digite o código completo.'; return this.porta(); }
+    document.getElementById('p-btn').disabled = true;
+    const { error } = await this.sb.auth.verifyOtp({ email: this.emailPendente, token, type: 'email' });
+    if (error) { this.erro = 'Código inválido ou vencido. Peça outro.'; this.emailPendente = ''; return this.porta(); }
+    this.erro = '';
+    await this.carregar();
+  },
+
+  async sair() {
+    await this.sb.auth.signOut({ scope: 'local' });
+    this.emailPendente = ''; this.erro = '';
+    this.porta();
+  },
+
+  /* ---------- contas ---------- */
+  filtrados() {
+    if (this.periodo === 'todos') return this.dados;
+    const dias = this.periodo === '7' ? 7 : 30;
+    const desde = Date.now() - dias * 86400000;
+    return this.dados.filter(r => new Date(r.criado_em).getTime() >= desde);
+  },
+
+  contar(lista, chave, outros) {
+    const m = new Map();
+    lista.forEach(r => {
+      const vals = Array.isArray(r[chave]) ? r[chave] : [r[chave]];
+      vals.filter(Boolean).forEach(v => {
+        const nome = v === 'Outro' && outros && r[outros] ? 'Outro: ' + String(r[outros]).trim() : v;
+        m.set(nome, (m.get(nome) || 0) + 1);
+      });
+    });
+    return [...m.entries()].sort((a, b) => b[1] - a[1]);
+  },
+
+  /* influenciador citado: "@maria.fit", "Maria Fit" e "mariafit" são a
+     mesma pessoa. A chave ignora @, espaço, ponto, traço e sublinhado; o
+     nome mostrado é o jeito mais escrito. */
+  influenciadores(lista) {
+    const m = new Map();
+    lista.filter(r => r.indicado_por === 'Um influenciador' && r.indicado_nome).forEach(r => {
+      const bruto = String(r.indicado_nome).trim();
+      const chave = bruto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[@\s._-]/g, '');
+      if (!chave) return;
+      const g = m.get(chave) || { n: 0, formas: new Map() };
+      g.n++; g.formas.set(bruto, (g.formas.get(bruto) || 0) + 1);
+      m.set(chave, g);
+    });
+    return [...m.values()].sort((a, b) => b.n - a.n)
+      .map(g => [[...g.formas.entries()].sort((a, b) => b[1] - a[1])[0][0], g.n]);
+  },
+
+  /* NPS: % de notas 9 e 10 menos % de 0 a 6 */
+  nps(lista) {
+    const notas = lista.map(r => r.nps).filter(n => n !== null && n !== undefined);
+    const tot = notas.length;
+    const prom = notas.filter(n => n >= 9).length, det = notas.filter(n => n <= 6).length;
+    return {
+      tot, prom, det, neu: tot - prom - det,
+      score: tot ? Math.round((prom - det) / tot * 100) : null,
+      media: tot ? Math.round(notas.reduce((s, n) => s + n, 0) / tot * 10) / 10 : null,
+      dist: Array.from({ length: 11 }, (_, n) => notas.filter(x => x === n).length)
+    };
+  },
+
+  /* ---------- desenho ---------- */
+  pintar() {
+    const lista = this.filtrados();
+    const n = this.nps(lista);
+    const total = lista.length;
+    const fmt = v => String(v).replace('.', ',');
+    const sugestoes = lista.filter(r => r.sugestao && r.sugestao.trim())
+      .filter(r => !this.busca || r.sugestao.toLowerCase().includes(this.busca.toLowerCase()));
+
+    document.getElementById('raiz').innerHTML = `
+      <div class="topo">
+        <img src="logo-mira.png" alt="Focus Fit">
+        <div>
+          <h1>Avaliações do app</h1>
+          <div class="sub">${this.dados.length} ${this.dados.length === 1 ? 'resposta' : 'respostas'} no total · atualizado agora</div>
+        </div>
+        <div class="filtros">
+          ${[['todos', 'Tudo'], ['30', '30 dias'], ['7', '7 dias']].map(([k, r]) => `<button class="${this.periodo === k ? 'on' : ''}" onclick="Painel.setPeriodo('${k}')">${r}</button>`).join('')}
+          <button onclick="Painel.carregar()">Atualizar</button>
+          <button onclick="Painel.csv()">Baixar CSV</button>
+        </div>
+      </div>
+
+      ${!total ? `<div class="cartao"><p class="vazio">Nenhuma resposta neste período ainda. A pesquisa aparece para quem usa o app há 3 dias ou mais.</p></div>` : `
+      <div class="tiles">
+        <div class="cartao tile"><div class="v">${total}</div><div class="l">${total === 1 ? 'resposta' : 'respostas'} no período</div></div>
+        <div class="cartao tile"><div class="v">${n.score === null ? '–' : (n.score > 0 ? '+' : '') + n.score}</div>
+          <div class="l">NPS (de −100 a +100): % de notas 9 e 10 menos % de 0 a 6</div></div>
+        <div class="cartao tile"><div class="v">${n.media === null ? '–' : fmt(n.media)}<small> / 10</small></div><div class="l">nota média de indicação</div></div>
+        <div class="cartao tile"><div class="v">${n.tot ? Math.round((lista.filter(r => r.nps > 7).length) / n.tot * 100) : 0}<small>%</small></div>
+          <div class="l">deram mais de 7 e viram a oferta do Plano Duo</div></div>
+      </div>
+
+      <div class="cartao" style="margin-bottom:14px">
+        <div class="tt">Chance de indicar para um amigo<span class="n">0 a 10</span></div>
+        ${this.colunas(n.dist)}
+        <div class="nps-faixas">
+          <span><b>${n.prom}</b> promotores (9 e 10)</span>
+          <span><b>${n.neu}</b> neutros (7 e 8)</span>
+          <span><b>${n.det}</b> detratores (0 a 6)</span>
+        </div>
+      </div>
+
+      <div class="grade">
+        ${this.barras('Como conheceram o app', this.contar(lista, 'origem', 'origem_outro'), total)}
+        ${this.barras('Através de quem', this.contar(lista, 'indicado_por'), total)}
+      </div>
+      <div class="grade">
+        ${this.barras('O que fez baixar', this.contar(lista, 'motivos', 'motivo_outro'), total, 'mais de uma por pessoa')}
+        ${this.barras('Influenciadores citados', this.influenciadores(lista), total, 'pelo nome escrito')}
+      </div>
+
+      <div class="cartao" style="margin-bottom:14px">
+        <div class="tt">Sugestões<span class="n">${sugestoes.length}</span></div>
+        <input class="busca" placeholder="Buscar nas sugestões" value="${this.esc(this.busca)}" oninput="Painel.buscar(this.value)">
+        <div id="msgs">${this.mensagens(sugestoes)}</div>
+      </div>
+
+      <div class="cartao">
+        <div class="tt">Todas as respostas<span class="n"><button class="acao" onclick="Painel.alternarTabela()">${this.verTabela ? 'Esconder tabela' : 'Ver em tabela'}</button></span></div>
+        ${this.verTabela ? this.tabela(lista) : '<p class="vazio">A tabela mostra cada resposta, com data, nota e todas as escolhas.</p>'}
+      </div>`}`;
+    this.ligarDicas();
+  },
+
+  barras(titulo, linhas, total, obs) {
+    if (!linhas.length) return `<div class="cartao"><div class="tt">${titulo}</div><p class="vazio">Sem respostas ainda.</p></div>`;
+    const max = Math.max(...linhas.map(x => x[1]));
+    return `
+      <div class="cartao">
+        <div class="tt">${titulo}${obs ? `<span class="n">${obs}</span>` : ''}</div>
+        ${linhas.slice(0, 12).map(([rot, q]) => `
+          <div class="hb" data-dica="${this.esc(rot)}: ${q} ${q === 1 ? 'resposta' : 'respostas'} (${Math.round(q / total * 100)}%)">
+            <span class="r" title="${this.esc(rot)}">${this.esc(rot)}</span>
+            <span class="t"><i style="width:${(q / max * 100).toFixed(1)}%"></i></span>
+            <span class="q">${q} <small>${Math.round(q / total * 100)}%</small></span>
+          </div>`).join('')}
+        ${linhas.length > 12 ? `<p class="vazio">E mais ${linhas.length - 12}. Veja todas no CSV.</p>` : ''}
+      </div>`;
+  },
+
+  colunas(dist) {
+    const max = Math.max(1, ...dist);
+    return `
+      <div class="nps">
+        ${dist.map((q, nota) => `
+          <div class="c" data-dica="Nota ${nota}: ${q} ${q === 1 ? 'pessoa' : 'pessoas'}">
+            <b>${q || ''}</b><i style="height:${q ? (q / max * 100).toFixed(1) : 0}%"></i>
+          </div>`).join('')}
+      </div>
+      <div class="nps-x">${dist.map((_, n) => `<span>${n}</span>`).join('')}</div>`;
+  },
+
+  mensagens(lista) {
+    if (!lista.length) return '<p class="vazio">Nenhuma sugestão com esse texto.</p>';
+    const mostrar = this.todasMsgs ? lista : lista.slice(0, 20);
+    const resto = lista.length - mostrar.length;
+    return mostrar.map(r => `
+      <div class="msg">
+        <p>${this.esc(r.sugestao)}</p>
+        <div class="meta">${this.data(r.criado_em)} · nota ${r.nps ?? '–'} · ${this.esc(r.origem || 'sem origem')}${r.indicado_nome ? ' · ' + this.esc(r.indicado_nome) : ''}</div>
+      </div>`).join('') + (resto > 0 ? `<button class="acao" style="margin-top:12px" onclick="Painel.verTodasMsgs()">Ver mais ${resto}</button>` : '');
+  },
+
+  verTodasMsgs() { this.todasMsgs = true; this.buscar(this.busca); },
+
+  tabela(lista) {
+    return `
+      <div class="tabela-wrap"><table>
+        <thead><tr><th>Data</th><th>Nota</th><th>Como conheceu</th><th>Através de quem</th><th>O que fez baixar</th><th>Sugestão</th></tr></thead>
+        <tbody>${lista.map(r => `
+          <tr>
+            <td>${this.data(r.criado_em)}</td><td>${r.nps ?? '–'}</td>
+            <td>${this.esc(r.origem || '')}${r.origem_outro ? ': ' + this.esc(r.origem_outro) : ''}</td>
+            <td>${this.esc(r.indicado_por || '')}${r.indicado_nome ? ': ' + this.esc(r.indicado_nome) : ''}</td>
+            <td>${this.esc((r.motivos || []).join(', '))}${r.motivo_outro ? ': ' + this.esc(r.motivo_outro) : ''}</td>
+            <td>${this.esc(r.sugestao || '')}</td>
+          </tr>`).join('')}</tbody>
+      </table></div>`;
+  },
+
+  setPeriodo(p) { this.periodo = p; this.pintar(); },
+  alternarTabela() { this.verTabela = !this.verTabela; this.pintar(); },
+  buscar(v) {
+    this.busca = v;
+    const lista = this.filtrados().filter(r => r.sugestao && r.sugestao.trim())
+      .filter(r => !v || r.sugestao.toLowerCase().includes(v.toLowerCase()));
+    document.getElementById('msgs').innerHTML = this.mensagens(lista);
+  },
+
+  csv() {
+    const cols = ['criado_em', 'nps', 'origem', 'origem_outro', 'indicado_por', 'indicado_nome', 'motivos', 'motivo_outro', 'sugestao'];
+    const cel = v => '"' + String(Array.isArray(v) ? v.join('; ') : (v ?? '')).replace(/"/g, '""') + '"';
+    const texto = [cols.join(';')].concat(this.filtrados().map(r => cols.map(c => cel(r[c])).join(';'))).join('\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob(['﻿' + texto], { type: 'text/csv;charset=utf-8' }));
+    a.download = 'avaliacoes-focusfit.csv';
+    a.click();
+  },
+
+  ligarDicas() {
+    const dica = document.getElementById('dica');
+    document.querySelectorAll('[data-dica]').forEach(el => {
+      el.addEventListener('mousemove', e => {
+        dica.textContent = el.dataset.dica;
+        dica.style.left = Math.min(window.innerWidth - dica.offsetWidth - 8, e.clientX + 14) + 'px';
+        dica.style.top = (e.clientY - 34) + 'px';
+        dica.style.opacity = 1;
+      });
+      el.addEventListener('mouseleave', () => { dica.style.opacity = 0; });
+    });
+  },
+
+  data(iso) {
+    try { return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }); } catch (e) { return ''; }
+  },
+  esc(s) { return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+};
+Painel.iniciar();
+</script>
+</body>
+</html>

@@ -112,7 +112,7 @@ const Onb = {
   /* a logo de verdade, o mesmo arquivo usado na abertura e no giro das
      telas de carregamento — uma fonte só pra marca no app inteiro */
   logoHTML() {
-    return `<img class="login-logo" src="logo-focusfit.png" alt="Focus Fit">`;
+    return `<img class="login-logo login-mira" src="logo-mira.png" alt="Focus Fit">`;
   },
 
   /* link direto pro WhatsApp, sem mensagem pronta — só abre a conversa */
@@ -541,6 +541,16 @@ const Onb = {
   },
 
   bloco_cardapio() {
+    if (Store.dietaPropriaAtiva()) {
+      const t = Store.totaisDietaPropria();
+      return `
+        ${Store.planoAlimentar().map(r => `
+          <div class="plano-item">
+            <span class="plano-item-nome">${r.nome}<small> ${r.horario}</small></span>
+            <span class="plano-item-val">${r.alimentos.reduce((s, a) => s + a.kcal, 0)} kcal</span>
+          </div>`).join('')}
+        <p class="plano-nota">A dieta que você montou: ${t.kcal} kcal, ${t.prot} g de proteína e ${t.carb} g de carboidrato por dia.</p>`;
+    }
     const base = Store.planoBase();
     const refeicoes = Store.planoAlimentar();
     const variacoes = base.refeicoes[0] ? base.refeicoes[0].variacoes.length : 0;
@@ -762,6 +772,22 @@ const Onb = {
     /* agora que o perfil existe e foi pra nuvem, as respostas do quiz
        já cumpriram o papel delas e podem sair do banco */
     Backend.limparRespostasQuiz();
+
+    /* respondidas as perguntas, ela escolhe o tipo de treino e ajusta o
+       plano (treino, alimentação, metas) antes de o app criar tudo */
+    Editor.onb = true;
+    Editor.aba = 'treino';
+    Editor.dia = 0;
+    App.tela = 'escolhaTreino';
+    App.render();
+    window.scrollTo(0, 0);
+  },
+
+  /* o "Criar meu plano" do fim do editor */
+  async criarPlano() {
+    Editor.onb = false;
+    Backend.salvar();
+    if (typeof Lembretes !== 'undefined') Lembretes.agendar();
 
     /* carregamento -> plano montado -> app. A comemoração de nível fica
        pro "Começar" (ver Onb.comecar). */

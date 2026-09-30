@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Focus Fit · Seu plano de dieta e treino no celular</title>
+<meta name="description" content="Responda um quiz rápido e o Focus Fit monta o seu cardápio, o seu treino e as suas metas do dia, com lembretes no celular.">
+<link rel="icon" href="icone-512.png" type="image/png">
+<link rel="apple-touch-icon" href="icone-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<!--
+  PÁGINA DE VENDAS DO APP (focusapp.com.br/conheca)
+
+  O celular 3D acompanha a rolagem: gira um pouco conforme a pessoa desce
+  e troca a tela a cada passo, com as linhas de "mira" apontando cada
+  função. As telas são prints do próprio app (pasta vendas/), tirados com
+  dados de exemplo.
+
+  ⚠️ LINK DO BOTÃO: LINK_QUIZ, lá no fim da página. Os parâmetros da URL
+  (utm_source, utm_campaign...) passam junto pro quiz, então o link de
+  cada influenciador continua rastreável.
+
+  ⚠️ VÍDEO: troque o bloco <div class="video-vazio"> dentro de #video
+  pelo código de incorporação do vídeo (YouTube, Vimeo, VTurb). O espaço
+  já tem proporção 16:9 e cantos arredondados.
+-->
+<style>
+  :root{
+    --preto:#000;--carvao:#060A08;--menta:#00D7A2;--menta-2:#00B386;--menta-3:#008F6B;
+    --linha:rgba(0,215,162,.2);--linha-forte:rgba(0,215,162,.45);
+    --tinta:#fff;--tinta-2:#C3D6CB;--cinza:#8FA59A;
+    --fone-w:clamp(240px,23vw,300px);
+    color-scheme:dark;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--preto);color:var(--tinta);font-family:'Manrope',system-ui,sans-serif;font-size:16px;line-height:1.6;
+       overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+  img{display:block;max-width:100%;}
+  a{color:inherit;}
+  .display{font-family:'Bricolage Grotesque','Manrope',sans-serif;letter-spacing:-.03em;}
+
+  /* fundo: a grade fina de mira e um brilho menta no topo */
+  .atmosfera{position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(60% 45% at 50% -5%, rgba(0,215,162,.16), transparent 70%),
+      linear-gradient(rgba(0,215,162,.045) 1px, transparent 1px) 0 0/64px 64px,
+      linear-gradient(90deg, rgba(0,215,162,.045) 1px, transparent 1px) 0 0/64px 64px;
+    -webkit-mask-image:linear-gradient(#000 0%, rgba(0,0,0,.35) 60%, rgba(0,0,0,.15) 100%);
+            mask-image:linear-gradient(#000 0%, rgba(0,0,0,.35) 60%, rgba(0,0,0,.15) 100%);}
+  main,header,footer{position:relative;z-index:1;}
+
+  /* ---------- topo ---------- */
+  .barra{display:flex;align-items:center;justify-content:space-between;max-width:1180px;margin:0 auto;padding:20px 20px;}
+  .marca{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;text-decoration:none;}
+  .marca img{width:34px;height:34px;}
+  .entrar{font-size:14px;font-weight:800;color:var(--tinta-2);text-decoration:none;border:1px solid var(--linha);
+    padding:9px 16px;border-radius:999px;transition:border-color .2s,color .2s;}
+  .entrar:hover{border-color:var(--menta);color:var(--menta);}
+
+  /* ---------- abertura ---------- */
+  .abertura{max-width:980px;margin:0 auto;padding:36px 20px 40px;text-align:center;}
+  .selo{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;border:1px solid var(--linha-forte);
+    color:var(--menta);font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;}
+  .selo i{width:7px;height:7px;border-radius:50%;background:var(--menta);box-shadow:0 0 12px var(--menta);animation:pisca 2s infinite;}
+  @keyframes pisca{50%{opacity:.35;}}
+  h1{font-size:clamp(36px,6.4vw,72px);line-height:1.02;font-weight:800;margin:22px auto 18px;max-width:900px;}
+  h1 em{font-style:normal;color:var(--menta);}
+  .sub{font-size:clamp(16px,2vw,19px);color:var(--tinta-2);max-width:680px;margin:0 auto;font-weight:500;}
+  .cta{display:inline-flex;align-items:center;justify-content:center;gap:10px;margin-top:30px;padding:18px 30px;border-radius:999px;
+    background:linear-gradient(135deg,var(--menta-3),var(--menta-2));color:#fff;font-weight:800;font-size:17px;text-decoration:none;
+    box-shadow:0 14px 40px rgba(0,215,162,.28);transition:transform .15s,box-shadow .2s;}
+  .cta:hover{transform:translateY(-2px);box-shadow:0 18px 50px rgba(0,215,162,.38);}
+  .cta svg{width:18px;height:18px;}
+  .cta-nota{display:block;margin-top:12px;font-size:13px;color:var(--cinza);font-weight:600;}
+
+  #video{position:relative;margin:40px auto 0;max-width:880px;aspect-ratio:16/9;border-radius:24px;overflow:hidden;
+    border:1px solid var(--linha-forte);background:#050807;box-shadow:0 30px 80px rgba(0,0,0,.7),0 0 60px rgba(0,215,162,.08);}
+  #video iframe,#video video{position:absolute;inset:0;width:100%;height:100%;border:0;}
+  .video-vazio{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+    color:var(--cinza);font-weight:700;font-size:14px;}
+  .video-vazio .play{width:74px;height:74px;border-radius:50%;border:1.5px solid var(--menta);display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 0 10px rgba(0,215,162,.06),0 0 0 22px rgba(0,215,162,.03);}
+  .video-vazio .play svg{width:26px;height:26px;margin-left:4px;color:var(--menta);}
+
+  /* ---------- a história com o celular ---------- */
+  .historia{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.4fr);max-width:1180px;margin:40px auto 0;padding:0 20px;}
+  .passos{padding:10vh 0 20vh;}
+  .passo{min-height:92vh;display:flex;flex-direction:column;justify-content:center;max-width:430px;opacity:.28;
+    transition:opacity .5s;}
+  .passo.on{opacity:1;}
+  .passo .n{font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:800;color:var(--menta);letter-spacing:.12em;}
+  .passo h2{font-size:clamp(30px,3.6vw,44px);line-height:1.06;font-weight:800;margin:10px 0 14px;}
+  .passo p{color:var(--tinta-2);font-size:17px;}
+  .passo ul{list-style:none;margin-top:18px;display:grid;gap:10px;}
+  .passo li{display:flex;gap:12px;align-items:flex-start;font-size:15px;font-weight:700;color:var(--tinta);}
+  .passo li b{flex-shrink:0;width:24px;height:24px;border-radius:50%;border:1px solid var(--menta);color:var(--menta);font-size:12px;
+    display:flex;align-items:center;justify-content:center;margin-top:1px;}
+
+  .palco-wrap{position:sticky;top:0;height:100vh;}
+  .palco{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;perspective:1500px;}
+  .fone{position:relative;width:var(--fone-w);aspect-ratio:390/844;transform-style:preserve-3d;
+    transform:rotateY(var(--ry,-14deg)) rotateX(var(--rx,6deg)) rotateZ(var(--rz,0deg));will-change:transform;}
+  /* a espessura: duas chapas atrás da frente, que aparecem quando ele gira */
+  .fone .chapa{position:absolute;inset:-12px;border-radius:52px;background:linear-gradient(145deg,#1d2622,#07100c 60%,#0e1713);}
+  .fone .chapa.c1{transform:translateZ(-6px);filter:brightness(.8);}
+  .fone .chapa.c2{transform:translateZ(-12px);filter:brightness(.55);box-shadow:0 60px 90px rgba(0,0,0,.8);}
+  .fone .frente{position:absolute;inset:-12px;border-radius:52px;padding:12px;
+    background:linear-gradient(145deg,#2b3a33,#0b1510 45%,#1a2621);
+    box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08),inset 0 0 0 3px rgba(0,0,0,.6),0 0 0 1px rgba(0,215,162,.25);}
+  .fone .tela{position:relative;width:100%;height:100%;border-radius:40px;overflow:hidden;background:#000;}
+  .fone .ilha{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:32%;height:24px;border-radius:20px;background:#000;z-index:5;}
+  .fone .brilho{position:absolute;inset:0;border-radius:40px;pointer-events:none;z-index:4;
+    background:linear-gradient(115deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,0) 32%,rgba(255,255,255,0) 70%,rgba(255,255,255,.05) 100%);
+    background-size:220% 100%;background-position:var(--bx,40%) 0;}
+  .fone .botao{position:absolute;right:-15px;width:4px;border-radius:2px;background:#26332d;}
+  .fone .b1{top:22%;height:10%;} .fone .b2{top:35%;height:6%;}
+  .tela-app{position:absolute;inset:0;opacity:0;transform:translateY(5%) scale(.97);transition:opacity .55s ease,transform .7s cubic-bezier(.2,.8,.2,1);}
+  .tela-app.on{opacity:1;transform:none;}
+  .tela-app img{width:100%;height:100%;object-fit:cover;object-position:top;}
+
+  /* tela de bloqueio desenhada, pros lembretes */
+  /* tela de bloqueio desenhada, pros lembretes: medidas em cqw (% da
+     largura da tela do celular), pra ficar igual em qualquer tamanho */
+  .tela{container-type:inline-size;}
+  .bloqueio{background:radial-gradient(90% 60% at 50% 0%,#0b3a2d,#000 70%);display:flex;flex-direction:column;align-items:center;padding:14cqw 6cqw 0;}
+  .bloqueio .hora{font-family:'Bricolage Grotesque',sans-serif;font-size:20cqw;font-weight:700;line-height:1;margin-top:2cqw;}
+  .bloqueio .dia{font-size:4cqw;color:var(--tinta-2);font-weight:700;margin-bottom:6cqw;}
+  .aviso{width:100%;display:flex;gap:3cqw;align-items:flex-start;background:rgba(20,30,26,.78);backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,.06);border-radius:5cqw;padding:3.4cqw 3.6cqw;margin-bottom:2.6cqw;text-align:left;}
+  .aviso img{width:8.5cqw;height:8.5cqw;border-radius:2.4cqw;background:#000;padding:1.2cqw;flex-shrink:0;}
+  .aviso div{flex:1;min-width:0;}
+  .aviso b{display:block;font-size:3.9cqw;line-height:1.25;}
+  .aviso span{display:block;font-size:3.5cqw;color:var(--tinta-2);line-height:1.35;margin-top:.6cqw;}
+  .aviso small{font-size:3cqw;color:var(--cinza);font-weight:700;white-space:nowrap;}
+
+  /* as miras: rótulo, linha e o alvo em cima da função */
+  .miras{position:absolute;inset:0;pointer-events:none;}
+  .miras svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
+  .miras path{fill:none;stroke:var(--menta);stroke-width:1.3;stroke-dasharray:var(--len,600);stroke-dashoffset:var(--len,600);
+    transition:stroke-dashoffset .9s cubic-bezier(.3,.7,.2,1) var(--atraso,0s);}
+  .miras .ativa path{stroke-dashoffset:0;}
+  .miras .alvo circle{fill:none;stroke:var(--menta);stroke-width:1.3;opacity:0;transform-box:fill-box;transform-origin:center;
+    transform:scale(.3);transition:opacity .3s var(--atraso2,0s),transform .5s cubic-bezier(.2,.9,.3,1.3) var(--atraso2,0s);}
+  .miras .alvo circle.ponto{fill:var(--menta);stroke:none;}
+  .miras .ativa .alvo circle{opacity:1;transform:none;}
+  .rotulo{position:absolute;max-width:clamp(128px,13vw,188px);font-size:13px;font-weight:800;line-height:1.35;color:var(--tinta);
+    padding:9px 12px;border-radius:12px;border:1px solid var(--linha-forte);background:rgba(0,0,0,.82);
+    opacity:0;transform:translateY(6px);transition:opacity .4s var(--atraso2,0s),transform .4s var(--atraso2,0s);}
+  .rotulo.on{opacity:1;transform:none;}
+  .rotulo i{font-style:normal;color:var(--menta);margin-right:6px;font-family:'Bricolage Grotesque',sans-serif;}
+  .pino{position:absolute;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;border:1.5px solid var(--menta);background:rgba(0,0,0,.75);
+    color:var(--menta);font-size:11px;font-weight:800;display:none;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;}
+  .pino.on{opacity:1;box-shadow:0 0 0 6px rgba(0,215,162,.15);}
+
+  /* ---------- fim ---------- */
+  .faixa{max-width:980px;margin:0 auto;padding:60px 20px;text-align:center;}
+  .faixa h2{font-size:clamp(32px,4.4vw,54px);line-height:1.05;font-weight:800;}
+  .faixa p{color:var(--tinta-2);max-width:620px;margin:14px auto 0;font-size:17px;}
+  .perguntas{max-width:760px;margin:10px auto 0;padding:0 20px 40px;}
+  .perguntas details{border-top:1px solid var(--linha);padding:18px 4px;}
+  .perguntas details:last-child{border-bottom:1px solid var(--linha);}
+  .perguntas summary{cursor:pointer;list-style:none;font-weight:800;font-size:17px;display:flex;justify-content:space-between;gap:16px;}
+  .perguntas summary::-webkit-details-marker{display:none;}
+  .perguntas summary::after{content:'+';color:var(--menta);font-size:22px;line-height:1;transition:transform .2s;}
+  .perguntas details[open] summary::after{transform:rotate(45deg);}
+  .perguntas details p{color:var(--tinta-2);margin-top:10px;font-size:15.5px;}
+  footer{max-width:980px;margin:0 auto;padding:30px 20px 50px;text-align:center;color:var(--cinza);font-size:13px;font-weight:600;border-top:1px solid var(--linha);}
+  footer nav{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;}
+  footer a{color:var(--tinta-2);text-decoration:none;}
+  footer a:hover{color:var(--menta);}
+
+  /* entrada da abertura */
+  .entra{opacity:0;transform:translateY(18px);animation:entra .9s cubic-bezier(.2,.8,.2,1) forwards;}
+  .entra:nth-child(2){animation-delay:.08s;} .entra:nth-child(3){animation-delay:.18s;}
+  .entra:nth-child(4){animation-delay:.28s;} .entra:nth-child(5){animation-delay:.38s;}
+  @keyframes entra{to{opacity:1;transform:none;}}
+
+  /* ---------- celular ---------- */
+  @media (max-width:900px){
+    :root{--fone-w:min(52vw,236px);}
+    .historia{display:flex;flex-direction:column;padding:0 16px;}
+    .palco-wrap{order:-1;height:64vh;top:0;z-index:2;
+      background:linear-gradient(#000 70%, rgba(0,0,0,0));}
+    .passos{padding:2vh 0 30vh;position:relative;z-index:1;}
+    .passo{min-height:62vh;justify-content:flex-start;padding-top:4vh;max-width:none;}
+    .passo h2{font-size:28px;}
+    .passo p{font-size:15.5px;}
+    .rotulo,.miras svg{display:none;}
+    .pino{display:flex;}
+    .barra{padding:16px;}
+    .abertura{padding:22px 16px 30px;}
+    #video{border-radius:18px;margin-top:28px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .entra{animation:none;opacity:1;transform:none;}
+    .tela-app,.miras path,.rotulo{transition:none;}
+    .selo i{animation:none;}
+  }
+</style>
+</head>
+<body>
+<div class="atmosfera" aria-hidden="true"></div>
+
+<header class="barra">
+  <a class="marca" href="#topo" aria-label="Focus Fit"><img src="logo-mira.png" alt=""> Focus Fit</a>
+  <a class="entrar" href="/">Já sou aluno</a>
+</header>
+
+<main id="topo">
+  <section class="abertura">
+    <div class="selo entra"><i></i> Dieta, treino e metas num app só</div>
+    <h1 class="display entra">Seu plano de dieta e treino, <em>montado pra você</em>, no seu celular.</h1>
+    <p class="sub entra">Responda um quiz rápido e o Focus Fit monta o seu cardápio com as gramas certas, o seu treino da semana e as suas metas de água e sono. E te lembra de cada um na hora.</p>
+    <div class="entra">
+      <a class="cta js-quiz" href="#">Montar meu plano
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <span class="cta-nota">Leva poucos minutos. Funciona no Android e no iPhone.</span>
+    </div>
+
+    <div id="video" class="entra">
+      <!-- COLE AQUI O VÍDEO: troque este div pelo código de incorporação -->
+      <div class="video-vazio">
+        <span class="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg></span>
+        Espaço do vídeo de apresentação do app
+      </div>
+    </div>
+  </section>
+
+  <section class="historia" id="historia">
+    <div class="passos" id="passos">
+      <article class="passo" data-tela="0">
+        <span class="n">01 · INÍCIO</span>
+        <h2 class="display">Tudo do seu dia numa tela só.</h2>
+        <p>Abra o app e veja o que falta: calorias, proteína, carboidrato, água e sono, e o quanto você já andou até a sua meta de peso.</p>
+        <ul>
+          <li><b>1</b>Quanto falta pra sua meta de peso</li>
+          <li><b>2</b>Calorias, proteína e carboidrato do dia</li>
+          <li><b>3</b>Água copo a copo, com um toque</li>
+          <li><b>4</b>Sono da noite e a sua meta de horas</li>
+        </ul>
+      </article>
+      <article class="passo" data-tela="1">
+        <span class="n">02 · SEU TREINO</span>
+        <h2 class="display">O treino que você segue. Ou o que você quer seguir.</h2>
+        <p>Escolha entre as divisões mais conhecidas, com a recomendada pelo seu objetivo e pelos seus dias de treino, ou monte o seu do zero.</p>
+        <ul>
+          <li><b>1</b>Você escolhe o tipo de treino</li>
+          <li><b>2</b>A divisão indicada pra você, marcada</li>
+          <li><b>3</b>Full Body, ABC, Push Pull Legs, ABCD e outras</li>
+        </ul>
+      </article>
+      <article class="passo" data-tela="2">
+        <span class="n">03 · NA ACADEMIA</span>
+        <h2 class="display">Anote cada série e veja a carga subir.</h2>
+        <p>Em cada exercício você registra a carga e as repetições de cada série. Troque exercícios, músculos e séries do jeito que você já treina.</p>
+        <ul>
+          <li><b>1</b>O treino do dia, com os músculos</li>
+          <li><b>2</b>Tire ou ponha séries</li>
+          <li><b>3</b>A carga de cada treino, lado a lado</li>
+          <li><b>4</b>Carga e repetição de cada série</li>
+        </ul>
+      </article>
+      <article class="passo" data-tela="3">
+        <span class="n">04 · ALIMENTAÇÃO</span>
+        <h2 class="display">Cardápio com as gramas certas. Ou a sua própria dieta.</h2>
+        <p>O app monta as refeições na medida da sua meta de calorias, com trocas equivalentes e lista de compras. Prefere a sua rotina? Monte com os seus alimentos e o app calcula calorias, proteína e carboidrato.</p>
+        <ul>
+          <li><b>1</b>Lista de compras da semana</li>
+          <li><b>2</b>Monte a sua dieta, em gramas</li>
+          <li><b>3</b>Calorias de cada refeição</li>
+          <li><b>4</b>Troque por um alimento equivalente</li>
+        </ul>
+      </article>
+      <article class="passo" data-tela="4">
+        <span class="n">05 · PROGRESSO</span>
+        <h2 class="display">Um progresso que dá pra ver.</h2>
+        <p>Gráfico do peso, evolução de carga por exercício, níveis e pontos. E fotos de progresso que ficam só no seu celular, nunca na nuvem.</p>
+        <ul>
+          <li><b>1</b>Peso inicial, atual e meta</li>
+          <li><b>2</b>Níveis e pontos pra manter o ritmo</li>
+          <li><b>3</b>A curva do seu peso, pesagem a pesagem</li>
+        </ul>
+      </article>
+      <article class="passo" data-tela="5">
+        <span class="n">06 · LEMBRETES</span>
+        <h2 class="display">O celular avisa na hora certa.</h2>
+        <p>Refeição, água, treino e sono, no seu horário, mesmo com o app fechado. Você escolhe o que quer receber.</p>
+        <ul>
+          <li><b>1</b>Cada refeição no horário do seu cardápio</li>
+          <li><b>2</b>Água espalhada ao longo do dia</li>
+          <li><b>3</b>O treino no horário que você marcou</li>
+        </ul>
+      </article>
+    </div>
+
+    <div class="palco-wrap">
+      <div class="palco" id="palco">
+        <div class="fone" id="fone">
+          <div class="chapa c2"></div><div class="chapa c1"></div>
+          <div class="frente">
+            <div class="tela" id="tela">
+              <div class="ilha"></div>
+              <div class="tela-app on"><img src="vendas/tela-inicio.jpg" alt="Tela inicial do Focus Fit com as metas do dia"></div>
+              <div class="tela-app"><img src="vendas/tela-escolha.jpg" alt="Escolha do tipo de treino" loading="lazy"></div>
+              <div class="tela-app"><img src="vendas/tela-treinos.jpg" alt="Treino do dia com as cargas de cada série" loading="lazy"></div>
+              <div class="tela-app"><img src="vendas/tela-alimentacao.jpg" alt="Cardápio do dia com as refeições" loading="lazy"></div>
+              <div class="tela-app"><img src="vendas/tela-peso.jpg" alt="Gráfico da evolução do peso" loading="lazy"></div>
+              <div class="tela-app bloqueio" aria-label="Lembretes na tela de bloqueio">
+                <div class="hora">07:00</div>
+                <div class="dia">segunda-feira</div>
+                <div class="aviso"><img src="logo-mira.png" alt=""><div><b>Café da Manhã</b><span>Hora da sua refeição. Abra o app e marque o que comeu.</span></div><small>agora</small></div>
+                <div class="aviso"><img src="logo-mira.png" alt=""><div><b>Hora de beber água</b><span>Um copo agora e você segue no ritmo de 2,5 L hoje.</span></div><small>2 h</small></div>
+                <div class="aviso"><img src="logo-mira.png" alt=""><div><b>Treino de Glúteos e Posterior</b><span>Seu horário de treino chegou. Veja os exercícios de hoje.</span></div><small>ontem</small></div>
+              </div>
+              <div class="brilho"></div>
+              <!-- marcadores: pontos dentro da tela que o JS usa pra saber onde a mira aponta, já com o giro 3D -->
+              <div id="marcas"></div>
+            </div>
+          </div>
+          <span class="botao b1"></span><span class="botao b2"></span>
+        </div>
+        <div class="miras" id="miras"><svg id="linhas"></svg></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="faixa">
+    <h2 class="display">Pronto pra montar o seu?</h2>
+    <p>O quiz leva poucos minutos. Com as suas respostas, o app monta o cardápio, o treino e as metas, e você ajusta o que quiser depois.</p>
+    <a class="cta js-quiz" href="#">Montar meu plano
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </section>
+
+  <section class="perguntas">
+    <details><summary>Funciona em qualquer celular?</summary>
+      <p>Funciona no Android e no iPhone, pelo navegador. Você instala na tela inicial e ele abre como um app, com os lembretes no celular.</p></details>
+    <details><summary>Preciso treinar em academia?</summary>
+      <p>Não. No quiz você diz onde treina, e o app monta o treino pra academia ou pra casa, com peso do corpo e elástico.</p></details>
+    <details><summary>Posso mudar o plano depois?</summary>
+      <p>Pode. Dentro do app você troca o tipo de treino, os músculos, os exercícios, as séries, os horários das refeições, as metas e até monta a sua própria dieta.</p></details>
+    <details><summary>O app substitui nutricionista ou médico?</summary>
+      <p>Não. O Focus Fit é material educativo de apoio: não é consulta, não fecha diagnóstico e não substitui acompanhamento profissional. Resultados variam de pessoa para pessoa.</p></details>
+  </section>
+</main>
+
+<footer>
+  <nav>
+    <a href="/privacidade">Privacidade</a>
+    <a href="/excluir-conta">Excluir conta</a>
+    <a href="https://wa.me/5541987975115" target="_blank" rel="noopener">Suporte no WhatsApp</a>
+  </nav>
+  Focus Fit · material educativo de apoio. Não substitui acompanhamento médico ou nutricional.
+</footer>
+
+<script>
+/* pra onde os botões levam: o quiz. Os parâmetros da URL desta página
+   (utm_*, xcod, sck) vão junto, pra o link de cada influenciador
+   continuar rastreável até o checkout. */
+const LINK_QUIZ = '/quiz/escuro';
+
+(function () {
+  const qs = location.search.replace(/^\?/, '');
+  document.querySelectorAll('.js-quiz').forEach(a => {
+    a.href = LINK_QUIZ + (qs ? (LINK_QUIZ.includes('?') ? '&' : '?') + qs : '');
+  });
+})();
+
+/* ---------- as miras de cada tela ----------
+   x e y em % da tela do app (390 × 844). `lado`: onde fica o rótulo. */
+const MIRAS = [
+  [ { x: 50, y: 27, lado: 'esq', t: 'Quanto falta pra sua meta de peso' },
+    { x: 23, y: 48, lado: 'dir', t: 'Calorias, proteína e carboidrato do dia' },
+    { x: 23, y: 66, lado: 'esq', t: 'Água copo a copo, com um toque' },
+    { x: 23, y: 83, lado: 'dir', t: 'Sono da noite e a sua meta de horas' } ],
+  [ { x: 44, y: 18, lado: 'esq', t: 'Você escolhe o tipo de treino' },
+    { x: 50, y: 32, lado: 'dir', t: 'A divisão indicada pra você, marcada' },
+    { x: 30, y: 58, lado: 'esq', t: 'Full Body, ABC, Push Pull Legs e outras' } ],
+  [ { x: 45, y: 14, lado: 'esq', t: 'O treino do dia, com os músculos' },
+    { x: 86, y: 28, lado: 'dir', t: 'Tire ou ponha séries' },
+    { x: 22, y: 34, lado: 'esq', t: 'A carga de cada treino, lado a lado' },
+    { x: 60, y: 51, lado: 'dir', t: 'Carga e repetição de cada série' } ],
+  [ { x: 50, y: 9,  lado: 'esq', t: 'Lista de compras da semana' },
+    { x: 50, y: 19, lado: 'dir', t: 'Monte a sua dieta, em gramas' },
+    { x: 84, y: 40, lado: 'dir', t: 'Calorias de cada refeição' },
+    { x: 38, y: 75, lado: 'esq', t: 'Troque por um alimento equivalente' } ],
+  [ { x: 50, y: 11, lado: 'esq', t: 'Peso inicial, atual e meta' },
+    { x: 50, y: 28, lado: 'dir', t: 'Níveis e pontos pra manter o ritmo' },
+    { x: 60, y: 53, lado: 'esq', t: 'A curva do seu peso, pesagem a pesagem' } ],
+  [ { x: 50, y: 27, lado: 'dir', t: 'Cada refeição no horário do seu cardápio' },
+    { x: 50, y: 36, lado: 'esq', t: 'Água espalhada ao longo do dia' },
+    { x: 50, y: 49, lado: 'dir', t: 'O treino no horário que você marcou' } ]
+];
+
+const Palco = {
+  atual: -1,
+  fone: document.getElementById('fone'),
+  palco: document.getElementById('palco'),
+  miras: document.getElementById('miras'),
+  svg: document.getElementById('linhas'),
+  marcas: document.getElementById('marcas'),
+  telas: [...document.querySelectorAll('.tela-app')],
+  quieto: matchMedia('(prefers-reduced-motion: reduce)').matches,
+
+  mostrar(i) {
+    if (i === this.atual) return;
+    this.atual = i;
+    this.telas.forEach((t, k) => t.classList.toggle('on', k === i));
+    document.querySelectorAll('.passo').forEach((p, k) => p.classList.toggle('on', k === i));
+    this.montarMiras();
+  },
+
+  /* cria os marcadores dentro da tela (eles giram junto com o celular) e
+     os rótulos, as linhas e os alvos em volta */
+  montarMiras() {
+    const lista = MIRAS[this.atual] || [];
+    this.marcas.innerHTML = lista.map(m => `<i style="position:absolute;left:${m.x}%;top:${m.y}%;width:1px;height:1px"></i>`).join('');
+    this.miras.querySelectorAll('.rotulo,.pino').forEach(e => e.remove());
+    this.svg.innerHTML = '';
+    lista.forEach((m, k) => {
+      const r = document.createElement('div');
+      r.className = 'rotulo';
+      r.innerHTML = `<i>${k + 1}</i>${m.t}`;
+      r.style.setProperty('--atraso2', (0.25 + k * 0.12) + 's');
+      this.miras.appendChild(r);
+      const p = document.createElement('div');
+      p.className = 'pino';
+      p.textContent = k + 1;
+      this.miras.appendChild(p);
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.innerHTML = `<path/><g class="alvo"><circle r="9"/><circle class="ponto" r="2.6"/></g>`;
+      g.style.setProperty('--atraso', (k * 0.12) + 's');
+      g.style.setProperty('--atraso2', (0.55 + k * 0.12) + 's');
+      this.svg.appendChild(g);
+    });
+    this.posicionar(true);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      this.svg.querySelectorAll(':scope > g').forEach(g => g.classList.add('ativa'));
+      this.miras.querySelectorAll('.rotulo,.pino').forEach(e => e.classList.add('on'));
+    }));
+  },
+
+  /* a cada quadro: onde cada ponto da tela está agora (com o giro), e a
+     linha do rótulo até ele */
+  posicionar(novo) {
+    const lista = MIRAS[this.atual] || [];
+    const base = this.palco.getBoundingClientRect();
+    const fone = this.fone.getBoundingClientRect();
+    const marcas = [...this.marcas.children];
+    const rotulos = [...this.miras.querySelectorAll('.rotulo')];
+    const pinos = [...this.miras.querySelectorAll('.pino')];
+    const grupos = [...this.svg.querySelectorAll(':scope > g')];
+    const usados = { esq: [], dir: [] };
+    lista.forEach((m, k) => {
+      const mk = marcas[k]; if (!mk) return;
+      const r = mk.getBoundingClientRect();
+      const px = r.left - base.left, py = r.top - base.top;
+      if (pinos[k]) { pinos[k].style.left = px + 'px'; pinos[k].style.top = py + 'px'; }
+      const rot = rotulos[k], g = grupos[k];
+      if (!rot || !g) return;
+      const larg = rot.offsetWidth, alt = rot.offsetHeight;
+      const folga = 26;
+      /* o lado pedido, ou o outro se ali não couber sem cobrir o celular */
+      const cabeEsq = fone.left - base.left - folga - larg >= 4;
+      const cabeDir = base.width - (fone.right - base.left + folga) - larg >= 4;
+      const lado = m.lado === 'esq' ? (cabeEsq || !cabeDir ? 'esq' : 'dir') : (cabeDir || !cabeEsq ? 'dir' : 'esq');
+      let x = lado === 'esq' ? Math.max(4, fone.left - base.left - folga - larg) : Math.min(base.width - larg - 4, fone.right - base.left + folga);
+      let y = py - alt / 2;
+      /* não deixa dois rótulos do mesmo lado se atropelarem */
+      usados[lado].forEach(u => { if (Math.abs(u - y) < alt + 10) y = u + alt + 10; });
+      usados[lado].push(y);
+      rot.style.left = x + 'px'; rot.style.top = y + 'px';
+      const ax = lado === 'esq' ? x + larg : x, ay = y + alt / 2;
+      const meio = lado === 'esq' ? ax + 14 : ax - 14;
+      const d = `M${ax},${ay} L${meio},${ay} L${px},${py}`;
+      const path = g.querySelector('path');
+      path.setAttribute('d', d);
+      if (novo) path.style.setProperty('--len', Math.ceil(path.getTotalLength() + 2));
+      g.querySelector('.alvo').setAttribute('transform', `translate(${px},${py})`);
+    });
+  },
+
+  /* o giro acompanha a rolagem pela seção inteira: vai de um lado pro
+     outro a cada passo, bem de leve, e o reflexo da tela anda junto */
+  girar() {
+    const h = document.getElementById('historia').getBoundingClientRect();
+    const total = Math.max(1, h.height - innerHeight);
+    const prog = Math.min(1, Math.max(0, -h.top / total));
+    const passos = MIRAS.length;
+    const onda = Math.sin(prog * Math.PI * (passos - 1));
+    const ry = this.quieto ? -8 : -12 + onda * 16;
+    const rx = this.quieto ? 4 : 7 - prog * 6;
+    const rz = this.quieto ? 0 : onda * -1.2;
+    this.fone.style.setProperty('--ry', ry.toFixed(2) + 'deg');
+    this.fone.style.setProperty('--rx', rx.toFixed(2) + 'deg');
+    this.fone.style.setProperty('--rz', rz.toFixed(2) + 'deg');
+    this.fone.style.setProperty('--bx', (20 + prog * 60).toFixed(1) + '%');
+    /* passo ativo: o que está cruzando a altura de 55% da tela
+       (no celular, a faixa de texto fica embaixo do palco) */
+    const linha = innerWidth <= 900 ? innerHeight * 0.78 : innerHeight * 0.55;
+    let ativo = 0;
+    document.querySelectorAll('.passo').forEach((p, k) => { if (p.getBoundingClientRect().top < linha) ativo = k; });
+    this.mostrar(ativo);
+    this.posicionar(false);
+  }
+};
+
+let pedido = false;
+const aoRolar = () => {
+  if (pedido) return;
+  pedido = true;
+  requestAnimationFrame(() => { pedido = false; Palco.girar(); });
+};
+addEventListener('scroll', aoRolar, { passive: true });
+addEventListener('resize', () => { Palco.montarMiras(); aoRolar(); });
+Palco.mostrar(0);
+Palco.girar();
+</script>
+</body>
+</html>

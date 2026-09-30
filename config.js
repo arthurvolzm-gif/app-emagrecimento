@@ -38,6 +38,11 @@ const CONFIG = {
      e gravar em `acessos_extras` em vez de mexer na assinatura da
      pessoa (nos dois casos, avulso ou bump — ver zuptos-webhook).
      Vazio = o botão não aparece e o Run Tracker some da aba. */
+  /* ⚠️ DESLIGADO POR ENQUANTO, a pedido do usuário: a medição de
+     distância pelo GPS não ficou confiável no teste de rua. false tira a
+     aba, a oferta nas notificações e o botão de iniciar. Quem já comprou
+     continua com o acesso gravado no banco; é só voltar pra true. */
+  RUN_TRACKER_ATIVO: false,
   CHECKOUT_URL_CORRIDA: 'https://app.zuptos.com.br/checkout/bb063a1e47620e78',
   PRECO_CORRIDA: 'R$47,90',
   /* como o parcelamento aparece pra quem só vê o preço passar rápido,
