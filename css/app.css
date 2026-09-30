@@ -1175,6 +1175,10 @@ a{color:inherit;text-decoration:none;}
    estreita; o cadeado da Biblioteca ainda soma um caractere */
 .toggle button{padding-left:4px;padding-right:4px;font-size:12.5px;white-space:nowrap;}
 .toggle.duas button{font-size:13px;}
+/* alternância com uma linha de explicação embaixo do nome (editor, alimentação) */
+.toggle.com-sub{border-radius:18px;}
+.toggle.com-sub button{white-space:normal;line-height:1.2;padding:9px 6px;border-radius:14px;}
+.toggle.com-sub button small{display:block;margin-top:3px;font-size:10.5px;font-weight:600;opacity:.8;}
 .toggle button.on{
   background:linear-gradient(90deg,#008F6B,#00B386);color:#fff;
   box-shadow:0 6px 18px rgba(0,215,162,.26);

@@ -369,9 +369,9 @@ const Editor = {
   _alimentacao() {
     const propria = Store.dietaPropriaAtiva() || (Store.db.perfil.dieta_propria && Store.db.perfil.dieta_propria.ativa);
     return `
-      <div class="toggle duas">
-        <button class="${!propria ? 'on' : ''}" onclick="Editor.modoDieta(false)">Cardápio do app</button>
-        <button class="${propria ? 'on' : ''}" onclick="Editor.modoDieta(true)">Minha dieta</button>
+      <div class="toggle duas com-sub">
+        <button class="${!propria ? 'on' : ''}" onclick="Editor.modoDieta(false)">Plano personalizado<small>com base nas suas respostas</small></button>
+        <button class="${propria ? 'on' : ''}" onclick="Editor.modoDieta(true)">Minha dieta<small>com os seus alimentos</small></button>
       </div>
       ${propria ? this._dietaPropria() : this._horariosApp()}`;
   },
@@ -380,7 +380,7 @@ const Editor = {
     return `
       <div class="card">
         <div class="card-tt">${Ic.talher(20)} Horários das refeições</div>
-        <p class="ed-nota">O cardápio do app ajusta as gramagens à sua meta de calorias e muda de variação durante a semana. Aqui você escolhe o horário de cada refeição; o lembrete toca no horário novo.</p>
+        <p class="ed-nota">O app monta o seu cardápio com base nas respostas que você deu (peso, altura, objetivo e rotina), ajusta as gramas à sua meta de calorias e muda de variação durante a semana. Aqui você escolhe o horário de cada refeição; o lembrete toca no horário novo.</p>
         ${Store.planoAlimentar().map(r => `
           <div class="ed-hora">
             <span>${r.nome}</span>
