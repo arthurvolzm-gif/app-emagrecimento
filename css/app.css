@@ -1966,3 +1966,17 @@ body.travado{overflow:hidden;}
 .av-nps-leg{display:flex;justify-content:space-between;font-size:11.5px;color:var(--cinza);font-weight:700;margin-bottom:16px;}
 .av-caixa .btn[disabled]{opacity:.45;}
 .bv-caixa.av-segue{animation:none !important;}
+
+/* ---------- Início: anéis por cor e a semana com o fogo ---------- */
+.anel .barra{stroke:url(#gradAnel);}
+.anel.medio .anel-lbl{font-size:11px;letter-spacing:.02em;}
+.sem-linha{display:flex;align-items:center;gap:12px;}
+.sem-linha .sem-fila{flex:1;margin-bottom:0;min-width:0;}
+.sem-dia .b{color:transparent;}
+.sem-dia.on .b{background:linear-gradient(135deg,var(--verde),var(--verde-claro));border-color:transparent;}
+.sem-dia.fora .b{background:var(--tint-neutro);}
+.sem-dia.on.fora .b{background:linear-gradient(135deg,var(--verde),var(--verde-claro));}
+.sem-fogo{flex-shrink:0;display:flex;flex-direction:column;align-items:center;min-width:44px;padding-left:12px;border-left:1px solid var(--linha);}
+.sem-fogo svg{width:26px;height:32px;filter:drop-shadow(0 0 8px rgba(0,215,162,.45));}
+.sem-fogo b{font-family:'Bricolage Grotesque',sans-serif;font-size:19px;font-weight:800;line-height:1;margin-top:2px;}
+.sem-fogo span{font-size:10.5px;color:var(--cinza);font-weight:700;}

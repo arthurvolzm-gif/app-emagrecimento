@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <title>Focus Fit · Seu plano de dieta e treino no celular</title>
-<meta name="description" content="Responda um quiz rápido e o Focus Fit monta o seu cardápio, o seu treino e as suas metas do dia, com lembretes no celular.">
+<meta name="description" content="O Focus Fit monta o seu cardápio, o seu treino e as suas metas do dia, com lembretes no celular. Escolha o seu plano e comece hoje.">
 <link rel="icon" href="icone-512.png" type="image/png">
 <link rel="apple-touch-icon" href="icone-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,9 +19,11 @@
   função. As telas são prints do próprio app (pasta vendas/), tirados com
   dados de exemplo.
 
-  ⚠️ LINK DO BOTÃO: LINK_QUIZ, lá no fim da página. Os parâmetros da URL
-  (utm_source, utm_campaign...) passam junto pro quiz, então o link de
-  cada influenciador continua rastreável.
+  ⚠️ OS BOTÕES levam pra seção de planos (#planos), e cada plano vai direto
+  pro checkout da Zuptos. Os links e os preços saem de PLANOS, no fim da
+  página (os links são os mesmos de config.js). Os parâmetros da URL
+  (utm_source, utm_campaign...) passam junto pro checkout, então o link
+  de cada influenciador continua rastreável até a venda.
 
   ⚠️ VÍDEO: troque o bloco <div class="video-vazio"> dentro de #video
   pelo código de incorporação do vídeo (YouTube, Vimeo, VTurb). O espaço
@@ -160,6 +162,24 @@
   .faixa{max-width:980px;margin:0 auto;padding:60px 20px;text-align:center;}
   .faixa h2{font-size:clamp(32px,4.4vw,54px);line-height:1.05;font-weight:800;}
   .faixa p{color:var(--tinta-2);max-width:620px;margin:14px auto 0;font-size:17px;}
+  .planos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:30px;text-align:left;}
+  .plano{position:relative;border:1px solid var(--linha-forte);border-radius:22px;padding:24px 20px 20px;background:rgba(0,0,0,.6);
+    display:flex;flex-direction:column;}
+  .plano.destaque{border-color:var(--menta);box-shadow:0 0 0 1px var(--menta) inset,0 20px 60px rgba(0,215,162,.12);}
+  .plano-selo{position:absolute;top:-12px;left:20px;padding:5px 12px;border-radius:999px;background:var(--menta);color:#04150C;
+    font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;}
+  .plano-nome{font-size:14px;font-weight:800;color:var(--tinta-2);text-transform:uppercase;letter-spacing:.08em;}
+  .plano-preco{font-size:40px;font-weight:800;line-height:1.05;margin-top:10px;}
+  .plano-periodo{font-size:13.5px;color:var(--cinza);font-weight:700;}
+  .plano-obs{font-size:14.5px;color:var(--menta);font-weight:800;margin:10px 0 18px;min-height:22px;}
+  .plano-btn{margin-top:auto;width:100%;padding:15px 18px;font-size:15.5px;}
+  .plano:not(.destaque) .plano-btn{background:#000;border:1px solid var(--menta);color:var(--menta);box-shadow:none;}
+  .plano-off{margin-top:auto;font-size:13px;color:var(--cinza);font-weight:700;}
+  .planos-nota{font-size:13.5px !important;color:var(--cinza) !important;margin-top:18px !important;}
+  @media (max-width:760px){
+    .planos{grid-template-columns:1fr;gap:18px;}
+    .plano.destaque{order:-1;}
+  }
   .perguntas{max-width:760px;margin:10px auto 0;padding:0 20px 40px;}
   .perguntas details{border-top:1px solid var(--linha);padding:18px 4px;}
   .perguntas details:last-child{border-bottom:1px solid var(--linha);}
@@ -214,12 +234,12 @@
   <section class="abertura">
     <div class="selo entra"><i></i> Dieta, treino e metas num app só</div>
     <h1 class="display entra">Seu plano de dieta e treino, <em>montado pra você</em>, no seu celular.</h1>
-    <p class="sub entra">Responda um quiz rápido e o Focus Fit monta o seu cardápio com as gramas certas, o seu treino da semana e as suas metas de água e sono. E te lembra de cada um na hora.</p>
+    <p class="sub entra">Você responde algumas perguntas e o Focus Fit monta o seu cardápio com as gramas certas, o seu treino da semana e as suas metas de água e sono. E te lembra de cada um na hora.</p>
     <div class="entra">
-      <a class="cta js-quiz" href="#">Montar meu plano
+      <a class="cta" href="#planos">Ver os planos
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
-      <span class="cta-nota">Leva poucos minutos. Funciona no Android e no iPhone.</span>
+      <span class="cta-nota">Acesso logo depois do pagamento. Funciona no Android e no iPhone.</span>
     </div>
 
     <div id="video" class="entra">
@@ -329,19 +349,18 @@
     </div>
   </section>
 
-  <section class="faixa">
-    <h2 class="display">Pronto pra montar o seu?</h2>
-    <p>O quiz leva poucos minutos. Com as suas respostas, o app monta o cardápio, o treino e as metas, e você ajusta o que quiser depois.</p>
-    <a class="cta js-quiz" href="#">Montar meu plano
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
+  <section class="faixa planos-sec" id="planos">
+    <h2 class="display">Escolha o seu plano.</h2>
+    <p>Depois do pagamento você entra no app com o mesmo e-mail da compra, responde algumas perguntas e ele monta o cardápio, o treino e as metas. Você ajusta o que quiser depois.</p>
+    <div class="planos" id="lista-planos"></div>
+    <p class="planos-nota">Pix, cartão ou boleto. Todos os planos têm o app completo: cardápio, treino, metas, progresso e lembretes.</p>
   </section>
 
   <section class="perguntas">
     <details><summary>Funciona em qualquer celular?</summary>
       <p>Funciona no Android e no iPhone, pelo navegador. Você instala na tela inicial e ele abre como um app, com os lembretes no celular.</p></details>
     <details><summary>Preciso treinar em academia?</summary>
-      <p>Não. No quiz você diz onde treina, e o app monta o treino pra academia ou pra casa, com peso do corpo e elástico.</p></details>
+      <p>Não. Nas perguntas do começo você diz onde treina, e o app monta o treino pra academia ou pra casa, com peso do corpo e elástico.</p></details>
     <details><summary>Posso mudar o plano depois?</summary>
       <p>Pode. Dentro do app você troca o tipo de treino, os músculos, os exercícios, as séries, os horários das refeições, as metas e até monta a sua própria dieta.</p></details>
     <details><summary>O app substitui nutricionista ou médico?</summary>
@@ -358,17 +377,36 @@
   Focus Fit · material educativo de apoio. Não substitui acompanhamento médico ou nutricional.
 </footer>
 
+<script src="config.js"></script>
 <script>
-/* pra onde os botões levam: o quiz. Os parâmetros da URL desta página
-   (utm_*, xcod, sck) vão junto, pra o link de cada influenciador
-   continuar rastreável até o checkout. */
-const LINK_QUIZ = '/quiz/escuro';
+/* os planos, com os mesmos preços da tela de assinatura do app. Os
+   links vêm de config.js (CHECKOUT_URL_*), que é onde eles moram pro app
+   inteiro: trocou lá, troca aqui. Os parâmetros da URL desta página
+   (utm_*, xcod, sck) vão junto pro checkout, pra venda chegar na UTMify
+   com o nome do influenciador. */
+const PLANOS = [
+  { chave: 'CHECKOUT_URL_MENSAL',     nome: 'Mensal',     preco: 'R$29,90', periodo: 'por mês',  obs: 'Renova todo mês' },
+  { chave: 'CHECKOUT_URL_TRIMESTRAL', nome: 'Trimestral', preco: 'R$74,70', periodo: 'a cada 3 meses', obs: 'Sai R$24,90 por mês', selo: 'Recomendado' },
+  { chave: 'CHECKOUT_URL_ANUAL',      nome: 'Anual',      preco: 'R$238,80', periodo: 'por ano', obs: 'Sai R$19,90 por mês' }
+];
 
 (function () {
   const qs = location.search.replace(/^\?/, '');
-  document.querySelectorAll('.js-quiz').forEach(a => {
-    a.href = LINK_QUIZ + (qs ? (LINK_QUIZ.includes('?') ? '&' : '?') + qs : '');
-  });
+  const link = url => url + (qs ? (url.includes('?') ? '&' : '?') + qs : '');
+  const cfg = typeof CONFIG !== 'undefined' ? CONFIG : {};
+  document.getElementById('lista-planos').innerHTML = PLANOS.map(p => {
+    const url = cfg[p.chave];
+    return `
+      <div class="plano ${p.selo ? 'destaque' : ''}">
+        ${p.selo ? `<span class="plano-selo">${p.selo}</span>` : ''}
+        <div class="plano-nome">${p.nome}</div>
+        <div class="plano-preco display">${p.preco}</div>
+        <div class="plano-periodo">${p.periodo}</div>
+        <div class="plano-obs">${p.obs}</div>
+        ${url ? `<a class="cta plano-btn" href="${link(url)}">Assinar o ${p.nome}</a>`
+              : `<span class="plano-off">Link de pagamento ainda não configurado</span>`}
+      </div>`;
+  }).join('');
 })();
 
 /* ---------- as miras de cada tela ----------

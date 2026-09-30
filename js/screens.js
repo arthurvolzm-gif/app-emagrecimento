@@ -8,8 +8,6 @@ const Telas = {
   inicio() {
     const p = Store.db.perfil;
     const t = Store.totaisDoDia();
-    const ms = Store.metasSemana();
-    const streak = Store.streak();
     const treinoHoje = App.treinoDeHoje();
 
     return `
@@ -18,7 +16,6 @@ const Telas = {
           <div class="topo-saud">${App.saudacao()}</div>
           <div class="topo-nome display">
             ${p.nome.split(' ')[0]}
-            ${streak > 0 ? `<span class="streak-badge" title="${streak} ${streak === 1 ? 'dia seguido' : 'dias seguidos'} ativo">🔥 ${streak}</span>` : ''}
           </div>
         </div>
         <button class="sino-btn" onclick="App.ir('notificacoes')" aria-label="Notificações">
@@ -36,7 +33,7 @@ const Telas = {
 
         ${Telas._metasHoje(p, t)}
 
-        ${Telas._semana(ms)}
+        ${Telas._semana()}
 
         <h3 class="secao-tt">Continuar de onde parou</h3>
         <div class="card" style="padding:0;overflow:hidden">
@@ -87,7 +84,7 @@ const Telas = {
         </div>
 
         <div class="mh-linha">
-          ${Comp.anel(pct(t.kcal, p.meta_kcal), t.kcal, 'kcal', 'medio')}
+          ${Comp.anel(pct(t.kcal, p.meta_kcal), t.kcal, '', 'medio')}
           <div class="anel-info">
             <div class="meta-grande">Calorias</div>
             <div class="meta-val">${p.meta_kcal} kcal</div>
@@ -97,24 +94,26 @@ const Telas = {
         </div>
 
         <div class="mh-linha">
-          ${Comp.anel(pct(t.agua, p.meta_agua), litros(t.agua), 'litros', 'medio')}
+          ${Comp.anel(pct(t.agua, p.meta_agua), litros(t.agua), '', 'medio agua')}
           <div class="anel-info">
             <div class="meta-grande">Água</div>
             <div class="meta-val">${litros(p.meta_agua)} L</div>
             <div class="mh-botoes">
-              <button class="btn-mini" onclick="App.agua(-250)" aria-label="Tirar um copo">−</button>
-              <span>250 ml</span>
-              <button class="btn-mini" onclick="App.agua(250)" aria-label="Pôr um copo">+</button>
+              <button class="btn-mini" onclick="App.agua(-250)" aria-label="Tirar um copo de 250 ml">−</button>
+              <button class="btn-mini" onclick="App.agua(250)" aria-label="Pôr um copo de 250 ml">+</button>
             </div>
           </div>
         </div>
 
         <div class="mh-linha">
-          ${Comp.anel(pct(t.sono, p.meta_sono), t.sono ? String(t.sono).replace('.', ',') : 0, 'horas', 'medio')}
+          ${Comp.anel(pct(t.sono, p.meta_sono), t.sono ? String(t.sono).replace('.', ',') : 0, '', 'medio sono')}
           <div class="anel-info">
             <div class="meta-grande">Sono</div>
             <div class="meta-val">${String(p.meta_sono).replace('.', ',')} h</div>
-            <button class="mh-sono" onclick="App.abrirSono()">${Ic.lapis(15)} ${t.sono ? 'Alterar o sono de hoje' : 'Registrar o sono de hoje'}</button>
+            <div class="mh-botoes">
+              <button class="btn-mini" onclick="App.sono(-0.5)" aria-label="Tirar meia hora de sono">−</button>
+              <button class="btn-mini" onclick="App.sono(0.5)" aria-label="Pôr meia hora de sono">+</button>
+            </div>
           </div>
         </div>
       </div>`;
@@ -169,30 +168,34 @@ const Telas = {
      Sete bolinhas que enchem e reiniciam no domingo, no lugar da
      sequência que zerava. Dia fora da rotina conta como cumprido e
      aparece em azul: é uma escolha, não uma falha. */
-  _semana(ms) {
+  _semana() {
     const sp = Store.semanaPerfeita();
-    const plano = Store.planoTreino();
-    const alvo = Number(String(plano.frequencia).match(/\d+/)?.[0]) || 5;
+    const seq = Store.streak();
 
+    /* verde = ela mexeu no app naquele dia (dia fora da rotina também
+       conta, porque marcar é mexer); preto = não mexeu. Ao lado, a
+       sequência de dias seguidos com o fogo no verde da marca. */
     return `
       <div class="card">
-        <div class="card-tt">${Ic.calendario(20)} Sua semana<span class="n">${sp.feitos} de 7 dias</span></div>
-        <div class="sem-fila">
-          ${sp.dias.map((d, i) => `
-            <div class="sem-dia ${d.fora ? 'fora' : d.ativo ? 'on' : ''} ${d.hoje ? 'hoje' : ''} ${d.futuro ? 'futuro' : ''}">
-              <span class="b">${d.fora ? '~' : d.ativo ? '✓' : ''}</span>
-              <span class="d">${['S','T','Q','Q','S','S','D'][i]}</span>
-            </div>`).join('')}
-        </div>
-        <p class="sem-txt">
-          ${sp.feitos >= sp.passados
-            ? 'Semana limpa até aqui. A contagem reinicia toda segunda.'
-            : `Faltou marcar ${sp.passados - sp.feitos} ${sp.passados - sp.feitos === 1 ? 'dia' : 'dias'}. Sem problema: a semana reinicia na segunda e o que passou não conta contra você.`}
-        </p>
-        <div class="sem-nums">
-          <div><b>${ms.treino}<small>/${alvo}</small></b><span>Treinos</span></div>
-          <div><b>${ms.dieta}<small>/7</small></b><span>Dietas completas</span></div>
-          <div><b>${ms.agua}<small>/7</small></b><span>Metas de água</span></div>
+        <div class="card-tt">${Ic.calendario(20)} Sua semana</div>
+        <div class="sem-linha">
+          <div class="sem-fila">
+            ${sp.dias.map((d, i) => `
+              <div class="sem-dia ${d.ativo || d.fora ? 'on' : ''} ${d.hoje ? 'hoje' : ''} ${d.futuro ? 'futuro' : ''}">
+                <span class="b"></span>
+                <span class="d">${['S','T','Q','Q','S','S','D'][i]}</span>
+              </div>`).join('')}
+          </div>
+          <div class="sem-fogo" aria-label="${seq} ${seq === 1 ? 'dia seguido' : 'dias seguidos'} ativo no app">
+            <svg viewBox="0 0 24 30" aria-hidden="true">
+              <defs><linearGradient id="gradFogo" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0%" stop-color="#008F6B"/><stop offset="100%" stop-color="#00D7A2"/></linearGradient></defs>
+              <path fill="url(#gradFogo)" d="M12 1c1.5 4.2 6.8 7.4 6.8 14.2A6.8 6.8 0 0 1 12 22c-3.8 0-6.8-3-6.8-6.8 0-3 1.6-4.9 3.2-6.2 0 2 .8 3.4 2.2 3.8C10 8.6 10.8 4.6 12 1z" transform="translate(0 4)"/>
+              <path fill="#9DF5DE" opacity=".55" d="M12 14.5c1 1.6 2.6 2.8 2.6 5a2.6 2.6 0 0 1-5.2 0c0-1.4.8-2.3 1.4-3 .1.8.5 1.3 1 1.4-.1-1.2 0-2.4.2-3.4z" transform="translate(0 4)"/>
+            </svg>
+            <b>${seq}</b>
+            <span>${seq === 1 ? 'dia' : 'dias'}</span>
+          </div>
         </div>
       </div>`;
   },
@@ -2084,25 +2087,32 @@ const Comp = {
       </button>`;
   },
 
+  /* `tamanho` também leva a cor: 'agua' pinta de azul e 'sono' de roxo,
+     como eram as barras delas; sem nada, é o verde da marca. Unidade
+     vazia = só o número e a porcentagem dentro do anel. */
   anel(pct, valor, unidade, tamanho) {
     const r = 54, c = 2 * Math.PI * r;
     const off = c * (1 - Math.min(100, pct) / 100);
+    const cls = tamanho || '';
+    const cor = /\bagua\b/.test(cls) ? ['gradAgua', '#3B82C4', '#6FB3E8']
+              : /\bsono\b/.test(cls) ? ['gradSono', '#7C6BC4', '#A99BE8']
+              : ['gradAnel', '#008F6B', '#00D7A2'];
     return `
-      <div class="anel ${tamanho || ''}">
+      <div class="anel ${cls}">
         <svg viewBox="0 0 132 132">
           <defs>
-            <linearGradient id="gradAnel" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#008F6B"/>
-              <stop offset="100%" stop-color="#00D7A2"/>
+            <linearGradient id="${cor[0]}" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="${cor[1]}"/>
+              <stop offset="100%" stop-color="${cor[2]}"/>
             </linearGradient>
           </defs>
           <circle class="trilho" cx="66" cy="66" r="${r}"/>
-          <circle class="barra" cx="66" cy="66" r="${r}"
+          <circle class="barra" cx="66" cy="66" r="${r}" style="stroke:url(#${cor[0]})"
                   stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/>
         </svg>
         <div class="anel-centro">
           <div class="anel-num">${valor}</div>
-          <div class="anel-lbl">${unidade} · ${pct}%</div>
+          <div class="anel-lbl">${unidade ? unidade + ' · ' : ''}${pct}%</div>
         </div>
       </div>`;
   },

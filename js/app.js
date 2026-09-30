@@ -2247,6 +2247,19 @@ const App = {
     setTimeout(() => document.getElementById('m-sono').focus(), 120);
   },
 
+  /* o − e o + do sono na Início: meia hora por toque */
+  sono(delta) {
+    const p = Store.db.perfil;
+    const antes = Store.dia().sono || 0;
+    const v = Math.max(0, Math.min(14, Math.round((antes + delta) * 2) / 2));
+    Store.setSono(v);
+    Backend.agendarSync();
+    this.render();
+    if (this.checarNivel()) return;
+    if (this.checarStreak()) return;
+    if (antes < p.meta_sono && v >= p.meta_sono) this.toast('Meta de sono batida! +20 pontos 😴', true);
+  },
+
   salvarSono() {
     const v = parseFloat(document.getElementById('m-sono').value);
     if (isNaN(v)) return;
