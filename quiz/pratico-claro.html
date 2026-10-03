@@ -47,7 +47,7 @@ src="https://www.facebook.com/tr?id=1021851947333727&ev=PageView&noscript=1"
 
 :root{
   --verde:#007F5F;
-  --verde-claro:#00D7A2;
+  --verde-claro:#00A07A;
   --verde-suave:#e6f7f2;
   --verde-escuro:#004D3A;
   --dourado:#c8973a;
@@ -63,12 +63,12 @@ html{scroll-behavior:smooth;}
 
 body{
   font-family:'Lato',sans-serif;
-  background-color:#0a0f0c;
-  background-image:radial-gradient(ellipse at top, #0F2A23 0%, #0a0f0c 65%);
+  background-color:#f4f8f6;
+  background-image:radial-gradient(ellipse at top, #e3f5ee 0%, #f4f8f6 65%);
   background-attachment:fixed;
   background-size:cover;
   background-position:center;
-  color:#cfe0d6;
+  color:#33433b;
   line-height:1.6;
   min-height:100vh;
 }
@@ -97,26 +97,26 @@ body{
 }
 
 .card-quiz{
-  background:#000;
+  background:#fff;
   border-radius:22px;
-  box-shadow:0 12px 50px rgba(0,0,0,.55), 0 0 40px rgba(0,215,162,.06);
+  box-shadow:0 12px 50px rgba(16,60,45,.10), 0 0 40px rgba(0,160,122,.05);
   padding:34px 30px;
   position:relative;
   border:1px solid rgba(0,215,162,.14);
 }
 
 /* seta de voltar */
-.back-btn{position:absolute;left:16px;top:14px;background:none;border:none;color:#7c9186;font-size:24px;line-height:1;cursor:pointer;padding:4px 8px;z-index:5;transition:color .18s;}
+.back-btn{position:absolute;left:16px;top:14px;background:none;border:none;color:#6b7c74;font-size:24px;line-height:1;cursor:pointer;padding:4px 8px;z-index:5;transition:color .18s;}
 .back-btn:hover{color:var(--verde-claro);}
 
 .brand{text-align:center;margin-bottom:6px;}
 .brand-nome{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--verde-claro);}
 .brand-logo{height:54px;display:block;margin:0 auto;}
-.brand-sub{font-size:13px;color:#7c9186;margin-bottom:20px;text-align:center;}
+.brand-sub{font-size:13px;color:#6b7c74;margin-bottom:20px;text-align:center;}
 
 /* ===== PROGRESSO ===== */
 .progress-head{display:flex;justify-content:flex-end;font-size:13px;color:var(--dourado);font-weight:700;margin-bottom:8px;}
-.progress-bar{height:7px;background:rgba(255,255,255,.08);border-radius:20px;overflow:hidden;margin-bottom:26px;}
+.progress-bar{height:7px;background:rgba(16,60,45,.08);border-radius:20px;overflow:hidden;margin-bottom:26px;}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--verde),var(--verde-claro));border-radius:20px;transition:width .5s ease;}
 
 /* ===== PILLS ===== */
@@ -124,7 +124,7 @@ body{
 .pill{background:rgba(0,215,162,.12);border:1px solid rgba(0,215,162,.3);color:var(--verde-claro);font-size:12px;font-weight:700;padding:6px 12px;border-radius:20px;}
 
 /* ===== INSIGHT BOX ===== */
-.insight{background:rgba(0,215,162,.1);border-left:4px solid var(--verde-claro);border-radius:8px;padding:14px 16px;font-size:14px;color:#cfe0d6;line-height:1.6;margin-bottom:20px;}
+.insight{background:rgba(0,215,162,.1);border-left:4px solid var(--verde-claro);border-radius:8px;padding:14px 16px;font-size:14px;color:#33433b;line-height:1.6;margin-bottom:20px;}
 .insight strong{color:var(--verde-claro);}
 
 .echo{font-size:14px;color:#8fa79c;margin-bottom:6px;}
@@ -152,18 +152,18 @@ body{
 }
 .opts.grid2 .opt:hover{transform:none;box-shadow:none;border-color:transparent;}
 .opts.grid2 .opt.sel{background:linear-gradient(135deg,#004D3A,#008F6B);border-color:transparent;color:#fff;}
-.opts.grid2 .opt-radio{width:20px;height:20px;border-color:rgba(255,255,255,.85);background:rgba(255,255,255,.16);}
+.opts.grid2 .opt-radio{width:20px;height:20px;border-color:rgba(255,255,255,.85);background:rgba(16,60,45,.16);}
 .opts.grid2 .opt.sel .opt-radio{border-color:#fff;background:#fff;}
 .opts.grid2 .opt.sel .opt-radio::after{color:var(--verde-escuro);font-size:12px;}
 .opts.grid2 .idade-card:last-child:nth-child(odd){grid-column:1 / -1;justify-self:center;width:calc(50% - 5px);}
 .opt{
   display:flex;align-items:center;gap:14px;
-  background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);border-radius:14px;
-  padding:17px 18px;font-size:15px;font-weight:600;color:#dfeae4;
+  background:rgba(16,60,45,.04);border:1.5px solid rgba(16,60,45,.1);border-radius:14px;
+  padding:17px 18px;font-size:15px;font-weight:600;color:#22332b;
   cursor:pointer;transition:all .18s ease;text-align:left;
 }
 .opt:hover{border-color:var(--verde-claro);box-shadow:0 6px 20px rgba(0,215,162,.18);transform:translateY(-1px);}
-.opt-radio{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.25);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .18s ease;}
+.opt-radio{width:24px;height:24px;border-radius:50%;border:2px solid rgba(16,60,45,.28);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .18s ease;}
 .opt.sel{border-color:var(--verde-claro);background:rgba(0,215,162,.16);}
 .opt.sel .opt-radio{border-color:var(--verde-claro);background:var(--verde);}
 .opt.sel .opt-radio::after{content:'✓';color:#fff;font-size:13px;font-weight:700;}
@@ -184,23 +184,23 @@ body{
   box-shadow:0 8px 30px rgba(0,143,107,.32);transition:transform .2s,box-shadow .2s;letter-spacing:.3px;
 }
 .btn:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,143,107,.45);}
-.btn-ghost{background:rgba(255,255,255,.04);color:var(--verde-claro);border:1.5px solid rgba(255,255,255,.12);box-shadow:none;margin-top:12px;}
-.btn-ghost:hover{background:rgba(255,255,255,.07);box-shadow:none;}
+.btn-ghost{background:rgba(16,60,45,.04);color:var(--verde-claro);border:1.5px solid rgba(16,60,45,.12);box-shadow:none;margin-top:12px;}
+.btn-ghost:hover{background:rgba(16,60,45,.07);box-shadow:none;}
 
 /* ===== INPUT DE TEXTO (nome) ===== */
-.text-input{width:100%;border:1.5px solid rgba(255,255,255,.12);border-radius:14px;padding:16px 18px;font-size:16px;font-family:'Lato',sans-serif;color:#eef6f3;background:rgba(255,255,255,.05);margin-bottom:14px;outline:none;transition:border-color .18s,box-shadow .18s;}
+.text-input{width:100%;border:1.5px solid rgba(16,60,45,.12);border-radius:14px;padding:16px 18px;font-size:16px;font-family:'Lato',sans-serif;color:#10201a;background:rgba(16,60,45,.05);margin-bottom:14px;outline:none;transition:border-color .18s,box-shadow .18s;}
 .text-input:focus{border-color:var(--verde-claro);box-shadow:0 6px 20px rgba(0,215,162,.18);}
 .text-input::placeholder{color:#6f8579;}
 
 /* ===== RÉGUA (peso / altura) ===== */
 .ruler-sub{font-size:14px;color:#8fa79c;margin:-8px 0 18px;}
-.unit-toggle{display:inline-flex;background:rgba(255,255,255,.06);border-radius:30px;padding:4px;margin-bottom:6px;}
+.unit-toggle{display:inline-flex;background:rgba(16,60,45,.06);border-radius:30px;padding:4px;margin-bottom:6px;}
 .unit-toggle .ut{border:none;background:transparent;color:#8fa79c;font-weight:800;font-size:14px;padding:8px 26px;border-radius:24px;cursor:pointer;transition:all .18s;}
 .unit-toggle .ut.active{background:var(--verde);color:#fff;box-shadow:0 4px 14px rgba(0,143,107,.3);}
 .ruler-val{font-family:'Playfair Display',serif;font-size:46px;font-weight:900;color:var(--verde-claro);margin:16px 0 6px;line-height:1;}
 .ruler-val small{font-size:20px;color:var(--verde-claro);margin-left:3px;font-weight:700;}
 .ruler-track{position:relative;height:52px;margin:6px 6px 0;}
-.ruler-line{position:absolute;left:0;right:0;bottom:16px;height:2px;background:rgba(255,255,255,.15);}
+.ruler-line{position:absolute;left:0;right:0;bottom:16px;height:2px;background:rgba(16,60,45,.15);}
 .ruler-ticks{position:absolute;left:0;right:0;bottom:16px;height:26px;display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none;}
 .ruler-ticks .tk{width:1px;height:12px;background:rgba(255,255,255,.2);}
 .ruler-ticks .tk.maj{height:24px;width:2px;background:rgba(255,255,255,.35);}
@@ -216,7 +216,7 @@ body{
 .intro-badge{display:inline-block;background:rgba(0,215,162,.14);color:var(--verde-claro);font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:7px 18px;border-radius:20px;margin-bottom:22px;}
 .intro-h1{font-family:'Open Sans',sans-serif;font-size:32px;font-weight:900;color:var(--verde-claro);line-height:1.25;margin-bottom:16px;text-align:center;}
 .intro-h1 span{color:var(--verde-claro);}
-.intro-sub{font-size:16px;color:#a9bcb2;text-align:center;line-height:1.65;margin-bottom:26px;}
+.intro-sub{font-size:16px;color:#5f6f68;text-align:center;line-height:1.65;margin-bottom:26px;}
 .hero-h1{font-family:'Baloo 2',sans-serif;font-size:30px;font-weight:800;color:var(--verde-claro);line-height:1.25;text-align:center;margin-bottom:18px;}
 .hero-sub{font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:600;color:var(--verde-claro);line-height:1.55;text-align:center;margin:20px 0 22px;}
 .intro-secure{text-align:center;font-size:12px;color:#98a89f;margin-top:12px;}
@@ -286,7 +286,7 @@ body{
 .ad-col li{list-style:none;font-size:13px;color:#66756f;padding:6px 0;display:flex;gap:8px;align-items:flex-start;line-height:1.5;}
 .ad-col.antes li::before{content:'✕';color:#e07a7a;font-weight:800;flex-shrink:0;}
 .ad-col.depois li::before{content:'✓';color:var(--verde-claro);font-weight:800;flex-shrink:0;}
-.ad-note{text-align:center;font-size:12px;color:#a8b8b1;margin-top:14px;font-style:italic;}
+.ad-note{text-align:center;font-size:12px;color:#5f6f68;margin-top:14px;font-style:italic;}
 
 /* ===== OFERTA REVELAR ===== */
 .rev-badge{display:block;width:max-content;margin:0 auto 16px;background:var(--verde-escuro);color:#fff;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:6px 16px;border-radius:20px;}
@@ -300,7 +300,7 @@ body{
 
 .reserva{display:flex;align-items:center;justify-content:center;gap:10px;background:#eef7f4;border-radius:12px;padding:12px;font-size:14px;color:var(--verde-escuro);font-weight:700;margin-bottom:20px;}
 .reserva .t{font-variant-numeric:tabular-nums;}
-.rev-secure{text-align:center;font-size:12px;color:#a8b8b1;margin-top:16px;}
+.rev-secure{text-align:center;font-size:12px;color:#5f6f68;margin-top:16px;}
 
 /* ===== PREÇO ===== */
 .price-box{background:linear-gradient(150deg,var(--verde-escuro),var(--verde));border-radius:18px;padding:28px 24px;text-align:center;color:#fff;margin-bottom:18px;}
@@ -355,7 +355,7 @@ body{
 
 /* ===== PROVA CIENTÍFICA (mesma da landing) ===== */
 .prova-numero{font-family:'Playfair Display',serif;font-size:72px;font-weight:900;color:#ff6f61;line-height:1;margin-bottom:6px;text-align:center;}
-.prova-numero-legenda{font-size:15.5px;color:#a9bcb2;max-width:420px;margin:0 auto 26px;line-height:1.6;text-align:center;}
+.prova-numero-legenda{font-size:15.5px;color:#5f6f68;max-width:420px;margin:0 auto 26px;line-height:1.6;text-align:center;}
 .prova-noticia{max-width:620px;margin:0 auto;background:#fff;border:1px solid #e4e4e4;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.10);}
 .prova-noticia img{width:100%;height:auto;display:block;}
 .prova-fonte{font-size:11.5px;color:#999;padding:12px 16px;text-align:left;border-top:1px solid #f0f0f0;line-height:1.6;}
@@ -376,7 +376,7 @@ body{
 .proj-compare-col h5{font-size:12.5px;font-weight:900;margin:0 0 8px;text-align:center;}
 .proj-compare-col.ruim h5{color:var(--vermelho);}
 .proj-compare-col.bom h5{color:var(--verde-escuro);}
-.proj-compare-col ul{list-style:none;padding:0;margin:0;font-size:12px;color:#cfe0d6;line-height:1.6;}
+.proj-compare-col ul{list-style:none;padding:0;margin:0;font-size:12px;color:#33433b;line-height:1.6;}
 .proj-compare-col li{margin-bottom:6px;}
 .glp-metric{margin-bottom:10px;}
 .glp-metric:last-child{margin-bottom:0;}
@@ -393,10 +393,10 @@ body{
 @media(max-width:768px){.prova-numero{font-size:58px;}.prova-texto{font-size:15px;}}
 
 /* tabela "quanto vale destravar" */
-.valor-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:8px 22px;margin-top:8px;box-shadow:0 2px 14px rgba(0,0,0,.2);}
-.valor-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:14px;}
+.valor-box{background:rgba(16,60,45,.04);border:1px solid rgba(16,60,45,.1);border-radius:16px;padding:8px 22px;margin-top:8px;box-shadow:0 2px 14px rgba(0,0,0,.2);}
+.valor-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid rgba(16,60,45,.08);font-size:14px;}
 .valor-row:last-child{border-bottom:none;}
-.valor-row .lbl{color:#dfeae4;font-weight:700;}
+.valor-row .lbl{color:#22332b;font-weight:700;}
 .valor-row .num{color:var(--vermelho);font-weight:800;white-space:nowrap;}
 .valor-row.total{background:#fbf1f0;margin:0 -22px;padding:16px 22px;border-radius:12px;}
 .valor-nota{text-align:center;font-size:13px;color:#7d9488;margin-top:16px;line-height:1.7;}
@@ -419,7 +419,7 @@ body{
 .dep-c{background:#fff;border-radius:18px;border:1px solid #e4ede9;padding:22px 20px;min-width:270px;max-width:270px;box-shadow:0 4px 20px rgba(0,143,107,.08);display:flex;flex-direction:column;text-align:center;}
 .dep-c img{width:64px;height:64px;border-radius:50%;object-fit:cover;margin:0 auto 10px;border:3px solid var(--verde-suave);}
 .dep-c .n{font-weight:900;font-size:14px;color:var(--cinza);}
-.dep-c .id{font-size:12px;color:#a8b8b1;margin-bottom:6px;}
+.dep-c .id{font-size:12px;color:#5f6f68;margin-bottom:6px;}
 .dep-c .st{color:#f5a623;font-size:14px;letter-spacing:2px;margin-bottom:10px;}
 .dep-c .qt{font-style:italic;font-weight:700;font-size:13.5px;color:var(--verde);margin-bottom:8px;line-height:1.45;}
 .dep-c .tx{font-size:12.5px;color:#66756f;line-height:1.6;text-align:left;}
@@ -446,11 +446,11 @@ body{
 .of-item .pr{flex-shrink:0;color:var(--verde-claro);text-decoration:line-through;font-weight:700;font-size:12.5px;}
 .of-block{text-align:left;font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--verde);margin:16px 0 4px;}
 .of-block.bonus{color:var(--dourado);}
-.of-de{font-size:15px;color:#a8b8b1;text-decoration:line-through;margin-top:20px;}
+.of-de{font-size:15px;color:#5f6f68;text-decoration:line-through;margin-top:20px;}
 .of-por{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--verde-claro);margin-top:6px;}
 .of-val{font-family:'Playfair Display',serif;font-size:48px;font-weight:900;color:var(--verde-escuro);line-height:1;margin:4px 0;}
-.of-avista{font-size:14px;color:#8aa79a;margin-bottom:22px;}
-.of-secure{font-size:12px;color:#a8b8b1;margin-top:12px;}
+.of-avista{font-size:14px;color:#62736b;margin-bottom:22px;}
+.of-secure{font-size:12px;color:#5f6f68;margin-top:12px;}
 
 /* faq */
 .faq details{background:#fff;border-radius:12px;margin-bottom:10px;border:1px solid #e4ede9;overflow:hidden;}
@@ -461,14 +461,14 @@ body{
 .faq .a{padding:0 20px 18px;font-size:13.5px;color:#66756f;line-height:1.7;}
 
 /* faq da tela de projeção (fundo escuro do card-quiz, não o fundo claro do .faq acima) */
-.faq-escuro details{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;margin-bottom:10px;overflow:hidden;}
-.faq-escuro summary{padding:15px 18px;font-size:14px;font-weight:700;color:#eef6f3;cursor:pointer;display:flex;justify-content:space-between;align-items:center;list-style:none;gap:12px;}
+.faq-escuro details{background:rgba(16,60,45,.04);border:1px solid rgba(16,60,45,.1);border-radius:12px;margin-bottom:10px;overflow:hidden;}
+.faq-escuro summary{padding:15px 18px;font-size:14px;font-weight:700;color:#10201a;cursor:pointer;display:flex;justify-content:space-between;align-items:center;list-style:none;gap:12px;}
 .faq-escuro summary::-webkit-details-marker{display:none;}
 .faq-escuro summary::after{content:'+';font-size:20px;color:var(--verde-claro);font-weight:300;flex-shrink:0;transition:transform .3s;}
 .faq-escuro details[open] summary::after{transform:rotate(45deg);}
-.faq-escuro .a{padding:0 18px 16px;font-size:13px;color:#9aa8a2;line-height:1.65;}
+.faq-escuro .a{padding:0 18px 16px;font-size:13px;color:#62736b;line-height:1.65;}
 
-.res-footer{text-align:center;padding:30px 20px;font-size:12px;color:#8aa79a;line-height:1.7;}
+.res-footer{text-align:center;padding:30px 20px;font-size:12px;color:#62736b;line-height:1.7;}
 
 /* ===== DIAGNÓSTICO (IMC + sinais) ===== */
 .diag-imc{text-align:center;margin:22px 0 6px;}
@@ -511,8 +511,8 @@ body{
 .alerta-box .it{font-size:13.5px;color:#8a5f5c;padding:5px 0;display:flex;gap:9px;align-items:flex-start;line-height:1.55;}
 .alerta-box .it::before{content:'✕';color:var(--vermelho);font-weight:900;flex-shrink:0;}
 .solucao-box{background:none;border:none;border-radius:0;padding:0;margin:22px 0;}
-.solucao-box h4{color:#eef6f3;font-size:20px;font-weight:900;margin-bottom:10px;line-height:1.35;display:flex;gap:9px;align-items:flex-start;justify-content:center;text-align:center;}
-.solucao-box p{font-size:13.5px;color:#c3d4cb;line-height:1.65;}
+.solucao-box h4{color:#10201a;font-size:20px;font-weight:900;margin-bottom:10px;line-height:1.35;display:flex;gap:9px;align-items:flex-start;justify-content:center;text-align:center;}
+.solucao-box p{font-size:13.5px;color:#46564e;line-height:1.65;}
 .solucao-box p strong{color:var(--verde-claro);}
 
 @media(max-width:600px){
@@ -529,29 +529,29 @@ body{
 /* ===== POP-UP DE SAÍDA (BOTÃO VOLTAR) ===== */
 .saida-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999;}
 .saida-overlay.aberto{display:flex;}
-.saida-modal{background:#000;border-radius:24px;padding:44px 32px 28px;box-shadow:0 12px 60px rgba(0,0,0,.6), 0 0 40px rgba(0,215,162,.08);border:1px solid rgba(0,215,162,.16);width:min(460px,100%);max-height:92vh;overflow:hidden auto;text-align:center;position:relative;animation:saidaEntra .28s ease-out;}
+.saida-modal{background:#fff;border-radius:24px;padding:44px 32px 28px;box-shadow:0 12px 60px rgba(16,60,45,.18), 0 0 40px rgba(0,160,122,.06);border:1px solid rgba(0,215,162,.16);width:min(460px,100%);max-height:92vh;overflow:hidden auto;text-align:center;position:relative;animation:saidaEntra .28s ease-out;}
 .saida-modal::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--verde),var(--verde-claro));}
 @keyframes saidaEntra{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:none;}}
 .saida-fechar{position:absolute;top:12px;right:14px;background:none;border:none;font-size:26px;line-height:1;color:#5c6b63;cursor:pointer;padding:4px 8px;z-index:2;}
 .saida-fechar:hover{color:var(--verde-claro);}
 .saida-selo{text-transform:uppercase;color:var(--verde-claro);font-weight:700;letter-spacing:1px;font-size:13px;margin-bottom:10px;}
-.saida-titulo{font-family:'Open Sans',sans-serif;font-size:20px;font-weight:800;line-height:1.25;color:#eef6f3;margin-bottom:12px;}
+.saida-titulo{font-family:'Open Sans',sans-serif;font-size:20px;font-weight:800;line-height:1.25;color:#10201a;margin-bottom:12px;}
 .saida-badge{display:inline-block;background:linear-gradient(135deg,#008F6B,#00B386);color:#fff;font-family:'Open Sans',sans-serif;font-size:30px;font-weight:900;letter-spacing:.3px;text-transform:uppercase;padding:10px 22px;border-radius:14px;margin-bottom:18px;transform:rotate(-2deg);animation:descontoPulse 1.6s ease-in-out infinite;}
 @keyframes descontoPulse{0%,100%{transform:rotate(-2deg) scale(1);box-shadow:0 8px 28px rgba(0,143,107,.5);}50%{transform:rotate(-2deg) scale(1.045);box-shadow:0 14px 40px rgba(0,143,107,.8);}}
-.saida-sub{color:#c3d4cb;font-weight:700;font-size:15px;line-height:1.7;letter-spacing:.3px;margin-bottom:24px;}
+.saida-sub{color:#46564e;font-weight:700;font-size:15px;line-height:1.7;letter-spacing:.3px;margin-bottom:24px;}
 .saida-de{font-size:16px;color:#6f8579;text-decoration:line-through;margin-bottom:4px;}
 .saida-por{font-size:13px;text-transform:uppercase;color:var(--verde-claro);font-weight:700;letter-spacing:1px;margin-bottom:4px;}
 .saida-val{font-family:'Open Sans',sans-serif;font-size:46px;font-weight:900;color:var(--verde-claro);line-height:1;margin-bottom:6px;text-shadow:0 0 26px rgba(0,215,162,.45);}
-.saida-val small{font-size:16px;font-weight:700;color:#8aa79a;margin-left:4px;}
-.saida-depois{font-size:13px;color:#8aa79a;margin-bottom:10px;}
+.saida-val small{font-size:16px;font-weight:700;color:#62736b;margin-left:4px;}
+.saida-depois{font-size:13px;color:#62736b;margin-bottom:10px;}
 .saida-economia{font-size:15px;font-weight:700;color:var(--verde-claro);margin-bottom:22px;}
-.saida-beneficios{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:6px 18px;margin:0 0 22px;text-align:left;}
-.saida-beneficios .sb-item{display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:700;color:#dfeae4;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07);}
+.saida-beneficios{background:rgba(16,60,45,.04);border:1px solid rgba(16,60,45,.1);border-radius:14px;padding:6px 18px;margin:0 0 22px;text-align:left;}
+.saida-beneficios .sb-item{display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:700;color:#22332b;padding:10px 0;border-bottom:1px solid rgba(16,60,45,.07);}
 .saida-beneficios .sb-item:last-child{border-bottom:none;}
 .saida-beneficios .sb-ic{flex-shrink:0;width:18px;height:18px;border-radius:50%;background:var(--verde);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;}
 .saida-modal .btn{font-size:16px;padding:17px 24px;}
 .saida-recusa{display:inline-block;margin-top:14px;font-size:13px;color:#6f8579;text-decoration:underline;background:none;border:none;cursor:pointer;font-family:inherit;}
-.saida-recusa:hover{color:#9aa8a2;}
+.saida-recusa:hover{color:#62736b;}
 .saida-rodape{font-size:12px;color:#6f8579;margin-top:12px;letter-spacing:.3px;}
 @media (max-width:768px){
   .saida-modal{padding:36px 20px 22px;border-radius:18px;}
@@ -567,21 +567,21 @@ body{
    tem 6 de 62vh), pra chegar no fim rápido. */
 .rf{position:relative;margin:26px -6px 0;}
 .rf-tt{text-align:center;font-size:22px;font-weight:900;color:var(--verde-claro);line-height:1.2;margin:0 0 4px;}
-.rf-sub{text-align:center;font-size:13.5px;color:#9aa8a2;margin:0 0 6px;}
-.rf-palco-wrap{position:sticky;top:0;height:54vh;z-index:2;background:#000;box-shadow:0 18px 18px #000;}
+.rf-sub{text-align:center;font-size:13.5px;color:#62736b;margin:0 0 6px;}
+.rf-palco-wrap{position:sticky;top:0;height:54vh;z-index:2;background:#fff;box-shadow:0 18px 18px #fff;}
 .rf-palco{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;perspective:1300px;}
 .rf-fone{position:relative;width:min(44vw,190px,22vh);aspect-ratio:390/844;transform-style:preserve-3d;
   transform:rotateY(var(--ry,-12deg)) rotateX(var(--rx,6deg)) rotateZ(var(--rz,0deg));will-change:transform;}
 .rf-fone .chapa{position:absolute;inset:-8px;border-radius:34px;background:linear-gradient(145deg,#1d2622,#07100c 60%,#0e1713);}
 .rf-fone .chapa.c1{transform:translateZ(-5px);filter:brightness(.8);}
-.rf-fone .chapa.c2{transform:translateZ(-10px);filter:brightness(.55);box-shadow:0 40px 70px rgba(0,0,0,.8);}
+.rf-fone .chapa.c2{transform:translateZ(-10px);filter:brightness(.55);box-shadow:0 30px 50px rgba(16,60,45,.22);}
 .rf-fone .frente{position:absolute;inset:-8px;border-radius:34px;padding:8px;
   background:linear-gradient(145deg,#2b3a33,#0b1510 45%,#1a2621);
-  box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08),inset 0 0 0 3px rgba(0,0,0,.6),0 0 0 1px rgba(0,215,162,.25);}
+  box-shadow:inset 0 0 0 1.5px rgba(16,60,45,.08),inset 0 0 0 3px rgba(0,0,0,.6),0 0 0 1px rgba(0,215,162,.25);}
 .rf-tela{position:relative;width:100%;height:100%;border-radius:26px;overflow:hidden;background:#000;container-type:inline-size;}
 .rf-ilha{position:absolute;top:7px;left:50%;transform:translateX(-50%);width:32%;height:16px;border-radius:14px;background:#000;z-index:5;}
 .rf-brilho{position:absolute;inset:0;border-radius:26px;pointer-events:none;z-index:4;
-  background:linear-gradient(115deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,0) 32%,rgba(255,255,255,0) 70%,rgba(255,255,255,.05) 100%);
+  background:linear-gradient(115deg,rgba(16,60,45,.12) 0%,rgba(255,255,255,0) 32%,rgba(255,255,255,0) 70%,rgba(16,60,45,.05) 100%);
   background-size:220% 100%;background-position:var(--bx,40%) 0;}
 .rf-app{position:absolute;inset:0;opacity:0;transform:translateY(5%) scale(.97);transition:opacity .45s ease,transform .55s cubic-bezier(.2,.8,.2,1);}
 .rf-app.on{opacity:1;transform:none;}
@@ -604,9 +604,9 @@ body{
 .rf-passo{min-height:32vh;padding-top:3vh;opacity:.18;transition:opacity .35s;}
 .rf-passo.on{opacity:1;}
 .rf-passo .n{font-size:11.5px;font-weight:900;letter-spacing:.08em;color:var(--verde-claro);}
-.rf-passo h3{font-size:20px;font-weight:900;color:#eef6f3;line-height:1.25;margin:6px 0 10px;}
+.rf-passo h3{font-size:20px;font-weight:900;color:#10201a;line-height:1.25;margin:6px 0 10px;}
 .rf-passo ul{list-style:none;padding:0;margin:0;display:grid;gap:8px;}
-.rf-passo li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;font-weight:700;color:#dfeae4;line-height:1.4;}
+.rf-passo li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;font-weight:700;color:#22332b;line-height:1.4;}
 .rf-passo li b{flex-shrink:0;width:22px;height:22px;border-radius:50%;border:1px solid var(--verde-claro);color:var(--verde-claro);
   font-size:11px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
 @media (prefers-reduced-motion: reduce){ .rf-app,.rf-passo{transition:none;} }
@@ -882,7 +882,7 @@ function renderIntro(){
       </div>
 
       <button class="btn" style="margin-top:22px;border-radius:8px;" onclick="iniciarQuiz()">Começar agora →</button>
-      <p style="font-size:13px;color:#8aa79a;margin:12px 0 0;">✅ Tempo estimado: 2 minutos</p>
+      <p style="font-size:13px;color:#62736b;margin:12px 0 0;">✅ Tempo estimado: 2 minutos</p>
 
       <div class="saida-beneficios" style="margin-top:22px;">
         <div style="padding:10px 0 4px;text-align:center;font-size:12.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;color:var(--verde-claro);">Com o Focus Fit você tem:</div>
@@ -950,7 +950,7 @@ function renderGenero(){
     <div class="card-quiz" style="text-align:center;">
       ${backBtn()}
       <h2 class="intro-h1" style="margin-top:20px;">Qual seu gênero?</h2>
-      <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#9aa8a2;margin:14px 0 22px;">Toque para escolher</p>
+      <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#62736b;margin:14px 0 22px;">Toque para escolher</p>
       <div class="opts grid2">
         ${SEXO_OPTS.map((o,i)=>`<div class="idade-card" onclick="selectSexo(${i})"><img src="${SEXO_IMGS[i]}" alt="${o}" class="idade-img" onerror="this.style.display='none'"><button class="opt${state.answers.sexo===o?' sel':''}" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button></div>`).join('')}
       </div>
@@ -975,7 +975,7 @@ function renderIdade(){
     <div class="card-quiz" style="text-align:center;">
       ${backBtn()}
       <h2 class="intro-h1" style="margin-top:20px;">Qual a sua idade?</h2>
-      <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#9aa8a2;margin:14px 0 22px;">Toque para escolher</p>
+      <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#62736b;margin:14px 0 22px;">Toque para escolher</p>
       <div class="opts grid2">
         ${(()=>{ const imgs=idadeImgsDe(); return IDADE_OPTS.map((o,i)=>`<div class="idade-card" onclick="selectIdade(${i})"><img src="${imgs[i]}" alt="${o}" class="idade-img" onerror="this.style.display='none'"><button class="opt${state.answers.idade===o?' sel':''}" data-i="${i}"><span class="opt-radio"></span><span>${o}</span></button></div>`).join(''); })()}
       </div>
@@ -1010,7 +1010,7 @@ function renderQuestion(q){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}<div class="brand"><img src="/Logo-escuro.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      ${backBtn()}<div class="brand"><img src="/logo-focusfit-claro.png" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
       ${echo}
@@ -1046,7 +1046,7 @@ function renderMultiQuestion(q){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}<div class="brand"><img src="/Logo-escuro.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      ${backBtn()}<div class="brand"><img src="/logo-focusfit-claro.png" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
       <h2 class="q-title tight">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
@@ -1075,7 +1075,7 @@ function renderTextQuestion(q){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}<div class="brand"><img src="/Logo-escuro.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      ${backBtn()}<div class="brand"><img src="/logo-focusfit-claro.png" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
       <h2 class="q-title">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
@@ -1096,7 +1096,7 @@ function renderRulerQuestion(q){
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz" style="text-align:center;">
-      ${backBtn()}<div class="brand"><img src="/Logo-escuro.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      ${backBtn()}<div class="brand"><img src="/logo-focusfit-claro.png" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${(q.num/TOTAL_Q)*100}%"></div></div>
       <h2 class="q-title" style="text-align:center;">${typeof q.question==="function"?q.question(state.answers):q.question}</h2>
@@ -1191,15 +1191,15 @@ function renderEmailEtapa(){
     <div class="card-quiz" style="text-align:center;">
       <h2 class="q-title" style="margin-bottom:26px;">Digite o seu e-mail para receber o seu Plano Personalizado</h2>
       <div style="text-align:left;margin-bottom:8px;">
-        <label style="display:block;font-size:12px;color:#9aa8a2;font-weight:700;margin-bottom:8px;">E-mail</label>
+        <label style="display:block;font-size:12px;color:#62736b;font-weight:700;margin-bottom:8px;">E-mail</label>
       </div>
       <input type="email" id="email-etapa" placeholder="Digite seu e-mail..." autocomplete="email"
              value="${esc(state.answers.email||'')}" onkeydown="if(event.key==='Enter')confirmarEmailEtapa()"
-             style="width:100%;background:#fff;border:2px solid transparent;border-radius:12px;padding:16px 18px;font-size:16px;font-family:'Lato',sans-serif;color:#111;outline:none;margin-bottom:8px;">
+             style="width:100%;background:#f4f8f6;border:2px solid rgba(16,60,45,.16);border-radius:12px;padding:16px 18px;font-size:16px;font-family:'Lato',sans-serif;color:#111;outline:none;margin-bottom:8px;">
       <p id="email-etapa-erro" style="display:none;text-align:left;font-size:12.5px;color:var(--vermelho);font-weight:700;margin:0 0 14px;">Digite um e-mail válido.</p>
-      <p style="font-size:15px;font-weight:800;color:#fff;margin:14px 0;">+120 pessoas nos escolheram</p>
-      <p style="font-size:12.5px;color:#8aa79a;line-height:1.5;margin-bottom:22px;">Respeitamos sua privacidade e usamos seus dados apenas de acordo com a nossa Política de Privacidade.</p>
-      <button class="btn" style="background:#fff;color:#111;" onclick="confirmarEmailEtapa()">Continuar</button>
+      <p style="font-size:15px;font-weight:800;color:#10201a;margin:14px 0;">+120 pessoas nos escolheram</p>
+      <p style="font-size:12.5px;color:#62736b;line-height:1.5;margin-bottom:22px;">Respeitamos sua privacidade e usamos seus dados apenas de acordo com a nossa Política de Privacidade.</p>
+      <button class="btn" onclick="confirmarEmailEtapa()">Continuar</button>
     </div>
   </div>`;
   setTimeout(()=>{ const f=document.getElementById('email-etapa'); if(f) f.focus(); },60);
@@ -1299,29 +1299,29 @@ function renderProjecao(){
   const GRAD_TRILHA = 'linear-gradient(90deg,#e05a4e 0%,#f0a05a 25%,#f0c05a 50%,#8fb85a 75%,#00D7A2 100%)';
   /* a barra "com o app" é verde inteira; a de "hoje" mantém o degradê */
   const trilha = (pct, bom) => `
-            <div style="height:7px;border-radius:6px;background:rgba(255,255,255,.1);overflow:hidden;">
+            <div style="height:7px;border-radius:6px;background:rgba(16,60,45,.1);overflow:hidden;">
               <div style="height:100%;width:${pct}%;${bom ? 'background:var(--verde-claro);' : `background-image:${GRAD_TRILHA};background-size:${pct?(10000/pct):0}% 100%;`}border-radius:6px;"></div>
             </div>`;
   const nivelTxt = v => v < 35 ? 'Baixa' : v < 65 ? 'Média' : 'Alta';
   const barra = (pct, bom) => `
           <div style="margin-top:10px;">
-            <div style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:${bom?'var(--verde-claro)':'#f2b8b2'};margin-bottom:6px;"><span>${bom?'Alta':nivelTxt(pct)}</span><span>${pct}%</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:${bom?'var(--verde-claro)':'#c0453a'};margin-bottom:6px;"><span>${bom?'Alta':nivelTxt(pct)}</span><span>${pct}%</span></div>
             <div style="position:relative;">
               ${trilha(pct, bom)}
               <div style="position:absolute;top:50%;left:${pct}%;transform:translate(-50%,-50%);width:15px;height:15px;border-radius:50%;background:#fff;border:3px solid ${bom?'var(--verde-claro)':'#e05a4e'};box-shadow:0 0 0 4px ${bom?'rgba(0,215,162,.3)':'rgba(224,90,78,.28)'};"></div>
             </div>
           </div>`;
   const rotinaHTML = `
-      <div style="margin-top:22px;border:1px solid rgba(255,255,255,.1);border-radius:16px;overflow:hidden;">
-        <div style="display:grid;grid-template-columns:1fr 1fr;background:rgba(255,255,255,.04);">
-          <div style="padding:12px 14px;font-size:12px;font-weight:800;color:#9fb0a7;text-transform:uppercase;letter-spacing:.4px;">Hoje</div>
+      <div style="margin-top:22px;border:1px solid rgba(16,60,45,.1);border-radius:16px;overflow:hidden;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;background:rgba(16,60,45,.04);">
+          <div style="padding:12px 14px;font-size:12px;font-weight:800;color:#62736b;text-transform:uppercase;letter-spacing:.4px;">Hoje</div>
           <div style="padding:12px 14px;font-size:12px;font-weight:800;color:var(--verde-claro);text-transform:uppercase;letter-spacing:.4px;">Com o ${APP_NOME}</div>
         </div>
         ${ROTINA_HOJE.map(([rot, hoje, com, antes, depois])=>`
-        <div style="border-top:1px solid rgba(255,255,255,.08);padding:12px 14px 4px;font-size:11.5px;font-weight:800;color:#9fb0a7;">${rot}</div>
+        <div style="border-top:1px solid rgba(16,60,45,.08);padding:12px 14px 4px;font-size:11.5px;font-weight:800;color:#62736b;">${rot}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;padding:0 0 14px;">
           <div style="padding:0 14px;display:flex;flex-direction:column;justify-content:space-between;">
-            <div style="font-size:14px;font-weight:700;color:#f2b8b2;line-height:1.4;">${hoje}</div>
+            <div style="font-size:14px;font-weight:700;color:#c0453a;line-height:1.4;">${hoje}</div>
             ${barra(antes, false)}
           </div>
           <div style="padding:0 14px;display:flex;flex-direction:column;justify-content:space-between;">
@@ -1342,45 +1342,45 @@ function renderProjecao(){
   const planosHTML = `
       <div style="margin-top:22px;">
         ${PLANOS.map(p=>`
-        <div onclick="irParaPlano('${p.chave}')" style="cursor:pointer;border:2px solid ${p.destaque?'#00A87E':'rgba(255,255,255,.14)'};border-radius:14px;overflow:hidden;margin-bottom:14px;">
+        <div onclick="irParaPlano('${p.chave}')" style="cursor:pointer;border:2px solid ${p.destaque?'#00A87E':'rgba(16,60,45,.14)'};border-radius:14px;overflow:hidden;margin-bottom:14px;">
           ${p.destaque?`<div style="background:linear-gradient(135deg,#008F6B,#00B386);color:#fff;text-align:center;font-weight:800;font-size:12.5px;padding:6px 0;">${p.destaque}</div>`:''}
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;background:rgba(255,255,255,.04);">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;background:rgba(16,60,45,.04);">
             <div style="display:flex;align-items:center;gap:12px;">
               <span style="width:20px;height:20px;border-radius:50%;border:2px solid #8a9a92;flex-shrink:0;display:block;"></span>
               <div>
-                <div style="font-weight:800;font-size:16px;color:#eef6f3;">${p.nome}</div>
-                ${p.sub?`<div style="font-size:12px;color:#9aa8a2;margin-top:2px;">${p.sub}</div>`:''}
+                <div style="font-weight:800;font-size:16px;color:#10201a;">${p.nome}</div>
+                ${p.sub?`<div style="font-size:12px;color:#62736b;margin-top:2px;">${p.sub}</div>`:''}
               </div>
             </div>
             <div style="text-align:right;flex-shrink:0;">
-              <div style="font-weight:900;font-size:19px;color:#eef6f3;">${p.preco}</div>
-              <div style="font-size:11px;color:#9aa8a2;margin-top:2px;">${p.obs}</div>
+              <div style="font-weight:900;font-size:19px;color:#10201a;">${p.preco}</div>
+              <div style="font-size:11px;color:#62736b;margin-top:2px;">${p.obs}</div>
             </div>
           </div>
         </div>`).join('')}
-        <p style="font-size:11.5px;color:#8aa79a;text-align:center;line-height:1.5;margin:8px 0 0;">Clique para escolher o seu plano. Cancele a qualquer momento para não ser cobrado.</p>
+        <p style="font-size:11.5px;color:#62736b;text-align:center;line-height:1.5;margin:8px 0 0;">Clique para escolher o seu plano. Cancele a qualquer momento para não ser cobrado.</p>
       </div>`;
 
 
   app.innerHTML = `
   <div class="wrap fade">
     <div class="card-quiz">
-      ${backBtn()}<div class="brand"><img src="/Logo-escuro.jpg" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
+      ${backBtn()}<div class="brand"><img src="/logo-focusfit-claro.png" alt="${APP_NOME}" class="brand-logo" onerror="this.outerHTML='<span class=&quot;brand-nome&quot;>'+APP_NOME+'</span>'"></div>
       <div class="brand-sub">Diagnóstico personalizado</div>
       <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:100%"></div></div>
 
       <h2 class="q-title" style="margin-top:18px;">${nome?nome+', a':'A'}qui está a sua rotina com o ${APP_NOME}</h2>
 
-      <div style="margin-top:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:16px 18px;text-align:center;">
-        <div style="font-size:12px;font-weight:800;color:#9fb0a7;text-transform:uppercase;letter-spacing:.4px;">Seu índice de organização hoje</div>
-        <div style="font-size:40px;font-weight:900;color:${niv.cor};line-height:1.15;margin-top:6px;">${idx}<span style="font-size:18px;color:#9fb0a7;">/100</span></div>
+      <div style="margin-top:16px;background:rgba(16,60,45,.05);border:1px solid rgba(16,60,45,.1);border-radius:16px;padding:16px 18px;text-align:center;">
+        <div style="font-size:12px;font-weight:800;color:#62736b;text-transform:uppercase;letter-spacing:.4px;">Seu índice de organização hoje</div>
+        <div style="font-size:40px;font-weight:900;color:${niv.cor};line-height:1.15;margin-top:6px;">${idx}<span style="font-size:18px;color:#62736b;">/100</span></div>
         <div style="font-size:13px;font-weight:800;color:${niv.cor};">${niv.txt}</div>
       </div>
 
       ${rotinaHTML}
 
       <div style="background:rgba(0,215,162,.12);border-radius:14px;padding:20px 18px;margin:22px 0 14px;text-align:center;">
-        <h4 style="margin:0 0 10px;font-size:17px;color:#eef6f3;">Seu plano organizado no <span style="color:var(--verde-claro);">${APP_NOME}</span></h4>
+        <h4 style="margin:0 0 10px;font-size:17px;color:#10201a;">Seu plano organizado no <span style="color:var(--verde-claro);">${APP_NOME}</span></h4>
         <p style="font-size:14.5px;color:var(--verde-claro);font-weight:800;line-height:1.6;margin:0;">Você coloca a sua dieta e o seu treino, e o app soma as calorias, guarda as cargas e avisa na hora de cada coisa. Todo dia você vê o seu progresso e quanto falta para o seu objetivo de ${objFrase}.</p>
       </div>
 
@@ -1391,7 +1391,7 @@ function renderProjecao(){
 
       ${planosHTML}
 
-      <img src="/garantia-escuro.jpg" alt="Garantia de 30 dias" style="width:100%;border-radius:16px;display:block;margin:22px 0 0;" onerror="this.remove()">
+      <img src="/garantia-claro.jpg" alt="Garantia de 30 dias" style="width:100%;border-radius:16px;display:block;margin:22px 0 0;" onerror="this.remove()">
 
       <h4 style="text-align:center;margin:28px 0 14px;font-size:20px;font-weight:900;color:var(--verde-claro);">Quem já está usando</h4>
       <div style="display:flex;flex-direction:column;gap:14px;">
@@ -1606,9 +1606,9 @@ function renderAutoridade(){
     <div class="card-quiz" style="text-align:center;">
       <div class="brand-sub" style="margin-bottom:14px;">Antes de continuar</div>
       <h2 class="q-title" style="margin-bottom:20px;">Por que existe o ${APP_NOME}</h2>
-      <p style="font-size:15.5px;color:#c3d4cb;line-height:1.7;margin-bottom:14px;">A gente cansou de ver plano genérico, que não considera o seu sono, a sua rotina ou o que você já tentou antes, e trava assim que a vida real atravessa o caminho.</p>
-      <p style="font-size:15.5px;color:#c3d4cb;line-height:1.7;margin-bottom:14px;">Por isso o ${APP_NOME} não entrega um cardápio pronto: ele calcula tudo a partir das suas respostas, e reajusta todo mês com base no que você realmente fez, não no que um PDF assumiu no dia 1.</p>
-      <p style="font-size:15.5px;color:#c3d4cb;line-height:1.7;margin-bottom:14px;">Não somos donos de um método mágico. Somos a equipe que constrói e mantém o app, e que responde no WhatsApp quando alguma coisa não encaixa na sua rotina.</p>
+      <p style="font-size:15.5px;color:#46564e;line-height:1.7;margin-bottom:14px;">A gente cansou de ver plano genérico, que não considera o seu sono, a sua rotina ou o que você já tentou antes, e trava assim que a vida real atravessa o caminho.</p>
+      <p style="font-size:15.5px;color:#46564e;line-height:1.7;margin-bottom:14px;">Por isso o ${APP_NOME} não entrega um cardápio pronto: ele calcula tudo a partir das suas respostas, e reajusta todo mês com base no que você realmente fez, não no que um PDF assumiu no dia 1.</p>
+      <p style="font-size:15.5px;color:#46564e;line-height:1.7;margin-bottom:14px;">Não somos donos de um método mágico. Somos a equipe que constrói e mantém o app, e que responde no WhatsApp quando alguma coisa não encaixa na sua rotina.</p>
       <button class="btn" style="margin-top:14px" onclick="go(1)">Entendi, quero continuar →</button>
     </div>
   </div>`;
@@ -1626,11 +1626,11 @@ function renderDirecaoCerta(){
     <div class="card-quiz" style="text-align:center;">
       <div class="brand-sub" style="margin-bottom:14px;">Antes de continuar</div>
       <p style="font-size:18px;font-weight:800;color:var(--verde-claro);line-height:1.45;margin-bottom:12px;">Se você se esforça, mas mesmo assim o shape não aparece…</p>
-      <p style="font-size:15.5px;color:#c3d4cb;line-height:1.7;margin-bottom:18px;">Não adianta repetir as mesmas coisas esperando um resultado diferente…</p>
+      <p style="font-size:15.5px;color:#46564e;line-height:1.7;margin-bottom:18px;">Não adianta repetir as mesmas coisas esperando um resultado diferente…</p>
       <img src="/direcao-certa.jpg" alt="" style="width:100%;border-radius:14px;display:block;margin:0 0 18px;" onerror="this.style.display='none'">
-      <p style="font-size:15.5px;color:#c3d4cb;line-height:1.7;margin-bottom:14px;">Quando você aprende a comer e treinar da forma certa, consegue construir um corpo mais forte, mais seco e mais estético, sem precisar passar horas dentro da academia…</p>
+      <p style="font-size:15.5px;color:#46564e;line-height:1.7;margin-bottom:14px;">Quando você aprende a comer e treinar da forma certa, consegue construir um corpo mais forte, mais seco e mais estético, sem precisar passar horas dentro da academia…</p>
       <p style="font-size:18px;font-weight:800;color:var(--verde-claro);line-height:1.45;margin-bottom:14px;">Não é uma questão de idade, genética ou tempo...</p>
-      <p style="font-size:15.5px;color:#c3d4cb;line-height:1.7;margin-bottom:22px;">E sim de ter um plano para seguir na <strong style="color:var(--verde-claro);">DIREÇÃO CERTA</strong>… E é isso que o ${APP_NOME} vai fazer por você: direcionar seus esforços para eles realmente <strong style="color:var(--verde-claro);">VALEREM</strong> a pena.</p>
+      <p style="font-size:15.5px;color:#46564e;line-height:1.7;margin-bottom:22px;">E sim de ter um plano para seguir na <strong style="color:var(--verde-claro);">DIREÇÃO CERTA</strong>… E é isso que o ${APP_NOME} vai fazer por você: direcionar seus esforços para eles realmente <strong style="color:var(--verde-claro);">VALEREM</strong> a pena.</p>
       <button class="btn" onclick="go(1)">Continuar →</button>
     </div>
   </div>`;
@@ -1643,12 +1643,12 @@ function renderComunidade(){
   <div class="wrap fade">
     <div class="card-quiz" style="text-align:center;">
       <h2 class="q-title" style="margin-bottom:10px;">Tenho certeza que você vai conseguir!</h2>
-      <p style="font-size:14px;color:#9aa8a2;line-height:1.6;margin-bottom:18px;">Essas são pessoas reais, com uma rotina real... que decidiram confiar no plano e executar de forma simples e estratégica.</p>
+      <p style="font-size:14px;color:#62736b;line-height:1.6;margin-bottom:18px;">Essas são pessoas reais, com uma rotina real... que decidiram confiar no plano e executar de forma simples e estratégica.</p>
       <div style="position:relative;width:100%;aspect-ratio:941/1672;max-height:52vh;border-radius:14px;overflow:hidden;margin:0 0 20px;background:#000;">
         <img id="comunidade-img" src="${COMUNIDADE_FOTOS[0]}" style="width:100%;height:100%;object-fit:cover;display:block;transition:opacity .2s ease;" onerror="this.style.display='none'">
       </div>
-      <p style="font-size:15px;color:#dfeae4;line-height:1.65;margin-bottom:10px;">Seja bem vindo(a) à nossa comunidade focada em fazer as pessoas atingirem seus objetivos.</p>
-      <p style="font-size:14px;color:#9aa8a2;line-height:1.65;margin-bottom:22px;">Nosso propósito é unir pessoas a um estilo de vida mais saudável por meio da atividade física.</p>
+      <p style="font-size:15px;color:#22332b;line-height:1.65;margin-bottom:10px;">Seja bem vindo(a) à nossa comunidade focada em fazer as pessoas atingirem seus objetivos.</p>
+      <p style="font-size:14px;color:#62736b;line-height:1.65;margin-bottom:22px;">Nosso propósito é unir pessoas a um estilo de vida mais saudável por meio da atividade física.</p>
       <button class="btn" onclick="go(1)">Continuar →</button>
     </div>
   </div>`;
@@ -1710,7 +1710,7 @@ function renderAnalyzing(){
       <div class="analise-title" style="margin-bottom:10px;">Analisando suas respostas...</div>
       <div id="topoPct" style="text-align:center;font-size:32px;font-weight:900;color:var(--verde-claro);font-variant-numeric:tabular-nums;margin-bottom:10px;">0%</div>
       <div class="progress-bar"><div class="progress-fill" id="topoFill" style="width:0%;transition:none;"></div></div>
-      <p style="text-align:center;font-size:16px;font-weight:800;color:#c3d4cb;line-height:1.4;margin:22px 0 22px;">Em poucos segundos a sua rotina organizada fica pronta.</p>
+      <p style="text-align:center;font-size:16px;font-weight:800;color:#46564e;line-height:1.4;margin:22px 0 22px;">Em poucos segundos a sua rotina organizada fica pronta.</p>
 
       <div id="cliente-wrap" style="position:relative;width:100%;margin:0 auto;aspect-ratio:3/4;border-radius:14px;overflow:hidden;background:#000;box-shadow:0 10px 26px rgba(0,0,0,.4);">
         <img id="cliente-img" src="${CLIENTES_FOTOS[0]}" alt="Depoimento de cliente" style="width:100%;height:100%;object-fit:cover;display:block;transition:opacity .2s ease;" onerror="this.style.display='none'">
@@ -1849,8 +1849,8 @@ function calcIndiceConstancia(){
 /* o índice deste quiz fica sempre abaixo de 50 (ver calcIndiceConstancia),
    então só existem duas faixas */
 function faixaIndice(v){
-  if(v < 30) return { txt:'RUIM',     cor:'#e8776d', bg:'#fdecec' };
-  return       { txt:'RAZOÁVEL', cor:'#e8a94f', bg:'#fff8e8' };
+  if(v < 30) return { txt:'RUIM',     cor:'#cc4a3d', bg:'#fdecec' };
+  return       { txt:'RAZOÁVEL', cor:'#b8730e', bg:'#fff8e8' };
 }
 
 /* renderDiagnostico ("Você não está sozinho(a) nisso") removida do quiz
