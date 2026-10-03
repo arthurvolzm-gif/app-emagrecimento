@@ -1296,6 +1296,18 @@ const Store = {
      A hora da primeira coisa que ela faz no treino (abrir um exercício,
      anotar carga, ajustar série, registrar cardio). É dela que sai a
      duração do resumo. */
+  /* ---------- descanso entre séries ----------
+     O tempo que ela escolheu fica no perfil (viaja pra nuvem) e vale pra
+     todo treino. Padrão de 90 s, o descanso mais comum nas fichas. */
+  descansoPadrao() {
+    return Number(this.db.perfil && this.db.perfil.descanso_s) || 90;
+  },
+
+  definirDescanso(seg) {
+    this.db.perfil.descanso_s = Math.max(15, Math.min(300, Number(seg) || 90));
+    this.save();
+  },
+
   iniciarTreinoHoje() {
     const d = this.dia();
     if (d.treino || d.treino_inicio) return;

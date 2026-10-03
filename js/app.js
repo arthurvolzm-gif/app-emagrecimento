@@ -1707,6 +1707,109 @@ const App = {
     setTimeout(() => this.perguntarEsforco(), 900);
   },
 
+  /* ---------- descanso entre séries (contagem regressiva) ----------
+     A contagem vive fora do #app, numa camada própria por cima de tudo:
+     assim ela não some quando a tela redesenha. A conta é por horário de
+     término, então continua certa mesmo se o celular travar o timer em
+     segundo plano. No fim, vibra e toca dois bipes curtos. */
+  descanso: null,
+
+  escolherDescanso(seg) {
+    Store.definirDescanso(seg);
+    Backend.agendarSync();
+    this.render();
+  },
+
+  iniciarDescanso(seg) {
+    const s = Number(seg) || Store.descansoPadrao();
+    Store.iniciarTreinoHoje();
+    /* o áudio só pode nascer num toque da pessoa: cria aqui, usa no fim */
+    try { this._audio = this._audio || new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
+    this.descanso = { fim: Date.now() + s * 1000, total: s * 1000, acabou: false };
+    this._pintarDescanso();
+    clearInterval(this._descT);
+    this._descT = setInterval(() => this._tickDescanso(), 200);
+    this._tickDescanso();
+  },
+
+  ajustarDescanso(delta) {
+    const d = this.descanso;
+    if (!d || d.acabou) return;
+    d.fim = Math.max(Date.now() + 1000, d.fim + delta * 1000);
+    d.total = Math.max(d.total, d.fim - Date.now());
+    this._tickDescanso();
+  },
+
+  pararDescanso() {
+    clearInterval(this._descT);
+    this.descanso = null;
+    const ov = document.getElementById('descanso-ov');
+    if (ov) ov.remove();
+  },
+
+  _pintarDescanso() {
+    let ov = document.getElementById('descanso-ov');
+    if (!ov) {
+      ov = document.createElement('div');
+      ov.id = 'descanso-ov';
+      ov.className = 'desc-ov';
+      document.body.appendChild(ov);
+    }
+    const c = (2 * Math.PI * 100).toFixed(1);
+    ov.innerHTML = `
+      <div class="desc-box">
+        <div class="desc-rot">Descanso</div>
+        <div class="desc-anel">
+          <svg viewBox="0 0 220 220"><circle class="tr" cx="110" cy="110" r="100"/><circle class="br" id="desc-arco" cx="110" cy="110" r="100" stroke-dasharray="${c}" stroke-dashoffset="0"/></svg>
+          <div class="desc-num" id="desc-num"></div>
+        </div>
+        <div class="desc-acoes">
+          <button class="btn sec" onclick="App.ajustarDescanso(-15)">−15s</button>
+          <button class="btn sec" onclick="App.ajustarDescanso(15)">+15s</button>
+        </div>
+        <button class="btn" onclick="App.pararDescanso()">Pular descanso</button>
+      </div>`;
+  },
+
+  _tickDescanso() {
+    const d = this.descanso;
+    if (!d) return;
+    const resta = Math.max(0, d.fim - Date.now());
+    const num = document.getElementById('desc-num');
+    const arco = document.getElementById('desc-arco');
+    if (!num || !arco) return;
+    const seg = Math.ceil(resta / 1000);
+    num.textContent = Math.floor(seg / 60) + ':' + String(seg % 60).padStart(2, '0');
+    const c = 2 * Math.PI * 100;
+    arco.setAttribute('stroke-dashoffset', (c * (1 - resta / d.total)).toFixed(1));
+    if (resta > 0 || d.acabou) return;
+
+    d.acabou = true;
+    clearInterval(this._descT);
+    try { if (navigator.vibrate) navigator.vibrate([250, 120, 250]); } catch (e) {}
+    try {
+      const a = this._audio;
+      if (a) {
+        if (a.state === 'suspended') a.resume();
+        [0, 0.25].forEach(t => {
+          const o = a.createOscillator(), g = a.createGain();
+          o.frequency.value = 880;
+          g.gain.setValueAtTime(0.0001, a.currentTime + t);
+          g.gain.exponentialRampToValueAtTime(0.3, a.currentTime + t + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + t + 0.18);
+          o.connect(g); g.connect(a.destination);
+          o.start(a.currentTime + t); o.stop(a.currentTime + t + 0.2);
+        });
+      }
+    } catch (e) {}
+    const ov = document.getElementById('descanso-ov');
+    if (ov) ov.classList.add('fim');
+    num.textContent = 'Bora!';
+    const rot = ov && ov.querySelector('.desc-rot');
+    if (rot) rot.textContent = 'Próxima série';
+    setTimeout(() => { if (this.descanso === d) this.pararDescanso(); }, 2200);
+  },
+
   /* ---------- evolução e feedbacks de um treino ----------
      Os dois botões de cada dia na aba Treinos: a carga dos exercícios
      daquele treino e como foram as últimas sessões dele. */

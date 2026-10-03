@@ -1568,6 +1568,47 @@ body.travado{overflow:hidden;}
 .cl.previsto::before{background:var(--cinza-c);}
 .cl.perdido::before{background:var(--vermelho);}
 .cl.descanso::before{background:transparent;border:1px solid var(--cinza-c);}
+/* calendário sem bolinhas: dia perdido no fundo normal, descanso azul
+   inteiro e a legenda em quadradinhos, iguais aos dias */
+.cal-dia .cd-p{display:none;}
+.cal-dia.perdido{opacity:1;}
+.cal-dia.descanso{background:linear-gradient(135deg,#0A84E8,#3DC8FF);border-color:transparent;}
+.cal-dia.descanso .cd-n{color:#fff;font-weight:800;}
+/* hoje continua o círculo verde, mesmo quando é dia de descanso */
+.cal-dia.hoje.descanso{background:var(--verde);}
+/* verde do calendário no mesmo neon dos contornos (#00D7A2) */
+.cal-dia.hoje,.cal-dia.hoje.descanso{background:var(--verde-logo);}
+.cal-dia.hoje .cd-n,.cal-dia.hoje .cd-h{color:#04150C;}
+.cal-dia.feito{border:1.5px solid var(--verde-logo);background:rgba(0,215,162,.1);}
+.cal-dia.feito .cd-n{color:var(--verde-logo);}
+
+/* ---------- descanso entre séries ---------- */
+.desc-card{margin-top:14px;padding:14px;border:1px solid var(--verde-logo);border-radius:18px;background:rgba(0,215,162,.07);}
+.desc-tt{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:var(--tinta);margin-bottom:12px;}
+.desc-tt svg{color:var(--verde-logo);}
+.desc-ops{display:flex;gap:6px;margin-bottom:12px;}
+.desc-op{flex:1;padding:9px 0;border-radius:12px;border:1px solid var(--verde-borda);background:transparent;color:var(--cinza);
+  font-family:inherit;font-weight:800;font-size:13px;cursor:pointer;}
+.desc-op.on{background:var(--verde-logo);border-color:var(--verde-logo);color:#04150C;}
+.desc-btn{margin:0;}
+.desc-ov{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;padding:24px;
+  background:rgba(0,0,0,.9);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+.desc-box{width:min(340px,100%);text-align:center;}
+.desc-rot{font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--verde-logo);margin-bottom:18px;}
+.desc-anel{position:relative;width:230px;height:230px;margin:0 auto 24px;}
+.desc-anel svg{transform:rotate(-90deg);width:100%;height:100%;}
+.desc-anel .tr{fill:none;stroke:#16241E;stroke-width:12;}
+.desc-anel .br{fill:none;stroke:var(--verde-logo);stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset .2s linear;
+  filter:drop-shadow(0 0 8px rgba(0,215,162,.45));}
+.desc-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:'Bricolage Grotesque',sans-serif;font-size:58px;font-weight:800;color:#fff;letter-spacing:-.02em;}
+.desc-acoes{display:flex;gap:10px;margin-bottom:10px;}
+.desc-acoes .btn{flex:1;margin:0;}
+.desc-ov.fim .desc-num{color:var(--verde-logo);font-size:46px;}
+.cl::before{width:10px;height:10px;border-radius:3px;}
+.cl.hoje::before{background:var(--verde-logo);border-radius:50%;}
+.cl.feito::before{background:rgba(0,215,162,.1);border:1.5px solid var(--verde-logo);}
+.cl.descanso::before{background:linear-gradient(135deg,#0A84E8,#3DC8FF);border:none;}
 
 /* a lista de exercícios dentro do modal do dia */
 .dia-ex{margin:4px 0 16px;display:flex;flex-direction:column;gap:7px;}

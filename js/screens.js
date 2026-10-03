@@ -1247,6 +1247,7 @@ const Telas = {
             <div class="card-tt">${Ic.halter(20)} ${dia.foco}<span class="n">${dia.exercicios.length} ${dia.exercicios.length === 1 ? 'exercício' : 'exercícios'}</span></div>
             ${dia.exercicios.length ? dia.exercicios.map((e, i) => Telas._exercicio(e, i)).join('') : `
               <p class="carga-vazio">Este treino ainda não tem exercícios. Escolha os músculos dele e o app monta a lista.</p>`}
+            ${Telas._descansoCard()}
             <button class="btn sec" style="margin-top:12px" onclick="Editor.abrir('treino')">${Ic.lapis(17)} Editar meu treino</button>
             <div class="tr-acoes">
               <button class="btn sec" onclick="App.verEvolucaoTreino()">${Ic.barras(17)} Evolução</button>
@@ -1404,9 +1405,10 @@ const Telas = {
   },
 
   /* ---------- calendário do mês ----------
-     Cada dia mostra o que é: treino feito, treino marcado que ainda vai
-     acontecer, treino que ela deixou passar, ou descanso. O dia de hoje
-     é o círculo verde. Tocar em qualquer dia abre o que é o treino dele
+     Sem bolinhas: o dia de hoje é o círculo verde, treino feito fica
+     com fundo verde-claro, descanso fica azul inteiro, e o resto (treino
+     a fazer ou que passou) fica no fundo normal; o que ainda vai
+     acontecer mostra o horário. Tocar em qualquer dia abre o que é o treino dele
      e o horário. */
   _calendarioTreino() {
     const base = App.mesCalendario();
@@ -1445,7 +1447,6 @@ const Telas = {
                 ${antesDoPlano ? 'disabled' : `onclick="App.abrirDataTreino('${iso}')"`}
                 aria-label="${d} de ${MESES_PT[mes]}">
           <span class="cd-n">${d}</span>
-          <span class="cd-p"></span>
           ${hora && !feito && !passou ? `<span class="cd-h">${hora}</span>` : ''}
         </button>`);
     }
@@ -1465,12 +1466,30 @@ const Telas = {
         <div class="cal-grade">${celulas.join('')}</div>
 
         <div class="cal-legenda">
-          <span class="cl feito">Feito</span>
-          <span class="cl previsto">A fazer</span>
-          <span class="cl perdido">Passou</span>
+          <span class="cl hoje">Hoje</span>
+          <span class="cl feito">Treino feito</span>
           <span class="cl descanso">Descanso</span>
         </div>
       </div>`;
+  },
+
+  /* ---------- descanso entre séries ----------
+     O cartão verde acima de "Editar meu treino": ela escolhe o tempo e
+     toca em Descansar; a contagem abre por cima da tela (App.iniciarDescanso). */
+  _descansoCard() {
+    const seg = Store.descansoPadrao();
+    const OPCOES = [30, 45, 60, 90, 120];
+    return `
+            <div class="desc-card">
+              <div class="desc-tt">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/></svg>
+                Descanso entre séries
+              </div>
+              <div class="desc-ops">
+                ${OPCOES.map(s => `<button class="desc-op ${s === seg ? 'on' : ''}" onclick="App.escolherDescanso(${s})">${s}s</button>`).join('')}
+              </div>
+              <button class="btn desc-btn" onclick="App.iniciarDescanso()">Descansar ${seg}s</button>
+            </div>`;
   },
 
   /* ---------- evolução de UM treino (modal) ----------
