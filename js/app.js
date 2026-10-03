@@ -15,7 +15,7 @@ const PULAR_LOGIN = false;
    Mexeu no fluxo do onboarding? Mexa aqui junto. */
 const ORDEM_TELAS = [
   'abertura', 'auth', 'codigo', 'recebendo', 'revisao',
-  'criando', 'plano', 'cadastro', 'assinatura', 'reajuste', 'inicio'
+  'criando', 'plano', 'cadastro', 'assinatura', 'reajustePergunta', 'reajuste', 'inicio'
 ];
 
 const App = {
@@ -534,6 +534,7 @@ const App = {
     if (this.tela === 'codigo')     { app.innerHTML = Onb.codigo();     nav.style.display = 'none'; return; }
     if (this.tela === 'recebendo')  { app.innerHTML = Onb.recebendo();  nav.style.display = 'none'; return; }
     if (this.tela === 'revisao')    { app.innerHTML = Onb.revisao();    nav.style.display = 'none'; return; }
+    if (this.tela === 'reajustePergunta') { app.innerHTML = Telas.reajustePergunta(); nav.style.display = 'none'; return; }
     if (this.tela === 'reajuste')   { app.innerHTML = Telas.reajuste();  nav.style.display = 'none'; return; }
     if (this.tela === 'criando')    { app.innerHTML = Onb.criando();    nav.style.display = 'none'; return; }
     if (this.tela === 'plano')      { app.innerHTML = Onb.plano();      nav.style.display = 'none'; return; }
@@ -611,8 +612,22 @@ const App = {
   checarReajuste() {
     if (this.tela !== 'inicio') return false;
     if (!Store.reajustePendente()) return false;
-    this.abrirReajuste();
+    /* antes do reajuste, ela escolhe se quer ajustar o plano neste mês */
+    this.tela = 'reajustePergunta';
     return true;
+  },
+
+  aceitarReajuste() {
+    this.abrirReajuste();
+    this.render();
+    window.scrollTo(0, 0);
+  },
+
+  recusarReajuste() {
+    Store.recusarReajuste();
+    Backend.agendarSync();
+    this.fecharReajuste();
+    this.toast('Combinado. O seu plano continua como está.', true);
   },
 
   /* Fecha o mês e abre a tela. Quem não assina o reajuste também passa
@@ -628,7 +643,7 @@ const App = {
   /* entrada pela notificação: se o mês já foi fechado, remonta o
      retrato do último reajuste em vez de gravar outro */
   irReajuste() {
-    if (Store.reajustePendente()) this.abrirReajuste();
+    if (Store.reajustePendente()) this.tela = 'reajustePergunta';
     else {
       const ult = Store.ultimoReajuste();
       if (!ult) return this.toast('Ainda não há reajuste para mostrar.');
@@ -2288,6 +2303,38 @@ const App = {
     if (this.checarNivel()) return;
     if (this.checarStreak()) return;
     if (antes < p.meta_sono && v >= p.meta_sono) this.toast('Meta de sono batida! +20 pontos 😴', true);
+  },
+
+  /* ---------- medidas corporais ---------- */
+  abrirMedidas() {
+    this.modal(`
+      <h3 class="display">Registrar medidas</h3>
+      <p class="m-sub">Use uma fita métrica, sempre no mesmo ponto do corpo, firme sem apertar. Preencha só o que quiser medir.</p>
+      ${Store.MEDIDAS.map(([k, rot]) => `
+        <div class="campo">
+          <label>${rot} (cm)</label>
+          <input id="md-${k}" type="number" inputmode="decimal" step="0.1" placeholder="Ex: 80" value="${Store.ultimaMedida(k)}">
+        </div>`).join('')}
+      <button class="btn" onclick="App.salvarMedidas()">Salvar medidas</button>
+      <div style="height:10px"></div>
+      <button class="btn sec" onclick="App.fecharModal()">Cancelar</button>
+    `);
+  },
+
+  salvarMedidas() {
+    const valores = {};
+    for (const [k, rot] of Store.MEDIDAS) {
+      const bruto = String(document.getElementById('md-' + k).value).replace(',', '.').trim();
+      if (!bruto) continue;
+      const v = parseFloat(bruto);
+      if (isNaN(v) || v < 10 || v > 250) return this.toast(`Confira a medida de ${rot.toLowerCase()}.`);
+      valores[k] = v;
+    }
+    if (!Store.registrarMedidas(valores)) return this.toast('Preencha pelo menos uma medida.');
+    Backend.agendarSync();
+    this.fecharModal();
+    this.render();
+    this.toast('Medidas registradas!', true);
   },
 
   abrirPeso() {

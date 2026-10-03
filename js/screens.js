@@ -98,9 +98,10 @@ const Telas = {
           <div class="anel-info">
             <div class="meta-grande">Água</div>
             <div class="meta-val">${litros(p.meta_agua)} L</div>
-            <div class="mh-botoes">
+            <div class="mh-botoes com-barras">
               <button class="btn-mini" onclick="App.agua(-250)" aria-label="Tirar um copo de 250 ml">−</button>
               <button class="btn-mini" onclick="App.agua(250)" aria-label="Pôr um copo de 250 ml">+</button>
+              ${Telas._barrasSemana('agua', '#3DC8FF', p.meta_agua)}
             </div>
           </div>
         </div>
@@ -110,13 +111,30 @@ const Telas = {
           <div class="anel-info">
             <div class="meta-grande">Sono</div>
             <div class="meta-val">${String(p.meta_sono).replace('.', ',')} h</div>
-            <div class="mh-botoes">
+            <div class="mh-botoes com-barras">
               <button class="btn-mini" onclick="App.sono(-0.5)" aria-label="Tirar meia hora de sono">−</button>
               <button class="btn-mini" onclick="App.sono(0.5)" aria-label="Pôr meia hora de sono">+</button>
+              ${Telas._barrasSemana('sono', '#B98CFF', p.meta_sono)}
             </div>
           </div>
         </div>
       </div>`;
+  },
+
+  /* as sete barrinhas ao lado do −/+ da água e do sono: os últimos 7
+     dias, hoje mais aceso. Só lê o banco (não cria dia vazio), e a
+     altura é a fração da meta de cada dia. */
+  _barrasSemana(k, cor, meta) {
+    const letras = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+    const barras = [6, 5, 4, 3, 2, 1, 0].map(n => {
+      const iso = Store.diasAtras(n);
+      const d = Store.db.dias[iso] || {};
+      const v = Number(d[k]) || 0;
+      const h = Math.max(4, Math.round(Math.min(1, meta ? v / meta : 0) * 40));
+      const letra = letras[new Date(iso + 'T12:00:00').getDay()];
+      return `<div class="sb-b"><i style="height:${h}px;background:${cor};opacity:${n ? .45 : 1}"></i><span${n ? '' : ` style="color:${cor}"`}>${letra}</span></div>`;
+    }).join('');
+    return `<div class="sb-barras" aria-hidden="true">${barras}</div>`;
   },
 
   /* ============ ALIMENTAÇÃO ============ */
@@ -638,6 +656,25 @@ const Telas = {
      a meta recalculada, a fase do treino. Nada inventado — é o que
      torna a tela uma prova de que a assinatura está viva, em vez de
      mais uma notificação.                                            */
+  /* a pergunta antes do reajuste do mês: ajustar ou manter o plano */
+  reajustePergunta() {
+    const p = Store.db.perfil;
+    const nome = (p.nome || '').split(' ')[0];
+    const mes = MESES_PT[new Date().getMonth()] || '';
+    return `
+      <div class="tela-login tela-reajuste">
+        <div class="login-content">
+          <div class="reaj-selo">Plano de ${mes}</div>
+          <h1 class="login-h1 esq">${nome ? nome + ', quer' : 'Quer'} ajustar o seu plano este mês?</h1>
+          <p class="login-sub esq">Todo mês o app pode mudar a fase do seu treino (séries, repetições e descanso) e te mostrar o que mudou no seu plano desde o último mês.</p>
+          <button class="btn" onclick="App.aceitarReajuste()">Sim, ajustar o meu plano</button>
+          <div style="height:10px"></div>
+          <button class="btn sec" onclick="App.recusarReajuste()">Não, manter o plano como está</button>
+          <p class="login-sub esq" style="font-size:13px;margin-top:16px">Se preferir manter, o seu treino continua igual até o mês que vem. As metas de calorias continuam se ajustando a cada pesagem.</p>
+        </div>
+      </div>`;
+  },
+
   reajuste() {
     const r = App.reajusteDados;
     if (!r) return '';
@@ -1778,17 +1815,47 @@ const Telas = {
           </div>
         </div>
 
-        ${Telas._nivelCard()}
+        ${Telas._progressoMeta()}
 
         <div class="card">
-          <div class="card-tt">${Ic.balanca(20)} Evolução do peso<span class="n">${Store.db.pesagens.length} pesagens</span></div>
+          <div class="card-tt">${Ic.balanca(20)} Evolução do peso<span class="n">${Store.db.pesagens.length} ${Store.db.pesagens.length === 1 ? 'pesagem' : 'pesagens'}</span></div>
           ${Comp.grafico(Store.seriePeso())}
           <button class="btn" style="margin-top:14px" onclick="App.abrirPeso()">Registrar pesagem de hoje</button>
         </div>`;
   },
 
-  /* o cartão de nível, que era o primeiro da Início e agora mora no
-     Progresso, no lugar do progresso até a meta (que foi pra Início) */
+  /* medidas corporais: da primeira à última, com o minigráfico de cada
+     parte. A diferença fica sem cor de "bom" ou "ruim": braço maior é
+     ótimo pra quem ganha massa e cintura menor pra quem emagrece. */
+  _medidas() {
+    const lista = Store.MEDIDAS.map(([k, rot]) => ({ k, rot, ev: Store.evolucaoMedida(k) }));
+    const n = Store.medidas().length;
+    return `
+        <h3 class="secao-tt">Suas medidas</h3>
+        <div class="card">
+          <div class="card-tt">${Ic.pessoa(20)} Medidas corporais<span class="n">${n} ${n === 1 ? 'registro' : 'registros'}</span></div>
+          ${n ? lista.map(m => m.ev ? `
+            <div class="carga-linha">
+              <div class="cl-topo">
+                <span class="cl-nome">${m.rot}</span>
+                <span class="cl-ganho">${m.ev.dif > 0 ? '+' : ''}${m.ev.dif} cm</span>
+              </div>
+              <div class="cl-corpo">
+                ${Comp.sparkline(m.ev.serie)}
+                <div class="cl-nums"><span>${m.ev.inicio} cm</span><span class="seta">→</span><span class="atual">${m.ev.atual} cm</span></div>
+              </div>
+            </div>` : `
+            <div class="carga-linha">
+              <div class="cl-topo"><span class="cl-nome">${m.rot}</span><span class="cl-ganho">sem registro</span></div>
+            </div>`).join('') : `
+            <p class="carga-vazio">Anote cintura, quadril, braço e coxa com uma fita métrica. A fita mostra mudanças que a balança nem sempre mostra.</p>`}
+          <button class="btn" style="margin-top:14px" onclick="App.abrirMedidas()">${n ? 'Registrar medidas de hoje' : 'Registrar as primeiras medidas'}</button>
+        </div>`;
+  },
+
+  /* o cartão de nível. Saiu do Progresso (lá entrou o progresso até a
+     meta, igual ao da Início); os níveis seguem em "Ver níveis de
+     evolução", no fim da aba. */
   _nivelCard() {
     const nv = Store.nivel();
     return `
@@ -1849,6 +1916,8 @@ const Telas = {
         ${Telas._evolucaoCargas()}
 
         ${Telas._peso()}
+
+        ${Telas._medidas()}
 
         <button class="card fora-btn" onclick="App.ir('niveis')">
           <span class="fb-ic">${Ic.festa(21)}</span>
@@ -2162,8 +2231,9 @@ const Comp = {
     const r = 54, c = 2 * Math.PI * r;
     const off = c * (1 - Math.min(100, pct) / 100);
     const cls = tamanho || '';
-    const cor = /\bagua\b/.test(cls) ? ['gradAgua', '#3B82C4', '#6FB3E8']
-              : /\bsono\b/.test(cls) ? ['gradSono', '#7C6BC4', '#A99BE8']
+    /* azul e roxo no mesmo brilho do verde neon (#00D7A2) dos contornos */
+    const cor = /\bagua\b/.test(cls) ? ['gradAgua', '#0A84E8', '#3DC8FF']
+              : /\bsono\b/.test(cls) ? ['gradSono', '#7B45F5', '#B98CFF']
               : ['gradAnel', '#008F6B', '#00D7A2'];
     return `
       <div class="anel ${cls}">

@@ -26,7 +26,7 @@ const Store = {
   },
 
   vazio() {
-    return { perfil: null, dias: {}, pesagens: [], cargas: {}, trocas: {}, corridas: [], reajustes: [] };
+    return { perfil: null, dias: {}, pesagens: [], cargas: {}, trocas: {}, corridas: [], reajustes: [], medidas: [] };
   },
 
   /* ---------- MODO CORRIDA ----------
@@ -837,7 +837,9 @@ const Store = {
      (Backend.extras); isto é só a porta da tela. */
   reajusteLiberado() {
     if (typeof CONFIG !== 'undefined' && !CONFIG.CHECKOUT_URL_REAJUSTE) return true;  /* sem produto criado, liberado pra todos */
-    if (this.reajustes().length === 0) return true;  /* primeira troca de estratégia: sempre grátis */
+    /* primeira troca de estratégia: sempre grátis. Conta só as aplicadas:
+       quem recusou o reajuste num mês não gastou a troca grátis */
+    if (this.reajustes().filter(r => r.liberado).length === 0) return true;
     return typeof App !== 'undefined' && typeof App.temReajuste === 'function' && App.temReajuste();
   },
 
@@ -926,6 +928,26 @@ const Store = {
     if (ult && ult.mes === mes) return false;
     const criado = String(this.db.perfil.criado_em || '').slice(0, 7);
     return !!criado && criado < mes;
+  },
+
+  /* ela respondeu "não, manter o plano": guarda o retrato do mês (pra
+     não perguntar de novo até o mês que vem) sem andar a fase. Fica
+     marcado como não aplicado, então não conta como "antes" do próximo
+     reajuste nem zera a contagem de dias no mesmo plano. */
+  recusarReajuste() {
+    const p = this.db.perfil;
+    const ult = this.ultimoReajuste();
+    this.reajustes().push({
+      mes: this.mesAtual(),
+      data: this.hoje(),
+      peso: p.peso_atual,
+      meta_kcal: p.meta_kcal,
+      meta_prot: p.meta_prot,
+      fase: ult && ult.fase ? ult.fase : 1,
+      liberado: false,
+      recusado: true
+    });
+    this.save();
   },
 
   /* fecha o mês: guarda o retrato de agora e devolve a comparação com
@@ -1479,6 +1501,46 @@ const Store = {
                ganho: Math.round((atual - inicio) * 10) / 10,
                serie: reg.slice(-8).map(r => r.peso) };
     });
+  },
+
+  /* ---------- medidas corporais (cm) ----------
+     Uma linha por dia, com as medidas que ela preencher (não precisa
+     ser as quatro). Viaja pra nuvem junto com o resto do banco. */
+  MEDIDAS: [['cintura', 'Cintura'], ['quadril', 'Quadril'], ['braco', 'Braço'], ['coxa', 'Coxa']],
+
+  medidas() {
+    if (!Array.isArray(this.db.medidas)) this.db.medidas = [];
+    return this.db.medidas;
+  },
+
+  registrarMedidas(valores) {
+    const reg = { data: this.hoje() };
+    let alguma = false;
+    this.MEDIDAS.forEach(([k]) => {
+      const v = Number(valores[k]);
+      if (v > 0) { reg[k] = Math.round(v * 10) / 10; alguma = true; }
+    });
+    if (!alguma) return false;
+    this.db.medidas = this.medidas().filter(r => r.data !== reg.data);
+    this.db.medidas.push(reg);
+    this.db.medidas.sort((a, b) => a.data.localeCompare(b.data));
+    this.save();
+    return true;
+  },
+
+  /* a última medida de cada parte, pra abrir o formulário preenchido */
+  ultimaMedida(k) {
+    const reg = this.medidas().filter(r => r[k] > 0);
+    return reg.length ? reg[reg.length - 1][k] : '';
+  },
+
+  /* da primeira à última medida de uma parte do corpo */
+  evolucaoMedida(k) {
+    const reg = this.medidas().filter(r => r[k] > 0);
+    if (!reg.length) return null;
+    const inicio = reg[0][k], atual = reg[reg.length - 1][k];
+    return { inicio, atual, dif: Math.round((atual - inicio) * 10) / 10,
+             registros: reg.length, serie: reg.slice(-8).map(r => r[k]) };
   },
 
   registrarPeso(peso) {
