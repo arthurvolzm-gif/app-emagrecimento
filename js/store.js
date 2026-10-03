@@ -1420,9 +1420,12 @@ const Store = {
      Guardado por dia, junto com o resto. Serve pra duas coisas: mostrar
      na aba de Treinos como as últimas sessões foram, e — mais pra frente
      — ajustar a carga sugerida sozinho, quando houver histórico. */
-  registrarEsforco(nivel) {
+  registrarEsforco(nivel, nota) {
     const d = this.dia();
     d.esforco = nivel;                        // 'leve' | 'ponto' | 'pesado'
+    /* a anotação é opcional ("senti o ombro", "faltou tempo") */
+    const n = String(nota || '').trim().slice(0, 200);
+    if (n) d.esforco_nota = n; else delete d.esforco_nota;
     this.save();
   },
 
@@ -1448,6 +1451,34 @@ const Store = {
     if (conta('leve') >= Math.ceil(l.length * 0.6))
       return { tom: 'leve', texto: 'Os últimos treinos estão leves pra você. Suba a carga no próximo, com cuidado.' };
     return { tom: 'ponto', texto: 'Seus treinos estão no ponto. Siga subindo aos poucos.' };
+  },
+
+  /* ---------- evolução e feedback POR TREINO ----------
+     Cada dia concluído guarda o resumo do treino (com o foco, ex. "Peito")
+     e a resposta de "como foi". Juntando os dois, dá pra ver só as sessões
+     daquele treino, como no histórico que um personal acompanha. */
+  sessoesDoTreino(foco, n = 12) {
+    const lista = [];
+    for (let i = 0; i < 365 && lista.length < n; i++) {
+      const data = this.diasAtras(i);
+      const d = this.db.dias[data];
+      if (!d || !d.treino || !d.resumo_treino || d.resumo_treino.foco !== foco) continue;
+      lista.push({ data, esforco: d.esforco || null, nota: d.esforco_nota || '',
+                   minutos: d.resumo_treino.minutos, series: d.resumo_treino.series });
+    }
+    return lista;
+  },
+
+  /* a carga de cada exercício DESTE treino, do primeiro registro ao último */
+  evolucaoDoTreino(exercicios) {
+    return (exercicios || []).map(e => {
+      const reg = this.cargas(e.ex);
+      if (!reg.length) return { ex: e.ex, registros: 0 };
+      const inicio = reg[0].peso, atual = reg[reg.length - 1].peso;
+      return { ex: e.ex, registros: reg.length, inicio, atual,
+               ganho: Math.round((atual - inicio) * 10) / 10,
+               serie: reg.slice(-8).map(r => r.peso) };
+    });
   },
 
   registrarPeso(peso) {

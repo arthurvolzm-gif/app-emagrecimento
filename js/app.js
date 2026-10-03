@@ -1692,6 +1692,19 @@ const App = {
     setTimeout(() => this.perguntarEsforco(), 900);
   },
 
+  /* ---------- evolução e feedbacks de um treino ----------
+     Os dois botões de cada dia na aba Treinos: a carga dos exercícios
+     daquele treino e como foram as últimas sessões dele. */
+  verEvolucaoTreino() {
+    const dia = Store.diasTreino()[this.diaTreino];
+    if (dia && !dia.descanso) this.modal(Telas.evolucaoTreino(dia));
+  },
+
+  verFeedbacksTreino() {
+    const dia = Store.diasTreino()[this.diaTreino];
+    if (dia && !dia.descanso) this.modal(Telas.feedbacksTreino(dia));
+  },
+
   /* ---------- resumo do treino (a tela dos stories) ---------- */
   resumoAtual: null,
   resumoBlob: null,
@@ -1770,6 +1783,8 @@ const App = {
     this.modal(`
       <h3 class="display">Como foi o treino?</h3>
       <p class="m-sub">Sua resposta ajusta a carga que o app vai sugerir. Um toque e pronto.</p>
+      <textarea id="esforco-nota" class="esforco-nota" maxlength="200" rows="2"
+        placeholder="Quer anotar algo? Ex.: senti o ombro, faltou tempo (opcional)"></textarea>
       <div class="esforco-fila">
         <button class="esforco-op" onclick="App.salvarEsforco('leve')">
           <span class="e">🙂</span><span class="t">Leve</span>
@@ -1789,7 +1804,8 @@ const App = {
   },
 
   salvarEsforco(nivel) {
-    Store.registrarEsforco(nivel);
+    const campo = document.getElementById('esforco-nota');
+    Store.registrarEsforco(nivel, campo ? campo.value : '');
     Backend.agendarSync();
     this.fecharModal();
     this.render();

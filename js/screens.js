@@ -1211,6 +1211,10 @@ const Telas = {
             ${dia.exercicios.length ? dia.exercicios.map((e, i) => Telas._exercicio(e, i)).join('') : `
               <p class="carga-vazio">Este treino ainda não tem exercícios. Escolha os músculos dele e o app monta a lista.</p>`}
             <button class="btn sec" style="margin-top:12px" onclick="Editor.abrir('treino')">${Ic.lapis(17)} Editar meu treino</button>
+            <div class="tr-acoes">
+              <button class="btn sec" onclick="App.verEvolucaoTreino()">${Ic.barras(17)} Evolução</button>
+              <button class="btn sec" onclick="App.verFeedbacksTreino()">${Ic.chat(17)} Feedbacks</button>
+            </div>
           </div>
 
           ${Telas._cardioTreino(App.diaTreino)}
@@ -1430,6 +1434,70 @@ const Telas = {
           <span class="cl descanso">Descanso</span>
         </div>
       </div>`;
+  },
+
+  /* ---------- evolução de UM treino (modal) ----------
+     A carga de cada exercício do treino selecionado, do primeiro registro
+     ao mais recente. Exercício sem carga anotada aparece também, pra ela
+     saber o que falta registrar. */
+  evolucaoTreino(dia) {
+    const lista = Store.evolucaoDoTreino(dia.exercicios);
+    const n = Store.sessoesDoTreino(dia.foco, 365).length;
+    return `
+      <h3 class="display">Evolução: ${dia.foco}</h3>
+      <p class="m-sub">${n ? `${n} ${n === 1 ? 'sessão concluída' : 'sessões concluídas'} deste treino.` : 'Nenhuma sessão deste treino concluída ainda.'} A carga vem do que você anota em cada série.</p>
+      <div class="tr-modal-lista">
+        ${lista.map(e => e.registros ? `
+          <div class="carga-linha">
+            <div class="cl-topo">
+              <span class="cl-nome">${e.ex}</span>
+              <span class="cl-ganho ${e.ganho > 0 ? 'sobe' : e.ganho < 0 ? 'desce' : ''}">${e.ganho > 0 ? '+' : ''}${e.ganho} kg</span>
+            </div>
+            <div class="cl-corpo">
+              ${Comp.sparkline(e.serie)}
+              <div class="cl-nums"><span>${e.inicio}kg</span><span class="seta">→</span><span class="atual">${e.atual}kg</span></div>
+            </div>
+          </div>` : `
+          <div class="carga-linha">
+            <div class="cl-topo">
+              <span class="cl-nome">${e.ex}</span>
+              <span class="cl-ganho">sem carga anotada</span>
+            </div>
+          </div>`).join('')}
+      </div>
+      <button class="btn sec" onclick="App.fecharModal()">Fechar</button>`;
+  },
+
+  /* ---------- feedbacks de UM treino (modal) ----------
+     As últimas sessões do treino selecionado, com a resposta de "como foi"
+     e a anotação. Se ela concluiu o treino hoje e pulou a pergunta, dá pra
+     responder daqui. */
+  feedbacksTreino(dia) {
+    const s = Store.sessoesDoTreino(dia.foco, 20);
+    const rot = { leve: 'Leve', ponto: 'No ponto', pesado: 'Pesado' };
+    const conta = t => s.filter(x => x.esforco === t).length;
+    const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    const pendenteHoje = s.length && s[0].data === Store.hoje() && !s[0].esforco;
+    return `
+      <h3 class="display">Feedbacks: ${dia.foco}</h3>
+      <p class="m-sub">Como foram as últimas sessões deste treino.</p>
+      ${pendenteHoje ? `<button class="btn" style="margin-bottom:14px" onclick="App.perguntarEsforco()">Contar como foi o treino de hoje</button>` : ''}
+      ${s.some(x => x.esforco) ? `
+        <div class="fb-resumo">
+          ${['leve', 'ponto', 'pesado'].map(t => `<span class="fb-chip ${t}">${rot[t]}: ${conta(t)}</span>`).join('')}
+        </div>` : ''}
+      <div class="tr-modal-lista">
+        ${s.length ? s.map(x => `
+          <div class="fb-linha">
+            <div class="fb-topo">
+              <span class="fb-data">${App.dataCurta(x.data)}${x.series ? ` · ${x.series} séries` : ''}</span>
+              <span class="fb-chip ${x.esforco || 'nada'}">${x.esforco ? rot[x.esforco] : 'Sem resposta'}</span>
+            </div>
+            ${x.nota ? `<p class="fb-nota">${esc(x.nota)}</p>` : ''}
+          </div>`).join('') : `
+          <p class="carga-vazio">Ainda não tem sessão deste treino. Quando você concluir o treino e contar como foi, a resposta aparece aqui.</p>`}
+      </div>
+      <button class="btn sec" onclick="App.fecharModal()">Fechar</button>`;
   },
 
   /* o que o app entendeu das respostas de "como foi o treino". Só aparece
