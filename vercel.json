@@ -1,5 +1,12 @@
 {
   "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/quiz/pratico",
+      "destination": "/quiz/1",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/app",
