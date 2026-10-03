@@ -560,6 +560,56 @@ body{
   .saida-sub{font-size:14px;}
   .saida-val{font-size:38px;}
 }
+
+/* ===== RESUMO DO APP: o celular 3D da landing (conheca.html), versão curta =====
+   O celular fica grudado no topo enquanto ela rola; cada passo troca a tela
+   e os números marcam o que o passo explica. 5 passos de 32vh (a landing
+   tem 6 de 62vh), pra chegar no fim rápido. */
+.rf{position:relative;margin:26px -6px 0;}
+.rf-tt{text-align:center;font-size:22px;font-weight:900;color:var(--verde-claro);line-height:1.2;margin:0 0 4px;}
+.rf-sub{text-align:center;font-size:13.5px;color:#9aa8a2;margin:0 0 6px;}
+.rf-palco-wrap{position:sticky;top:0;height:54vh;z-index:2;background:#000;box-shadow:0 18px 18px #000;}
+.rf-palco{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;perspective:1300px;}
+.rf-fone{position:relative;width:min(44vw,190px,22vh);aspect-ratio:390/844;transform-style:preserve-3d;
+  transform:rotateY(var(--ry,-12deg)) rotateX(var(--rx,6deg)) rotateZ(var(--rz,0deg));will-change:transform;}
+.rf-fone .chapa{position:absolute;inset:-8px;border-radius:34px;background:linear-gradient(145deg,#1d2622,#07100c 60%,#0e1713);}
+.rf-fone .chapa.c1{transform:translateZ(-5px);filter:brightness(.8);}
+.rf-fone .chapa.c2{transform:translateZ(-10px);filter:brightness(.55);box-shadow:0 40px 70px rgba(0,0,0,.8);}
+.rf-fone .frente{position:absolute;inset:-8px;border-radius:34px;padding:8px;
+  background:linear-gradient(145deg,#2b3a33,#0b1510 45%,#1a2621);
+  box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08),inset 0 0 0 3px rgba(0,0,0,.6),0 0 0 1px rgba(0,215,162,.25);}
+.rf-tela{position:relative;width:100%;height:100%;border-radius:26px;overflow:hidden;background:#000;container-type:inline-size;}
+.rf-ilha{position:absolute;top:7px;left:50%;transform:translateX(-50%);width:32%;height:16px;border-radius:14px;background:#000;z-index:5;}
+.rf-brilho{position:absolute;inset:0;border-radius:26px;pointer-events:none;z-index:4;
+  background:linear-gradient(115deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,0) 32%,rgba(255,255,255,0) 70%,rgba(255,255,255,.05) 100%);
+  background-size:220% 100%;background-position:var(--bx,40%) 0;}
+.rf-app{position:absolute;inset:0;opacity:0;transform:translateY(5%) scale(.97);transition:opacity .45s ease,transform .55s cubic-bezier(.2,.8,.2,1);}
+.rf-app.on{opacity:1;transform:none;}
+.rf-app img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;}
+.rf-bloqueio{background:radial-gradient(90% 60% at 50% 0%,#0b3a2d,#000 70%);display:flex;flex-direction:column;align-items:center;padding:14cqw 6cqw 0;}
+.rf-bloqueio .hora{font-size:20cqw;font-weight:900;line-height:1;margin-top:2cqw;color:#eef6f3;}
+.rf-bloqueio .dia{font-size:4cqw;color:#9fb0a7;font-weight:700;margin-bottom:6cqw;}
+.rf-aviso{width:100%;display:flex;gap:3cqw;align-items:flex-start;background:rgba(20,30,26,.78);border:1px solid rgba(255,255,255,.06);
+  border-radius:5cqw;padding:3.4cqw 3.6cqw;margin-bottom:2.6cqw;text-align:left;}
+.rf-aviso img{width:8.5cqw;height:8.5cqw;border-radius:2.4cqw;background:#000;padding:1.2cqw;flex-shrink:0;}
+.rf-aviso div{flex:1;min-width:0;}
+.rf-aviso b{display:block;font-size:3.9cqw;line-height:1.25;color:#eef6f3;}
+.rf-aviso span{display:block;font-size:3.5cqw;color:#9fb0a7;line-height:1.35;margin-top:.6cqw;}
+.rf-aviso small{font-size:3cqw;color:#7c9186;font-weight:700;white-space:nowrap;}
+.rf-pinos{position:absolute;inset:0;pointer-events:none;}
+.rf-pino{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;border:1.5px solid var(--verde-claro);background:rgba(0,0,0,.78);
+  color:var(--verde-claro);font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;}
+.rf-pino.on{opacity:1;box-shadow:0 0 0 6px rgba(0,215,162,.15);}
+.rf-passos{position:relative;z-index:1;padding:0 6px 16vh;}
+.rf-passo{min-height:32vh;padding-top:3vh;opacity:.18;transition:opacity .35s;}
+.rf-passo.on{opacity:1;}
+.rf-passo .n{font-size:11.5px;font-weight:900;letter-spacing:.08em;color:var(--verde-claro);}
+.rf-passo h3{font-size:20px;font-weight:900;color:#eef6f3;line-height:1.25;margin:6px 0 10px;}
+.rf-passo ul{list-style:none;padding:0;margin:0;display:grid;gap:8px;}
+.rf-passo li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;font-weight:700;color:#dfeae4;line-height:1.4;}
+.rf-passo li b{flex-shrink:0;width:22px;height:22px;border-radius:50%;border:1px solid var(--verde-claro);color:var(--verde-claro);
+  font-size:11px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+@media (prefers-reduced-motion: reduce){ .rf-app,.rf-passo{transition:none;} }
 </style>
 </head>
 <body>
@@ -1194,34 +1244,94 @@ function renderProjecao(){
   /* "a sua rotina hoje x com o app": cada linha sai de uma resposta real.
      Nada de corpo nem de peso: quem faz este quiz já tem o plano, quer
      organização. */
-  const pick = (id, lista, padrao) => { const i = a[id+'_i']; return typeof i==='number' && lista[i] ? lista[i] : padrao; };
+  const pick = (id, lista, padrao) => { const i = a[id+'_i']; return typeof i==='number' && lista[i]!==undefined ? lista[i] : padrao; };
+  /* barra de cada tópico: o "hoje" sai da resposta dela; o "com o app" é
+     uma estimativa fixa, sempre alta, igual à do quiz 1 */
+  const pctPlano  = pick('onde_plano', [30, 25, 50, 45, 10], 25);
+  const pctConta  = pick('contagem',   [60, 35, 10], 10);
+  const pctCarga  = pick('cargas',     [60, 35, 10], 10);
+  const pctHora   = (a.frustracao||'').includes('Esqueço') ? 20 : 40;
+  const pctProg   = Math.round((pctConta + pctCarga) / 2);
+  const pctMeta   = Math.max(10, Math.min(60, idx));
   const ROTINA_HOJE = [
-    ['O seu plano', pick('onde_plano', ['No PDF ou num print','No papel ou num caderno','Numa planilha','Num app de anotações','Só na cabeça'], 'Espalhado'), 'No app, com lembrete na hora'],
-    ['Calorias e proteína', pick('contagem', ['Você já controla, mas na mão','Uma ideia por cima','No chute'], 'No chute'), 'Somadas sozinhas, refeição por refeição'],
-    ['Carga do treino', pick('cargas', ['Anotada, mas espalhada','Anotada às vezes','De cabeça'], 'De cabeça'), 'Anotada em cada série, com a evolução'],
-    ['Horários', (a.frustracao||'').includes('Esqueço') ? 'Você esquece' : 'Depende da sua memória', 'Lembrete de refeição, água e treino']
+    ['O seu plano', pick('onde_plano', ['No PDF ou num print','No papel ou num caderno','Numa planilha','Num app de anotações','Só na cabeça'], 'Espalhado'), 'No app, com lembrete na hora', pctPlano, 92],
+    ['Calorias e proteína', pick('contagem', ['Você já controla, mas na mão','Uma ideia por cima','No chute'], 'No chute'), 'Somadas sozinhas, refeição por refeição', pctConta, 92],
+    ['Carga do treino', pick('cargas', ['Anotada, mas espalhada','Anotada às vezes','De cabeça'], 'De cabeça'), 'Anotada em cada série, com a evolução', pctCarga, 90],
+    ['Horários', (a.frustracao||'').includes('Esqueço') ? 'Você esquece' : 'Depende da sua memória', 'Lembrete de refeição, água e treino', pctHora, 90],
+    ['Seu progresso', 'Sem saber se melhorou', 'Como você estava ontem e o quanto avançou hoje', pctProg, 88],
+    ['Sua meta', 'Sem saber quanto falta', 'Quanto já percorreu e quanto falta para chegar lá', pctMeta, 85]
   ];
+  /* resumo do app: o celular 3D da landing, em 5 passos curtos */
+  const resumoAppHTML = `
+      <div class="rf" id="rf">
+        <h4 class="rf-tt">Tudo o que você vai ter no ${APP_NOME}</h4>
+        <p class="rf-sub">Role e veja o app por dentro</p>
+        <div class="rf-palco-wrap">
+          <div class="rf-palco" id="rf-palco">
+            <div class="rf-fone" id="rf-fone">
+              <div class="chapa c2"></div><div class="chapa c1"></div>
+              <div class="frente">
+                <div class="rf-tela">
+                  <div class="rf-ilha"></div>
+                  ${RF_PASSOS.map((p, k) => p.tela
+                    ? `<div class="rf-app${k ? '' : ' on'}"><img src="${p.tela}" alt="${p.alt}" ${k ? 'loading="lazy"' : ''}></div>`
+                    : `<div class="rf-app rf-bloqueio" aria-label="${p.alt}">
+                    <div class="hora">07:00</div><div class="dia">segunda-feira</div>
+                    <div class="rf-aviso"><img src="/logo-mira.png" alt=""><div><b>Café da Manhã</b><span>Hora da sua refeição. Abra o app e marque o que comeu.</span></div><small>agora</small></div>
+                    <div class="rf-aviso"><img src="/logo-mira.png" alt=""><div><b>Hora de beber água</b><span>Um copo agora e você segue no ritmo de 2,5 L hoje.</span></div><small>2 h</small></div>
+                    <div class="rf-aviso"><img src="/logo-mira.png" alt=""><div><b>Treino de Peito e Tríceps</b><span>Seu horário de treino chegou. Veja os exercícios de hoje.</span></div><small>ontem</small></div>
+                  </div>`).join('')}
+                  <div class="rf-brilho"></div>
+                  <div id="rf-marcas"></div>
+                </div>
+              </div>
+            </div>
+            <div class="rf-pinos" id="rf-pinos"></div>
+          </div>
+        </div>
+        <div class="rf-passos">
+          ${RF_PASSOS.map((p, k) => `
+          <article class="rf-passo${k ? '' : ' on'}">
+            <span class="n">${String(k + 1).padStart(2, '0')} · ${p.n}</span>
+            <h3>${p.h}</h3>
+            <ul>${p.itens.map((t, j) => `<li><b>${j + 1}</b>${t[0]}</li>`).join('')}</ul>
+          </article>`).join('')}
+        </div>
+      </div>`;
+  const GRAD_TRILHA = 'linear-gradient(90deg,#e05a4e 0%,#f0a05a 25%,#f0c05a 50%,#8fb85a 75%,#00D7A2 100%)';
+  /* a barra "com o app" é verde inteira; a de "hoje" mantém o degradê */
+  const trilha = (pct, bom) => `
+            <div style="height:7px;border-radius:6px;background:rgba(255,255,255,.1);overflow:hidden;">
+              <div style="height:100%;width:${pct}%;${bom ? 'background:var(--verde-claro);' : `background-image:${GRAD_TRILHA};background-size:${pct?(10000/pct):0}% 100%;`}border-radius:6px;"></div>
+            </div>`;
+  const nivelTxt = v => v < 35 ? 'Baixa' : v < 65 ? 'Média' : 'Alta';
+  const barra = (pct, bom) => `
+          <div style="margin-top:10px;">
+            <div style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:${bom?'var(--verde-claro)':'#f2b8b2'};margin-bottom:6px;"><span>${bom?'Alta':nivelTxt(pct)}</span><span>${pct}%</span></div>
+            <div style="position:relative;">
+              ${trilha(pct, bom)}
+              <div style="position:absolute;top:50%;left:${pct}%;transform:translate(-50%,-50%);width:15px;height:15px;border-radius:50%;background:#fff;border:3px solid ${bom?'var(--verde-claro)':'#e05a4e'};box-shadow:0 0 0 4px ${bom?'rgba(0,215,162,.3)':'rgba(224,90,78,.28)'};"></div>
+            </div>
+          </div>`;
   const rotinaHTML = `
       <div style="margin-top:22px;border:1px solid rgba(255,255,255,.1);border-radius:16px;overflow:hidden;">
         <div style="display:grid;grid-template-columns:1fr 1fr;background:rgba(255,255,255,.04);">
           <div style="padding:12px 14px;font-size:12px;font-weight:800;color:#9fb0a7;text-transform:uppercase;letter-spacing:.4px;">Hoje</div>
           <div style="padding:12px 14px;font-size:12px;font-weight:800;color:var(--verde-claro);text-transform:uppercase;letter-spacing:.4px;">Com o ${APP_NOME}</div>
         </div>
-        ${ROTINA_HOJE.map(([rot, hoje, com])=>`
+        ${ROTINA_HOJE.map(([rot, hoje, com, antes, depois])=>`
         <div style="border-top:1px solid rgba(255,255,255,.08);padding:12px 14px 4px;font-size:11.5px;font-weight:800;color:#9fb0a7;">${rot}</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;padding:0 0 12px;">
-          <div style="padding:0 14px;font-size:14px;font-weight:700;color:#e8a29b;line-height:1.4;">${hoje}</div>
-          <div style="padding:0 14px;font-size:14px;font-weight:800;color:#eef6f3;line-height:1.4;">${com}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;padding:0 0 14px;">
+          <div style="padding:0 14px;display:flex;flex-direction:column;justify-content:space-between;">
+            <div style="font-size:14px;font-weight:700;color:#f2b8b2;line-height:1.4;">${hoje}</div>
+            ${barra(antes, false)}
+          </div>
+          <div style="padding:0 14px;display:flex;flex-direction:column;justify-content:space-between;">
+            <div style="font-size:14px;font-weight:800;color:var(--verde-claro);line-height:1.4;">${com}</div>
+            ${barra(depois, true)}
+          </div>
         </div>`).join('')}
       </div>`;
-  /* imagens totalmente personalizadas por tópico (ver prompts enviados
-     ao usuário) — enquanto não forem enviadas, cai no emoji de fallback */
-  const COMO_FUNCIONA = [
-    ['Cardápio', '/icone-cardapio-escuro.jpg', '🍽️', 'A sua dieta em gramas, com as calorias somadas'],
-    ['Treino', '/icone-treino-escuro.jpg', '🏋️', 'O seu treino, com a carga de cada série'],
-    ['Hábitos', '/icone-habitos-escuro.jpg', '💧', 'Metas e lembretes de refeição, água e sono'],
-    ['Evolução', '/icone-evolucao-escuro.jpg', '📈', 'Pontos, níveis e registro de progresso']
-  ];
 
   /* comparativo ilustrativo (sem números/percentuais soltos) de progresso
      sozinho x com o app — mesma lógica qualitativa já usada noutras telas:
@@ -1267,28 +1377,19 @@ function renderProjecao(){
         <div style="font-size:12px;font-weight:800;color:#9fb0a7;text-transform:uppercase;letter-spacing:.4px;">Seu índice de organização hoje</div>
         <div style="font-size:40px;font-weight:900;color:${niv.cor};line-height:1.15;margin-top:6px;">${idx}<span style="font-size:18px;color:#9fb0a7;">/100</span></div>
         <div style="font-size:13px;font-weight:800;color:${niv.cor};">${niv.txt}</div>
-        <p style="font-size:12.5px;color:#9aa8a2;line-height:1.5;margin:8px 0 0;">Calculado só com as suas respostas sobre onde o plano fica, se você soma as calorias e se anota a carga.</p>
       </div>
 
       ${rotinaHTML}
 
       <div style="background:rgba(0,215,162,.12);border-radius:14px;padding:20px 18px;margin:22px 0 14px;text-align:center;">
         <h4 style="margin:0 0 10px;font-size:17px;color:#eef6f3;">Seu plano organizado no <span style="color:var(--verde-claro);">${APP_NOME}</span></h4>
-        <p style="font-size:14.5px;color:var(--verde-claro);font-weight:800;line-height:1.6;margin:0;">Você coloca a sua dieta, com as suas quantidades, e o seu treino, com as suas séries. O app soma as calorias, guarda as cargas e te lembra na hora de cada coisa. Se quiser, ele também sugere as metas pelo seu objetivo de ${objFrase}.</p>
+        <p style="font-size:14.5px;color:var(--verde-claro);font-weight:800;line-height:1.6;margin:0;">Você coloca a sua dieta, com as suas quantidades, e o seu treino, com as suas séries. O app soma as calorias, guarda as cargas e avisa na hora de cada coisa. E todo dia você enxerga o seu progresso: como estava ontem, o quanto avançou hoje e quanto falta para chegar no seu objetivo de ${objFrase}, no peso, nas cargas e nos treinos.</p>
       </div>
 
-      <!-- COMO FUNCIONA O APP -->
-      <h4 style="text-align:center;margin:18px 0 16px;font-size:24px;font-weight:900;color:var(--verde-claro);">Como o ${APP_NOME} funciona?</h4>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-        ${COMO_FUNCIONA.map(([titulo,img,emoji,resumo])=>`
-        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px 12px;text-align:center;box-shadow:0 2px 14px rgba(0,0,0,.2);">
-          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:22px;color:var(--verde-claro);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;line-height:1.1;">${titulo}</div>
-          <img src="${img}" alt="${titulo}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;display:block;margin-bottom:12px;" onerror="this.outerHTML='<div style=&quot;font-size:48px;margin-bottom:12px;&quot;>${emoji}</div>'">
-          <div style="font-size:13px;font-weight:800;color:var(--verde-claro);text-align:center;line-height:1.4;">${resumo}</div>
-        </div>`).join('')}
-      </div>
+      ${resumoAppHTML}
 
-      <img src="/fit-day-promo-escuro.jpg" alt="${APP_NOME}" style="width:100%;border-radius:16px;display:block;margin:22px 0 0;" onerror="this.remove()">
+
+      <img src="/fit-day-promo-pratico.jpg" alt="${APP_NOME}" style="width:100%;border-radius:16px;display:block;margin:22px 0 0;" onerror="this.remove()">
 
       ${planosHTML}
 
@@ -1305,7 +1406,95 @@ function renderProjecao(){
       </div>
     </div>
   </div>`;
+  RF.iniciar();
 }
+
+
+/* ===== RESUMO DO APP (celular 3D da landing, versão curta) =====
+   Mesmo mecanismo do conheca.html: o celular gira de leve conforme a
+   rolagem e cada passo que cruza a linha troca a tela. Os pontos (x, y)
+   são % da tela do app (390 × 844) e marcam os itens de cada passo. */
+const RF_PASSOS = [
+  { n:'SEU DIA', h:'Tudo do seu dia numa tela só.', tela:'/vendas/tela-inicio.jpg', alt:'Tela inicial do Focus Fit com as metas do dia',
+    itens:[['Quanto falta para a sua meta',50,27],['Calorias, proteína e carboidrato do dia',23,48],['Água com um toque',23,66],['O sono da noite',23,83]] },
+  { n:'NA ACADEMIA', h:'O seu treino, com a carga de cada série.', tela:'/vendas/tela-treinos.jpg', alt:'Treino do dia com as cargas de cada série',
+    itens:[['O treino do dia, com os músculos',45,14],['Tire ou ponha séries',86,28],['A carga de cada treino, lado a lado',22,34],['Carga e repetição de cada série',60,51]] },
+  { n:'SUA DIETA', h:'A sua dieta, com as calorias somadas.', tela:'/vendas/tela-alimentacao.jpg', alt:'Cardápio do dia com as refeições',
+    itens:[['Lista de compras da semana',50,9],['Monte a sua dieta, em gramas',50,19],['Calorias de cada refeição',84,40]] },
+  { n:'PROGRESSO', h:'Como estava ontem e quanto falta.', tela:'/vendas/tela-peso.jpg', alt:'Gráfico da evolução do peso',
+    itens:[['Peso inicial, atual e meta',50,11],['Níveis e pontos para manter o ritmo',50,28],['A curva do seu peso, pesagem a pesagem',60,53]] },
+  { n:'LEMBRETES', h:'O celular avisa na hora certa.', tela:'', alt:'Lembretes na tela de bloqueio',
+    itens:[['Cada refeição no seu horário',50,27],['Água ao longo do dia',50,36],['O treino no horário que você marcou',50,49]] }
+];
+
+const RF = {
+  atual: -1,
+  quieto: matchMedia('(prefers-reduced-motion: reduce)').matches,
+  el(id){ return document.getElementById(id); },
+
+  iniciar(){
+    if(!this.el('rf')) return;
+    this.atual = -1;
+    this.mostrar(0);
+    this.girar();
+  },
+
+  mostrar(i){
+    if(i === this.atual) return;
+    this.atual = i;
+    document.querySelectorAll('.rf-app').forEach((t, k) => t.classList.toggle('on', k === i));
+    document.querySelectorAll('.rf-passo').forEach((p, k) => p.classList.toggle('on', k === i));
+    const itens = (RF_PASSOS[i] || {}).itens || [];
+    /* marcadores dentro da tela (giram junto) e os números por cima */
+    this.el('rf-marcas').innerHTML = itens.map(t => `<i style="position:absolute;left:${t[1]}%;top:${t[2]}%;width:1px;height:1px"></i>`).join('');
+    this.el('rf-pinos').innerHTML = itens.map((t, k) => `<div class="rf-pino">${k + 1}</div>`).join('');
+    this.posicionar();
+    requestAnimationFrame(() => requestAnimationFrame(() =>
+      document.querySelectorAll('.rf-pino').forEach(p => p.classList.add('on'))));
+  },
+
+  posicionar(){
+    const palco = this.el('rf-palco'); if(!palco) return;
+    const base = palco.getBoundingClientRect();
+    const marcas = [...this.el('rf-marcas').children];
+    document.querySelectorAll('.rf-pino').forEach((p, k) => {
+      const m = marcas[k]; if(!m) return;
+      const r = m.getBoundingClientRect();
+      p.style.left = (r.left - base.left) + 'px';
+      p.style.top = (r.top - base.top) + 'px';
+    });
+  },
+
+  girar(){
+    const rf = this.el('rf'), fone = this.el('rf-fone');
+    if(!rf || !fone) return;
+    const h = rf.getBoundingClientRect();
+    const total = Math.max(1, h.height - innerHeight);
+    const prog = Math.min(1, Math.max(0, -h.top / total));
+    const onda = Math.sin(prog * Math.PI * (RF_PASSOS.length - 1));
+    fone.style.setProperty('--ry', (this.quieto ? -8 : -10 + onda * 14).toFixed(2) + 'deg');
+    fone.style.setProperty('--rx', (this.quieto ? 4 : 7 - prog * 6).toFixed(2) + 'deg');
+    fone.style.setProperty('--rz', (this.quieto ? 0 : onda * -1.2).toFixed(2) + 'deg');
+    fone.style.setProperty('--bx', (20 + prog * 60).toFixed(1) + '%');
+    /* passo ativo: o que cruzou 72% da altura da tela (o texto fica
+       embaixo do celular, que ocupa os 54% de cima) */
+    const linha = innerHeight * 0.72;
+    let ativo = 0;
+    document.querySelectorAll('.rf-passo').forEach((p, k) => { if(p.getBoundingClientRect().top < linha) ativo = k; });
+    this.mostrar(ativo);
+    this.posicionar();
+  }
+};
+(function(){
+  let pedido = false;
+  const aoRolar = () => {
+    if(pedido || !document.getElementById('rf')) return;
+    pedido = true;
+    requestAnimationFrame(() => { pedido = false; RF.girar(); });
+  };
+  addEventListener('scroll', aoRolar, { passive:true });
+  addEventListener('resize', aoRolar);
+})();
 
 /* ---------- SAÍDA DO QUIZ ----------
    Guarda as respostas antes de sair, pra o cadastro do app já abrir
@@ -1658,13 +1847,18 @@ function calcIndiceConstancia(){
     const i = state.answers[id+'_i'];
     if(typeof i === 'number') soma += (PESOS_INDICE[id][i] || 0);
   }
-  return Math.max(0, Math.min(100, Math.round(soma)));
+  /* a soma (0 a 100) é comprimida para 8 a 49: quem respondeu melhor
+     continua com nota maior, mas a nota nunca passa de 49 (pedido do dono
+     do quiz: o índice de hoje é sempre "ruim" ou "razoável") */
+  const bruto = Math.max(0, Math.min(100, soma));
+  return Math.round(8 + bruto * 0.41);
 }
 
+/* o índice deste quiz fica sempre abaixo de 50 (ver calcIndiceConstancia),
+   então só existem duas faixas */
 function faixaIndice(v){
-  if(v < 35) return { txt:'BAIXA',  cor:'#c0574f', bg:'#fdecec' };
-  if(v < 65) return { txt:'MÉDIA',  cor:'#c8973a', bg:'#fff8e8' };
-  return       { txt:'BOA',   cor:'#008F6B', bg:'#e6f6f0' };
+  if(v < 30) return { txt:'RUIM',     cor:'#e8776d', bg:'#fdecec' };
+  return       { txt:'RAZOÁVEL', cor:'#e8a94f', bg:'#fff8e8' };
 }
 
 /* renderDiagnostico ("Você não está sozinho(a) nisso") removida do quiz
