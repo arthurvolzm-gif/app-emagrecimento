@@ -432,6 +432,30 @@ const App = {
      tela seguinte e some. A capa é uma cópia parada do último quadro da
      animação (sem a classe .tocar), então não tem salto na troca. */
   async trocarDaAbertura() {
+    /* Primeiro a escrita some e fica só o "O". A logo inteira está na tela
+       (quadro final da abertura); por cima dela entra uma cópia da MESMA
+       imagem recortada só na mira, igual ao recorte do começo da
+       animação (mesmo raio, mesmo filtro que apaga o rastro verde). Então a
+       logo de baixo desbota e a mira fica sozinha, no mesmo lugar e no
+       mesmo tamanho, sem salto. Só depois ela voa pro topo.
+       decode() antes de desbotar: sem a cópia pronta, a mira piscaria
+       no quadro da troca. */
+    const logoAb = document.querySelector('#app .abertura-logo');
+    if (logoAb) {
+      const base = logoAb.querySelector('img');
+      if (base) {
+        const so = base.cloneNode();
+        so.className = 'abertura-o';
+        so.alt = '';
+        so.setAttribute('aria-hidden', 'true');
+        logoAb.classList.remove('tocar');
+        logoAb.appendChild(so);
+        try { await so.decode(); } catch (e) {}
+        logoAb.classList.add('so-o');
+        await new Promise(ok => setTimeout(ok, 460));
+      }
+    }
+
     const capa  = document.createElement('div');
     capa.className = 'capa-abertura';
     capa.innerHTML = '<div class="capa-fundo"></div>';
@@ -520,7 +544,7 @@ const App = {
     }
 
     capa.classList.add('saindo');
-    await new Promise(ok => setTimeout(ok, 700));
+    await new Promise(ok => setTimeout(ok, 900));   /* voo de 820 ms + folga */
     capa.remove();
   },
 

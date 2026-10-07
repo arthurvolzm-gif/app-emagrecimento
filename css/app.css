@@ -709,12 +709,12 @@ a{color:inherit;text-decoration:none;}
    interpolar — pularia direto pro opacity:0. */
 .capa-abertura{position:fixed;inset:0;z-index:60;}
 .capa-fundo{position:absolute;inset:0;background:#000;}
-.capa-abertura.saindo .capa-fundo{animation:capaSai 620ms ease both;}
+.capa-abertura.saindo .capa-fundo{animation:capaSai 820ms ease both;}
 @keyframes capaSai{0%,78%{opacity:1;}100%{opacity:0;}}
 /* a logo da capa desliza e encolhe até cair em cima da logo da tela de
    baixo; --dx/--dy/--esc são medidos em App.trocarDaAbertura() */
 .capa-abertura.juntando .abertura-logo{
-  animation:marcaEncaixa 620ms cubic-bezier(.4,0,.2,1) both;
+  animation:marcaEncaixa 820ms cubic-bezier(.4,0,.2,1) both;
 }
 @keyframes marcaEncaixa{
   from{transform:translate(0,0) scale(1);}
@@ -729,19 +729,20 @@ a{color:inherit;text-decoration:none;}
   animation-delay:calc(240ms + var(--i,0) * 60ms);
 }
 .tela-login.entrando .login-footer{animation:conteudoEntra 560ms 400ms ease both;}
-/* 600ms e não 620: aos 600 a logo que voa já está a menos de 1px do
+/* 800ms e não 820: aos 800 a mira que voa já está a menos de 1px do
    destino, então as duas coincidem e a troca não aparece. Acender junto
    com o pouso arriscaria um quadro sem logo nenhuma. */
-.tela-login.entrando .login-logo{animation:marcaChega 1ms 600ms both;}
+.tela-login.entrando .login-logo{animation:marcaChega 1ms 800ms both;}
 /* a marca do cabeçalho, quando é ela o destino do voo */
-.marca-chegando{animation:marcaChega 1ms 600ms both;}
+.marca-chegando{animation:marcaChega 1ms 800ms both;}
 /* sem destino nenhum: a logo desbota junto com o fundo, em vez de ficar
    parada por cima do app até a capa ser removida */
-.capa-abertura.sumindo .abertura-logo{animation:capaSai 620ms ease both;}
+.capa-abertura.sumindo .abertura-logo{animation:capaSai 820ms ease both;}
 @keyframes conteudoEntra{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
 @keyframes marcaChega{from{opacity:0;}to{opacity:1;}}
 
 @media (prefers-reduced-motion: reduce){
+  .abertura-logo > img:not(.abertura-o){transition:none;}
   .entra-el,.letreando .letra,
   .capa-abertura.juntando .abertura-logo,
   .capa-abertura.sumindo .abertura-logo,
@@ -770,8 +771,21 @@ a{color:inherit;text-decoration:none;}
 .tela-abertura{background:#000;}
 .tela-abertura::before{display:none;}
 
-.abertura-logo{--cx:33.9%;--cy:30%;--dur:2s;width:280px;}
+.abertura-logo{--cx:33.9%;--cy:30%;--dur:2s;width:280px;position:relative;}
 .abertura-logo img{width:100%;display:block;}
+
+/* saída: a escrita some e fica só a mira (o "O"). A cópia da imagem tem o
+   mesmo recorte e o mesmo filtro do começo da abertura, e fica por cima da
+   logo inteira, no mesmo lugar. Raio de 23px: ver a conta lá em cima. */
+.abertura-logo .abertura-o{
+  position:absolute;left:0;top:0;
+  clip-path:circle(23px at var(--cx) var(--cy));
+  filter:grayscale(1) brightness(.55) contrast(4) brightness(1.5);
+}
+/* transição e não animação: mover a logo pra capa reinicia animação CSS (a
+   escrita voltava a 100% e desbotava de novo durante o voo); transição não */
+.abertura-logo > img:not(.abertura-o){transition:opacity 460ms ease;}
+.abertura-logo.so-o > img:not(.abertura-o){opacity:0;}
 
 /* wrapper: só o passeio que leva a mira até o meio da tela e volta */
 .abertura-logo.tocar{animation:aberturaAnda var(--dur) cubic-bezier(.45,.05,.2,1) both;}
@@ -1901,7 +1915,7 @@ body.travado{overflow:hidden;}
 .login-mira{width:74px !important;height:74px;display:block;margin-left:auto;margin-right:auto;}
 /* a logo inteira encolhe até a mira dela cair na mira do destino e
    desbota no caminho: quem fica é a mira do cabeçalho, que acende no fim */
-.capa-abertura.juntando .abertura-logo{animation:marcaEncaixaMira 620ms cubic-bezier(.4,0,.2,1) both;}
+.capa-abertura.juntando .abertura-logo{animation:marcaEncaixaMira 820ms cubic-bezier(.4,0,.2,1) both;}
 @keyframes marcaEncaixaMira{
   from{transform:translate(0,0) scale(1);opacity:1;}
   70% {opacity:.85;}
